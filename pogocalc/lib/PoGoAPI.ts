@@ -112,24 +112,24 @@ export class PoGoAPI {
         return effectiveness;
     }
 
-    static async getDamageAttack(attackingPokemon: any, defendingPokemon: any, move: any) {
+    static async getDamageAttack(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any) {
         const types = await this.getTypes();
         const effectiveness = this.getEfectiveness(defendingPokemon, move, types);
         return Calculator.calculateDamage(
             move.power, 
-            Calculator.getEffectiveAttack(attackingPokemon.stats.attack, 50), 
-            Calculator.getEffectiveDefense(defendingPokemon.stats.defense, 50),
+            Calculator.getEffectiveAttack(attackingPokemon.stats.attack, attackerStats[1], attackerStats[0]), 
+            Calculator.getEffectiveDefense(defendingPokemon.stats.defense,defenderStats[2], defenderStats[0]),
             attackingPokemon.primaryType.type == move.type.type || attackingPokemon.secondaryType?.type == move.type.type ? 1.2 : 1, 
             effectiveness
         );
     }
     
-    static getDamage(attacker: any, defender: any, move: any, types: any) {
+    static getDamage(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any) {
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 
-            Calculator.getEffectiveAttack(attacker.stats.attack, 50), 
-            Calculator.getEffectiveDefense(defender.stats.defense, 50),
+            Calculator.getEffectiveAttack(attacker.stats.attack, attackerStats[1] , attackerStats[0]), 
+            Calculator.getEffectiveDefense(defender.stats.defense, defenderStats[2], defenderStats[0]),
             attacker.primaryType.type == move.type.type || attacker.secondaryType?.type == move.type.type ? 1.2 : 1, 
             effectiveness
         );
@@ -144,7 +144,7 @@ export class PoGoAPI {
      * @param chargedMove 
      * @returns 
      */
-    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any) {
+    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any) {
         const types = await this.getTypes();
         let energy = 0;
         let time = 0;
@@ -153,12 +153,15 @@ export class PoGoAPI {
         let chargedAttackUses = 0;
         let turn = 0;
         let graphic = [];
-        let maxHealth = Calculator.getEffectiveStamina(defender.stats.stamina, 50);
+        let maxHealth = Calculator.getEffectiveStamina(defender.stats.stamina, defenderStats[3], defenderStats[0]);
         console.log(quickMove, chargedMove);
         while (damage <= maxHealth) {
-            damage += this.getDamage(attacker, defender, quickMove, types);
+            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats);
             time += quickMove.durationMs;
             energy += quickMove.energy;
+            if (energy > 100) {
+                energy = 100;
+            }
             quickAttackUses++;
             turn++;
             graphic.push({"turn": turn, "type": "quick"});
@@ -168,13 +171,20 @@ export class PoGoAPI {
             
             // WARNING: chargedMove.energy is negative
             if (energy >= -chargedMove.energy) {
-                if (damage + (this.getDamage(attacker, defender, quickMove, types) * chargedMove.durationMs / quickMove.durationMs) < maxHealth) { 
-                    energy = energy + chargedMove.energy <= 0 ? 0 : energy + chargedMove.energy;
-                    time += chargedMove.durationMs;
-                    chargedAttackUses++;
-                    damage += this.getDamage(attacker, defender, chargedMove, types);
-                    turn++;
-                    graphic.push({"turn": turn, "type": "charged"});
+                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats);
+                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats);
+                console.log("Projected Damage per Charged Move: ", projectedDamageCharged);
+                console.log("Projected Damage per Quick Move: ", projectedDamageQuick);
+                console.log("Quick Move Damage done in Charged Move Duration: ", projectedDamageQuick * (chargedMove.durationMs / quickMove.durationMs));
+                if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
+                    if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
+                        energy = energy + chargedMove.energy <= 0 ? 0 : energy + chargedMove.energy;
+                        time += chargedMove.durationMs;
+                        chargedAttackUses++;
+                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats);
+                        turn++;
+                        graphic.push({"turn": turn, "type": "charged"});
+                    }
                 }
             }
         }

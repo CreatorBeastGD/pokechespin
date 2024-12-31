@@ -120,16 +120,27 @@ export class Calculator {
           ) + 1;
       }
 
-      static getEffectiveAttack(attack: number, level: number) {
-        return attack + 15 * this.getCPM(level);
+      static getEffectiveAttack(attack: number, iv: number, level: number) {
+        return (attack + iv) * this.getCPM(level);
       }
 
-      static getEffectiveDefense(defense: number, level: number) {
-          return defense + 15 * this.getCPM(level);
+      static getEffectiveDefense(defense: number, iv: number, level: number) {
+          return (defense + iv) * this.getCPM(level);
       }
 
-      static getEffectiveStamina(stamina: number, level: number) {
-          console.log(stamina, level);
-          return stamina + 15 * this.getCPM(level);
+      static getEffectiveStamina(stamina: number, iv: number, level: number) {
+          return (stamina + iv) * this.getCPM(level);
       }
+
+      /**
+       * 
+       * @param attack Effective Attack Stat of a Pokémon
+       * @param defense Effective Defense Stat of a Pokémon
+       * @param stamina Effective Stamina Stat of a Pokémon
+       * @returns PC of a Pokémon
+       */
+      static getPCs(attack: number, defense: number, stamina: number) {
+          return Math.max(10, Math.floor((Math.sqrt(stamina) * attack * Math.sqrt(defense)) / 10));
+      }
+
 }

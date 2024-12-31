@@ -10,12 +10,16 @@ export default function CalculateButtonSimulate({
   attacker,
   defender,
   quickMove,
-  chargedMove
+  chargedMove,
+  attackerStats,
+  defenderStats
 }: {
   attacker: any;
   defender: any;
   quickMove: any;
   chargedMove: any;
+  attackerStats: any;
+  defenderStats: any;
 }) {
   const [time, setTime] = useState<number | null>(0);
   const [qau, setQau] = useState<number | null>(0);
@@ -31,7 +35,7 @@ export default function CalculateButtonSimulate({
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove) return;
-    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove);
+    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats);
     setTime(time);
     setQau(quickAttackUses);
     setCau(chargedAttackUses);
@@ -65,7 +69,7 @@ export default function CalculateButtonSimulate({
                 </div>
             </CardContent>
             <CardContent>
-                <p><Badge variant="primary">Q</Badge> Quick Move <Badge variant="destructive">C</Badge> Charged Move</p>
+                <Badge variant="primary">Q</Badge> Fast Attack <Badge variant="destructive">C</Badge> Charged Attack
             </CardContent>
             </Card>
         </div>
