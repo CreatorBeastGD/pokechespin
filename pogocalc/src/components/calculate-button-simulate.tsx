@@ -46,10 +46,10 @@ export default function CalculateButtonSimulate({
       {time !== 0 && attacker && defender && quickMove && chargedMove && (
         <div>
           <p>
-            {attacker.names.English} takes {(time ?? 0) / 1000} seconds to defeat {defender.names.English} with {quickMove.names.English} and {chargedMove.names.English}
+            {attacker.names.English} takes {(time ?? 0) / 1000} seconds to defeat {defender.names.English} with {quickMove.names.English} and {chargedMove.names.English}.
           </p>
           <p>
-            {attacker.names.English} uses {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times
+            {attacker.names.English} needs to use {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times to defeat {defender.names.English} the fastest way possible.
           </p>
           <Card className="mt-4">
             <CardHeader>
