@@ -20,6 +20,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.responsive-test {
+  @apply flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 justify-center ;
+}
+
+.big-box {
+  @apply w-[90%]
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -84,3 +93,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
