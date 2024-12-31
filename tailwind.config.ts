@@ -1,18 +1,13 @@
 import type { Config } from "tailwindcss";
 
 export default {
-	mode: "jit",
     darkMode: ["class"],
     content: [
-		"./src/**/*.{js,ts,jsx,tsx,mdx}",
-	  ],
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
-	screens: {
-		sm: '640px',
-		md: '768px',
-		lg: '1024px',
-		xl: '1280px',
-	  },
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
@@ -60,8 +55,7 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		},
-		display: ['responsive', 'group-hover', 'focus-within', 'hover', 'focus'],
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
