@@ -139,11 +139,11 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
         onChange={handleInputChange}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 w-[10%]">
+        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.id}
-              className="p-2 cursor-pointer hover:bg-gray-200"
+              className="p-2 cursor-pointer hover:bg-gray-200 "
               onClick={() => handleSuggestionClick(suggestion.id)}
             >
               {suggestion.names.English}

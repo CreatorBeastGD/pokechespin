@@ -28,6 +28,10 @@ body {
   @apply w-[90%]
 }
 
+.resp-box-suggest {
+  @apply w-[35%] md:w-[15%]
+}
+
 
 @layer base {
   :root {
