@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Progress } from "./ui/progress";
 
 interface SearchBarAttackerProps {
   onSelect: (pokemon: any) => void;
@@ -45,6 +46,12 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
     onChargedMoveSelect(moveId, move);
   };
 
+  
+  const formatPokemonName = (name: string) => {
+    return name.toLowerCase().replace(/ /g, '-');
+  };
+
+
   return (
     <>
       <Input
@@ -61,16 +68,30 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           <p>Type(s): {pokemonData.primaryType.names.English + (pokemonData.secondaryType ? "/" + pokemonData.secondaryType.names.English : "")}</p>
           <p>Stats</p>
           <p>Attack: {pokemonData.stats.attack}</p>
-          <p>Defense: {pokemonData.stats.defense}</p>
-          <p>Stamina: {pokemonData.stats.stamina}</p>
-          {pokemonData.assets.image && (
+            <Progress color={"bg-red-600"} className="w-[60%]" value={(pokemonData.stats.attack / 505) * 100}/>
+            <p>Defense: {pokemonData.stats.defense}</p>
+            
+          <Progress color={"bg-green-600"} className="w-[60%]" value={(pokemonData.stats.defense / 505) * 100}/>
+            <p>Stamina: {pokemonData.stats.stamina}</p>
+            
+          <Progress color={"bg-yellow-600"} className="w-[60%]" value={(pokemonData.stats.stamina / 505) * 100}/>
+          {pokemonData.assets?.image ? (
             <Image
               className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
-              src={pokemonData.assets.image}
+              src={pokemonData.assets?.image}
               alt={pokemonData.names.English}
               width={400}
               height={400}
               style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
+            />
+          ) : (
+            <Image
+                className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
+                src={"https://img.pokemondb.net/sprites/home/normal/" + formatPokemonName(pokemonData.names.English) + ".png"}
+                alt={pokemonData.names.English}
+                width={400}
+                height={400}
+                style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
             />
           )}
           <div className="flex flex-row space-x-4">
@@ -89,6 +110,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                     <CardDescription>Power: {move.power}</CardDescription>
                     <CardDescription>Energy: {move.energy}</CardDescription>
                     <CardDescription>Type: {move.type.names.English}</CardDescription>
+                    <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>
               ))}
@@ -107,6 +129,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                         <CardDescription>Power: {move.power}</CardDescription>
                         <CardDescription>Energy: {move.energy}</CardDescription>
                         <CardDescription>Type: {move.type.names.English}</CardDescription>
+                        <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
                       </CardContent>
                     </Card>
                   ))}
@@ -127,8 +150,9 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Power: {move.power}</CardDescription>
-                    <CardDescription>Energy: {move.energy}</CardDescription>
+                    <CardDescription>Energy cost: {-move.energy}</CardDescription>
                     <CardDescription>Type: {move.type.names.English}</CardDescription>
+                    <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>
               ))}
@@ -145,8 +169,9 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                       </CardHeader>
                       <CardContent>
                         <CardDescription>Power: {move.power}</CardDescription>
-                        <CardDescription>Energy: {move.energy}</CardDescription>
+                        <CardDescription>Energy cost: {-move.energy}</CardDescription>
                         <CardDescription>Type: {move.type.names.English}</CardDescription>
+                        <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
                       </CardContent>
                     </Card>
                   ))}

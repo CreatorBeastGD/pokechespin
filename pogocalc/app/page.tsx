@@ -15,6 +15,7 @@ import SearchBarAttacker from "@/components/search-bar-attacker";
 import { Calculator } from "../lib/calculations";
 import { PoGoAPI } from "../lib/PoGoAPI";
 import CalculateButton from "@/components/calculate-button";
+import CalculateButtonSimulate from "@/components/calculate-button-simulate";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -22,7 +23,7 @@ export default function Home() {
   const [selectedQuickMove, setSelectedQuickMove] = useState<any | null>(null);
   const [selectedChargedMove, setSelectedChargedMove] = useState<any | null>(null);
 
-  const handleAttackerSelect = (pokemon: any) => {
+  const handleAttackerSelect = async (pokemon: any) => {
     setAttackingPokemon(pokemon);
     setSelectedQuickMove(null);
     setSelectedChargedMove(null);
@@ -39,14 +40,6 @@ export default function Home() {
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(move);
   };
-
-  const getQuickMoveDamage = async () => {
-    if (!attackingPokemon || !defendingPokemon || !selectedQuickMove) {
-      return "No damage calculated";
-    }
-    const damage = await PoGoAPI.getDamageQuickAttack(attackingPokemon, defendingPokemon, selectedQuickMove);
-    return `Damage: ${damage}`;
-  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -78,10 +71,19 @@ export default function Home() {
       <Card className="flex flex-col mt-4 w-1/2">
         <CardHeader >
           <CardTitle>Results</CardTitle>
-          <CardDescription>Assumming level 40 and 100% stats on both Pokémon:</CardDescription>
+          <CardDescription>Assumming level 50 and 100% stats on both Pokémon:</CardDescription>
         </CardHeader>
         <CardContent>
+          <CardDescription> Damage dealt per fast attack</CardDescription>
           <CalculateButton attacker={attackingPokemon} defender={defendingPokemon} move={selectedQuickMove} />
+        </CardContent>
+        <CardContent>
+          <CardDescription> Damage dealt per charged attack</CardDescription>
+          <CalculateButton attacker={attackingPokemon} defender={defendingPokemon} move={selectedChargedMove} />
+        </CardContent>
+        <CardContent>
+          <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
+          <CalculateButtonSimulate attacker={attackingPokemon} defender={defendingPokemon} quickMove={selectedQuickMove} chargedMove={selectedChargedMove} />
         </CardContent>
         <CardFooter>
           <p>Results will be displayed here</p>
