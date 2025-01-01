@@ -28,54 +28,10 @@ export class PoGoAPI {
         const data = await response.json();
         return data;
     }
-
-    static async getBestQuickMove(pokemon: any, defendingPokemon: any) {
-        
-        const types = await this.getTypes();
-        const bestQuickMove = pokemon.quickMoves.reduce((best: any, move: any) => {
-            const power = this.movepower(move, pokemon, defendingPokemon, types);
-            if (power > best.power) {
-                return {move, power};
-            }
-            return best;
-        });
-
-        const bestEliteQuickMove = pokemon.eliteQuickMoves.reduce((best: any, move: any) => {
-            const power = this.movepower(move, pokemon, defendingPokemon, types);
-            if (power > best.power) {
-                return {move, power};
-            }
-            return best;
-        });
-
-        return this.movepower(bestQuickMove.move, pokemon, defendingPokemon, types) > 
-              this.movepower(bestEliteQuickMove.move, pokemon, defendingPokemon, types) ? 
-              bestQuickMove : bestEliteQuickMove;
-    }
-
+    
     static async getTypes () {
         const response = await fetch(API + "types.json");
         return await response.json();
-    }
-
-    
-
-    static async movepower(move: any, attackingPokemon: any, defendingPokemon: any, types: any) {
-        const stabMultiplier = move.type.type == attackingPokemon.primaryType.type || move.type.type == attackingPokemon.secondaryType.type ? 1.2 : 1;
-        const speed = move.durationMS / 1000;
-        const power = move.power;
-        const energy = move.energy;
-        const defenderFirstType = defendingPokemon.primaryType.type;
-        const defenderSecondType = defendingPokemon.secondaryType?.type;
-        
-        const defenderFirstTypeWeaknesses = this.getTypeWeaknesses(defenderFirstType, types);
-        const defenderSecondTypeWeaknesses = this.getTypeWeaknesses(defenderSecondType, types);
-        const effectiveness = (defenderFirstTypeWeaknesses[move.type.type] ?? 1) * (defenderSecondTypeWeaknesses[move.type.type] ?? 1);
-        
-        const EPS = energy / speed;
-        const DPS = (power*effectiveness*stabMultiplier) / speed;
-
-        return EPS+DPS;
     }
 
     static getTypeWeaknesses(type: string, allTypes: any[]) {

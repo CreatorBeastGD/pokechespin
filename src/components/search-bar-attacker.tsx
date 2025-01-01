@@ -11,6 +11,7 @@ import { Slider } from "./ui/slider";
 import { Calculator } from "../../lib/calculations";
 import { Select, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { SelectContent } from "@radix-ui/react-select";
+import { SpecialAttacks } from "../../lib/special-attacks";
 
 
 interface SearchBarAttackerProps {
@@ -45,6 +46,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
   useEffect(() => {
     const fetchAllPokemonNames = async () => {
       const names = await PoGoAPI.getAllPokemon();
+      console.log("All Pokémon data fetched.");
       setAllPokemon(names);
     };
     fetchAllPokemonNames();
@@ -77,7 +79,15 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
 
   
   const formatPokemonName = (name: string) => {
-    return name.toLowerCase().replace(/ /g, '-');
+    return name.toLowerCase().replaceAll(/ /g, '-').replaceAll('(', '').replaceAll('form)', '').replaceAll("_", "-")
+      .replace('iron', 'iron-')
+      .replace('great', 'great-')
+      .replace('scream', 'scream-')
+      .replace('brute', 'brute-')
+      .replace('flutter', 'flutter-')
+      .replace('slither', 'slither-')
+      .replace('sandy', 'sandy-')
+      .replace('roaring', 'roaring-')
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -90,7 +100,9 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
   const getSelectedForm = () => {
     if (selectedForm === "normal") {
       return pokemonData;
-    } else {
+    } else if (selectedForm in pokemonData.regionForms) {
+      return pokemonData.regionForms[selectedForm];
+    } else if (selectedForm in pokemonData.megaEvolutions) {
       return pokemonData.megaEvolutions[selectedForm];
     }
   };
@@ -165,6 +177,9 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
             {pokemonData.hasMegaEvolution && Object.keys(pokemonData.megaEvolutions).map((form) => (
               <option key={form} value={form}>{pokemonData.megaEvolutions[form].names.English}</option>
             ))}
+            {pokemonData.regionForms && Object.keys(pokemonData.regionForms).map((form) => (
+              <option key={form} value={form}>{pokemonData.regionForms[form].names.English}</option>
+            ))}
           </select>
 
           <p>Stats (PC: {Calculator.getPCs(effAttack, effDefense, effStamina)})</p>
@@ -176,10 +191,10 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           
           <p>Stamina: {selectedPokemon.stats.stamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats.stamina / 505) * 100}/>
-          {selectedPokemon.assets?.image ? (
+          {( selectedPokemon.assets != null && selectedPokemon.assets?.image) ? (
             <Image
               className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
-              src={selectedPokemon.assets?.image}
+              src={(selectedPokemon.names.English === "Dialga" || selectedPokemon.names.English === "Palkia") ? "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon/Addressable%20Assets/pm" + pokemonData.dexNr + ".icon.png" : selectedPokemon.assets.image}
               alt={selectedPokemon.names.English}
               width={400}
               height={400}
@@ -188,7 +203,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           ) : (
             <Image
                 className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
-                src={"https://img.pokemondb.net/sprites/home/normal/" + formatPokemonName(selectedPokemon.names.English) + ".png"}
+                src={"https://img.pokemondb.net/sprites/home/normal/" + formatPokemonName(selectedPokemon.formId) + ".png"}
                 alt={selectedPokemon.names.English}
                 width={400}
                 height={400}
@@ -210,7 +225,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>
-              {Object.values(pokemonData.quickMoves).map((move: any) => (
+              {Object.values(selectedPokemon?.quickMoves ? selectedPokemon.quickMoves : pokemonData.quickMoves).map((move: any) => (
                 <Card
                   key={move.id}
                   className={`mb-4 ${selectedQuickMove === move.id ? 'bg-blue-200' : ''}`}
@@ -220,16 +235,16 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                     <CardTitle>{move.names.English}</CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <CardDescription>Type: {move.type.names.English}</CardDescription>
                     <CardDescription>Power: {move.power}</CardDescription>
                     <CardDescription>Energy: {move.energy}</CardDescription>
-                    <CardDescription>Type: {move.type.names.English}</CardDescription>
                     <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>
               ))}
-              {Object.values(pokemonData.eliteQuickMoves).length > 0 && (
+              {Object.values(selectedPokemon?.eliteQuickMoves ? selectedPokemon.eliteQuickMoves : pokemonData.eliteQuickMoves).length > 0 && (
                 <>
-                  {Object.values(pokemonData.eliteQuickMoves).map((move: any) => (
+                  {Object.values(selectedPokemon?.eliteQuickMoves ? selectedPokemon.eliteQuickMoves : pokemonData.eliteQuickMoves).map((move: any) => (
                     <Card
                       key={move.id}
                       className={`mb-4 ${selectedQuickMove === move.id ? 'bg-blue-200' : ''}`}
@@ -252,7 +267,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
 
             <div>
               <p>Charged Attacks:</p>
-              {Object.values(pokemonData.cinematicMoves).map((move: any) => (
+              {Object.values(selectedPokemon?.cinematicMoves ? selectedPokemon.cinematicMoves : pokemonData.cinematicMoves).map((move: any) => (
                 <Card
                   key={move.id}
                   className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
@@ -269,16 +284,16 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                   </CardContent>
                 </Card>
               ))}
-              {Object.values(pokemonData.eliteCinematicMoves).length > 0 && (
+              {Object.values(selectedPokemon?.eliteCinematicMoves ? selectedPokemon.eliteCinematicMoves : pokemonData.eliteCinematicMoves).length > 0 && (
                 <>
-                  {Object.values(pokemonData.eliteCinematicMoves).map((move: any) => (
+                  {Object.values(selectedPokemon?.eliteCinematicMoves ? selectedPokemon.eliteCinematicMoves : pokemonData.eliteCinematicMoves).map((move: any) => (
                     <Card
                       key={move.id}
                       className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
                       onClick={() => handleChargedMoveSelect(move.id, move)}
                     >
                       <CardHeader>
-                        <CardTitle>{move.names.English} (Elite)</CardTitle>
+                        <CardTitle>{move.names.English} <span className="text-xs">*</span></CardTitle>
                       </CardHeader>
                       <CardContent>
                         <CardDescription>Power: {move.power}</CardDescription>
@@ -290,6 +305,27 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
                   ))}
                 </>
               )}
+              {Object.entries(SpecialAttacks.specialChargedAttacks)
+                  .filter(([key, entry]: [string, any]) => ( key === selectedPokemon?.formId || key === selectedPokemon?.id))
+                  .map(([key, entry]: [string, any]) => (
+                    entry.map((move: any) => (
+                      <Card
+                        key={move.id}
+                        className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
+                        onClick={() => handleChargedMoveSelect(move.id, move)}
+                      >
+                        <CardHeader>
+                          <CardTitle>{move.names.English} <span className="text-xs">✝</span></CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <CardDescription>Power: {move.power}</CardDescription>
+                          <CardDescription>Energy cost: {-move.energy}</CardDescription>
+                          <CardDescription>Type: {move.type.names.English}</CardDescription>
+                          <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ))}
             </div>
           </div>
         </div>

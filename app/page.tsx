@@ -63,7 +63,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
-      <h1 className="mb-10 ">Pokémon GO Damage Calculator</h1>
+      <h1 className="mb-10 title">Pokémon GO Damage (and PC) Calculator</h1>
+      <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
+      
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
           <CardHeader>
@@ -135,9 +137,8 @@ export default function Home() {
         </Card>
       </div>
       
-      <p>Version 1.0</p>
-      <a className="text-cyan-600" href="https://github.com/CreatorBeastGD"><p>Made by CreatorBeastGD</p></a>
-      <a href="https://github.com/pokemon-go-api/pokemon-go-api">Pokémon GO API</a>
+      <p className="bottomtext">Version 1.1</p>
+      <p className="linktext">Pokémon GO API made by <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a></p>
     </div>
   );
 }

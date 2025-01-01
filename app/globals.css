@@ -32,6 +32,21 @@ body {
   @apply w-[35%] md:w-[15%]
 }
 
+.title {
+  @apply text-5xl font-bold text-center my-5;
+}
+
+.link {
+  @apply text-blue-500 underline;
+}
+
+.linktext {
+  @apply mb-5;
+}
+
+.bottomtext {
+  @apply text-center text-sm text-gray-500 mt-5;
+}	
 
 @layer base {
   :root {
