@@ -95,17 +95,17 @@ export class PoGoAPI {
         let convertedStats = [];
         console.log("def: ", defenderStats)
         if (raidMode === "raid-t1") {
-            convertedStats = [20, defenderStats[1], defenderStats[2], 600];
+            convertedStats = [20, 15, 15, 600];
         } else if (raidMode === "raid-t3") {
-            convertedStats = [30, defenderStats[1], defenderStats[2], 3600];
+            convertedStats = [30, 15, 15, 3600];
         } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
-            convertedStats = [40, defenderStats[1], defenderStats[2], 9000];
+            convertedStats = [40, 15, 15, 9000];
         } else if (raidMode === "raid-t5") {
-            convertedStats = [40, defenderStats[1], defenderStats[2], 15000];
+            convertedStats = [40, 15, 15, 15000];
         } else if (raidMode === "raid-elite") {
-            convertedStats = [40, defenderStats[1], defenderStats[2], 20000];
+            convertedStats = [40, 15, 15, 20000];
         } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
-            convertedStats = [40, defenderStats[1], defenderStats[2], 22500];
+            convertedStats = [40, 15, 15, 22500];
         } else {
             convertedStats = defenderStats;
         }
