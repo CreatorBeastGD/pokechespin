@@ -54,11 +54,11 @@ export default function CalculateButton({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          {attacker.names.English} deals {damage} damage to {defender.names.English} with {move.names.English} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> with {move.names.English} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           </p>
           <p>
           
-          {defender.names.English} has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
+          <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
           </p>
         </div>
       )}

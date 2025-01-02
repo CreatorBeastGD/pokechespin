@@ -149,8 +149,8 @@ export default function Home() {
             <CardHeader >
               <CardTitle>Results</CardTitle>
               <CardDescription>Assumming the following stats:</CardDescription>
-              <CardDescription>Attacker: {attackingPokemon?.names.English ? attackingPokemon?.names.English + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
-              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {defendingPokemon?.names.English ? (defendingPokemon?.names.English + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
+              <CardDescription>Attacker: {attackingPokemon?.names.English ? (bonusAttacker[1] !== false ? "Shadow " : "") + attackingPokemon?.names.English + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
+              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {defendingPokemon?.names.English ? (bonusDefender[1] !== false ? "Shadow " : "") + (defendingPokemon?.names.English + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
@@ -207,7 +207,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.3</p>
+      <p className="bottomtext">Version 1.3.1</p>
       <p className="linktext">Pokémon GO API made by <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a></p>
       <Avatar>
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

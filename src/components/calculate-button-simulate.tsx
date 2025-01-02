@@ -100,15 +100,15 @@ export default function CalculateButtonSimulate({
       {time !== 0 && attacker && defender && quickMove && chargedMove && (
         <div className="mt-4 space-y-4">
           <p>
-            {attacker.names.English} takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{defender.names.English}</span> with {quickMove.names.English} and {chargedMove.names.English} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus" : ""}{bonusAttacker[2] ? ", Mega bonus" : ""} and Friendship Level {bonusAttacker[3]} bonus.
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> with {quickMove.names.English} and {chargedMove.names.English} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
           </p>
           <p>
-            {attacker.names.English} needs to use {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{defender.names.English}</span> the fastest way possible.
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> needs to use {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> the fastest way possible.
           </p>
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{defender.names.English}</span> in the given time. ({getRaidTime(raidMode)} seconds)
+            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> in the given time. ({getRaidTime(raidMode)} seconds)
           </p>)}
           <Card className="mt-4">
             
