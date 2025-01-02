@@ -209,10 +209,12 @@ export default function Home() {
       
       <p className="bottomtext">Version 1.3.2</p>
       <p className="linktext">Pokémon GO API made by <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a></p>
-      <Avatar>
+      <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
+      <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
+      <p></p>
     </div>
   );
 }
