@@ -91,6 +91,45 @@ export class PoGoAPI {
         );
     }
 
+    static convertStats(defenderStats: any, raidMode: any) {
+        let convertedStats = [];
+        console.log("def: ", defenderStats)
+        if (raidMode === "raid-t1") {
+            convertedStats = [20, defenderStats[1], defenderStats[2], 600];
+        } else if (raidMode === "raid-t3") {
+            convertedStats = [30, defenderStats[1], defenderStats[2], 3600];
+        } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
+            convertedStats = [40, defenderStats[1], defenderStats[2], 9000];
+        } else if (raidMode === "raid-t5") {
+            convertedStats = [40, defenderStats[1], defenderStats[2], 15000];
+        } else if (raidMode === "raid-elite") {
+            convertedStats = [40, defenderStats[1], defenderStats[2], 20000];
+        } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
+            convertedStats = [40, defenderStats[1], defenderStats[2], 22500];
+        } else {
+            convertedStats = defenderStats;
+        }
+        return convertedStats;
+    }
+
+    static getRaidHealth (raidMode: any) {
+        if (raidMode === "raid-t1") {
+            return 600;
+        } else if (raidMode === "raid-t3") {
+            return 3600;
+        } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
+            return 9000;
+        } else if (raidMode === "raid-t5") {
+            return 15000;
+        } else if (raidMode === "raid-elite") {
+            return 20000;
+        } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
+            return 22500;
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Simulates a battle between two pokemon
      * 
@@ -100,7 +139,10 @@ export class PoGoAPI {
      * @param chargedMove 
      * @returns 
      */
-    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any) {
+    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any) {
+        if (raidMode !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raidMode);
+        }
         const types = await this.getTypes();
         let energy = 0;
         let time = 0;
@@ -109,8 +151,12 @@ export class PoGoAPI {
         let chargedAttackUses = 0;
         let turn = 0;
         let graphic = [];
+        console.log(defenderStats, raidMode);
         let maxHealth = Calculator.getEffectiveStamina(defender.stats.stamina, defenderStats[3], defenderStats[0]);
-        console.log(quickMove, chargedMove);
+        if (raidMode !== "normal") {
+            maxHealth = this.getRaidHealth(raidMode);
+        }
+        console.log("Max health: ", maxHealth)
         while (damage <= maxHealth) {
             damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats);
             time += quickMove.durationMs;
@@ -129,9 +175,6 @@ export class PoGoAPI {
             if (energy >= -chargedMove.energy) {
                 const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats);
                 const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats);
-                console.log("Projected Damage per Charged Move: ", projectedDamageCharged);
-                console.log("Projected Damage per Quick Move: ", projectedDamageQuick);
-                console.log("Quick Move Damage done in Charged Move Duration: ", projectedDamageQuick * (chargedMove.durationMs / quickMove.durationMs));
                 if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
                     if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
                         energy = energy + chargedMove.energy <= 0 ? 0 : energy + chargedMove.energy;

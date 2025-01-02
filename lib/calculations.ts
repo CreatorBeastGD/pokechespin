@@ -39,7 +39,7 @@ export class Calculator {
         18.5: 0.5745691333,
         19: 0.5822789,
         19.5: 0.5898879072,
-        20: 0.5974,
+        20: 0.5974, // Tier 1 raid boss
         20.5: 0.6048236651,
         21: 0.6121573,
         21.5: 0.6194041216,
@@ -49,7 +49,7 @@ export class Calculator {
         23.5: 0.6475809666,
         24: 0.65443563,
         24.5: 0.6612192524,
-        25: 0.667934,
+        25: 0.667934, // Tier 2 raid boss
         25.5: 0.6745818959,
         26: 0.6811649,
         26.5: 0.6876849038,
@@ -59,7 +59,7 @@ export class Calculator {
         28.5: 0.7131691091,
         29: 0.7193991,
         29.5: 0.7255756136,
-        30: 0.7317,
+        30: 0.7317, // Tier 3 raid boss
         30.5: 0.7347410093,
         31: 0.7377695,
         31.5: 0.7407855938,
@@ -79,7 +79,7 @@ export class Calculator {
         38.5: 0.7817900548,
         39: 0.784637,
         39.5: 0.7874736075,
-        40: 0.7903,
+        40: 0.7903, // Tier 4 and 5 raid boss
         40.5: 0.792803968,
         41: 0.79530001,
         41.5: 0.797800015,
@@ -102,6 +102,7 @@ export class Calculator {
         50: 0.84029999,
         50.5: 0.84279999,
         51: 0.84529999,
+        100: 1.0
     };
     
       static getCPM(level: number) {
@@ -129,6 +130,7 @@ export class Calculator {
       }
 
       static getEffectiveStamina(stamina: number, iv: number, level: number) {
+        console.log(stamina, iv, level);
           return (stamina + iv) * this.getCPM(level);
       }
 
@@ -143,4 +145,7 @@ export class Calculator {
           return Math.max(10, Math.floor((Math.sqrt(stamina) * attack * Math.sqrt(defense)) / 10));
       }
 
+      static getRawPCs(attack: number, defense: number, stamina: number) {
+        return Math.max(10, Math.floor((Math.sqrt(this.getEffectiveStamina(stamina, 0, 100)) * this.getEffectiveAttack(attack, 15, 100) * Math.sqrt(this.getEffectiveDefense(defense, 15, 100))) / 10));
+      }
 }

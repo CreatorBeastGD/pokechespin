@@ -12,7 +12,8 @@ export default function CalculateButtonSimulate({
   quickMove,
   chargedMove,
   attackerStats,
-  defenderStats
+  defenderStats,
+  raidMode
 }: {
   attacker: any;
   defender: any;
@@ -20,6 +21,7 @@ export default function CalculateButtonSimulate({
   chargedMove: any;
   attackerStats: any;
   defenderStats: any;
+  raidMode: string;
 }) {
   const [time, setTime] = useState<number | null>(0);
   const [qau, setQau] = useState<number | null>(0);
@@ -35,13 +37,22 @@ export default function CalculateButtonSimulate({
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove) return;
-    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats);
+    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode);
     setTime(time);
     setQau(quickAttackUses);
     setCau(chargedAttackUses);
     setGraphic(graphic);
   };
 
+  const getRequiredPeople = (raidMode: string) => {
+    let raidTime = 0;
+    if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4") {
+      raidTime = 180;
+    } else {
+      raidTime = 300;
+    }
+    return ( ((time ?? 0) / 1000) / raidTime).toFixed(2);
+  }
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -55,6 +66,11 @@ export default function CalculateButtonSimulate({
           <p>
             {attacker.names.English} needs to use {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times to defeat {defender.names.English} the fastest way possible.
           </p>
+          {raidMode == "normal" ? (
+            <></>
+          ) : (<p>
+            {getRequiredPeople(raidMode)} people are required to defeat {defender.names.English} in the given time.
+          </p>)}
           <Card className="mt-4">
             <CardHeader>
                 <CardTitle>Attack Sequence</CardTitle>
