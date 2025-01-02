@@ -1,5 +1,6 @@
 
 export class Data {
+    
     static weatherBoost = {
         "EXTREME": {
             boost: ["POKEMON_TYPE_BIRD"],
@@ -132,7 +133,7 @@ export class Data {
                 type: "POKEMON_TYPE_DRAGON",
             }
         }],
-        "HO_OH": [{
+        "HO_OH_S": [{
             id: "SACRED_FIRE_PLUS",
             names: {
                 English: "Sacred Fire+",
@@ -165,7 +166,7 @@ export class Data {
                 type: "POKEMON_TYPE_FIRE",
             }
         }],
-        "LUGIA": [{
+        "LUGIA_S": [{
             id: "AEROBLAST_PLUS",
             names: {
                 English: "Aeroblast+",

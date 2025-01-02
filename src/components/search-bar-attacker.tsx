@@ -65,7 +65,20 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
     handleChargedMoveSelect("", null);
     setSelectedForm("normal");
     try {
-      const response = await PoGoAPI.getPokemonByName(pokemon.toUpperCase());
+      const response = await PoGoAPI.getPokemonByName(pokemon.toUpperCase().
+        replaceAll("WO-CHIEN", "WOCHIEN").
+        replaceAll("CHIEN-PAO", "CHIENPAO").
+        replaceAll("CHI-YU", "CHIYU").
+        replaceAll("TING-LU", "TINGLU").
+        replaceAll("MR. ", "MR_").
+        replaceAll("MIME JR.", "MIME_JR").
+        replaceAll(": ", "_").
+        replaceAll("-", "_").
+        replaceAll("'", "").
+        replaceAll(" ", "").
+        replaceAll("♀", "_FEMALE").
+        replaceAll("♂", "_MALE").
+        replaceAll(".", ""));
       setPokemonData(response);
       onSelect(response);
     } finally {
@@ -94,6 +107,10 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
       .replace('slither', 'slither-')
       .replace('sandy', 'sandy-')
       .replace('roaring', 'roaring-')
+      .replace('wochien', 'wo-chien')
+      .replace('chienpao', 'chien-pao')
+      .replace('chiyu', 'chi-yu')
+      .replace('tinglu', 'ting-lu')
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -129,7 +146,19 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
     // Filtrar sugerencias
     if (value.length > 0) {
       const filteredSuggestions = allPokemon.filter((p: any) =>
-        p.id.toLowerCase().startsWith(value.toLowerCase())
+        p.id.toLowerCase()
+          .replaceAll("chd", "ch'd")
+          .replaceAll("mime_jr", "mime jr.")
+          .replaceAll("mr_", "mr. ")
+          .replaceAll("e_null", "e: null")
+          .replaceAll("_", "-")
+          .replaceAll("_male", "♂")
+          .replaceAll("_female", "♀")
+          .replaceAll("wochien", "wo-chien")
+          .replaceAll("chienpao", "chien-pao")
+          .replaceAll("chiyu", "chi-yu")
+          .replaceAll("tinglu", "ting-lu")
+          .startsWith(value.toLowerCase())
     );
       setSuggestions(filteredSuggestions);
     } else {
@@ -178,9 +207,9 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
         <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
-              key={suggestion.id}
+              key={suggestion.names.English}
               className="p-2 cursor-pointer hover:bg-gray-200 "
-              onClick={() => handleSuggestionClick(suggestion.id)}
+              onClick={() => handleSuggestionClick(suggestion.names.English)}
             >
               {suggestion.names.English}
             </li>

@@ -207,7 +207,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.3.1</p>
+      <p className="bottomtext">Version 1.3.2</p>
       <p className="linktext">Pokémon GO API made by <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a></p>
       <Avatar>
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
