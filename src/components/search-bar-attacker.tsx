@@ -187,7 +187,7 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           ))}
         </ul>
       )}
-      <Button onClick={searchPokemon} className="mt-4 mb-2">Buscar</Button>
+      <Button onClick={searchPokemon} className="mt-4 mb-2">Search</Button>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
       {pokemonData ? (

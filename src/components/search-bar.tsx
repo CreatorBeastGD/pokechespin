@@ -42,7 +42,7 @@ interface SearchBarDefenderProps {
         type="text"
         onChange={(e) => setPokemon(e.target.value)}
       />
-      <Button onClick={searchPokemon} className="mt-4 mb-2">Buscar</Button>
+      <Button onClick={searchPokemon} className="mt-4 mb-2">Search</Button>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
       {pokemonData ? (
