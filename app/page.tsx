@@ -146,7 +146,7 @@ export default function Home() {
                 <option key={"raid-mega"} value={"raid-mega"}>Mega Raid (9000HP) </option>
                 <option key={"raid-mega-leg"} value={"raid-mega-leg"}>Mega Legendary Raid (22500HP) </option>
                 <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
-                <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
+                <option key={"raid-primal"} value={"raid-mega-leg"}>Primal Raid (22500HP) </option>
 
               </select>
               <CalculateButtonSimulate 
