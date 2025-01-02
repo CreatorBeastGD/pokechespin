@@ -10,13 +10,19 @@ export default function CalculateButton({
   defender,
   move,
   attackerStats,
-  defenderStats
+  defenderStats,
+  bonusAttacker,
+  bonusDefender,
+  raidMode
 }: {
   attacker: any;
   defender: any;
   move: any;
   attackerStats: any;
   defenderStats: any;
+  bonusAttacker: any;
+  bonusDefender: any;
+  raidMode: string;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -25,13 +31,14 @@ export default function CalculateButton({
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats]);
 
   const calculateDamage = async () => {
+    console.log(bonusAttacker, bonusDefender);
     if (!attacker || !defender || !move) return;
     console.log(attacker, defender, move, attackerStats, defenderStats);
-    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats);
-    const effStamina = Calculator.getEffectiveStamina(defender.stats.stamina, defenderStats[3], defenderStats[0]);
+    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode);
+    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.stamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveStaminaForRaid(defender.stats.stamina, defenderStats[3], defenderStats[0], raidMode);
     console.log("Effective Stamina: ", effStamina);
     const remainingStamina = effStamina - damage;
     setDamage(damage);
@@ -45,14 +52,14 @@ export default function CalculateButton({
         Calculate
       </Button>
       {damage !== 0 && attacker && defender && move && (
-        <div>
+        <div className="mt-4 space-y-4">
           <p>
           {attacker.names.English} deals {damage} damage to {defender.names.English} with {move.names.English} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
-        </p>
-        <p>
-        
-        {defender.names.English} has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
-        </p>
+          </p>
+          <p>
+          
+          {defender.names.English} has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
+          </p>
         </div>
       )}
     </>

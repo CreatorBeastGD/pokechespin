@@ -18,6 +18,7 @@ import CalculateButton from "@/components/calculate-button";
 import CalculateButtonSimulate from "@/components/calculate-button-simulate";
 import { Switch } from "@/components/ui/switch"
 import { Select } from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 export default function Home() {
@@ -30,6 +31,8 @@ export default function Home() {
   const [attackerStats, setAttackerStats] = useState<any | null>([50, 15, 15, 15]);
   const [defenderStats, setDefenderStats] = useState<any | null>([50, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("normal");
+  const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
+  const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
 
   const handleAttackerSelect = async (pokemon: any) => {
     setAttackingPokemon(pokemon);
@@ -65,6 +68,14 @@ export default function Home() {
     setDefenderStats(stats);
   };
 
+  const handleBonusChangeAttacker = (bonus: any) => {
+    setBonusAttacker(bonus);
+  };
+
+  const handleBonusChangeDefender = (bonus: any) => {
+    setBonusDefender(bonus);
+  };
+
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
   }
@@ -72,6 +83,28 @@ export default function Home() {
   useEffect(() => {
     console.log("Raid mode updated:", raidMode);
   }, [raidMode]);
+
+  const raidSurname = (raidMode: string) => {
+    if (raidMode === "raid-t1") {
+      return "Tier 1";
+    } else if (raidMode === "raid-t3") {
+      return "Tier 3";
+    } else if (raidMode === "raid-t4") {
+      return "Tier 4";
+    } else if (raidMode === "raid-mega") {
+      return "Mega";
+    } else if (raidMode === "raid-t5") {
+      return "Tier 5";
+    } else if (raidMode === "raid-elite") {
+      return "Elite";
+    } else if (raidMode === "raid-primal") {
+      return "Primal";
+    } else if (raidMode === "raid-mega-leg") {
+      return "Mega Legendary";
+    } else {
+      return "Normal";
+    }
+  }
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -91,6 +124,7 @@ export default function Home() {
               onQuickMoveSelect={handleQuickMoveSelectAttacker}
               onChargedMoveSelect={handleChargedMoveSelectAttacker}
               onChangedStats={handleChangedStatsAttacker}
+              onBonusChange={handleBonusChangeAttacker}
             />
           </CardContent>
         </Card>
@@ -106,6 +140,8 @@ export default function Home() {
               onQuickMoveSelect={handleQuickMoveSelectDefender}
               onChargedMoveSelect={handleChargedMoveSelectDefender}
               onChangedStats={handleChangedStatsDefender}
+              onBonusChange={handleBonusChangeDefender}
+              raidMode={raidMode}
             />
           </CardContent>
         </Card>
@@ -114,29 +150,9 @@ export default function Home() {
               <CardTitle>Results</CardTitle>
               <CardDescription>Assumming the following stats:</CardDescription>
               <CardDescription>Attacker: {attackingPokemon?.names.English ? attackingPokemon?.names.English + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
-              <CardDescription>Defender: {defendingPokemon?.names.English ? defendingPokemon?.names.English + " (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")" : "TBD"}</CardDescription>
+              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {defendingPokemon?.names.English ? (defendingPokemon?.names.English + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
-              <CardDescription> Damage dealt per fast attack</CardDescription>
-              <CalculateButton 
-                attacker={attackingPokemon} 
-                defender={defendingPokemon} 
-                move={selectedQuickMoveAttacker} 
-                attackerStats={attackerStats}
-                defenderStats={defenderStats}/>
-            </CardContent>
-            <CardContent>
-              <CardDescription> Damage dealt per charged attack</CardDescription>
-              <CalculateButton 
-                attacker={attackingPokemon} 
-                defender={defendingPokemon} 
-                move={selectedChargedMoveAttacker}
-                attackerStats={attackerStats}
-                defenderStats={defenderStats}
-              />
-            </CardContent>
-            <CardContent>
-              <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 <option key="normal" value="normal">Normal</option>
                 <option key={"raid-t1"} value={"raid-t1"}>Tier-1 Raid (600HP) </option>
@@ -146,9 +162,36 @@ export default function Home() {
                 <option key={"raid-mega"} value={"raid-mega"}>Mega Raid (9000HP) </option>
                 <option key={"raid-mega-leg"} value={"raid-mega-leg"}>Mega Legendary Raid (22500HP) </option>
                 <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
-                <option key={"raid-primal"} value={"raid-mega-leg"}>Primal Raid (22500HP) </option>
+                <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
 
               </select>
+              <CardDescription> Damage dealt per fast attack</CardDescription>
+              <CalculateButton 
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                move={selectedQuickMoveAttacker} 
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                raidMode={raidMode}
+                />
+            </CardContent>
+            <CardContent>
+              <CardDescription> Damage dealt per charged attack</CardDescription>
+              <CalculateButton 
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                move={selectedChargedMoveAttacker}
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                raidMode={raidMode}
+              />
+            </CardContent>
+            <CardContent>
+              <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
               <CalculateButtonSimulate 
                 attacker={attackingPokemon} 
                 defender={defendingPokemon} 
@@ -157,13 +200,19 @@ export default function Home() {
                 attackerStats={attackerStats}
                 defenderStats={defenderStats}
                 raidMode={raidMode}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
                 />
             </CardContent>
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.2</p>
+      <p className="bottomtext">Version 1.3</p>
       <p className="linktext">Pokémon GO API made by <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a></p>
+      <Avatar>
+        <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
+        <AvatarFallback>CB</AvatarFallback>
+      </Avatar>
     </div>
   );
 }

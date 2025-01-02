@@ -1,3 +1,4 @@
+import { Data } from "./special-data";
 
 export class Calculator {
     private static CPM_VALUES: { [level: number]: number } = {
@@ -104,9 +105,29 @@ export class Calculator {
         51: 0.84529999,
         100: 1.0
     };
+
+    private static RAID_BOSS_HP: { [raidMode: string]: number } = {
+      "normal": 0,
+      "raid-t1": 600,
+      "raid-t3": 3600,
+      "raid-t4": 9000,
+      "raid-t5": 15000,
+      "raid-mega": 9000,
+      "raid-mega-leg": 22500,
+      "raid-elite": 20000,
+      "raid-primal": 22500
+    }
+
+    static getRaidBossHP(raidMode: string) {
+      return this.RAID_BOSS_HP[raidMode];
+    }
     
       static getCPM(level: number) {
         return this.CPM_VALUES[level];
+      }
+
+      static getFriendshipBonus(friendship: number) {
+        return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
       }
 
       static calculateDamage(
@@ -114,24 +135,44 @@ export class Calculator {
         attack: number,
         defense: number,
         STAB: number,
-        effectiveness: number
+        effectiveness: number,
+        type: string,
+        bonusAttacker?: any,
+        bonusDefender?: any,
       ) {
+          console.log(bonusAttacker, bonusDefender);
+          const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
+          const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
+          const modifiers = effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
           return Math.floor(
-              0.5 * power * (attack / defense) * STAB * effectiveness
+              0.5 * power * (attackFinal / defenseFinal) * modifiers 
           ) + 1;
       }
 
+      static getWeatherBoostBonus(moveType: string, weather: keyof typeof Data.weatherBoost) {
+        return Data.weatherBoost[weather].boost.includes(moveType) ? 1.2 : 1;
+      }
+
       static getEffectiveAttack(attack: number, iv: number, level: number) {
-        return (attack + iv) * this.getCPM(level);
+        return Math.max(1, (attack + iv) * this.getCPM(level));
       }
 
       static getEffectiveDefense(defense: number, iv: number, level: number) {
-          return (defense + iv) * this.getCPM(level);
+          return Math.max(1, (defense + iv) * this.getCPM(level));
       }
 
       static getEffectiveStamina(stamina: number, iv: number, level: number) {
         console.log(stamina, iv, level);
-          return (stamina + iv) * this.getCPM(level);
+          return Math.max(1, (stamina + iv) * this.getCPM(level));
+      }
+
+      static getEffectiveStaminaForRaid(stamina: number, iv: number, level: number, raidMode: string) {
+        if (raidMode === "normal") {
+          return this.getEffectiveStamina(stamina, iv, level);
+        } else {
+          
+          return this.RAID_BOSS_HP[raidMode];
+        }
       }
 
       /**
@@ -144,7 +185,7 @@ export class Calculator {
       static getPCs(attack: number, defense: number, stamina: number) {
           return Math.max(10, Math.floor((Math.sqrt(stamina) * attack * Math.sqrt(defense)) / 10));
       }
-
+      
       static getRawPCs(attack: number, defense: number, stamina: number) {
         return Math.max(10, Math.floor((Math.sqrt(this.getEffectiveStamina(stamina, 0, 100)) * this.getEffectiveAttack(attack, 15, 100) * Math.sqrt(this.getEffectiveDefense(defense, 15, 100))) / 10));
       }
