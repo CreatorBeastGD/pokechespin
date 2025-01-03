@@ -54,12 +54,12 @@ export default function Home() {
 
       const images = await PoGoAPI.getAllPokemonImagesPB();
       setImageLinks(images);
-      console.log(images);
+      //console.log(images);
       console.log("Fetched all images from PokeBattler API");
 
       const text = await PoGoAPI.getAllEnglishNamesPB();
       setAllEnglishText(text);
-      console.log(text);
+      //console.log(text);
       console.log("Fetched all English text from PokeBattler API");
     };
     fetchAllPokemonPB();
@@ -68,7 +68,6 @@ export default function Home() {
 
   const handleAttackerSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
-      console.log("PostOnSelect: ", pokemon?.pokemonId);
       setAttackingPokemon(pokemon);
       setSelectedQuickMoveAttacker(null);
       setSelectedChargedMoveAttacker(null);
@@ -77,7 +76,6 @@ export default function Home() {
 
   const handleDefenderSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
-      console.log("PostOnSelect: ", pokemon?.pokemonId);
       setDefendingPokemon(pokemon);
       setSelectedQuickMoveDefender(null);
       setSelectedChargedMoveDefender(null);
@@ -121,7 +119,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    console.log("Raid mode updated:", raidMode);
   }, [raidMode]);
 
   const raidSurname = (raidMode: string) => {
@@ -146,7 +143,6 @@ export default function Home() {
     }
   }
 
-  console.log(attackingPokemon, defendingPokemon);
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">

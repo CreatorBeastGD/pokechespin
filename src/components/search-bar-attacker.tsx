@@ -79,7 +79,6 @@ export default function SearchBarAttacker({
     setSuggestions([])
     const searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
-      console.log("Searched pokémon: " + pokemon);
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
@@ -96,10 +95,8 @@ export default function SearchBarAttacker({
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
     try {
-      console.log("Searched pokémon: " + form);
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
-      console.log("Pre OnSelect: " + response.pokemonId);
       onSelect(response);
     } finally {
       setLoading(false);
@@ -162,7 +159,6 @@ export default function SearchBarAttacker({
 
   useEffect(() => {
     onBonusChange(selectedBonuses);
-    console.log(selectedBonuses);
   }, [selectedBonuses]);
 
   useEffect(() => {

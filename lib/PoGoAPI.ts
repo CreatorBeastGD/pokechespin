@@ -8,7 +8,8 @@ const API_STATIC_PB = nextConfig.API_STATIC_PB_URL;
 
 export class PoGoAPI {
     static async getAllPokemon() {
-        const response = await fetch(API + "pokedex.json");
+        const response = await fetch(API + "pokedex.json", {
+        });
         return await response.json();
     }
 
@@ -18,7 +19,7 @@ export class PoGoAPI {
     }
 
     static async getAllPokemonImagesPB() {
-        const response = await fetch(API_STATIC_PB + "pokemonImages.json");
+        const response = await fetch('/api/pokemonImages');
         return (await response.json()).pokemon;
     }
 
@@ -42,8 +43,6 @@ export class PoGoAPI {
     }
 
     static getPokemonImageByID(pokemonId: string, pokemonList: any) {
-        console.log(pokemonId, pokemonList)
-        console.log(pokemonList[pokemonId].base)
         return pokemonList[pokemonId].base;
     }
 
@@ -52,7 +51,6 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
-        console.log((pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num))
         return (pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num);
     }
 
@@ -86,7 +84,6 @@ export class PoGoAPI {
       }
 
       static getPokemonPBBySpeciesName(name: string, pokemonList: any, textList: any) {
-        console.log("getPokemonPBBySpeciesName ", name, pokemonList, textList);
         const list = pokemonList.filter((pokemon: any) => 
           this.getPokemonNamePB(pokemon.pokedex.pokemonId, textList).toLowerCase().startsWith(name.toLowerCase())
         );
@@ -112,7 +109,6 @@ export class PoGoAPI {
     }
 
     static getKey(name?: string, list?: any): string {
-        console.log(name, list)
         if (name && list) {
             if (list.find((item: any) => (item.name).toLowerCase() === name.toLowerCase())) {
                 return list.find((item: any) => (item.name).toLowerCase() === name.toLowerCase()).id;
@@ -202,7 +198,6 @@ export class PoGoAPI {
 
     static convertStats(defenderStats: any, raidMode: any) {
         let convertedStats = [];
-        console.log("def: ", defenderStats)
         if (raidMode === "raid-t1") {
             convertedStats = [20, 15, 15, 600];
         } else if (raidMode === "raid-t3") {
@@ -252,7 +247,6 @@ export class PoGoAPI {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
-        console.log(bonusAttacker, bonusDefender);
         const types = await this.getTypes();
         let energy = 0;
         let time = 0;
@@ -261,12 +255,10 @@ export class PoGoAPI {
         let chargedAttackUses = 0;
         let turn = 0;
         let graphic = [];
-        console.log(defenderStats, raidMode);
         let maxHealth = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
         if (raidMode !== "normal") {
             maxHealth = this.getRaidHealth(raidMode);
         }
-        console.log("Max health: ", maxHealth)
         while (damage <= maxHealth) {
             damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
             time += quickMove.durationMs;
@@ -305,7 +297,6 @@ export class PoGoAPI {
     }
 
     static formatTypeName(typeName: string) {
-        console.log(typeName);
         if (!typeName) return "???";
         const formattedType = typeName.replace("POKEMON_TYPE_", "").toLowerCase();
         return formattedType.charAt(0).toUpperCase() + formattedType.slice(1);

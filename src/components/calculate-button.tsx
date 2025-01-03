@@ -36,12 +36,9 @@ export default function CalculateButton({
   }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
 
   const calculateDamage = async () => {
-    console.log(attacker, defender, bonusAttacker, bonusDefender);
     if (!attacker || !defender || !move) return;
-    console.log(attacker, defender, move, attackerStats, defenderStats);
     const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode);
     const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defenderStats[3], defenderStats[0], raidMode);
-    console.log("Effective Stamina: ", effStamina);
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setHealth(remainingStamina);

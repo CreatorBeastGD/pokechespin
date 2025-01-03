@@ -144,7 +144,7 @@ export class Calculator {
         bonusAttacker?: any,
         bonusDefender?: any,
       ) {
-          console.log(bonusAttacker, bonusDefender);
+          //console.log(bonusAttacker, bonusDefender);
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
@@ -166,7 +166,6 @@ export class Calculator {
       }
 
       static getEffectiveStamina(stamina: number, iv: number, level: number) {
-        console.log(stamina, iv, level);
           return Math.max(1, (stamina + iv) * this.getCPM(level));
       }
 
