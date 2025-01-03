@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/pokemonImages',
-        destination: `${process.env.NEXT_PUBLIC_STATIC_POKEBATTLER_API}/pokemonImages.json`,
+        destination: `${process.env.NEXT_PUBLIC_STATIC_POKEBATTLER_API}pokemonImages.json`,
       },
     ];
   },
