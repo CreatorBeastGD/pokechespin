@@ -13,7 +13,8 @@ export default function CalculateButton({
   defenderStats,
   bonusAttacker,
   bonusDefender,
-  raidMode
+  raidMode,
+  allEnglishText
 }: {
   attacker: any;
   defender: any;
@@ -23,6 +24,7 @@ export default function CalculateButton({
   bonusAttacker: any;
   bonusDefender: any;
   raidMode: string;
+  allEnglishText: any;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -31,14 +33,14 @@ export default function CalculateButton({
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
 
   const calculateDamage = async () => {
-    console.log(bonusAttacker, bonusDefender);
+    console.log(attacker, defender, bonusAttacker, bonusDefender);
     if (!attacker || !defender || !move) return;
     console.log(attacker, defender, move, attackerStats, defenderStats);
     const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode);
-    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.stamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveStaminaForRaid(defender.stats.stamina, defenderStats[3], defenderStats[0], raidMode);
+    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defenderStats[3], defenderStats[0], raidMode);
     console.log("Effective Stamina: ", effStamina);
     const remainingStamina = effStamina - damage;
     setDamage(damage);
@@ -54,11 +56,11 @@ export default function CalculateButton({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> with {move.names.English} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           </p>
           <p>
           
-          <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
+          <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
           </p>
         </div>
       )}

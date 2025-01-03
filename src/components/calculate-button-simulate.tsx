@@ -15,7 +15,8 @@ export default function CalculateButtonSimulate({
   defenderStats,
   raidMode,
   bonusAttacker,
-  bonusDefender
+  bonusDefender,
+  allEnglishText
 }: {
   attacker: any;
   defender: any;
@@ -26,6 +27,7 @@ export default function CalculateButtonSimulate({
   raidMode: string;
   bonusAttacker: any;
   bonusDefender: any;
+  allEnglishText: any;
 }) {
   const [time, setTime] = useState<number | null>(0);
   const [qau, setQau] = useState<number | null>(0);
@@ -37,7 +39,7 @@ export default function CalculateButtonSimulate({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -100,15 +102,15 @@ export default function CalculateButtonSimulate({
       {time !== 0 && attacker && defender && quickMove && chargedMove && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> with {quickMove.names.English} and {chargedMove.names.English} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
           </p>
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{attacker.names.English}</span> needs to use {quickMove.names.English} {qau} times and {chargedMove.names.English} {cau} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> the fastest way possible.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
           </p>
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.names.English}</span> in the given time. ({getRaidTime(raidMode)} seconds)
+            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.pokemonId}</span> in the given time. ({getRaidTime(raidMode)} seconds)
           </p>)}
           <Card className="mt-4">
             
@@ -120,13 +122,13 @@ export default function CalculateButtonSimulate({
                 <div className="flex flex-wrap gap-2">
                 {graphic.map((g: any) => (
                     <Badge key={g.turn} variant={g.type === "quick" ? "primary" : "destructive"}>
-                    {g.type === "quick" ? "Q" : "C"}
+                    {g.type === "quick" ? "F" : "C"}
                     </Badge>
                 ))}
                 </div>
             </CardContent>
             <CardContent>
-                <Badge variant="primary">Q</Badge> Fast Attack <Badge variant="destructive">C</Badge> Charged Attack
+                <Badge variant="primary">F</Badge> Fast Attack <Badge variant="destructive">C</Badge> Charged Attack
             </CardContent>
             </Card>
         </div>

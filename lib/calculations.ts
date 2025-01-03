@@ -106,21 +106,25 @@ export class Calculator {
         100: 1.0
     };
 
-    private static RAID_BOSS_HP: { [raidMode: string]: number } = {
-      "normal": 0,
-      "raid-t1": 600,
-      "raid-t3": 3600,
-      "raid-t4": 9000,
-      "raid-t5": 15000,
-      "raid-mega": 9000,
-      "raid-mega-leg": 22500,
-      "raid-elite": 20000,
-      "raid-primal": 22500
-    }
+      private static RAID_BOSS_HP: { [raidMode: string]: number } = {
+        "normal": 0,
+        "raid-t1": 600,
+        "raid-t3": 3600,
+        "raid-t4": 9000,
+        "raid-t5": 15000,
+        "raid-mega": 9000,
+        "raid-mega-leg": 22500,
+        "raid-elite": 20000,
+        "raid-primal": 22500
+      }
 
-    static getRaidBossHP(raidMode: string) {
-      return this.RAID_BOSS_HP[raidMode];
-    }
+      static getRaidBossHP(raidMode: string) {
+        return this.RAID_BOSS_HP[raidMode];
+      }
+
+      static getMaxEnergyGain(damage: number, bossHP: number) {
+        return Math.max(1, Math.floor(damage / (bossHP / 200)));
+      }
     
       static getCPM(level: number) {
         return this.CPM_VALUES[level];

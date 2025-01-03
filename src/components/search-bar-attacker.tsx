@@ -21,10 +21,27 @@ interface SearchBarAttackerProps {
   onChargedMoveSelect: (moveId: string, move: any) => void;
   onChangedStats: (stats: any) => void;
   onBonusChange: (bonuses: any) => void;
+  pokemonList: any;
+  searchBarNames: any;
+  allMoves: any;
+  assets: any;
+  allEnglishText: any;
   raidMode?: string;
 }
 
-export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onChargedMoveSelect, onChangedStats, onBonusChange, raidMode }: SearchBarAttackerProps, ) {
+export default function SearchBarAttacker({ 
+    onSelect, 
+    onQuickMoveSelect, 
+    onChargedMoveSelect, 
+    onChangedStats, 
+    onBonusChange, 
+    raidMode, 
+    pokemonList, 
+    searchBarNames, 
+    allMoves, 
+    assets, 
+    allEnglishText 
+  }: SearchBarAttackerProps, ) {
   const [pokemon, setPokemon] = useState<string>("");
   const [pokemonData, setPokemonData] = useState<any>(null);
   const [selectedForm, setSelectedForm] = useState<string>("normal");
@@ -34,52 +51,55 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
   const [selectedChargedMove, setSelectedChargedMove] = useState<string | null>(null);
   const [stats, setStats] = useState<any>([50, 15, 15, 15]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [allPokemon, setAllPokemon] = useState<any[]>([]);
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
+  const [availableForms, setAvailableForms] = useState<any[]>([]);
+  const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
+
+  
   
   useEffect(() => {
-    if (pokemonData) {
-      onSelect(getSelectedForm());
+    if (clickedSuggestion) {
+      searchPokemon();
+      setClickedSuggestion(false);
     }
-  }, [selectedForm]);
+  } , [clickedSuggestion]);
+  
 
   useEffect(() => {
     onChangedStats(stats);
   } , [stats]);
 
 
-
-  useEffect(() => {
-    const fetchAllPokemonNames = async () => {
-      const names = await PoGoAPI.getAllPokemon();
-      console.log("All Pokémon data fetched.");
-      setAllPokemon(names);
-    };
-    fetchAllPokemonNames();
-  }, []);
-
-  const searchPokemon = async () => {
+  const searchPokemon = () => {
     setLoading(true);
     setError(null);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
     setSelectedForm("normal");
+    setSuggestions([])
+    const searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
-      const response = await PoGoAPI.getPokemonByName(pokemon.toUpperCase().
-        replaceAll("WO-CHIEN", "WOCHIEN").
-        replaceAll("CHIEN-PAO", "CHIENPAO").
-        replaceAll("CHI-YU", "CHIYU").
-        replaceAll("TING-LU", "TINGLU").
-        replaceAll("MR. ", "MR_").
-        replaceAll("MIME JR.", "MIME_JR").
-        replaceAll(": ", "_").
-        replaceAll("-", "_").
-        replaceAll("'", "").
-        replaceAll(" ", "").
-        replaceAll("♀", "_FEMALE").
-        replaceAll("♂", "_MALE").
-        replaceAll(".", ""));
+      console.log("Searched pokémon: " + pokemon);
+      const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
+      onSelect(response);
+      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
+      setAvailableForms(allForms);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const searchForm = (form: string) => {
+    setLoading(true);
+    setError(null);
+    handleQuickMoveSelect("", null);
+    handleChargedMoveSelect("", null);
+    try {
+      console.log("Searched pokémon: " + form);
+      const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
+      setPokemonData(response);
+      console.log("Pre OnSelect: " + response.pokemonId);
       onSelect(response);
     } finally {
       setLoading(false);
@@ -96,38 +116,11 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
     onChargedMoveSelect(moveId, move);
   };
 
-  
-  const formatPokemonName = (name: string) => {
-    return name.toLowerCase().replaceAll(/ /g, '-').replaceAll('(', '').replaceAll('form)', '').replaceAll("_", "-")
-      .replace('iron', 'iron-')
-      .replace('great', 'great-')
-      .replace('scream', 'scream-')
-      .replace('brute', 'brute-')
-      .replace('flutter', 'flutter-')
-      .replace('slither', 'slither-')
-      .replace('sandy', 'sandy-')
-      .replace('roaring', 'roaring-')
-      .replace('wochien', 'wo-chien')
-      .replace('chienpao', 'chien-pao')
-      .replace('chiyu', 'chi-yu')
-      .replace('tinglu', 'ting-lu')
-  };
-
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedForm(event.target.value);
-    onSelect(getSelectedForm());
+    onSelect(searchForm(event.target.value));
     setSelectedQuickMove(null);
     setSelectedChargedMove(null);
-  };
-
-  const getSelectedForm = () => {
-    if (selectedForm === "normal") {
-      return pokemonData;
-    } else if (selectedForm in pokemonData.regionForms) {
-      return pokemonData.regionForms[selectedForm];
-    } else if (selectedForm in pokemonData.megaEvolutions) {
-      return pokemonData.megaEvolutions[selectedForm];
-    }
   };
 
   const handleChangeStat = (value: number[], index: number) => {
@@ -145,21 +138,8 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
 
     // Filtrar sugerencias
     if (value.length > 0) {
-      const filteredSuggestions = allPokemon.filter((p: any) =>
-        p.id.toLowerCase()
-          .replaceAll("chd", "ch'd")
-          .replaceAll("mime_jr", "mime jr.")
-          .replaceAll("mr_", "mr. ")
-          .replaceAll("e_null", "e: null")
-          .replaceAll("_", "-")
-          .replaceAll("_male", "♂")
-          .replaceAll("_female", "♀")
-          .replaceAll("wochien", "wo-chien")
-          .replaceAll("chienpao", "chien-pao")
-          .replaceAll("chiyu", "chi-yu")
-          .replaceAll("tinglu", "ting-lu")
-          .startsWith(value.toLowerCase())
-    );
+      const filteredSuggestions = PoGoAPI.getPokemonPBBySpeciesName(value, pokemonList, allEnglishText).filter((p: any) => ((PoGoAPI.getPokemonNamePB(p.pokedex.pokemonId, allEnglishText))
+        .toLowerCase()))
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions([]);
@@ -168,6 +148,8 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
 
   const handleSuggestionClick = (suggestion: any) => {
     setPokemon(suggestion);
+    setClickedSuggestion(true);
+    searchPokemon();
     setSuggestions([]);
   };
 
@@ -187,11 +169,11 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
     setSelectedBonuses(["EXTREME", false, false, 0]);
   } , [raidMode]);
 
-  const selectedPokemon = pokemonData ? getSelectedForm() : null;
+  const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
-  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats.attack, stats[1], stats[0]);
-  const effDefense = Calculator.getEffectiveAttack(selectedPokemon?.stats.defense, stats[2], stats[0]);
-  const effStamina = Calculator.getEffectiveAttack(selectedPokemon?.stats.stamina, stats[3], stats[0]);
+  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], stats[0]);
+  const effDefense = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
+  const effStamina = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
 
   const raidmode = raidMode? raidMode : "normal";
 
@@ -202,16 +184,17 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
         type="text"
         value={pokemon}
         onChange={handleInputChange}
+        onKeyDown={(e) => e.key === "Enter" && searchPokemon()}
       />
       {suggestions.length > 0 && (
         <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
-              key={suggestion.names.English}
+              key={suggestion.pokemonId}
               className="p-2 cursor-pointer hover:bg-gray-200 "
-              onClick={() => handleSuggestionClick(suggestion.names.English)}
+              onClick={() => handleSuggestionClick(PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText))}
             >
-              {suggestion.names.English}
+              {PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText)}
             </li>
           ))}
         </ul>
@@ -221,50 +204,35 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
       {error && <p>{error}</p>}
       {pokemonData ? (
         <div>
-          <h2>Name: {selectedPokemon.names.English}</h2>
-          <p>Type(s): {selectedPokemon.primaryType.names.English + (selectedPokemon.secondaryType ? "/" + selectedPokemon.secondaryType.names.English : "")}</p>
+          <h2>Name: {PoGoAPI.getName(selectedPokemon.pokedex.pokemonId, searchBarNames)}</h2>
+          <p>Type(s): {PoGoAPI.formatTypeName(selectedPokemon.type) + (selectedPokemon.type2 ? " / " + PoGoAPI.formatTypeName(selectedPokemon.type2) : "")}</p>
           
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-            <option value="normal">Normal</option>
-            {pokemonData.hasMegaEvolution && Object.keys(pokemonData.megaEvolutions).map((form) => (
-              <option key={form} value={form}>{pokemonData.megaEvolutions[form].names.English}</option>
-            ))}
-            {pokemonData.regionForms && Object.keys(pokemonData.regionForms).map((form) => (
-              <option key={form} value={form}>{pokemonData.regionForms[form].names.English}</option>
+            {availableForms && (availableForms).map((form: any) => (
+              <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
             ))}
           </select>
 
-          <p>Stats (PC: {raidmode === "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats.attack, selectedPokemon?.stats.defense, Calculator.getRaidBossHP(raidmode))}) </p>
+          <p>Stats (PC: {raidmode === "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
           {raidmode === "normal" ? (<></>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Stat changes won't be affected.</p>)}
-          <p>Attack: {selectedPokemon.stats.attack} <span className="text-xs">(Effective Attack: {Math.floor(effAttack)})</span></p>
-          <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats.attack / 505) * 100}/>
+          <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {Math.floor(effAttack)})</span></p>
+          <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
-          <p>Defense: {selectedPokemon.stats.defense} <span className="text-xs">(Effective Defense: {Math.floor(effDefense)})</span></p> 
-          <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats.defense / 505) * 100}/>
+          <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {Math.floor(effDefense)})</span></p> 
+          <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
           
-          <p>Stamina: {selectedPokemon.stats.stamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
-          <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats.stamina / 505) * 100}/>
-          {( selectedPokemon.assets != null && selectedPokemon.assets?.image) ? (
-            <Image
-              className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
-              // Por qué cojones no puedo cargar las fotos de los primigenios...?
-              src={selectedPokemon.names.English === "Primal Kyogre" || selectedPokemon.names.English === "Primal Groudon" ? "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon/Addressable%20Assets/pm" + pokemonData.dexNr + ".fPRIMAL.icon.png" : selectedPokemon.assets.image}
-              alt={selectedPokemon.names.English}
-              width={400}
-              height={400}
-              style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
-            />
-          ) : (
+          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
+          <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
+          
             <Image
                 className="rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 bg-white dark:bg-gray-800 dark:border-gray-700"
-                src={"https://img.pokemondb.net/sprites/home/normal/" + formatPokemonName(selectedPokemon.formId) + ".png"}
-                alt={selectedPokemon.names.English}
+                src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
+                alt={selectedPokemon.pokemonId}
                 width={400}
                 height={400}
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
             />
-          )}
           <div className="grid grid-cols-1">
             <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
             <p>Level: {stats[0]}</p>
@@ -302,107 +270,44 @@ export default function SearchBarAttacker({ onSelect, onQuickMoveSelect, onCharg
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>
-              {Object.values(selectedPokemon?.quickMoves ? selectedPokemon.quickMoves : pokemonData.quickMoves).map((move: any) => (
-                <Card
-                  key={move.id}
-                  className={`mb-4 ${selectedQuickMove === move.id ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleQuickMoveSelect(move.id, move)}
+              {selectedPokemon?.quickMoves.map((move: string) => (
+                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+                  key={move}
+                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
+                  onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
-                    <CardTitle>{move.names.English}</CardTitle>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ""}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>Type: {move.type.names.English}</CardDescription>
-                    <CardDescription>Power: {move.power}</CardDescription>
-                    <CardDescription>Energy: {move.energy}</CardDescription>
-                    <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
+                    <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
+                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
+                    <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta}</CardDescription>
+                    <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
-                </Card>
-              ))}
-              {Object.values(selectedPokemon?.eliteQuickMoves ? selectedPokemon.eliteQuickMoves : pokemonData.eliteQuickMoves).length > 0 && (
-                <>
-                  {Object.values(selectedPokemon?.eliteQuickMoves ? selectedPokemon.eliteQuickMoves : pokemonData.eliteQuickMoves).map((move: any) => (
-                    <Card
-                      key={move.id}
-                      className={`mb-4 ${selectedQuickMove === move.id ? 'bg-blue-200' : ''}`}
-                      onClick={() => handleQuickMoveSelect(move.id, move)}
-                    >
-                      <CardHeader>
-                        <CardTitle>{move.names.English} <span className="text-xs">*</span></CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription>Power: {move.power}</CardDescription>
-                        <CardDescription>Energy: {move.energy}</CardDescription>
-                        <CardDescription>Type: {move.type.names.English}</CardDescription>
-                        <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </>
-              )}
+                </Card>)
+              ))}     
             </div>
 
             <div>
               <p>Charged Attacks:</p>
-              {Object.values(selectedPokemon?.cinematicMoves ? selectedPokemon.cinematicMoves : pokemonData.cinematicMoves).map((move: any) => (
-                <Card
-                  key={move.id}
-                  className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleChargedMoveSelect(move.id, move)}
+              {selectedPokemon?.cinematicMoves.map((move: string) => (
+                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+                  key={move}
+                  className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
+                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
-                    <CardTitle>{move.names.English}</CardTitle>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>Power: {move.power}</CardDescription>
-                    <CardDescription>Energy cost: {-move.energy}</CardDescription>
-                    <CardDescription>Type: {move.type.names.English}</CardDescription>
-                    <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
+                    <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
+                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
+                    <CardDescription>Energy cost: {-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta}</CardDescription>
+                    <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
-                </Card>
+                </Card>)
               ))}
-              {Object.values(selectedPokemon?.eliteCinematicMoves ? selectedPokemon.eliteCinematicMoves : pokemonData.eliteCinematicMoves).length > 0 && (
-                <>
-                  {Object.values(selectedPokemon?.eliteCinematicMoves ? selectedPokemon.eliteCinematicMoves : pokemonData.eliteCinematicMoves).map((move: any) => (
-                    <Card
-                      key={move.id}
-                      className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
-                      onClick={() => handleChargedMoveSelect(move.id, move)}
-                    >
-                      <CardHeader>
-                        <CardTitle>{move.names.English} <span className="text-xs">*</span></CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CardDescription>Power: {move.power}</CardDescription>
-                        <CardDescription>Energy cost: {-move.energy}</CardDescription>
-                        <CardDescription>Type: {move.type.names.English}</CardDescription>
-                        <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </>
-              )}
-              {Object.entries(Data.specialChargedAttacks)
-                  .filter(([key, entry]: [string, any]) => ( key === selectedPokemon?.formId || key === selectedPokemon?.id))
-                  .map(([key, entry]: [string, any]) => (
-                    entry.map((move: any) => (
-                      <Card
-                        key={move.id}
-                        className={`mb-4 ${selectedChargedMove === move.id ? 'bg-blue-200' : ''}`}
-                        onClick={() => handleChargedMoveSelect(move.id, move)}
-                      >
-                        <CardHeader>
-                          <CardTitle>{move.names.English} <span className="text-xs">✝</span></CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <CardDescription>Power: {move.power}</CardDescription>
-                          <CardDescription>Energy cost: {-move.energy}</CardDescription>
-                          <CardDescription>Type: {move.type.names.English}</CardDescription>
-                          <CardDescription>Duration: {move.durationMs / 1000}s</CardDescription>
-                        </CardContent>
-                      </Card>
-                    ))
-                  ))}
             </div>
           </div>
         </div>
