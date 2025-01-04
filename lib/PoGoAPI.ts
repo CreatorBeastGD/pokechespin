@@ -468,7 +468,7 @@ export class PoGoAPI {
                     if (oneMember ? true : (attackerFaints % 6) == 0) {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": true});
                         console.log("Attacker has a 10 second delay before the next attacker is sent.");
-                        attackerDamageStart = -10001;
+                        attackerDamageStart = -8001;
                     } else {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false});
                         attackerDamageStart = -1001;

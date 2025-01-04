@@ -156,7 +156,7 @@ export default function CalculateButtonSimulateAdvanced({
             This simulation takes in consideration a team of {oneMember ? "one" : "six"} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}, not avoiding, and casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
           </p>
           <p className="text-sm text-slate-700 italic">
-            The simulation does not take into consideration the use of dodges or any other mechanic that might affect the outcome of the battle. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes 10 seconds in this simulation.
+            The simulation does not take into consideration the use of dodges or any other mechanic that might affect the outcome of the battle. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes 8 seconds in this simulation.
           </p>
 
           {graphic && (
