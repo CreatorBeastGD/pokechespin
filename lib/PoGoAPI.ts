@@ -24,7 +24,7 @@ export class PoGoAPI {
     }
 
     static async getAllEnglishNamesPB() {
-        const response = await fetch(API_STATIC_PB + "locales/en-US/constants.json");
+        const response = await fetch('/api/pokemonNames');;
         return (await response.json());
     }
 

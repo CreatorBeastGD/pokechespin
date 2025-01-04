@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         source: '/api/pokemonImages',
         destination: `${process.env.NEXT_PUBLIC_STATIC_POKEBATTLER_API}pokemonImages.json`,
       },
+      {
+        source: '/api/pokemonNames',
+        destination: `${process.env.NEXT_PUBLIC_STATIC_POKEBATTLER_API}locales/en-US/constants.json`,
+      }
     ];
   },
 };
