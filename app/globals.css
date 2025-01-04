@@ -36,6 +36,19 @@ body {
   @apply text-5xl font-bold text-center my-5;
 }
 
+.favicon {
+  width: 60px;
+  animation: jump 1s infinite;
+}
+
+@keyframes jump {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
 .link {
   @apply text-blue-500 underline;
 }
