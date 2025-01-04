@@ -466,11 +466,11 @@ export class PoGoAPI {
                     // Attacker has a 1.5 second delay before the next attacker is sent.
                     // If the attacker faints 6 times, the attacker will have a 10 second delay before the next attacker is sent.
                     if (oneMember ? true : (attackerFaints % 6) == 0) {
-                        battleLog.push({"turn": time, "attacker": attacker.pokemonId, "relobby": true});
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": true});
                         console.log("Attacker has a 10 second delay before the next attacker is sent.");
                         attackerDamageStart = -10001;
                     } else {
-                        battleLog.push({"turn": time, "attacker": attacker.pokemonId, "relobby": false});
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": false});
                         attackerDamageStart = -3001;
                     }
                 }
