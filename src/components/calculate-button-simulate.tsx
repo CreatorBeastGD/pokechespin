@@ -110,7 +110,7 @@ export default function CalculateButtonSimulate({
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{defender.pokemonId}</span> in the given time. ({getRaidTime(raidMode)} seconds)
+            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time. ({getRaidTime(raidMode)} seconds)
           </p>)}
           <Card className="mt-4">
             
