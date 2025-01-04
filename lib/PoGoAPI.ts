@@ -34,6 +34,18 @@ export class PoGoAPI {
           }) : "Error");
       }
 
+      static getPreferredMovesPB(pokemonId: string, megaPokemonId: string, pokemonList: any) {
+        //console.log(pokemonId, megaPokemonId);
+        const pokeData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
+        const pokeDataMega = this.getPokemonPBByID(megaPokemonId, pokemonList)[0];
+        
+    
+        const quickMoves = Array.from(new Set((pokeDataMega?.quickMoves || []).concat(pokeData?.quickMoves || [])));
+        const chargedMoves = Array.from(new Set((pokeDataMega?.cinematicMoves || []).concat(pokeData?.cinematicMoves || [])));
+    
+        return { preferredMovesQuick: quickMoves, preferredMovesCharged: chargedMoves };
+      }
+
     static getPokemonNamePB(pokemonId: string, textList: any) {
         return pokemonId ? this.formatPokemonText(textList.pokemon[pokemonId], textList) : "???";
     }
@@ -55,7 +67,10 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByName(name: string, pokemonList: any) {
-        return (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
+        const list = (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
+        const origPokemon = this.getPokemonPBByID(name, pokemonList)[0];
+        const listFiltered = list ? (list).filter((pokemon: any) => (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId) || (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId + "_MEGA")) : [];
+        return listFiltered;
     }
 
     static async getAllMovesPB() {
@@ -75,7 +90,7 @@ export class PoGoAPI {
         const seenIds = new Set();
         return pokemonList.filter((pokemon: any) => {
           const pokemonId = pokemon.pokedex.pokemonId;
-          if (pokemonId.startsWith(name) && !seenIds.has(pokemonId)) {
+          if (!(pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_X") ) && !seenIds.has(pokemonId)) {
             seenIds.add(pokemonId);
             return true;
           }

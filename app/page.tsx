@@ -19,7 +19,6 @@ import { Switch } from "@/components/ui/switch"
 import { Select } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
@@ -140,7 +139,6 @@ export default function Home() {
     }
   }
 
-
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <h1 className="mb-10 title">Pokémon GO Damage (and PC) Calculator</h1>
@@ -256,7 +254,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.4.1.1</p>
+      <p className="bottomtext">Version 1.4.2</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> // <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

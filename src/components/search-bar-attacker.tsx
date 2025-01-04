@@ -173,6 +173,14 @@ export default function SearchBarAttacker({
 
   const raidmode = raidMode ? raidMode : "normal";
 
+  //console.log(selectedPokemon? selectedPokemon : "null");
+
+  const suffixes = ["_MEGA", "_MEGA_X", "_MEGA_Y"];
+
+  const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA", "").replace("_X", "").replace("_Y", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
+  const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
+  const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
+
   return (
     <>
       <Input
@@ -200,7 +208,7 @@ export default function SearchBarAttacker({
       {error && <p>{error}</p>}
       {pokemonData ? (
         <div>
-          <h2>Name: {PoGoAPI.getName(selectedPokemon.pokedex.pokemonId, searchBarNames)}</h2>
+          <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
           <p>Type(s): {PoGoAPI.formatTypeName(selectedPokemon.type) + (selectedPokemon.type2 ? " / " + PoGoAPI.formatTypeName(selectedPokemon.type2) : "")}</p>
           
           
@@ -266,7 +274,7 @@ export default function SearchBarAttacker({
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>
-              {selectedPokemon?.quickMoves.map((move: string) => (
+              {preferredMovesQuick.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
                   key={move}
                   className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
@@ -287,7 +295,7 @@ export default function SearchBarAttacker({
 
             <div>
               <p>Charged Attacks:</p>
-              {selectedPokemon?.cinematicMoves.map((move: string) => (
+              {preferredMovesCharged.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
                   key={move}
                   className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
