@@ -248,20 +248,9 @@ export default function SearchBarAttacker({
             <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
             <Slider onValueChange={(value) => handleChangeStat(value, 3)} defaultValue={[15]} max={15} step={1} className="w-[60%] mb-5" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
           </div>
-          {raidmode === "normal" ? (
+          {raidmode ? (
           <div className="grid grid-cols-1 mb-4 space-y-2">
             <p>Bonuses</p>
-            <p className="italic text-slate-700">Weather Boost</p>
-            <select onChange={(e) => handleBonusChange(0, e.target.value)} value={selectedBonuses[0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-              <option value="EXTREME">Extreme</option>
-              <option value="SUNNY">Sunny</option>
-              <option value="WINDY">Windy</option>
-              <option value="RAINY">Rainy</option>
-              <option value="FOG">Fog</option>
-              <option value="PARTLY_CLOUDY">Partly Cloudy</option>
-              <option value="CLOUDY">Cloudy</option>
-              <option value="SNOW">Snow</option>
-            </select>
             <p className="italic text-slate-700">
               <Switch onCheckedChange={(checked) => handleBonusChange(1, checked)} checked={selectedBonuses[1]} /> Shadow Pokémon
             </p>

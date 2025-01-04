@@ -18,6 +18,7 @@ import CalculateButtonSimulate from "@/components/calculate-button-simulate";
 import { Switch } from "@/components/ui/switch"
 import { Select } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -113,6 +114,10 @@ export default function Home() {
     setBonusDefender(bonus);
   };
 
+  const handleBonusChange = (value: string) => {
+    setBonusAttacker([value, bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]]);
+  }
+
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
   }
@@ -138,6 +143,7 @@ export default function Home() {
       return "Normal";
     }
   }
+
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -200,8 +206,21 @@ export default function Home() {
               <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (bonusDefender[1] !== false ? "Shadow " : "") + (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
+            <p className="italic text-slate-700 text-sm">Weather: </p>
+            <select onChange={(e) => handleBonusChange(e.target.value)} value={bonusAttacker[0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+              <option value="EXTREME">Extreme</option>
+              <option value="SUNNY">Sunny</option>
+              <option value="WINDY">Windy</option>
+              <option value="RAINY">Rainy</option>
+              <option value="FOG">Fog</option>
+              <option value="PARTLY_CLOUDY">Partly Cloudy</option>
+              <option value="CLOUDY">Cloudy</option>
+              <option value="SNOW">Snow</option>
+            </select>
+            
+            <p className="italic text-slate-700 text-sm">Raid difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-                <option key="normal" value="normal">Normal</option>
+                <option key="normal" value="normal">Default (Gym Battle)</option>
                 <option key={"raid-t1"} value={"raid-t1"}>Tier-1 Raid (600HP) </option>
                 <option key={"raid-t3"} value={"raid-t3"}>Tier-3 Raid (3600HP) </option>
                 <option key={"raid-t4"} value={"raid-t4"}>Tier-4 Raid (9000HP) </option>
@@ -214,7 +233,7 @@ export default function Home() {
               </select>
               <CardDescription> Damage dealt per fast attack</CardDescription>
               <CalculateButton 
-              allEnglishText={allEnglishText}
+                allEnglishText={allEnglishText}
                 attacker={attackingPokemon} 
                 defender={defendingPokemon} 
                 move={selectedQuickMoveAttacker} 
@@ -228,7 +247,7 @@ export default function Home() {
             <CardContent>
               <CardDescription> Damage dealt per charged attack</CardDescription>
               <CalculateButton 
-              allEnglishText={allEnglishText}
+                allEnglishText={allEnglishText}
                 attacker={attackingPokemon} 
                 defender={defendingPokemon} 
                 move={selectedChargedMoveAttacker}
@@ -242,7 +261,7 @@ export default function Home() {
             <CardContent>
               <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
               <CalculateButtonSimulate 
-              allEnglishText={allEnglishText}
+                allEnglishText={allEnglishText}
                 attacker={attackingPokemon} 
                 defender={defendingPokemon} 
                 quickMove={selectedQuickMoveAttacker} 
@@ -254,10 +273,27 @@ export default function Home() {
                 bonusDefender={bonusDefender}
                 />
             </CardContent>
+            <CardContent>
+              <CardDescription> Advanced simulation (random)</CardDescription>
+              <CalculateButtonSimulateAdvanced 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                quickMove={selectedQuickMoveAttacker} 
+                chargedMove={selectedChargedMoveAttacker}
+                quickMoveDefender={selectedQuickMoveDefender}
+                chargedMoveDefender={selectedChargedMoveDefender}
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                raidMode={raidMode}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                />
+            </CardContent>
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.4.2.1</p>
+      <p className="bottomtext">Version 1.5</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> // <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

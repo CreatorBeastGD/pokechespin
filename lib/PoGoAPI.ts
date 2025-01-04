@@ -29,7 +29,9 @@ export class PoGoAPI {
     }
 
     static formatPokemonText(text: string, constants: any) {
-        return (text ? text.replace(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
+        return (text ? text.replaceAll(/\$t\(constants:pokemon\:(\w+)\)/g, (_, key) => {
+            return constants.pokemon[key] || key;
+          }).replaceAll(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
             return constants.pokemon[key] || key;
           }) : "Error");
       }
@@ -305,6 +307,211 @@ export class PoGoAPI {
             }
         }
         return {time, quickAttackUses, chargedAttackUses, graphic};
+    }
+
+    static async advancedSimulation(attacker: any, defender: any, quickMoveAttacker: any, chargedMoveAttacker: any, quickMoveDefender: any, chargedMoveDefender: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, oneMember: any) {
+        if (raidMode !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raidMode);
+        }
+
+        let time = 0;
+
+        // Damage window start, will be -1 if the attacker is not casting a move
+        let attackerDamageStart = -1;
+        let defenderDamageStart = -1;
+
+
+        let attackerEnergy = 0;
+        let defenderEnergy = 0;
+        let attackerHealth = Calculator.getEffectiveStamina(attacker.stats.baseStamina, attackerStats[3], attackerStats[0]);
+        let defenderHealth = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
+        
+        let attackerFaints = 0;
+        let attackerEvades = false;
+        let attackerFaint = false;
+
+        let attackerDamage = 0;
+        let defenderDamage = 0;
+        let defenderDamageTotal = 0;
+        let attackerQuickAttackUses = 0;
+        let defenderQuickAttackUses = 0;
+        let attackerChargedAttackUses = 0;
+        let defenderChargedAttackUses = 0;
+
+        console.log (quickMoveAttacker, chargedMoveAttacker, quickMoveDefender, chargedMoveDefender);
+
+        let attackerMove = null;
+        let defenderMove = null;
+        
+        let battleLog = []
+
+        const types = await this.getTypes();
+
+        while (attackerDamage <= defenderHealth) {
+            // Attacker can cast a move
+            if (attackerDamageStart == -1) {
+                attackerFaint = false;
+                // Defender has casted a charged move, attacker may try to evade it
+                /*
+                if (defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
+                    if (defenderMove.energyDelta < 0 && 
+                        time < defenderDamageStart + defenderMove.damageWindowStartMs) {
+                            // Attacker evades the move
+                            console.log("Attacker evades the next move!")
+                            attackerEvades = true;
+                            attackerDamageStart = -1;
+                        }
+                }
+                        
+                // Attacker can select its charged move
+                else */if (attackerEnergy >= -chargedMoveAttacker.energyDelta) {
+                    console.log("Attacker casts a charged move at time " + time);
+                    attackerDamageStart = time;
+                    attackerMove = chargedMoveAttacker;
+                    attackerEnergy += chargedMoveAttacker.energyDelta;
+                    attackerChargedAttackUses++;
+                }
+                // Attacker will cast a quick move
+                else {
+                    console.log("Attacker casts a quick move at time " + time);
+                    attackerDamageStart = time;
+                    attackerMove = quickMoveAttacker;
+                    attackerEnergy += quickMoveAttacker.energyDelta;
+                    if (attackerEnergy > 100) {
+                        attackerEnergy = 100;
+                    }
+                    attackerQuickAttackUses++;
+                }
+            }
+            // Attacker deals damage
+            if (attackerMove !== null && attackerDamageStart > -1 && time === attackerDamageStart + attackerMove.damageWindowStartMs) 
+            {
+                const projectedDamage = this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                attackerDamage += projectedDamage;
+                console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
+                defenderEnergy += Math.floor(projectedDamage / 2);
+                if (defenderEnergy > 100) {
+                    defenderEnergy = 100;
+                }
+                battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy});
+                // End of simulation
+                if (attackerDamage > defenderHealth) {
+                    console.log("Defender faints at time " + time + ", end of simulation.");
+                    battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
+                    break;
+                }
+            }
+            // Attacker has finished casting its move
+            if (attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
+                attackerDamageStart = -1;
+                attackerMove = null;
+                console.log("Attacker has finished casting its move at time " + time);
+            }
+            
+            // Defender can cast a move
+            if (defenderDamageStart == -1) {
+                defenderDamageStart = time;
+                // Defender can select its charged move
+                if (defenderEnergy >= -chargedMoveDefender.energyDelta) {
+                    if (Math.random() > 0.5) {
+                        console.log("Defender casts a charged move at time " + time);
+                        defenderMove = chargedMoveDefender;
+                        defenderEnergy += chargedMoveDefender.energyDelta;
+                        defenderChargedAttackUses++;
+                    } else {
+                        console.log("Defender casts a quick move at time " + time);
+                        defenderMove = quickMoveDefender;
+                        defenderEnergy += quickMoveDefender.energyDelta;
+                        if (defenderEnergy > 100) {
+                            defenderEnergy = 100;
+                        }
+                        defenderQuickAttackUses++;
+                    }
+                }
+                // Defender will cast a quick move
+                else {
+                    console.log("Defender casts a quick move at time " + time);
+                    defenderMove = quickMoveDefender;
+                    defenderEnergy += quickMoveDefender.energyDelta;
+                    if (defenderEnergy > 100) {
+                        defenderEnergy = 100;
+                    }
+                    defenderQuickAttackUses++;
+                }
+            }
+            // Defender deals damage
+            if (defenderDamageStart > -1 && 
+                time === defenderDamageStart + defenderMove.damageWindowStartMs) 
+            {
+                const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
+                defenderDamage += (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender;
+                attackerEnergy += (attackerFaint) ? 0 : Math.floor(projectedDamageDefender / 2);
+                if (attackerEnergy > 100) {
+                    attackerEnergy = 100;
+                }
+                if (defenderDamage != 0) {
+                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender, "energy": defenderEnergy});
+                }
+                console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
+                
+                attackerEvades = false;
+                // Attacker faints
+                if (defenderDamage > attackerHealth) {
+                    attackerEnergy = 0;
+                    console.log("Attacker faints at time " + time);
+                    attackerFaints++;
+                    defenderDamageTotal += attackerHealth;
+                    defenderDamage = 0;
+                    attackerFaint = true
+                    // Attacker has a 1.5 second delay before the next attacker is sent.
+                    // If the attacker faints 6 times, the attacker will have a 10 second delay before the next attacker is sent.
+                    if (oneMember ? true : (attackerFaints % 6) == 0) {
+                        battleLog.push({"turn": time, "attacker": attacker.pokemonId, "relobby": true});
+                        console.log("Attacker has a 10 second delay before the next attacker is sent.");
+                        attackerDamageStart = -10001;
+                    } else {
+                        battleLog.push({"turn": time, "attacker": attacker.pokemonId, "relobby": false});
+                        attackerDamageStart = -3001;
+                    }
+                }
+            }
+            // Defender has finished casting its move
+            if (defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
+                defenderDamageStart = (Math.floor(Math.random() * 3) * 500) - 2501;
+                defenderMove = null;
+
+            }
+            if (defenderDamageStart < -1) {
+                defenderDamageStart++;
+            }
+            if (attackerDamageStart < -1) {
+                attackerDamageStart++;
+            }
+            time++;
+        }
+
+        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints};
+        
+
+        // In a raid battle, the defender is the raid boss
+
+        // A raid boss will attack each 1.5/2.5 seconds, chosen randomly
+
+        // Raid Boss has an energy bar of 100, and will have a 50% chance of using a charged move when it has enough energy
+
+        // Each attack has a damage window start and end time, which is the time in which the attack will deal damage
+
+        // Each Pokemon will attack when the damage window is open, and will deal damage based on the damage window
+
+        // damage window parameter on attacks are attack.damageWindowStartMs and attack.damageWindowEndMs
+
+        // When the attacker faints, he will have a 1.5 second delay before the next attacker is sent
+
+        // Both Pokémon will gain energy based on the energyDelta of the attack
+        
+        // Both Pokémon will gain 50% energy of the damage taken (1 energy per 2 damage taken)
+
+
     }
 
     static formatMoveName(moveName: string) {
