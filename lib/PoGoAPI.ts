@@ -29,9 +29,10 @@ export class PoGoAPI {
     }
 
     static formatPokemonText(text: string, constants: any) {
-        return text.replace(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
-          return constants.pokemon[key] || key;
-        });
+        console.log(text)
+        return (text ? text.replace(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
+            return constants.pokemon[key] || key;
+          }) : "Error");
       }
 
     static getPokemonNamePB(pokemonId: string, textList: any) {
