@@ -171,7 +171,7 @@ export default function SearchBarAttacker({
   const effDefense = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
   const effStamina = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
 
-  const raidmode = raidMode? raidMode : "normal";
+  const raidmode = raidMode ? raidMode : "normal";
 
   return (
     <>
@@ -210,7 +210,7 @@ export default function SearchBarAttacker({
             ))}
           </select>
 
-          <p>Stats (PC: {raidmode === "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
+          <p>Stats (PC: {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
           {raidmode === "normal" ? (<></>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Stat changes won't be affected.</p>)}
           <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {Math.floor(effAttack)})</span></p>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>

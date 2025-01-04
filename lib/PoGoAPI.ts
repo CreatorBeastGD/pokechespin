@@ -29,7 +29,6 @@ export class PoGoAPI {
     }
 
     static formatPokemonText(text: string, constants: any) {
-        console.log(text)
         return (text ? text.replace(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
             return constants.pokemon[key] || key;
           }) : "Error");
