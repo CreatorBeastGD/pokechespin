@@ -324,7 +324,7 @@ export class PoGoAPI {
         let attackerEnergy = 0;
         let defenderEnergy = 0;
         let attackerHealth = Calculator.getEffectiveStamina(attacker.stats.baseStamina, attackerStats[3], attackerStats[0]);
-        let defenderHealth = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defenderStats[3], defenderStats[0], raidMode);
         
         let attackerFaints = 0;
         let attackerEvades = false;
@@ -441,7 +441,7 @@ export class PoGoAPI {
             }
             // Defender deals damage
             if (defenderDamageStart > -1 && 
-                time === defenderDamageStart + defenderMove.damageWindowStartMs) 
+                time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
                 const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
                 defenderDamage += (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender;
@@ -471,13 +471,13 @@ export class PoGoAPI {
                         attackerDamageStart = -10001;
                     } else {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false});
-                        attackerDamageStart = -3001;
+                        attackerDamageStart = -1001;
                     }
                 }
             }
             // Defender has finished casting its move
             if (defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
-                defenderDamageStart = (Math.floor(Math.random() * 3) * 500) - 2501;
+                defenderDamageStart = (Math.floor(Math.random() * 3) * -500) - 1501;
                 defenderMove = null;
 
             }
@@ -490,7 +490,7 @@ export class PoGoAPI {
             time++;
         }
 
-        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints};
+        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage};
         
 
         // In a raid battle, the defender is the raid boss
