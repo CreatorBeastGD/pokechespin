@@ -396,7 +396,7 @@ export class PoGoAPI {
                 }
                 battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
                 // End of simulation
-                if (attackerDamage > defenderHealth) {
+                if (attackerDamage >= defenderHealth) {
                     console.log("Defender faints at time " + time + ", end of simulation.");
                     battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
                     break;
@@ -457,7 +457,7 @@ export class PoGoAPI {
                 
                 attackerEvades = false;
                 // Attacker faints
-                if (defenderDamage > attackerHealth) {
+                if (defenderDamage >= attackerHealth) {
                     attackerEnergy = 0;
                     console.log("Attacker faints at time " + time);
                     attackerFaints++;
