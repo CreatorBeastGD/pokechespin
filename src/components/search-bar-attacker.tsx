@@ -123,6 +123,8 @@ export default function SearchBarAttacker({
 
   const searchPokemonInit = (pokemonD: any) => {
     setPokemon(pokemonD.pokedex.pokemonId);
+    handleQuickMoveSelect("", null);
+    handleChargedMoveSelect("", null);
     setLoading(true);
     setError(null);
     try {
@@ -157,6 +159,8 @@ export default function SearchBarAttacker({
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");  
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -172,8 +176,11 @@ export default function SearchBarAttacker({
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(searchParams.toString());    
       newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
+      
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -185,7 +192,6 @@ export default function SearchBarAttacker({
       
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move);
-    
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack", moveId);
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
@@ -232,10 +238,6 @@ export default function SearchBarAttacker({
     newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", selectedBonuses.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [selectedBonuses]);
-
-  const handleBonusLoaded = (bonus: any) => {
-    setSelectedBonuses(bonus);
-  }
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
