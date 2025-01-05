@@ -332,7 +332,7 @@ export class PoGoAPI {
 
         let attackerDamage = 0;
         let defenderDamage = 0;
-        let defenderDamageTotal = 0;
+        let tdo = 0;
         let attackerQuickAttackUses = 0;
         let defenderQuickAttackUses = 0;
         let attackerChargedAttackUses = 0;
@@ -388,12 +388,13 @@ export class PoGoAPI {
             {
                 const projectedDamage = this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
                 attackerDamage += projectedDamage;
+                tdo += projectedDamage;
                 console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
                 defenderEnergy += Math.floor(projectedDamage / 2);
                 if (defenderEnergy > 100) {
                     defenderEnergy = 100;
                 }
-                battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy});
+                battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
                 // End of simulation
                 if (attackerDamage > defenderHealth) {
                     console.log("Defender faints at time " + time + ", end of simulation.");
@@ -450,7 +451,7 @@ export class PoGoAPI {
                     attackerEnergy = 100;
                 }
                 if (defenderDamage != 0) {
-                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender, "energy": defenderEnergy});
+                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
                 }
                 console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
                 
@@ -460,19 +461,19 @@ export class PoGoAPI {
                     attackerEnergy = 0;
                     console.log("Attacker faints at time " + time);
                     attackerFaints++;
-                    defenderDamageTotal += attackerHealth;
                     defenderDamage = 0;
                     attackerFaint = true
                     // Attacker has a 1.5 second delay before the next attacker is sent.
                     // If the attacker faints 6 times, the attacker will have a 10 second delay before the next attacker is sent.
                     if (oneMember ? true : (attackerFaints % 6) == 0) {
-                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": true});
-                        console.log("Attacker has a 10 second delay before the next attacker is sent.");
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": true, "tdo": tdo});
+                        console.log("Attacker has a 8 second delay before the next attacker is sent.");
                         attackerDamageStart = -8001;
                     } else {
-                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": false});
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo});
                         attackerDamageStart = -1001;
                     }
+                    tdo = 0;
                 }
             }
             // Defender has finished casting its move

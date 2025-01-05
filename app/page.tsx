@@ -147,7 +147,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
-      <div className="flex flex-row items-center justify-center space-y-4">
+      <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" /><h1 className="mb-10 title">
         Pokémon GO Damage (and PC) Calculator</h1><img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
@@ -293,7 +293,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.5.1.1</p>
+      <p className="bottomtext">Version 1.5.1.2</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> // <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

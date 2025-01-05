@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge"
 import { CardHeader, Card, CardTitle, CardContent, CardFooter, CardDescription } from "./ui/card";
 import { Switch } from "./ui/switch";
+import { Progress } from "./ui/progress";
 
 export default function CalculateButtonSimulateAdvanced({
   attacker,
@@ -144,7 +145,7 @@ export default function CalculateButtonSimulateAdvanced({
             <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
           </p>
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times, dealing a TDO (Total Damage Output) of {(attackerDamage / (faints === 0 ? 1 : faints+1)).toFixed(2)} damage to the Raid Boss and a DPS of {(attackerDamage / ((time ? time : 0) / 1000)).toFixed(2)}.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times, dealing an average TDO (Total Damage Output) of {(attackerDamage / (faints === 0 ? 1 : faints+1)).toFixed(2)} damage to the Raid Boss and an average DPS of {(attackerDamage / ((time ? time : 0) / 1000)).toFixed(2)}.
           </p>
           {raidMode == "normal" ? (
             <></>
@@ -173,6 +174,7 @@ export default function CalculateButtonSimulateAdvanced({
                                         <div className="flex flex-col space-y-1">
                                             <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn/1000).toFixed(1)}s</p></Badge>
                                             <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
+                                            <Progress className="w-full" value={(Math.floor(item.health-item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health-item.stackedDamage > 0 ? item.health-item.stackedDamage : 0)} / {Math.floor(item.health)}
                                         </div>
                                         <div className="flex flex-col space-y-1">
                                             <Badge className="opacity-90" variant="default"><p className={"text-sm " + (item.move.endsWith("_FAST") ? "text-slate-400" : "text-red-300")}>Move: {PoGoAPI.getMoveNamePB(item.move, allEnglishText)}</p></Badge>
@@ -187,6 +189,7 @@ export default function CalculateButtonSimulateAdvanced({
                                         </div>
                                         <div className="flex flex-col space-y-1">
                                             <p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>
+                                            <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                                         </div>
                                     </div>)
                                 ))}
