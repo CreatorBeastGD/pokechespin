@@ -323,7 +323,7 @@ export class PoGoAPI {
 
         let attackerEnergy = 0;
         let defenderEnergy = 0;
-        let attackerHealth = Calculator.getEffectiveStamina(attacker.stats.baseStamina, attackerStats[3], attackerStats[0]);
+        let attackerHealth = Math.floor(Calculator.getEffectiveStamina(attacker.stats.baseStamina, attackerStats[3], attackerStats[0]));
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defenderStats[3], defenderStats[0], raidMode);
         
         let attackerFaints = 0;
