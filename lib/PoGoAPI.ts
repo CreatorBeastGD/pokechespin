@@ -471,14 +471,15 @@ export class PoGoAPI {
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
                 const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
-                const finalDamage = Math.floor((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender);
+                const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
+                console.log("Final damage: " + finalDamage);
                 defenderDamage += finalDamage
                 attackerEnergy += (finalDamage/2)
                 if (attackerEnergy > 100) {
                     attackerEnergy = 100;
                 }
                 if (defenderDamage != 0) {
-                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
+                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamage, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
                 }
                 console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
                 
