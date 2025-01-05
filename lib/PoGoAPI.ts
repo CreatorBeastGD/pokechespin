@@ -354,7 +354,7 @@ export class PoGoAPI {
         let attackerChargedAttackUses = 0;
         let defenderChargedAttackUses = 0;
 
-        console.log (quickMoveAttacker, chargedMoveAttacker, quickMoveDefender, chargedMoveDefender);
+        //console.log (quickMoveAttacker, chargedMoveAttacker, quickMoveDefender, chargedMoveDefender);
 
         let attackerMove = null;
         let defenderMove = null;
@@ -377,7 +377,7 @@ export class PoGoAPI {
                         time < defenderDamageStart + defenderMove.damageWindowStartMs && 
                         (projectedDamageDefender + defenderDamage) < attackerHealth) {
                         // Attacker evades the move
-                        console.log("Attacker evades the next move!")
+                        //console.log("Attacker evades the next move!")
                         attackerEvades = true;
                         firstDmgReduction = true;
 
@@ -390,7 +390,7 @@ export class PoGoAPI {
                 if (!firstDmgReduction) {
                     // Attacker can select its charged move
                     if (attackerEnergy >= -chargedMoveAttacker.energyDelta) {
-                        console.log("Attacker casts a charged move at time " + time);
+                        //console.log("Attacker casts a charged move at time " + time);
                         attackerDamageStart = time;
                         attackerMove = chargedMoveAttacker;
                         attackerEnergy += chargedMoveAttacker.energyDelta;
@@ -398,7 +398,7 @@ export class PoGoAPI {
                     }
                     // Attacker will cast a quick move
                     else {
-                        console.log("Attacker casts a quick move at time " + time);
+                        //console.log("Attacker casts a quick move at time " + time);
                         attackerDamageStart = time;
                         attackerMove = quickMoveAttacker;
                         attackerEnergy += quickMoveAttacker.energyDelta;
@@ -416,7 +416,7 @@ export class PoGoAPI {
                 const projectedDamage = this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
                 attackerDamage += projectedDamage;
                 tdo += projectedDamage;
-                console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
+                //console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
                 defenderEnergy += Math.floor(projectedDamage / 2);
                 if (defenderEnergy > 100) {
                     defenderEnergy = 100;
@@ -424,7 +424,7 @@ export class PoGoAPI {
                 battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
                 // End of simulation
                 if (attackerDamage >= defenderHealth) {
-                    console.log("Defender faints at time " + time + ", end of simulation.");
+                    //console.log("Defender faints at time " + time + ", end of simulation.");
                     battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
                     break;
                 }
@@ -433,7 +433,7 @@ export class PoGoAPI {
             if (attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
                 attackerDamageStart = -1;
                 attackerMove = null;
-                console.log("Attacker has finished casting its move at time " + time);
+                //console.log("Attacker has finished casting its move at time " + time);
             }
             
             // Defender can cast a move
@@ -442,12 +442,12 @@ export class PoGoAPI {
                 // Defender can select its charged move
                 if (defenderEnergy >= -chargedMoveDefender.energyDelta) {
                     if (Math.random() > 0.5) {
-                        console.log("Defender casts a charged move at time " + time);
+                        //console.log("Defender casts a charged move at time " + time);
                         defenderMove = chargedMoveDefender;
                         defenderEnergy += chargedMoveDefender.energyDelta;
                         defenderChargedAttackUses++;
                     } else {
-                        console.log("Defender casts a quick move at time " + time);
+                        //console.log("Defender casts a quick move at time " + time);
                         defenderMove = quickMoveDefender;
                         defenderEnergy += quickMoveDefender.energyDelta;
                         if (defenderEnergy > 100) {
@@ -458,7 +458,7 @@ export class PoGoAPI {
                 }
                 // Defender will cast a quick move
                 else {
-                    console.log("Defender casts a quick move at time " + time);
+                    //console.log("Defender casts a quick move at time " + time);
                     defenderMove = quickMoveDefender;
                     defenderEnergy += quickMoveDefender.energyDelta;
                     if (defenderEnergy > 100) {
@@ -473,7 +473,7 @@ export class PoGoAPI {
             {
                 const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
                 const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
-                console.log("Final damage: " + finalDamage);
+                //console.log("Final damage: " + finalDamage);
                 defenderDamage += finalDamage
                 attackerEnergy += (finalDamage/2)
                 if (attackerEnergy > 100) {
@@ -482,13 +482,13 @@ export class PoGoAPI {
                 if (defenderDamage != 0) {
                     battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamage, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
                 }
-                console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
+                //console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
                 
                 attackerEvades = false;
                 // Attacker faints
                 if (defenderDamage >= attackerHealth) {
                     attackerEnergy = 0;
-                    console.log("Attacker faints at time " + time);
+                    //console.log("Attacker faints at time " + time);
                     attackerFaints++;
                     defenderDamage = 0;
                     attackerFaint = true

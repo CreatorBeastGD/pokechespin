@@ -19,6 +19,8 @@ import { Switch } from "@/components/ui/switch"
 import { Select } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Link } from "lucide-react";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -37,34 +39,116 @@ export default function Home() {
   const [allMoves, setAllMoves] = useState<any>(null);
   const [imageLinks, setImageLinks] = useState<any>(null);
   const [allEnglishText, setAllEnglishText] = useState<any>(null);
+  const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
+  const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
+
+  const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  (searchParams.forEach((value, key) => {
+    //console.log(key, value);
+  }
+  ));
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
+      setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
       setAllPokemonPB(pokemonlist);
-      console.log("Fetched all Pokémon from PokeBattler API");
+      //console.log("Fetched all Pokémon from PokeBattler API");
 
       const names = await PoGoAPI.getAllPokemonNames();
       setSearchBarNames(names);
-      console.log("Fetched all Pokémon names from API");
+      //console.log("Fetched all Pokémon names from API");
 
       const moves = await PoGoAPI.getAllMovesPB();
       setAllMoves(moves);
-      console.log("Fetched all moves from PokeBattler API");
+      //console.log("Fetched all moves from PokeBattler API");
 
       const images = await PoGoAPI.getAllPokemonImagesPB();
       setImageLinks(images);
       //console.log(images);
-      console.log("Fetched all images from PokeBattler API");
+      //console.log("Fetched all images from PokeBattler API");
 
       const text = await PoGoAPI.getAllEnglishNamesPB();
       setAllEnglishText(text);
       //console.log(text);
-      console.log("Fetched all English text from PokeBattler API");
+      //console.log("Fetched all English text from PokeBattler API");
+
+      
+      setAllDataLoaded(true);
     };
     fetchAllPokemonPB();
     
   }, []);
+
+  useEffect(() => {
+    if (allDataLoaded) {
+      //console.log ("All data loaded, checking for URL parameters");
+      const loadParams = () => {
+        const attacker = searchParams.get("attacker");
+        const defender = searchParams.get("defender");
+        const attackerStats = searchParams.get("attacker_stats");
+        const defenderStats = searchParams.get("defender_stats");
+        const bonusAttacker = searchParams.get("attacker_bonuses");
+        const bonusDefender = searchParams.get("defender_bonuses");
+        const attackerFastAttack = searchParams.get("attacker_fast_attack");
+        const defenderFastAttack = searchParams.get("defender_fast_attack");
+        const attackerChargedAttack = searchParams.get("attacker_cinematic_attack");
+        const defenderChargedAttack = searchParams.get("defender_cinematic_attack");
+        const weather = searchParams.get("weather");
+        const raidMode = searchParams.get("raid_mode");
+
+        if (attacker) {
+          const attackerPokemon = PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0];
+          setAttackingPokemon(attackerPokemon);
+        }
+        if (defender) {
+          const defenderPokemon = PoGoAPI.getPokemonPBByID(defender, pokemonList)[0];
+          setDefendingPokemon(defenderPokemon);
+        }
+        if (attackerFastAttack) {
+          const fastAttack = PoGoAPI.getMovePBByID(attackerFastAttack, allMoves);
+          setSelectedQuickMoveAttacker(fastAttack);
+        }
+        if (attackerChargedAttack) {
+          const chargedAttack = PoGoAPI.getMovePBByID(attackerChargedAttack, allMoves);
+          setSelectedChargedMoveAttacker(chargedAttack);
+        }
+        if (defenderFastAttack) {
+          const fastAttack = PoGoAPI.getMovePBByID(defenderFastAttack, allMoves);
+          setSelectedQuickMoveDefender(fastAttack);
+        }
+        if (defenderChargedAttack) {
+          const chargedAttack = PoGoAPI.getMovePBByID(defenderChargedAttack, allMoves);
+          setSelectedChargedMoveDefender(chargedAttack);
+        }
+        if (attackerStats) {
+          setAttackerStats(attackerStats.split(",").map((stat: string) => parseInt(stat)));
+        }
+        if (defenderStats) {
+          setDefenderStats(defenderStats.split(",").map((stat: string) => parseInt(stat)));
+        }
+        //console.log("BA", bonusAttacker);
+        if (bonusAttacker) {
+          const ba = bonusAttacker.split(",");
+          ba[0] = weather ? weather : ba[0];
+          setBonusAttacker(ba);
+        }
+        //console.log("BD", bonusDefender);
+        if (bonusDefender) {
+          setBonusDefender(defenderBonusBug.split(","));
+        }
+        if (raidMode) {
+          setRaidMode(raidMode);
+        }
+        setParamsLoaded(true);
+      }
+      loadParams();
+    }
+  }, [allDataLoaded]);
 
   const handleAttackerSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
@@ -116,10 +200,18 @@ export default function Home() {
 
   const handleBonusChange = (value: string) => {
     setBonusAttacker([value, bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]]);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("weather", value);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("raid_mode", event.target.value);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
   const raidSurname = (raidMode: string) => {
@@ -143,6 +235,15 @@ export default function Home() {
       return "Normal";
     }
   }
+
+  const copyLinkToClipboard = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch((err) => {
+      console.error("Failed to copy: ", err);
+    });
+  };
 
 
   return (
@@ -175,6 +276,17 @@ export default function Home() {
               onChargedMoveSelect={handleChargedMoveSelectAttacker}
               onChangedStats={handleChangedStatsAttacker}
               onBonusChange={handleBonusChangeAttacker}
+              slot={1}
+              initialValues={
+                {
+                  attacker: attackingPokemon,
+                  quickMove: selectedQuickMoveAttacker,
+                  chargedMove: selectedChargedMoveAttacker,
+                  attackerStats: attackerStats,
+                  bonusAttacker: bonusAttacker
+                }
+              }
+              paramsLoaded={paramsLoaded}
             />
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
@@ -203,6 +315,17 @@ export default function Home() {
               onChangedStats={handleChangedStatsDefender}
               onBonusChange={handleBonusChangeDefender}
               raidMode={raidMode}
+              slot={2}
+              initialValues={
+                {
+                  attacker: defendingPokemon,
+                  quickMove: selectedQuickMoveDefender,
+                  chargedMove: selectedChargedMoveDefender,
+                  attackerStats: defenderStats,
+                  bonusAttacker: bonusDefender
+                }
+              }
+              paramsLoaded={paramsLoaded}
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
@@ -243,6 +366,11 @@ export default function Home() {
                 <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
 
               </select>
+
+              <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                Copy Link of this setup
+              </button>
+
               <CardDescription> Damage dealt per fast attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
@@ -305,7 +433,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.5.3</p>
+      <p className="bottomtext">Version 1.6</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

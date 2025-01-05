@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -13,6 +13,8 @@ import { Select, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { SelectContent } from "@radix-ui/react-select";
 import { Data } from "../../lib/special-data";
 import { Switch } from "./ui/switch";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 
 interface SearchBarAttackerProps {
@@ -27,6 +29,9 @@ interface SearchBarAttackerProps {
   assets: any;
   allEnglishText: any;
   raidMode?: string;
+  slot?: number;
+  initialValues?: any;
+  paramsLoaded?: boolean;
 }
 
 export default function SearchBarAttacker({ 
@@ -40,7 +45,10 @@ export default function SearchBarAttacker({
     searchBarNames, 
     allMoves, 
     assets, 
-    allEnglishText 
+    allEnglishText,
+    slot,
+    initialValues,
+    paramsLoaded
   }: SearchBarAttackerProps, ) {
   const [pokemon, setPokemon] = useState<string>("");
   const [pokemonData, setPokemonData] = useState<any>(null);
@@ -54,8 +62,57 @@ export default function SearchBarAttacker({
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
-
   
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const initialLoad = useRef(false);
+
+
+
+  useEffect(() => {
+    //console.log(initialValues);
+    if (!initialLoad.current && initialValues && paramsLoaded) {
+      initialLoad.current = true;
+      if (initialValues.attacker) searchPokemonInit(initialValues.attacker);
+      if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
+      if (initialValues.bonusAttacker) {
+        const normalizedBonuses = initialValues.bonusAttacker.map((bonus: any, index: number) => {
+          if (index === 0) return bonus; // EXTREME sigue como string
+          if (index === 3) return parseInt(bonus); // Último es número
+          return bonus === "true"; // Conviértelo en booleano
+        });
+
+        handleBonusSelect(normalizedBonuses);
+      }
+      if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
+      if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
+      //console.log("Initial values loaded");
+    }
+  }, [initialValues]); // Agrega `initialValues` como dependencia
+
+  const handleQuickMoveSelect = (moveId: string, move: any) => {
+    setSelectedQuickMove(moveId);
+    onQuickMoveSelect(moveId, move);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack", moveId);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  };
+
+  const handleStatsSelect = (stats: any) => {
+    setStats(stats);
+    onChangedStats(stats);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
+
+  const handleBonusSelect = (bonus: any) => {
+    setSelectedBonuses(bonus);
+    onBonusChange(bonus);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot == 1 ? "attacker_bonuses" : "defender_bonuses", bonus.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
   
   useEffect(() => {
     if (clickedSuggestion) {
@@ -63,12 +120,26 @@ export default function SearchBarAttacker({
       setClickedSuggestion(false);
     }
   } , [clickedSuggestion]);
-  
 
-  useEffect(() => {
-    onChangedStats(stats);
-  } , [stats]);
-
+  const searchPokemonInit = (pokemonD: any) => {
+    setPokemon(pokemonD.pokedex.pokemonId);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = PoGoAPI.getPokemonPBByID(pokemonD.pokemonId, pokemonList)[0];
+      setPokemonData(response);
+      onSelect(response);
+      //console.log();
+      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId);
+      setAvailableForms(allForms);// Construir nueva URL
+      setSelectedForm(pokemonD.pokemonId);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const searchPokemon = () => {
     setLoading(true);
@@ -83,7 +154,10 @@ export default function SearchBarAttacker({
       setPokemonData(response);
       onSelect(response);
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
-      setAvailableForms(allForms);
+      setAvailableForms(allForms);// Construir nueva URL
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
     }
@@ -98,19 +172,24 @@ export default function SearchBarAttacker({
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickMoveSelect = (moveId: string, move: any) => {
-    setSelectedQuickMove(moveId);
-    onQuickMoveSelect(moveId, move);
-  };
-
   const handleChargedMoveSelect = (moveId: string, move: any) => {
+    if (paramsLoaded) {
+      
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move);
+    
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack", moveId);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -120,14 +199,44 @@ export default function SearchBarAttacker({
     setSelectedChargedMove(null);
   };
 
+  // [level, attack, defense, stamina]
   const handleChangeStat = (value: number[], index: number) => {
     setStats((prev: any) => {
       const newStats = [...prev];
       newStats[index] = value[0];
-
       return newStats;
     });
   }
+
+  // Bonuses = [weather-boost, shadow, mega, friendship]
+  const handleBonusChange = (bonusIndex: number, value: any) => {
+    setSelectedBonuses((prev: any) => {
+      const newBonuses = [...prev];
+      newBonuses[bonusIndex] = value;
+      return newBonuses;
+    });
+  };
+
+  useEffect(() => {
+    
+    onChangedStats(stats);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }, [stats]);
+
+  useEffect(() => {
+    onBonusChange(selectedBonuses);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", selectedBonuses.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }, [selectedBonuses]);
+
+  const handleBonusLoaded = (bonus: any) => {
+    setSelectedBonuses(bonus);
+  }
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -150,26 +259,11 @@ export default function SearchBarAttacker({
     setSuggestions([]);
   };
 
-  // Bonuses = [weather-boost, shadow, mega, friendship]
-  const handleBonusChange = (bonusIndex: number, value: any) => {
-    let bonuses = [...selectedBonuses];
-    bonuses[bonusIndex] = value;
-    setSelectedBonuses(bonuses);
-  };
-
-  useEffect(() => {
-    onBonusChange(selectedBonuses);
-  }, [selectedBonuses]);
-
-  useEffect(() => {
-    setSelectedBonuses(["EXTREME", false, false, 0]);
-  } , [raidMode]);
-
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
   const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], stats[0]);
-  const effDefense = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
-  const effStamina = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
+  const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
+  const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
 
   const raidmode = raidMode ? raidMode : "normal";
 
@@ -315,8 +409,4 @@ export default function SearchBarAttacker({
       )}
     </>
   );
-}
-
-function onChangedStats(stats: any) {
-  throw new Error("Function not implemented.");
 }
