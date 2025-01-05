@@ -12,10 +12,20 @@ export class PoGoAPI {
         });
         return await response.json();
     }
+    
+    static async getTypes () {
+        const response = await fetch(API + "types.json");
+        return await response.json();
+    }
 
     static async getAllPokemonPB() {
         const response = await fetch(API_PB + "pokemon");
         return (await response.json()).pokemon;
+    }
+    
+    static async getAllMovesPB() {
+        const response = await fetch(API_PB + "moves");
+        return (await response.json()).move;
     }
 
     static async getAllPokemonImagesPB() {
@@ -27,26 +37,26 @@ export class PoGoAPI {
         const response = await fetch('/api/pokemonNames');;
         return (await response.json());
     }
+    
 
     static formatPokemonText(text: string, constants: any) {
         return (text ? text.replaceAll(/\$t\(constants:pokemon\:(\w+)\)/g, (_, key) => {
             return constants.pokemon[key] || key;
-          }).replaceAll(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
+        }).replaceAll(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
             return constants.pokemon[key] || key;
-          }) : "Error");
-      }
+        }) : "Error");
+    }
 
-      static getPreferredMovesPB(pokemonId: string, megaPokemonId: string, pokemonList: any) {
+    static getPreferredMovesPB(pokemonId: string, megaPokemonId: string, pokemonList: any) {
         //console.log(pokemonId, megaPokemonId);
         const pokeData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
         const pokeDataMega = this.getPokemonPBByID(megaPokemonId, pokemonList)[0];
-        
-    
+
         const quickMoves = Array.from(new Set((pokeDataMega?.quickMoves || []).concat(pokeData?.quickMoves || [])));
         const chargedMoves = Array.from(new Set((pokeDataMega?.cinematicMoves || []).concat(pokeData?.cinematicMoves || [])));
     
         return { preferredMovesQuick: quickMoves, preferredMovesCharged: chargedMoves };
-      }
+    }
 
     static getPokemonNamePB(pokemonId: string, textList: any) {
         return pokemonId ? this.formatPokemonText(textList.pokemon[pokemonId], textList) : "???";
@@ -75,10 +85,6 @@ export class PoGoAPI {
         return listFiltered;
     }
 
-    static async getAllMovesPB() {
-        const response = await fetch(API_PB + "moves");
-        return (await response.json()).move;
-    }
 
     static getMovePBByID(moveId: string, moveList: any[]) {
         const move = moveList.find((move: any) => move.moveId === moveId);
@@ -100,9 +106,9 @@ export class PoGoAPI {
         });
       }
 
-      static getPokemonPBBySpeciesName(name: string, pokemonList: any, textList: any) {
+    static getPokemonPBBySpeciesName(name: string, pokemonList: any, textList: any) {
         const list = pokemonList.filter((pokemon: any) => 
-          this.getPokemonNamePB(pokemon.pokedex.pokemonId, textList).toLowerCase().startsWith(name.toLowerCase())
+            this.getPokemonNamePB(pokemon.pokedex.pokemonId, textList).toLowerCase().startsWith(name.toLowerCase())
         );
         const lista = this.filterUniquePokemon(list);
         return lista;
@@ -135,11 +141,6 @@ export class PoGoAPI {
         } else {
             return "???";
         }
-    }
-    
-    static async getTypes () {
-        const response = await fetch(API + "types.json");
-        return await response.json();
     }
 
     static getTypeWeaknesses(type: string, allTypes: any[]) {

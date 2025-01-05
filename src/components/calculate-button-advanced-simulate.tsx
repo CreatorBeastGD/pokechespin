@@ -44,6 +44,16 @@ export default function CalculateButtonSimulateAdvanced({
   const [ignoreRelobby, setIgnoreRelobby] = useState<boolean>(false);
   const [avoidCharged, setAvoidCharged] = useState<boolean>(false);
   const [attackerDamage, setAttackerDamage] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [visibleEntries, setVisibleEntries] = useState(50);
+
+  const loadMoreEntries = () => {
+    setVisibleEntries(prev => prev + 50);
+  };
+
+  const showLessEntries = () => {
+    setVisibleEntries(50);
+  }
 
   useEffect(() => {
     setTime(0);
@@ -77,10 +87,13 @@ export default function CalculateButtonSimulateAdvanced({
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove || !quickMoveDefender || !chargedMoveDefender) return;
 
+    setLoading(true);
     // Both should have the same weather boost.
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, oneMember, avoidCharged, ignoreRelobby);
+    setLoading(false);
+    setVisibleEntries(50);
     setTime(time);
     setQau({attackerQuickAttackUses, defenderQuickAttackUses});
     setCau({attackerChargedAttackUses, defenderChargedAttackUses});
@@ -138,7 +151,13 @@ export default function CalculateButtonSimulateAdvanced({
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setIgnoreRelobby)} checked={ignoreRelobby} /> Ignore relobby time. (8s -{">"} 1s)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
       </div>
-      {time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
+      {loading && (
+        <div className="flex flex-col items-center justify-center space-y-2 mt-4">
+          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <p className="text-primary text-lg">Loading...</p>
+        </div>
+      )}
+      {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
             <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
@@ -170,46 +189,59 @@ export default function CalculateButtonSimulateAdvanced({
             </p>
           )} 
 
-          {graphic && (
-            <Card className="mt-4">
-                <CardHeader>
-                    <CardTitle>Attack Sequence</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <CardDescription>
-                            <div className="flex flex-col space-y-4">
-                                {graphic.map((item: any, index: number) => (
-                                    item.damage ? (
-                                    <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
-                                        <div className="flex flex-col space-y-1">
-                                            <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn/1000).toFixed(1)}s</p></Badge>
-                                            <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
-                                            <Progress className="w-full" value={(Math.floor(item.health-item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health-item.stackedDamage > 0 ? item.health-item.stackedDamage : 0)} / {Math.floor(item.health)}
-                                        </div>
-                                        <div className="flex flex-col space-y-1">
-                                            <Badge className="opacity-90" variant="default"><p className={"text-sm " + (item.move.endsWith("_FAST") ? "text-slate-400" : "text-red-300")}>Move: {PoGoAPI.getMoveNamePB(item.move, allEnglishText)}</p></Badge>
-                                            <p className="text-sm text-slate-700">Damage: <span className="font-extrabold">{item.damage}</span></p>
-                                            <p className="text-sm text-slate-700">Energy: <span className="font-extrabold">{item.energy}</span></p>
-                                        </div>
-                                    </div>) : (
-                                    <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 bg-slate-200 p-2 rounded-lg"}>
-                                        <div className="flex flex-col space-y-1">
-                                            <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn/1000).toFixed(1)}s</p></Badge>
-                                            <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</p>
-                                        </div>
-                                        <div className="flex flex-col space-y-1">
-                                            {(item.relobby === true || item.relobby === false) ? (<p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : (<></>)}
-                                            {item.dodge ? (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : (<></>)}
-                                            <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
-                                        </div>
-                                    </div>)
-                                ))}
-                            </div>
-                        </CardDescription>
-                    </CardContent>
-                </Card>
-            )}
-          
+        {graphic && (
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Attack Sequence</CardTitle>
+              <CardDescription>Showing {visibleEntries > graphic.length ? graphic.length : visibleEntries} of {graphic.length} steps.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                <div className="flex flex-col space-y-4">
+                  {graphic.slice(0, visibleEntries).map((item: any, index: number) => (
+                    item.damage ? (
+                      <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
+                        <div className="flex flex-col space-y-1">
+                          <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
+                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
+                          <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <Badge className="opacity-90" variant="default"><p className={"text-sm " + (item.move.endsWith("_FAST") ? "text-slate-400" : "text-red-300")}>Move: {PoGoAPI.getMoveNamePB(item.move, allEnglishText)}</p></Badge>
+                          <p className="text-sm text-slate-700">Damage: <span className="font-extrabold">{item.damage}</span></p>
+                          <p className="text-sm text-slate-700">Energy: <span className="font-extrabold">{item.energy}</span></p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 bg-slate-200 p-2 rounded-lg"}>
+                        <div className="flex flex-col space-y-1">
+                          <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
+                          <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</p>
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          {(item.relobby === true || item.relobby === false) ? (<p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : (<></>)}
+                          {item.dodge ? (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : (<></>)}
+                          <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
+                        </div>
+                      </div>
+                    )
+                  ))}
+                </div>
+                {visibleEntries < graphic.length ? (
+                  <button onClick={loadMoreEntries} className="w-full py-2 text-white bg-primary rounded-lg mt-4">
+                    Load More
+                  </button>
+                ) : (
+                  graphic.length > 50 ? (
+                    <button onClick={showLessEntries} className="w-full py-2 text-white bg-primary rounded-lg mt-4">
+                      Set to 50 entries
+                    </button>
+                  ) : (<></>)
+                )}
+              </CardDescription>
+            </CardContent>
+          </Card>
+        )}
         </div>
       )}
     </>

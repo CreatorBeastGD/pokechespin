@@ -33,6 +33,15 @@ export default function CalculateButtonSimulate({
   const [qau, setQau] = useState<number | null>(0);
   const [cau, setCau] = useState<number | null>(0);
   const [graphic, setGraphic] = useState<any | null>(null);
+  const [shownGraphic, setShownGraphic] = useState<any>(false);
+
+  const showGraphic = () => {
+    setShownGraphic(true);
+  }
+
+  const hideGraphic = () => {
+    setShownGraphic(false);
+  }
 
   useEffect(() => {
     setTime(0);
@@ -66,6 +75,7 @@ export default function CalculateButtonSimulate({
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove) return;
     const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, bonusDefender);
+    setShownGraphic(false);
     setTime(time);
     setQau(quickAttackUses);
     setCau(chargedAttackUses);
@@ -119,13 +129,19 @@ export default function CalculateButtonSimulate({
                 <CardDescription>This sequence doesn't take in count any damage produced by the defender Pokémon. In a realistic scenario, a player should need to use multiple Pokémon and heal them, so more time would be needed.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="flex flex-wrap gap-2">
-                {graphic.map((g: any) => (
-                    <Badge key={g.turn} variant={g.type === "quick" ? "primary" : "destructive"}>
-                    {g.type === "quick" ? "F" : "C"}
-                    </Badge>
-                ))}
-                </div>
+                {shownGraphic ? (
+                  <>
+                  <div className="flex flex-wrap gap-2">
+                  {graphic.map((g: any) => (
+                      <Badge key={g.turn} variant={g.type === "quick" ? "primary" : "destructive"}>
+                      {g.type === "quick" ? "F" : "C"}
+                      </Badge>
+                  ))}
+                  </div>
+                  <button onClick={hideGraphic} className="w-full py-2 text-white bg-primary rounded-lg mt-2">Hide graphic</button></>
+                ) : (
+                  <button onClick={showGraphic} className="w-full py-2 text-white bg-primary rounded-lg">Show graphic</button>
+                )}
             </CardContent>
             <CardContent>
                 <Badge variant="primary">F</Badge> Fast Attack <Badge variant="destructive">C</Badge> Charged Attack

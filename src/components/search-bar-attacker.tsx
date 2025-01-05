@@ -204,7 +204,12 @@ export default function SearchBarAttacker({
         </ul>
       )}
       <Button onClick={searchPokemon} className="mt-4 mb-2">Search</Button>
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="flex flex-col items-center justify-center space-y-2 mt-4">
+          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <p className="text-primary text-lg">Loading...</p>
+        </div>
+      )}
       {error && <p>{error}</p>}
       {pokemonData ? (
         <div>
