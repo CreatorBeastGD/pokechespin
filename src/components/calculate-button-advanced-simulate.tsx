@@ -41,6 +41,8 @@ export default function CalculateButtonSimulateAdvanced({
   const [graphic, setGraphic] = useState<any | null>(null);
   const [faints, setFaints] = useState<any | null>(null);
   const [oneMember, setOneMember] = useState<boolean>(false);
+  const [ignoreRelobby, setIgnoreRelobby] = useState<boolean>(false);
+  const [avoidCharged, setAvoidCharged] = useState<boolean>(false);
   const [attackerDamage, setAttackerDamage] = useState<number>(0);
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function CalculateButtonSimulateAdvanced({
     // Both should have the same weather boost.
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
-    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, oneMember);
+    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, oneMember, avoidCharged, ignoreRelobby);
     setTime(time);
     setQau({attackerQuickAttackUses, defenderQuickAttackUses});
     setCau({attackerChargedAttackUses, defenderChargedAttackUses});
@@ -87,20 +89,21 @@ export default function CalculateButtonSimulateAdvanced({
     setAttackerDamage(attackerDamage);
   };
 
-  const handleSwitch = (checked: boolean) => {
-    setOneMember(checked);
+  const handleSwitch = (checked: boolean, handle: any) => {
+    handle(checked);
   }
 
   useEffect(() => {
     setOneMember(oneMember);
-    console.log(oneMember);
+    setIgnoreRelobby(ignoreRelobby);
+    setAvoidCharged(avoidCharged);
     
     setTime(0);
     setQau(0);
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [oneMember]);
+  }, [oneMember, ignoreRelobby, avoidCharged]);
 
   useEffect(() => {
     setTime(0);
@@ -130,9 +133,11 @@ export default function CalculateButtonSimulateAdvanced({
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Calculate
       </Button>
-      <p className="italic text-slate-700 text-sm my-2">
-        <Switch onCheckedChange={(checked) => handleSwitch(checked)} checked={oneMember} /> Only one Pokémon in the raid party
-      </p>
+      <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setOneMember)} checked={oneMember} /> Only one Pokémon in the raid party.</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setIgnoreRelobby)} checked={ignoreRelobby} /> Ignore relobby time. (8s -{">"} 1s)</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
+      </div>
       {time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
@@ -157,8 +162,13 @@ export default function CalculateButtonSimulateAdvanced({
             This simulation takes in consideration a team of {oneMember ? "one" : "six"} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}, not avoiding, and casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
           </p>
           <p className="text-sm text-slate-700 italic">
-            The simulation does not take into consideration the use of dodges or any other mechanic that might affect the outcome of the battle. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes 8 seconds in this simulation.
+            The simulation does not take into consideration the use of dodges or any other mechanic that might affect the outcome of the battle. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {ignoreRelobby === true ? "1 second (ignored relobby time)" : "8 seconds"} in this simulation.
           </p>
+          {avoidCharged && (
+            <p className="text-sm text-slate-700 italic">
+              The simulation takes into consideration that the attacker will dodge the next Charged Attack if it doesn't faint. This will reduce the damage taken by 75%.
+            </p>
+          )} 
 
           {graphic && (
             <Card className="mt-4">
@@ -188,7 +198,8 @@ export default function CalculateButtonSimulateAdvanced({
                                             <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</p>
                                         </div>
                                         <div className="flex flex-col space-y-1">
-                                            <p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>
+                                            {(item.relobby === true || item.relobby === false) ? (<p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : (<></>)}
+                                            {item.dodge ? (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : (<></>)}
                                             <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                                         </div>
                                     </div>)

@@ -309,7 +309,22 @@ export class PoGoAPI {
         return {time, quickAttackUses, chargedAttackUses, graphic};
     }
 
-    static async advancedSimulation(attacker: any, defender: any, quickMoveAttacker: any, chargedMoveAttacker: any, quickMoveDefender: any, chargedMoveDefender: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, oneMember: any) {
+    static async advancedSimulation(
+        attacker: any, 
+        defender: any,
+        quickMoveAttacker: any, 
+        chargedMoveAttacker: any, 
+        quickMoveDefender: any, 
+        chargedMoveDefender: any, 
+        attackerStats: any, 
+        defenderStats: any,
+        raidMode: any, 
+        bonusAttacker: any, 
+        bonusDefender: any, 
+        oneMember: any,
+        avoids?: any,
+        ignoreRelobbyTime?: any
+    ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
@@ -345,6 +360,8 @@ export class PoGoAPI {
         
         let battleLog = []
 
+        let firstDmgReduction = false;
+
         const types = await this.getTypes();
 
         while (attackerDamage <= defenderHealth) {
@@ -352,36 +369,45 @@ export class PoGoAPI {
             if (attackerDamageStart == -1) {
                 attackerFaint = false;
                 // Defender has casted a charged move, attacker may try to evade it
-                /*
-                if (defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
+                if (avoids === true && defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
+                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker));
+                
                     if (defenderMove.energyDelta < 0 && 
-                        time < defenderDamageStart + defenderMove.damageWindowStartMs) {
-                            // Attacker evades the move
-                            console.log("Attacker evades the next move!")
-                            attackerEvades = true;
-                            attackerDamageStart = -1;
-                        }
-                }
-                        
-                // Attacker can select its charged move
-                else */if (attackerEnergy >= -chargedMoveAttacker.energyDelta) {
-                    console.log("Attacker casts a charged move at time " + time);
-                    attackerDamageStart = time;
-                    attackerMove = chargedMoveAttacker;
-                    attackerEnergy += chargedMoveAttacker.energyDelta;
-                    attackerChargedAttackUses++;
-                }
-                // Attacker will cast a quick move
-                else {
-                    console.log("Attacker casts a quick move at time " + time);
-                    attackerDamageStart = time;
-                    attackerMove = quickMoveAttacker;
-                    attackerEnergy += quickMoveAttacker.energyDelta;
-                    if (attackerEnergy > 100) {
-                        attackerEnergy = 100;
+                        time < defenderDamageStart + defenderMove.damageWindowStartMs && 
+                        (projectedDamageDefender + defenderDamage) < attackerHealth) {
+                        // Attacker evades the move
+                        console.log("Attacker evades the next move!")
+                        attackerEvades = true;
+                        firstDmgReduction = true;
+
+                        attackerDamageStart = -501;
+                        battleLog.push({"turn": (time + 500), "attacker": "attacker", "dodge": true});
                     }
-                    attackerQuickAttackUses++;
                 }
+                
+                // If the attacker is not evading, it can cast a move
+                if (!firstDmgReduction) {
+                    // Attacker can select its charged move
+                    if (attackerEnergy >= -chargedMoveAttacker.energyDelta) {
+                        console.log("Attacker casts a charged move at time " + time);
+                        attackerDamageStart = time;
+                        attackerMove = chargedMoveAttacker;
+                        attackerEnergy += chargedMoveAttacker.energyDelta;
+                        attackerChargedAttackUses++;
+                    }
+                    // Attacker will cast a quick move
+                    else {
+                        console.log("Attacker casts a quick move at time " + time);
+                        attackerDamageStart = time;
+                        attackerMove = quickMoveAttacker;
+                        attackerEnergy += quickMoveAttacker.energyDelta;
+                        if (attackerEnergy > 100) {
+                            attackerEnergy = 100;
+                        }
+                        attackerQuickAttackUses++;
+                    }
+                }
+                firstDmgReduction = false;
             }
             // Attacker deals damage
             if (attackerMove !== null && attackerDamageStart > -1 && time === attackerDamageStart + attackerMove.damageWindowStartMs) 
@@ -445,8 +471,9 @@ export class PoGoAPI {
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
                 const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
-                defenderDamage += (attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender;
-                attackerEnergy += (attackerFaint) ? 0 : Math.floor(projectedDamageDefender / 2);
+                const finalDamage = Math.floor((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1) * projectedDamageDefender);
+                defenderDamage += finalDamage
+                attackerEnergy += (finalDamage/2)
                 if (attackerEnergy > 100) {
                     attackerEnergy = 100;
                 }
@@ -467,8 +494,8 @@ export class PoGoAPI {
                     // If the attacker faints 6 times, the attacker will have a 10 second delay before the next attacker is sent.
                     if (oneMember ? true : (attackerFaints % 6) == 0) {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": true, "tdo": tdo});
-                        console.log("Attacker has a 8 second delay before the next attacker is sent.");
-                        attackerDamageStart = -8001;
+                        //console.log("Attacker has a 8 second delay before the next attacker is sent.");
+                        attackerDamageStart = ignoreRelobbyTime ? -1001 : -8001;
                     } else {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo});
                         attackerDamageStart = -1001;
