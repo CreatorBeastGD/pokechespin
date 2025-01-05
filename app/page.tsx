@@ -245,6 +245,10 @@ export default function Home() {
     });
   };
 
+  const startPage = () => {
+    const newSearchParams = new URLSearchParams();
+    window.history.replaceState({}, "", `${window.location.pathname}`);
+  };
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -367,9 +371,16 @@ export default function Home() {
 
               </select>
 
+              <div className="flex flex-row items-center justify-center space-x-4">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                Copy Link of this setup
+                Copy setup link
               </button>
+              <a href="https://pokemongo-damage-calculator.vercel.app" className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                <button className="w-full">
+                  Clean setup
+                </button>
+              </a>
+              </div>
 
               <CardDescription> Damage dealt per fast attack</CardDescription>
               <CalculateButton 
