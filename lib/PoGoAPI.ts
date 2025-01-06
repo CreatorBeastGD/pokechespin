@@ -201,6 +201,7 @@ export class PoGoAPI {
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
         }
+        //console.log(types);
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 

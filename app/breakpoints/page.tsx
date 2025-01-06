@@ -79,7 +79,6 @@ const BreakpointsPage = () => {
             setWeather(weather);
             setDefenderStatsLoad(defenderStats.split(',').map((stat: string) => parseInt(stat)));
             if (!attacker || !defender || !attackerFastAttack || !attackerCinematicAttack) {
-                console.log("Error: Missing parameters");
                 setError("Missing parameters");
             }
             else {
@@ -113,15 +112,17 @@ const BreakpointsPage = () => {
         const rows = 32*2 - 1; // Example value for rows
         const cols = 16; // Example value for cols
         const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
-        const attackerBonus = [weather, bonusAttacker[1] == "true", bonusAttacker[2] == "true", parseInt(bonusAttacker[3])];
+        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", parseInt(bonusAttacker[3])];
+        const defenderBonus = [weather, bonusDefender[1] === "true", bonusDefender[2] === "true", parseInt(bonusDefender[3])];
+        //console.log(attackerBonus);
         // Breakpoints will be calculated from level 20 to level 50
         for (let i = 20; i <= 51; i+=0.5) {
             // Attacker attack stat will go from 0 to 15
             for (let j = 0; j <= 15; j++) {
                 const attackerStats = [i, j, 15, 15];
                 const defenderStats = defenderStatsLoad;
-                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, bonusDefender, raidMode);
-                console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
+                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode);
+                //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
                 table[2*(i-20)][j] = damage;
 
             }
@@ -138,7 +139,7 @@ const BreakpointsPage = () => {
       const getMinMax = (data: number[][]) => {
         let min = Infinity;
         let max = -Infinity;
-        console.log(data);
+        //console.log(data);
         for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].length; j++) {
                 if (data[i][j] < min) {
