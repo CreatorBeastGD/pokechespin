@@ -144,7 +144,7 @@ export default function CalculateButtonSimulateAdvanced({
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
-        Calculate
+        Simulate
       </Button>
       <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setOneMember)} checked={oneMember} /> Only one Pokémon in the raid party.</p>

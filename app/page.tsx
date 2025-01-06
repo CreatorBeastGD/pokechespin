@@ -11,16 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import SearchBarAttacker from "@/components/search-bar-attacker";
-import { Calculator } from "../lib/calculations";
 import { PoGoAPI } from "../lib/PoGoAPI";
 import CalculateButton from "@/components/calculate-button";
 import CalculateButtonSimulate from "@/components/calculate-button-simulate";
-import { Switch } from "@/components/ui/switch"
-import { Select } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Link } from "lucide-react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -46,11 +42,7 @@ export default function Home() {
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
-  (searchParams.forEach((value, key) => {
-    //console.log(key, value);
-  }
-  ));
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
@@ -136,6 +128,8 @@ export default function Home() {
           const ba = bonusAttacker.split(",");
           ba[0] = weather ? weather : ba[0];
           setBonusAttacker(ba);
+        } if (bonusAttacker === null) {
+          setBonusAttacker([weather ? weather : "EXTREME", false, false, 0]);
         }
         //console.log("BD", bonusDefender);
         if (bonusDefender) {
@@ -245,10 +239,15 @@ export default function Home() {
     });
   };
 
-  const startPage = () => {
-    const newSearchParams = new URLSearchParams();
-    window.history.replaceState({}, "", `${window.location.pathname}`);
-  };
+  function checkBreakpoints(event: React.MouseEvent<HTMLButtonElement>): void {
+    if (defenderStats && attackingPokemon && defendingPokemon && selectedQuickMoveAttacker && selectedChargedMoveAttacker) {
+      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}`;
+      router.push(newUrl);
+    } else {
+      alert("Please select all required fields before checking breakpoints! (Attacker Pokémon, Defender Pokémon, Attacker's Fast Attack, Attacker's Charged Attack)");
+    }
+      
+  }
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -375,11 +374,14 @@ export default function Home() {
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
               </button>
-              <a href="https://pokemongo-damage-calculator.vercel.app" className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+              <a href={"https://pokemongo-damage-calculator.vercel.app"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full">
                   Clean setup
                 </button>
               </a>
+              <button onClick={checkBreakpoints} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                Breakpoints
+              </button>
               </div>
 
               <CardDescription> Damage dealt per fast attack</CardDescription>
@@ -444,7 +446,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.6</p>
+      <p className="bottomtext">Version 1.7</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

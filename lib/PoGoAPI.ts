@@ -310,6 +310,54 @@ export class PoGoAPI {
         return {time, quickAttackUses, chargedAttackUses, graphic};
     }
 
+    static simulateBreakpoints(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, types: any) {
+        if (raidMode !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raidMode);
+        }
+        let energy = 0;
+        let time = 0;
+        let damage = 0;
+        let quickAttackUses = 0;
+        let chargedAttackUses = 0;
+        let turn = 0;
+        let graphic = [];
+        let maxHealth = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
+        if (raidMode !== "normal") {
+            maxHealth = this.getRaidHealth(raidMode);
+        }
+        while (damage <= maxHealth) {
+            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+            time += quickMove.durationMs;
+            energy += quickMove.energyDelta;
+            if (energy > 100) {
+                energy = 100;
+            }
+            quickAttackUses++;
+            turn++;
+            graphic.push({"turn": turn, "type": "quick"});
+            if (damage >= maxHealth) {
+                break;
+            }
+            
+            // WARNING: chargedMove.energy is negative
+            if (energy >= -chargedMove.energyDelta) {
+                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
+                    if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
+                        energy = energy + chargedMove.energyDelta <= 0 ? 0 : energy + chargedMove.energyDelta;
+                        time += chargedMove.durationMs;
+                        chargedAttackUses++;
+                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                        turn++;
+                        graphic.push({"turn": turn, "type": "charged"});
+                    }
+                }
+            }
+        }
+        return {time, quickAttackUses, chargedAttackUses, graphic};
+    }
+
     static async advancedSimulation(
         attacker: any, 
         defender: any,
@@ -475,7 +523,7 @@ export class PoGoAPI {
                 const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
                 //console.log("Final damage: " + finalDamage);
                 defenderDamage += finalDamage
-                attackerEnergy += (finalDamage/2)
+                attackerEnergy += Math.floor(finalDamage / 2);
                 if (attackerEnergy > 100) {
                     attackerEnergy = 100;
                 }

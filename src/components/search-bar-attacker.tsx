@@ -376,8 +376,8 @@ export default function SearchBarAttacker({
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
-                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
-                    <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta}</CardDescription>
+                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power ?? 0}</CardDescription>
+                    <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta ?? 0}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>)
@@ -398,7 +398,7 @@ export default function SearchBarAttacker({
                   <CardContent>
                     <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
                     <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
-                    <CardDescription>Energy cost: {-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta}</CardDescription>
+                    <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta)}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>)

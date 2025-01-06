@@ -149,7 +149,7 @@ export class Calculator {
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
           return Math.floor(
-              0.5 * power * (attackFinal / defenseFinal) * modifiers 
+              0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers 
           ) + 1;
       }
 

@@ -30,7 +30,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        <Suspense fallback={
+          
+        <div className="flex flex-col items-center justify-center space-y-2 mt-4">
+          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+            <p className="text-white text-lg">Loading...</p>
+        </div>
+        }>
+          {children}
+        </Suspense>
         
         <Analytics />
       </body>

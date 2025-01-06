@@ -1,6 +1,6 @@
 {
   "name": "pogocalc",
-  "version": "1.6",
+  "version": "1.7",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,6 +17,7 @@
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "fs": "^0.0.1-security",
+    "html2canvas": "^1.4.1",
     "http-proxy-middleware": "^3.0.3",
     "lucide-react": "^0.469.0",
     "next": "^15.1.2",

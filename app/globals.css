@@ -41,6 +41,15 @@ body {
   animation: jump 1s infinite;
 }
 
+#breakpoints-container {
+  overflow: visible !important;
+}
+
+#breakpoints-container * {
+  transform: none !important;
+  position: static !important;
+}
+
 @keyframes jump {
   0%, 100% {
     transform: translateY(0);
