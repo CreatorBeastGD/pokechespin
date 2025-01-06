@@ -380,7 +380,7 @@ export default function Home() {
                 </button>
               </a>
               <button onClick={checkBreakpoints} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                Breakpoints
+                Breakpoint Check
               </button>
               </div>
 
