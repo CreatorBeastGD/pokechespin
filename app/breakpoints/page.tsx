@@ -210,7 +210,7 @@ const BreakpointsPage = () => {
                     <CardContent>
                         <div className="flex flex-row justify-center space-x-4">
                             <a href={`/${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
-                                <button className="w-full">
+                                <button className="w-full h-full">
                                     Go Back
                                 </button>
                             </a>
