@@ -71,6 +71,11 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
+        
+        if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
+            pokemonId = "HO_OH";
+        }
+        console.log(pokemonId);
         return (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
     }
 
@@ -79,6 +84,10 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByName(name: string, pokemonList: any) {
+        
+        if (name === "HO_OH" || name === "HO-OH") {
+            name = "HO_OH";
+        }
         const list = (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
         const origPokemon = this.getPokemonPBByID(name, pokemonList)[0];
         const listFiltered = list ? (list).filter((pokemon: any) => (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId) || (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId + "_MEGA")) : [];
@@ -207,6 +216,25 @@ export class PoGoAPI {
             move.power, 
             Calculator.getEffectiveAttack(attacker.stats.baseAttack, attackerStats[1] , attackerStats[0]), 
             Calculator.getEffectiveDefense(defender.stats.baseDefense, defenderStats[2], defenderStats[0]),
+            attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
+            effectiveness,
+            move.type,
+            bonusAttacker,
+            bonusDefender
+        );
+    }
+
+    static getDamageEnraged(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, attackEnraged?: boolean) {
+        const raid = raidMode ? raidMode : "normal";
+        if (raid !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raid);
+        }
+        //console.log(types);
+        const effectiveness = this.getEfectiveness(defender, move, types);
+        return Calculator.calculateDamage(
+            move.power, 
+            Calculator.getEffectiveAttack((attacker.stats.baseAttack * (attackEnraged ? 1.81 : 1)) , attackerStats[1] , attackerStats[0]), 
+            Calculator.getEffectiveDefense((defender.stats.baseDefense * (attackEnraged ? 1 : 3)), defenderStats[2], defenderStats[0]),
             attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
             move.type,
@@ -371,9 +399,11 @@ export class PoGoAPI {
         raidMode: any, 
         bonusAttacker: any, 
         bonusDefender: any, 
-        oneMember: any,
+        teamCount: any,
         avoids?: any,
-        ignoreRelobbyTime?: any
+        relobbyTime?: any,
+        enraged?: any,
+        peopleCount?: any,
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
@@ -414,6 +444,17 @@ export class PoGoAPI {
 
         const types = await this.getTypes();
 
+        let hasEnraged = false;
+        let isEnraged = false;
+
+        let purifiedGemsCount = 0;
+
+        let purifiedGemsLimit = 5 * peopleCount;
+
+        let purifiedGemCooldown = -1;
+        
+        let simGoing = true
+
         while (attackerDamage <= defenderHealth) {
             // Attacker can cast a move
             if (attackerDamageStart == -1) {
@@ -430,8 +471,10 @@ export class PoGoAPI {
                         attackerEvades = true;
                         firstDmgReduction = true;
 
-                        attackerDamageStart = -501;
-                        battleLog.push({"turn": (time + 500), "attacker": "attacker", "dodge": true});
+                        attackerDamageStart = -1001;
+                        for (let i = 0 ; i < peopleCount ; i++) {
+                            battleLog.push({"turn": (time + 500), "attacker": "attacker", "dodge": true});
+                        }
                     }
                 }
                 
@@ -456,37 +499,77 @@ export class PoGoAPI {
                         }
                         attackerQuickAttackUses++;
                     }
+
+                    // Attacker has a purified gem and can use it
+                    if (enraged && (purifiedGemsCount < purifiedGemsLimit) && isEnraged && purifiedGemCooldown == -1) {
+                        for (let i = 0 ; i < peopleCount ; i++) {
+                            purifiedGemsCount++;
+                            battleLog.push({"turn": time, "attacker": "attacker", "purifiedgem": true});
+                        }
+                        purifiedGemCooldown = -5001;
+                    }
+
+                    // 8 Purified gems have been used, the defender subdues
+                    if (enraged && purifiedGemsCount >= 8 && isEnraged) {
+                        isEnraged = false;
+                        //console.log("Defender subdues at time " + time);
+                        battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
+                    }
                 }
                 firstDmgReduction = false;
             }
             // Attacker deals damage
             if (attackerMove !== null && attackerDamageStart > -1 && time === attackerDamageStart + attackerMove.damageWindowStartMs) 
             {
-                const projectedDamage = this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
-                attackerDamage += projectedDamage;
-                tdo += projectedDamage;
-                //console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
-                defenderEnergy += Math.floor(projectedDamage / 2);
-                if (defenderEnergy > 100) {
-                    defenderEnergy = 100;
+                for (let i = 0; i < peopleCount && simGoing; i++) {
+                    const projectedDamage = (isEnraged ? 
+                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false) : 
+                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode)
+                    )
+                    
+                    tdo += projectedDamage / peopleCount;
+                    
+                    attackerDamage += projectedDamage;
+                    //console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
+                    defenderEnergy += Math.floor(projectedDamage / 2);
+                    if (defenderEnergy > 100) {
+                        defenderEnergy = 100;
+                    }
+                    battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
+                    // End of simulation
+                    if (attackerDamage >= defenderHealth) {
+                        //console.log("Defender faints at time " + time + ", end of simulation.");
+                        battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
+                        simGoing = false;
+                        break;
+                    }
                 }
-                battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
-                // End of simulation
-                if (attackerDamage >= defenderHealth) {
-                    //console.log("Defender faints at time " + time + ", end of simulation.");
-                    battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
-                    break;
+
+                // Defender is a shadow raid boss and reaches 60% of health, it will enrage
+                if (simGoing && enraged && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.6 && !hasEnraged) {
+                    hasEnraged = true;
+                    isEnraged = true;
+                    defenderHealth = defenderHealth * 1.2;
+                    //console.log("Defender enrages at time " + time);
+                    battleLog.push({"turn": time, "attacker": "defender", "enraged": true});
+                }
+
+                // Defender reaches 15% of health, it subdues
+                if (simGoing && enraged && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.15 && isEnraged) {
+                    isEnraged = false;
+                    //console.log("Defender subdues at time " + time);
+                    battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
                 }
             }
             // Attacker has finished casting its move
-            if (attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
+            if (simGoing && attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
                 attackerDamageStart = -1;
                 attackerMove = null;
                 //console.log("Attacker has finished casting its move at time " + time);
             }
             
             // Defender can cast a move
-            if (defenderDamageStart == -1) {
+            if (simGoing && defenderDamageStart == -1) {
                 defenderDamageStart = time;
                 // Defender can select its charged move
                 if (defenderEnergy >= -chargedMoveDefender.energyDelta) {
@@ -517,19 +600,26 @@ export class PoGoAPI {
                 }
             }
             // Defender deals damage
-            if (defenderDamageStart > -1 && 
+            if (simGoing && defenderDamageStart > -1 && 
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
-                const projectedDamageDefender = this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker);
+                const projectedDamageDefender = (isEnraged ?
+                    this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, raidMode, true) :
+                    this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, raidMode)
+                )
                 const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
                 //console.log("Final damage: " + finalDamage);
+                
                 defenderDamage += finalDamage
                 attackerEnergy += Math.floor(finalDamage / 2);
-                if (attackerEnergy > 100) {
-                    attackerEnergy = 100;
-                }
-                if (defenderDamage != 0) {
-                    battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamage, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
+                for (let i = 0 ; i < peopleCount ; i++) {
+                    
+                    if (attackerEnergy > 100) {
+                        attackerEnergy = 100;
+                    }
+                    if (defenderDamage != 0) {
+                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamage, "energy": defenderEnergy, "stackedDamage": defenderDamage, "health": attackerHealth});
+                    }
                 }
                 //console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
                 
@@ -542,11 +632,11 @@ export class PoGoAPI {
                     defenderDamage = 0;
                     attackerFaint = true
                     // Attacker has a 1.5 second delay before the next attacker is sent.
-                    // If the attacker faints 6 times, the attacker will have a 10 second delay before the next attacker is sent.
-                    if (oneMember ? true : (attackerFaints % 6) == 0) {
+                    // If the attacker faints teamCount times, the attacker will have a 10 second delay before the next attacker is sent.
+                    if ((attackerFaints % teamCount) == 0) {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": true, "tdo": tdo});
                         //console.log("Attacker has a 8 second delay before the next attacker is sent.");
-                        attackerDamageStart = ignoreRelobbyTime ? -1001 : -8001;
+                        attackerDamageStart = (relobbyTime * -1000) - 1;
                     } else {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo});
                         attackerDamageStart = -1001;
@@ -555,7 +645,7 @@ export class PoGoAPI {
                 }
             }
             // Defender has finished casting its move
-            if (defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
+            if (simGoing && defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
                 defenderDamageStart = (Math.floor(Math.random() * 3) * -500) - 1501;
                 defenderMove = null;
 
@@ -566,7 +656,13 @@ export class PoGoAPI {
             if (attackerDamageStart < -1) {
                 attackerDamageStart++;
             }
+            if (purifiedGemCooldown < -1) {
+                purifiedGemCooldown++;
+            }
             time++;
+            if (!simGoing) {
+                break;
+            }
         }
 
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage};

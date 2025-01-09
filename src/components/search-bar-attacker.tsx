@@ -150,8 +150,13 @@ export default function SearchBarAttacker({
     handleChargedMoveSelect("", null);
     setSelectedForm("normal");
     setSuggestions([])
-    const searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
+    console.log(searchBarNames)
+    let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
+    console.log(searchParam)
     try {
+      if (searchParam === "HO_OH" || searchParam === "HO-OH") {
+        searchParam = "HO_OH";
+      }
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);

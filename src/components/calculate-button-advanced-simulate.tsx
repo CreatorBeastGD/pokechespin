@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { CardHeader, Card, CardTitle, CardContent, CardFooter, CardDescription } from "./ui/card";
 import { Switch } from "./ui/switch";
 import { Progress } from "./ui/progress";
+import { Slider } from "./ui/slider";
 
 export default function CalculateButtonSimulateAdvanced({
   attacker,
@@ -40,12 +41,14 @@ export default function CalculateButtonSimulateAdvanced({
   const [cau, setCau] = useState<any | null>({ attackerChargedAttackUses: 0, defenderChargedAttackUses: 0 });
   const [graphic, setGraphic] = useState<any | null>(null);
   const [faints, setFaints] = useState<any | null>(null);
-  const [oneMember, setOneMember] = useState<boolean>(false);
-  const [ignoreRelobby, setIgnoreRelobby] = useState<boolean>(false);
+  const [teamCount, setTeamCount] = useState<number>(6);
+  const [relobbyTime, setRelobbyTime] = useState<number>(8);
   const [avoidCharged, setAvoidCharged] = useState<boolean>(false);
   const [attackerDamage, setAttackerDamage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [visibleEntries, setVisibleEntries] = useState(50);
+  const [enraged, setEnraged] = useState<boolean>(false);
+  const [peopleCount, setPeopleCount] = useState<number>(1);
 
   const loadMoreEntries = () => {
     setVisibleEntries(prev => prev + 50);
@@ -60,7 +63,7 @@ export default function CalculateButtonSimulateAdvanced({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, oneMember, quickMoveDefender, chargedMoveDefender]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, teamCount, quickMoveDefender, chargedMoveDefender]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -91,7 +94,8 @@ export default function CalculateButtonSimulateAdvanced({
     // Both should have the same weather boost.
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
-    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, oneMember, avoidCharged, ignoreRelobby);
+    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
+      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, enraged, peopleCount);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -107,16 +111,18 @@ export default function CalculateButtonSimulateAdvanced({
   }
 
   useEffect(() => {
-    setOneMember(oneMember);
-    setIgnoreRelobby(ignoreRelobby);
+    setTeamCount(teamCount);
+    setRelobbyTime(relobbyTime);
     setAvoidCharged(avoidCharged);
+    setPeopleCount(peopleCount);
+    setEnraged(enraged);
     
     setTime(0);
     setQau(0);
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [oneMember, ignoreRelobby, avoidCharged]);
+  }, [teamCount, relobbyTime, avoidCharged, peopleCount, enraged]);
 
   useEffect(() => {
     setTime(0);
@@ -128,7 +134,7 @@ export default function CalculateButtonSimulateAdvanced({
 
   const getRequiredPeople = (raidMode: string) => {
     
-    return ( ((time ?? 0) / 1000) / getRaidTime(raidMode)).toFixed(2);
+    return (( ((time ?? 0) / 1000) / getRaidTime(raidMode))*peopleCount).toFixed(2);
   }
 
   const getRaidTime = (raidMode: string) => {
@@ -141,15 +147,32 @@ export default function CalculateButtonSimulateAdvanced({
     return raidTime;
   }
 
+  function handleRelobbyTime(value: number[]): void {
+    setRelobbyTime(value[0]);
+  }
+
+  function handleTeamCount(value: number[]): void {
+    setTeamCount(value[0]);
+  }
+
+  function handlePeopleCount(value: number[]): void {
+    setPeopleCount(value[0]);
+  }
+
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
       <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setOneMember)} checked={oneMember} /> Only one Pokémon in the raid party.</p>
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setIgnoreRelobby)} checked={ignoreRelobby} /> Ignore relobby time. (8s -{">"} 1s)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/>Defender Pokémon can enrage.</p>
+        <p>Set the number of Pokémon in the team: ({teamCount})</p>
+        <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[relobbyTime]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <p>Set custom relobby time ({relobbyTime} seconds):</p>
+        <Slider onValueChange={(value) => handleRelobbyTime(value)} defaultValue={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <p>Set number of teams: {peopleCount} </p>
+        <Slider onValueChange={(value) => handlePeopleCount(value)} defaultValue={[peopleCount]} max={20} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
       </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
@@ -169,26 +192,30 @@ export default function CalculateButtonSimulateAdvanced({
             <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
           </p>
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times, dealing an average TDO (Total Damage Output) of {(attackerDamage / (faints === 0 ? 1 : faints+1)).toFixed(2)} damage to the Raid Boss and an average DPS of {(attackerDamage / ((time ? time : 0) / 1000)).toFixed(2)}.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times (per team), dealing an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
           </p>
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time within given conditions. ({getRaidTime(raidMode)} seconds)
+            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time within given conditions. ({getRaidTime(raidMode)} seconds)
           </p>)}
           
           <p className="text-sm text-slate-700 italic">
-            This simulation takes in consideration a team of {oneMember ? "one" : "six"} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}, not avoiding, and casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
+            This simulation takes in consideration a team of {teamCount} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)} casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
           </p>
           <p className="text-sm text-slate-700 italic">
-            The simulation does not take into consideration the use of dodges or any other mechanic that might affect the outcome of the battle. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {ignoreRelobby === true ? "1 second (ignored relobby time)" : "8 seconds"} in this simulation.
+            The simulation  {avoidCharged ? "takes" : "does not take"}  into consideration the use of dodges. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {relobbyTime} seconds in this simulation.
           </p>
           {avoidCharged && (
             <p className="text-sm text-slate-700 italic">
               The simulation takes into consideration that the attacker will dodge the next Charged Attack if it doesn't faint. This will reduce the damage taken by 75%.
             </p>
-          )} 
-
+          )}
+          {enraged && (
+            <p className="text-sm text-slate-700 italic">
+              The simulation takes into consideration that the defender Pokémon can enrage. 8 purified gems need to be used in order to subdue an enraged Pokémon. {peopleCount === 1 ? "Using 8 purified gems while raiding solo is not possible (MAX. 5)" : ""}
+            </p>
+            )}
         {graphic && (
           <Card className="mt-4">
             <CardHeader>
@@ -219,8 +246,17 @@ export default function CalculateButtonSimulateAdvanced({
                           <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</p>
                         </div>
                         <div className="flex flex-col space-y-1">
-                          {(item.relobby === true || item.relobby === false) ? (<p className="text-sm text-slate-700">{(item.relobby ? "All party fainted. Relobby is needed." : (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : (<></>)}
-                          {item.dodge ? (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : (<></>)}
+                          {(item.relobby === true || item.relobby === false) ? 
+                            (<p className="text-sm text-slate-700">
+                              {(item.relobby ? "All party fainted. Relobby is needed." : 
+                            (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : 
+                            (<></>)}
+                          {item.dodge ? 
+                            (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
+                            (item.purifiedgem ? "Purified Gem used." : 
+                              item.subdued ? "Defender Pokémon Subdued." :
+                               item.enraged ? "Defender Pokémon Enraged." : ""
+                            )}
                           <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                         </div>
                       </div>
