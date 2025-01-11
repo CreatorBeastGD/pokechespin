@@ -370,13 +370,13 @@ export default function Home() {
 
               </select>
 
-              <div className="flex flex-row items-center justify-center space-x-4">
+              <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
               </button>
               <a href={"https://pokemongo-damage-calculator.vercel.app"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full">
-                  Clean setup
+                <button className="w-full ">
+                  Clean this setup
                 </button>
               </a>
               <button onClick={checkBreakpoints} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">

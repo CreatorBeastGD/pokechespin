@@ -8,6 +8,7 @@ import { CardHeader, Card, CardTitle, CardContent, CardFooter, CardDescription }
 import { Switch } from "./ui/switch";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function CalculateButtonSimulateAdvanced({
   attacker,
@@ -36,19 +37,53 @@ export default function CalculateButtonSimulateAdvanced({
   bonusDefender: any;
   allEnglishText: any;
 }) {
+  
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [time, setTime] = useState<number>(0);
   const [qau, setQau] = useState<any | null>({ attackerQuickAttackUses: 0, defenderQuickAttackUses: 0 });
   const [cau, setCau] = useState<any | null>({ attackerChargedAttackUses: 0, defenderChargedAttackUses: 0 });
   const [graphic, setGraphic] = useState<any | null>(null);
   const [faints, setFaints] = useState<any | null>(null);
-  const [teamCount, setTeamCount] = useState<number>(6);
-  const [relobbyTime, setRelobbyTime] = useState<number>(8);
-  const [avoidCharged, setAvoidCharged] = useState<boolean>(false);
+  const [teamCount, setTeamCount] = useState<number>(parseInt(searchParams.get("pokemon_team_number") ?? "6"));
+  const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
+  const [avoidCharged, setAvoidCharged] = useState<boolean>(searchParams.get("can_dodge") === "true");
   const [attackerDamage, setAttackerDamage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [visibleEntries, setVisibleEntries] = useState(50);
-  const [enraged, setEnraged] = useState<boolean>(false);
-  const [peopleCount, setPeopleCount] = useState<number>(1);
+  const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
+  const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
+
+  
+  useEffect(() => {
+    const loadParams = () => {
+      const dodge = searchParams.get("can_dodge");
+      const enraged = searchParams.get("enraged");
+      const pokemon_team_number = searchParams.get("pokemon_team_number");
+      const relobby_time = searchParams.get("relobby_time");
+      const teams_number = searchParams.get("teams_number");
+
+      if (dodge) {
+        setAvoidCharged(dodge === "true");
+      }
+      if (enraged) {
+        setEnraged(enraged === "true");
+      }
+      if (pokemon_team_number) {
+        setTeamCount(parseInt(pokemon_team_number));
+      }
+      if (relobby_time) {
+        setRelobbyTime(parseInt(relobby_time));
+      }
+      if (teams_number) {
+        setPeopleCount(parseInt(teams_number));
+      }
+    }
+
+    loadParams();
+  }, []);
 
   const loadMoreEntries = () => {
     setVisibleEntries(prev => prev + 50);
@@ -63,7 +98,8 @@ export default function CalculateButtonSimulateAdvanced({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, teamCount, quickMoveDefender, chargedMoveDefender]);
+
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, quickMoveDefender, chargedMoveDefender]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -111,11 +147,20 @@ export default function CalculateButtonSimulateAdvanced({
   }
 
   useEffect(() => {
+
     setTeamCount(teamCount);
     setRelobbyTime(relobbyTime);
     setAvoidCharged(avoidCharged);
     setPeopleCount(peopleCount);
     setEnraged(enraged);
+    
+    const sp = new URLSearchParams(searchParams.toString());
+    sp.set("can_dodge", avoidCharged.toString());
+    sp.set("enraged", enraged.toString());
+    sp.set("pokemon_team_number", teamCount.toString());
+    sp.set("relobby_time", relobbyTime.toString());
+    sp.set("teams_number", peopleCount.toString());
+    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
     setQau(0);
@@ -168,7 +213,7 @@ export default function CalculateButtonSimulateAdvanced({
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/>Defender Pokémon can enrage.</p>
         <p>Set the number of Pokémon in the team: ({teamCount})</p>
-        <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[relobbyTime]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set custom relobby time ({relobbyTime} seconds):</p>
         <Slider onValueChange={(value) => handleRelobbyTime(value)} defaultValue={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set number of teams: {peopleCount} </p>
