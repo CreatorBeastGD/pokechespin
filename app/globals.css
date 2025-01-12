@@ -50,6 +50,10 @@ body {
   position: static !important;
 }
 
+.green {
+  @apply bg-green-500;
+}
+
 @keyframes jump {
   0%, 100% {
     transform: translateY(0);

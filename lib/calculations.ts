@@ -103,7 +103,13 @@ export class Calculator {
         50: 0.84029999,
         50.5: 0.84279999,
         51: 0.84529999,
-        100: 1.0
+        100: 1.0,
+        8001: 0.15,
+        8002: 0.38,
+        8003: 0.5,
+        8004: 0.6,
+        8005: 0.79,
+        8006: 0.85,
     };
 
       private static RAID_BOSS_HP: { [raidMode: string]: number } = {
@@ -115,7 +121,13 @@ export class Calculator {
         "raid-mega": 9000,
         "raid-mega-leg": 22500,
         "raid-elite": 20000,
-        "raid-primal": 22500
+        "raid-primal": 22500,
+        "raid-t1-dmax": 1700,
+        "raid-t2-dmax": 5000,
+        "raid-t3-dmax": 10000,
+        "raid-t4-dmax": 20000,
+        "raid-t5-dmax": 60000,
+        "raid-t6-gmax": 90000,
       }
 
       static getRaidBossHP(raidMode: string) {

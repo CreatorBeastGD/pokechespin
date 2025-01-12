@@ -257,6 +257,18 @@ export class PoGoAPI {
             convertedStats = [40, 15, 15, 20000];
         } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
             convertedStats = [40, 15, 15, 22500];
+        } else if (raidMode === "raid-t1-dmax") {
+            convertedStats = [8001, 15, 15, 1700];
+        } else if (raidMode === "raid-t2-dmax") {
+            convertedStats = [8002, 15, 15, 5000];
+        } else if (raidMode === "raid-t3-dmax") {
+            convertedStats = [8003, 15, 15, 10000];
+        } else if (raidMode === "raid-t4-dmax") {
+            convertedStats = [8004, 15, 15, 20000];
+        } else if (raidMode === "raid-t5-dmax") {
+            convertedStats = [8005, 15, 15, 60000];
+        } else if (raidMode === "raid-t6-gmax") {
+            convertedStats = [8006, 15, 15, 90000];
         } else {
             convertedStats = defenderStats;
         }
