@@ -81,7 +81,7 @@ export default function SearchBarDefenderDynamax({
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
       //console.log("Initial values loaded");
     }
-  }, []); // Agrega `initialValues` como dependencia
+  }, [initialValues]); // Agrega `initialValues` como dependencia
 
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
@@ -97,14 +97,14 @@ export default function SearchBarDefenderDynamax({
     setStats(stats);
     onChangedStats(stats, member, number);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    newSearchParams.set("defender_stats", stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
   const handleBonusSelect = (bonus: any) => {
     setSelectedBonuses(bonus);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot == 1 ? "attacker_bonuses" : "defender_bonuses", bonus.join(","));
+    newSearchParams.set("defender_bonuses", bonus.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
   
@@ -131,7 +131,7 @@ export default function SearchBarDefenderDynamax({
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      newSearchParams.set("defender", response?.pokemonId);
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -155,9 +155,9 @@ export default function SearchBarDefenderDynamax({
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");  
+      newSearchParams.set("defender", response?.pokemonId);
+      newSearchParams.delete("defender_fast_attack");
+      newSearchParams.delete("defender_cinematic_attack");  
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -174,9 +174,9 @@ export default function SearchBarDefenderDynamax({
       setPokemonData(response);
       onSelect(response, member, number);
       const newSearchParams = new URLSearchParams(searchParams.toString());    
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
+      newSearchParams.set("defender", response?.pokemonId);
+      newSearchParams.delete("defender_fast_attack");
+      newSearchParams.delete("defender_cinematic_attack");
       
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
@@ -214,15 +214,9 @@ export default function SearchBarDefenderDynamax({
     onChangedStats(stats, member, number);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    newSearchParams.set("defender_stats", stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [stats]);
-
-  useEffect(() => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", selectedBonuses.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [selectedBonuses]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

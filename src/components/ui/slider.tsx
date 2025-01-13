@@ -18,10 +18,14 @@ const Slider = React.forwardRef<
     <SliderPrimitive.Track className="relative h-3 w-full grow overflow-hidden rounded-full bg-primary/20">
       
       <SliderPrimitive.Range className={"absolute h-full " + (props.color ? props.color : "bg-yellow-600") + " rounded-full"} />
+      {props.disabled !== undefined ? props.disabled == true ? (<div className="absolute inset-0 flex items-center justify-between">
+        <div className="absolute left-1/2 h-full w-0.5 bg-gray-400"></div>
+      </div>) : null : (
       <div className="absolute inset-0 flex items-center justify-between">
         <div className="absolute left-1/3 h-full w-0.5 bg-gray-400"></div>
         <div className="absolute left-2/3 h-full w-0.5 bg-gray-400"></div>
       </div>
+      )}
     </SliderPrimitive.Track>
   </SliderPrimitive.Root>
 ));

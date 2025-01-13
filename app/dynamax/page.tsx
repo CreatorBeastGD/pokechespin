@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Card,
@@ -20,17 +20,21 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SearchBarAttackerDynamax from "@/components/search-bar-attacker-dynamax";
 import SearchBarDefenderDynamax from "@/components/search-bar-defender-dynamax";
+import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-button-advanced-dynamax";
+import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(4).fill(Array(3).fill(null)));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
+  const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
   const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
   const [attackerStats, setAttackerStats] = useState<any>(Array(4).fill(Array(3).fill([50, 15, 15, 15])));
+  const [maxMoves, setMaxMoves] = useState<any|null>(Array(4).fill(Array(3).fill([1,0,0])));
   const [defenderStats, setDefenderStats] = useState<any | null>([40, 15, 15, 15]);
-  const [raidMode, setRaidMode] = useState<any>("normal");
+  const [raidMode, setRaidMode] = useState<any>("raid-t1-dmax");
   const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(4).fill(Array(3).fill(["EXTREME", false, false, 0])));
   const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
@@ -41,11 +45,11 @@ export default function Home() {
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
 
+
   const [selectedMember, setSelectedMember] = useState<number>(1);
   const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(1);
 
-
-  const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -53,7 +57,6 @@ export default function Home() {
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
-      setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
       setAllPokemonPB(pokemonlist);
       //console.log("Fetched all Pokémon from PokeBattler API");
@@ -75,13 +78,77 @@ export default function Home() {
       setAllEnglishText(text);
       //console.log(text);
       //console.log("Fetched all English text from PokeBattler API");
-
       
       setAllDataLoaded(true);
     };
     fetchAllPokemonPB();
+
+
     
   }, []);
+
+  useEffect(() => {
+    if (allDataLoaded) {
+      // Fetch data from params
+      const newAttackingPokemon = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => attackingPokemon[i][j]));
+      const newQuickMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedQuickMoveAttacker[i][j]));
+      const newChargedMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedChargedMoveAttacker[i][j]));
+      const newStats = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => attackerStats[i][j]));
+      const newMaxMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
+  
+      for (let i = 1; i <= 4; i++) {
+        for (let j = 1; j <= 3; j++) {
+          const attacker = searchParams.get(`attacker${i}${j}`);
+          const quickMove = searchParams.get(`attacker_fast_attack${i}${j}`);
+          const chargedMove = searchParams.get(`attacker_cinematic_attack${i}${j}`);
+          const stats = searchParams.get(`attacker_stats${i}${j}`);
+          const maxMoveStats = searchParams.get(`attacker_max_moves${i}${j}`);
+  
+          if (attacker !== null) {
+            newAttackingPokemon[i - 1][j - 1] = PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0];
+          }
+          if (quickMove !== null) {
+            newQuickMoveList[i - 1][j - 1] = PoGoAPI.getMovePBByID(quickMove, allMoves);
+          }
+          if (chargedMove !== null) {
+            newChargedMoveList[i - 1][j - 1] = PoGoAPI.getMovePBByID(chargedMove, allMoves);
+          }
+          if (stats !== null) {
+            newStats[i - 1][j - 1] = stats.split(",").map((stat: string) => parseInt(stat));
+          }
+          if (maxMoveStats !== null) {
+            newMaxMoveList[i - 1][j - 1] = maxMoveStats.split(",").map((stat: string) => parseInt(stat));
+          }
+        }
+      }
+  
+      setAttackingPokemon(newAttackingPokemon);
+      setSelectedQuickMoveAttacker(newQuickMoveList);
+      setSelectedChargedMoveAttacker(newChargedMoveList);
+      setAttackerStats(newStats);
+      setMaxMoves(newMaxMoveList);
+  
+      const defender = searchParams.get("defender");
+      const quickMoveDefender = searchParams.get("defender_fast_attack");
+      const chargedMoveDefender = searchParams.get("defender_cinematic_attack");
+      const defenderStats = searchParams.get("defender_stats");
+  
+      if (defender !== null) {
+        handleDefenderSelect(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0]);
+      }
+      if (quickMoveDefender !== null) {
+        handleQuickMoveSelectDefender(quickMoveDefender, PoGoAPI.getMovePBByID(quickMoveDefender, allMoves));
+      }
+      if (chargedMoveDefender !== null) {
+        handleChargedMoveSelectDefender(chargedMoveDefender, PoGoAPI.getMovePBByID(chargedMoveDefender, allMoves));
+      }
+      if (defenderStats !== null) {
+        handleChangedStatsDefender(defenderStats.split(",").map((stat: string) => parseInt(stat)));
+      }
+  
+      setLoaded(true);
+    }
+  }, [allDataLoaded]);
 
   const handleAttackerSelect = (pokemon: any, member: any, slot: any) => {
     if (pokemon === null) {
@@ -91,24 +158,34 @@ export default function Home() {
         ) : memberArray
       );
       setAttackingPokemon(newAttackingPokemon);
+
       const newQuickMoveList = selectedQuickMoveAttacker.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
           slotIndex === slot - 1 ? null : m
         ) : memberArray
       );
       setSelectedQuickMoveAttacker(newQuickMoveList);
+
       const newChargedMoveList = selectedChargedMoveAttacker.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
           slotIndex === slot - 1 ? null : m
         ) : memberArray
       );
       setSelectedChargedMoveAttacker(newChargedMoveList);
+
       const newStats = attackerStats.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((stat: any, slotIndex: number) =>
           slotIndex === slot - 1 ? [50, 15, 15, 15] : stat
         ) : memberArray
       );
       setAttackerStats(newStats);
+
+      const newMaxMoveList = maxMoves.map((memberArray: any[], index: number) =>
+        index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
+          slotIndex === slot - 1 ? [1,0,0] : m
+        ) : memberArray
+      );
+      setMaxMoves(newMaxMoveList);
     }
     if (pokemon !== undefined) {
       const newAttackingPokemon = attackingPokemon.map((memberArray: any[], index: number) => 
@@ -121,17 +198,24 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.log(attackingPokemon)
-    console.log(attackingPokemon[0][0]?.pokemonId);
+    //console.log(attackingPokemon)
   }, [attackingPokemon]);
 
   useEffect(() => {
-    console.log(selectedQuickMoveAttacker);
+    //console.log(selectedQuickMoveAttacker);
   }, [selectedQuickMoveAttacker]);
 
   useEffect(() => {
-    console.log(selectedChargedMoveAttacker);
+    //(selectedChargedMoveAttacker);
   }, [selectedChargedMoveAttacker]);
+
+  useEffect(() => {
+    //console.log(attackerStats);
+  }, [attackerStats]);
+
+  useEffect(() => {
+    //console.log(maxMoves)
+  }, [maxMoves]);
 
   const handleDefenderSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
@@ -163,6 +247,26 @@ export default function Home() {
     }
   };
 
+  const handleChangeMaxMoveStats = (maxMoveStats: any, member: any, slot: any) => {
+    const newStats = maxMoves.map((memberArray: any[], index: number) =>
+      index === member - 1 ? memberArray.map((stat: any, slotIndex: number) =>
+        slotIndex === slot - 1 ? maxMoveStats : stat
+      ) : memberArray
+    );
+    setMaxMoves(newStats);
+  }
+
+  useEffect(() => {
+    if (selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null && selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== undefined) {
+      const newMaxMoveList = selectedMaxMoveAttacker.map((memberArray: any[], index: number) =>
+        index === selectedMember - 1 ? memberArray.map((m: any, slotIndex: number) =>
+          slotIndex === selectedPokemonSlot - 1 ? PoGoAPI.getDynamaxAttack(attackingPokemon[selectedMember-1][selectedPokemonSlot-1].pokemonId, selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1].type, allMoves, maxMoves[selectedMember-1][selectedPokemonSlot-1][0]) : m
+        ) : memberArray
+      );
+      setSelectedMaxMoveAttacker(newMaxMoveList);
+    }
+  }, [maxMoves]);
+
   const handleQuickMoveSelectDefender = (moveId: string, move: any) => {
     setSelectedQuickMoveDefender(move);
   };
@@ -192,9 +296,6 @@ export default function Home() {
     setBonusDefender(bonus);
   };
 
-  useEffect(() => {
-    console.log("Selected member: ", selectedMember);
-  }, [selectedMember]);
 
   const handleBonusChange = (value: string) => {
     setBonusAttacker([value, bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]]);
@@ -225,8 +326,6 @@ export default function Home() {
       return "Tier 5 Dynamax";
     } else if (raidMode === "raid-t6-gmax") {
       return "Gigantamax";
-    } else {
-      return "Normal";
     }
   }
 
@@ -246,8 +345,23 @@ export default function Home() {
     } else {
       alert("Please select all required fields before checking breakpoints! (Attacker Pokémon, Defender Pokémon, Attacker's Fast Attack, Attacker's Charged Attack)");
     }
-      
   }
+
+  const handleBarChange = (bar: string, value: number) => {
+    if (bar === "member") {
+      setSelectedMember(value);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("member", value.toString());
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    } else if (bar === "slot") {
+      setSelectedPokemonSlot(value);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("slot", value.toString());
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+  }
+
+  //console.log(maxMoves);
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -267,21 +381,21 @@ export default function Home() {
             <CardDescription>Set an attacking Team</CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
           </CardHeader>
-          {(pokemonList && searchBarNames && allMoves) ? (
+          {(pokemonList && searchBarNames && allMoves && loaded) ? (
           <CardContent>
             <Tabs defaultValue="member-1" className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
-                <TabsTrigger value="member-1" onClick={() => setSelectedMember(1)}>M1</TabsTrigger>
-                <TabsTrigger value="member-2" onClick={() => setSelectedMember(2)}>M2</TabsTrigger>
-                <TabsTrigger value="member-3" onClick={() => setSelectedMember(3)}>M3</TabsTrigger>
-                <TabsTrigger value="member-4" onClick={() => setSelectedMember(4)}>M4</TabsTrigger>
+                <TabsTrigger value="member-1" onClick={() => handleBarChange("member", 1)}>M1</TabsTrigger>
+                <TabsTrigger value="member-2" onClick={() => handleBarChange("member", 2)}>M2</TabsTrigger>
+                <TabsTrigger value="member-3" onClick={() => handleBarChange("member", 3)}>M3</TabsTrigger>
+                <TabsTrigger value="member-4" onClick={() => handleBarChange("member", 4)}>M4</TabsTrigger>
               </TabsList>
             </Tabs>
             <Tabs defaultValue="pokemon-1" className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
-                <TabsTrigger value="pokemon-1" className={attackingPokemon[selectedMember-1][0] !== null ? selectedChargedMoveAttacker[selectedMember-1][0] !== null && selectedQuickMoveAttacker[selectedMember-1][0] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => setSelectedPokemonSlot(1)}>P1</TabsTrigger>
-                <TabsTrigger value="pokemon-2" className={attackingPokemon[selectedMember-1][1] !== null ? selectedChargedMoveAttacker[selectedMember-1][1] !== null && selectedQuickMoveAttacker[selectedMember-1][1] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => setSelectedPokemonSlot(2)}>P2</TabsTrigger>
-                <TabsTrigger value="pokemon-3" className={attackingPokemon[selectedMember-1][2] !== null ? selectedChargedMoveAttacker[selectedMember-1][2] !== null && selectedQuickMoveAttacker[selectedMember-1][2] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => setSelectedPokemonSlot(3)}>P3</TabsTrigger>
+                <TabsTrigger value="pokemon-1" className={attackingPokemon[selectedMember-1][0] !== null ? selectedChargedMoveAttacker[selectedMember-1][0] !== null && selectedQuickMoveAttacker[selectedMember-1][0] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P1</TabsTrigger>
+                <TabsTrigger value="pokemon-2" className={attackingPokemon[selectedMember-1][1] !== null ? selectedChargedMoveAttacker[selectedMember-1][1] !== null && selectedQuickMoveAttacker[selectedMember-1][1] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P2</TabsTrigger>
+                <TabsTrigger value="pokemon-3" className={attackingPokemon[selectedMember-1][2] !== null ? selectedChargedMoveAttacker[selectedMember-1][2] !== null && selectedQuickMoveAttacker[selectedMember-1][2] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P3</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -304,16 +418,17 @@ export default function Home() {
                       onChargedMoveSelect={handleChargedMoveSelectAttacker}
                       onChangedStats={handleChangedStatsAttacker}
                       onClickedClearButton={() => handleAttackerSelect(null, memberIndex + 1, slotIndex + 1)}
+                      onChangedMaxMoveStats={handleChangeMaxMoveStats}
                       slot={slotIndex + 1}
                       paramsLoaded={paramsLoaded}
                       member={memberIndex + 1}
                       number={slotIndex + 1}
                       initialValues={{
-                        
                         attacker: attackingPokemon[memberIndex][slotIndex],
                         quickMove: selectedQuickMoveAttacker[memberIndex][slotIndex],
                         chargedMove: selectedChargedMoveAttacker[memberIndex][slotIndex],
                         attackerStats: attackerStats[memberIndex][slotIndex],
+                        maxMoves: maxMoves[memberIndex][slotIndex]
                       }
                       }
                     />
@@ -336,7 +451,7 @@ export default function Home() {
             <CardDescription>Set a defending Pokémon</CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
           </CardHeader>
-          {(pokemonList && searchBarNames && allMoves) ? (
+          {(pokemonList && searchBarNames && allMoves && loaded) ? (
             <CardContent>
             <SearchBarDefenderDynamax
               allEnglishText={allEnglishText}
@@ -356,7 +471,7 @@ export default function Home() {
                   quickMove: selectedQuickMoveDefender,
                   chargedMove: selectedChargedMoveDefender,
                   attackerStats: defenderStats,
-                  bonusAttacker: bonusDefender
+                  bonusAttacker: bonusDefender,
                 }
               }
               paramsLoaded={paramsLoaded}
@@ -432,28 +547,24 @@ export default function Home() {
               />
             </CardContent>
             <CardContent>
-            <CardDescription> Advanced simulation (random)</CardDescription>
-            
-            <CardDescription className="italic">To be able to run a simulation, every selectable Pokémon on the Attacking Team should be correctly configured (button will be displayed in green if that case is given.)</CardDescription>
-              <CalculateButtonSimulateAdvanced 
+              <CardDescription> Damage dealt per MAX attack</CardDescription>
+              <CalculateButtonDynamax
                 allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
+                attacker={attackingPokemon[selectedMember-1][selectedPokemonSlot-1]} 
                 defender={defendingPokemon} 
-                quickMove={selectedQuickMoveAttacker} 
-                chargedMove={selectedChargedMoveAttacker}
-                quickMoveDefender={selectedQuickMoveDefender}
-                chargedMoveDefender={selectedChargedMoveDefender}
-                attackerStats={attackerStats}
+                move={selectedMaxMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                raidMode={raidMode}
-                bonusAttacker={bonusAttacker}
+                bonusAttacker={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
-                />
+                raidMode={raidMode}
+                maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
+              />
             </CardContent>
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.8.1</p>
+      <p className="bottomtext">Version 1.9</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
@@ -464,20 +575,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-/*
-
-<p className="italic text-slate-700 text-sm">Weather: </p>
-            <select onChange={(e) => handleBonusChange(e.target.value)} value={bonusAttacker[0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-              <option value="EXTREME">Extreme</option>
-              <option value="SUNNY">Sunny</option>
-              <option value="WINDY">Windy</option>
-              <option value="RAINY">Rainy</option>
-              <option value="FOG">Fog</option>
-              <option value="PARTLY_CLOUDY">Partly Cloudy</option>
-              <option value="CLOUDY">Cloudy</option>
-              <option value="SNOW">Snow</option>
-            </select>
-
-*/

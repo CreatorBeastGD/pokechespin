@@ -23,6 +23,7 @@ interface SearchBarAttackerProps {
   onChargedMoveSelect: (moveId: string, move: any, member: any, slot: any) => void;
   onChangedStats: (stats: any, member: any, slot: any) => void;
   onClickedClearButton: (member:any, slot: any) => void;
+  onChangedMaxMoveStats: (maxMoves: any, member: any, slot: any) => void;
   pokemonList: any;
   searchBarNames: any;
   allMoves: any;
@@ -42,6 +43,7 @@ export default function SearchBarAttackerDynamax({
     onChargedMoveSelect, 
     onChangedStats,
     onClickedClearButton,
+    onChangedMaxMoveStats,
     raidMode, 
     pokemonList, 
     searchBarNames, 
@@ -66,6 +68,7 @@ export default function SearchBarAttackerDynamax({
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
+  const [maxMoves, setMaxMoves] = useState<any>([1,0,0]);
   
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -81,32 +84,39 @@ export default function SearchBarAttackerDynamax({
       if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
-      //console.log("Initial values loaded");
-    }
+      if (initialValues.maxMoves) handleMaxMovesSelect(initialValues.maxMoves);
+    } 
   }, []); // Agrega `initialValues` como dependencia
+
+  const handleMaxMovesSelect = (maxMoves: any) => {
+    setMaxMoves(maxMoves);
+    onChangedMaxMoveStats(maxMoves, member, number);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
 
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, member, number);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
   const handleStatsSelect = (stats: any) => {
     setStats(stats);
     onChangedStats(stats, member, number);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }
-
-  const handleBonusSelect = (bonus: any) => {
-    setSelectedBonuses(bonus);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot == 1 ? "attacker_bonuses" : "defender_bonuses", bonus.join(","));
+    newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
   
@@ -133,7 +143,7 @@ export default function SearchBarAttackerDynamax({
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -147,9 +157,9 @@ export default function SearchBarAttackerDynamax({
     handleChargedMoveSelect("", null);
     setSelectedForm("normal");
     setSuggestions([])
-    console.log(searchBarNames)
+    //console.log(searchBarNames)
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
-    console.log(searchParam)
+    //console.log(searchParam)
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
@@ -157,9 +167,9 @@ export default function SearchBarAttackerDynamax({
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");  
+      newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
+      newSearchParams.delete("attacker_fast_attack"+member+""+number);
+      newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
       setLoading(false);
@@ -176,9 +186,9 @@ export default function SearchBarAttackerDynamax({
       setPokemonData(response);
       onSelect(response, member, number);
       const newSearchParams = new URLSearchParams(searchParams.toString());    
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
+      newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
+      newSearchParams.delete("attacker_fast_attack"+member+""+number);
+      newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
       
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } finally {
@@ -202,30 +212,34 @@ export default function SearchBarAttackerDynamax({
     });
   }
 
-  // Bonuses = [weather-boost, shadow, mega, friendship]
-  const handleBonusChange = (bonusIndex: number, value: any) => {
-    setSelectedBonuses((prev: any) => {
-      const newBonuses = [...prev];
-      newBonuses[bonusIndex] = value;
-      return newBonuses;
+  const handleChangeMaxMoves = (value: number[], index: number) => {
+    setMaxMoves((prev: any) => {
+      if (!(index === 0 && value[0] === 0)) {
+        const newMaxMoves = [...prev];
+        newMaxMoves[index] = value[0];
+        return newMaxMoves;
+      } else {
+        return prev;
+      }
     });
-  };
+  }
+
+  useEffect(() => {
+    onChangedMaxMoveStats(maxMoves, member, number);
+    
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }, [maxMoves]);
 
   useEffect(() => {
     
     onChangedStats(stats, member, number);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [stats]);
-
-  useEffect(() => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", selectedBonuses.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [selectedBonuses]);
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -276,6 +290,8 @@ export default function SearchBarAttackerDynamax({
   const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
+  const dynamaxMove = selectedQuickMove ? PoGoAPI.getDynamaxAttack(selectedPokemon?.pokemonId, (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves)).type, allMoves, maxMoves[0]) : null;
+  
   return (
     <>
       <Input
@@ -320,7 +336,6 @@ export default function SearchBarAttackerDynamax({
           </select>
 
           <p>Stats (PC: {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
-          {raidmode === "normal" ? (<></>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Stat changes won't be affected.</p>)}
           <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {Math.floor(effAttack)})</span></p>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
@@ -349,11 +364,25 @@ export default function SearchBarAttackerDynamax({
             <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
             <Slider onValueChange={(value) => handleChangeStat(value, 3)} defaultValue={[stats[3]]} max={15} step={1} className="w-[60%] mb-5" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
           </div>
+          <div className="grid grid-cols-1 mb-4">
+            <p>Max moves</p>
+            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Attack {maxMoves[0] === 3 ? "MAX" : maxMoves[0]}</p>
+           
+            <Slider  onValueChange={(value) => handleChangeMaxMoves(value, 0)} defaultValue={[maxMoves[0]]} min={1} max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
+           
+            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Guard {maxMoves[1] === 3 ? "MAX" : maxMoves[1]}</p>
+            <Slider onValueChange={(value) => handleChangeMaxMoves(value, 1)} defaultValue={[maxMoves[1]]}  max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
+            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Spirit {maxMoves[2] === 3 ? "MAX" : maxMoves[2]}</p>
+            <Slider onValueChange={(value) => handleChangeMaxMoves(value, 2)} defaultValue={[maxMoves[2]]} max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
+
+
+          </div>
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>
               {preferredMovesQuick.map((move: string) => (
-                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+                PoGoAPI.getMovePBByID(move, allMoves).type && (
+                <Card
                   key={move}
                   className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
                   onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
@@ -367,14 +396,34 @@ export default function SearchBarAttackerDynamax({
                     <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta ?? 0}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
-                </Card>)
-              ))}     
+                </Card>
+              )))}
+              {dynamaxMove && (
+                <>
+                <p>Max move:</p>
+              <Card
+                  key={dynamaxMove.moveId}
+                  className={`mb-4 bg-gradient-to-t from-rose-400 to-red-950`}
+                >
+                <CardHeader>
+                  <CardTitle className="text-white">{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).moveId)}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-300">Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).type)}</CardDescription>
+                  <CardDescription className="text-slate-300">Power: {(PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).power ?? 0}</CardDescription>
+                  <CardDescription className="text-slate-300">Energy: {(PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).energyDelta ?? 0}</CardDescription>
+                  <CardDescription className="text-slate-300">Duration: {PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves).durationMs / 1000}s</CardDescription>
+                </CardContent>
+              </Card>
+                </>
+                )}
             </div>
 
             <div>
               <p>Charged Attacks:</p>
               {preferredMovesCharged.map((move: string) => (
-                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+                PoGoAPI.getMovePBByID(move, allMoves).type && (
+                <Card
                   key={move}
                   className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
                   onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}

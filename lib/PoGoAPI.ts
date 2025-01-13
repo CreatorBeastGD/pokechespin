@@ -39,12 +39,20 @@ export class PoGoAPI {
     }
     
 
-    static formatPokemonText(text: string, constants: any) {
-        return (text ? text.replaceAll(/\$t\(constants:pokemon\:(\w+)\)/g, (_, key) => {
-            return constants.pokemon[key] || key;
-        }).replaceAll(/\$t\(constants:pokemon\.(\w+)\)/g, (_, key) => {
-            return constants.pokemon[key] || key;
-        }) : "Error");
+    static formatPokemonText(text: string, constants: any): string {
+        if (!text) return "Error";
+    
+        const placeholderRegex = /\$t\(constants:pokemon[:\.](\w+)\)/g;
+    
+        let previousText;
+        do {
+            previousText = text;
+            text = text.replace(placeholderRegex, (_, key) => {
+                return constants.pokemon[key] || key;
+            });
+        } while (text !== previousText); // Repite hasta que no haya más cambios
+    
+        return text;
     }
 
     static getPreferredMovesPB(pokemonId: string, megaPokemonId: string, pokemonList: any) {
@@ -75,7 +83,7 @@ export class PoGoAPI {
         if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
             pokemonId = "HO_OH";
         }
-        console.log(pokemonId);
+        //console.log(pokemonId);
         return (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
     }
 
@@ -152,6 +160,102 @@ export class PoGoAPI {
         }
     }
 
+    static getGigantamaxAttack(pokemonId: any, allMoves: any, maxMoveLevel: any) {
+        const moveSuffix = maxMoveLevel === 1 ? "" : maxMoveLevel;
+        switch (pokemonId) {
+            case "CHARIZARD_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_WILDFIRE" + moveSuffix);
+            case "BUTTERFREE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_BEFUDDLE" + moveSuffix);
+            case "PIKACHU_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_VOLT_CRASH" + moveSuffix);
+            case "MEOWTH_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_GOLD_RUSH" + moveSuffix);
+            case "MACHAMP_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_CHI_STRIKE" + moveSuffix);
+            case "GENGAR_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_TERROR" + moveSuffix);
+            case "LAPRAS_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_RESONANCE" + moveSuffix);
+            case "EEVEE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_CUDDLE" + moveSuffix);
+            case "SNORLAX_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_REPLENISH" + moveSuffix);
+            case "GARBODOR_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_MALODOR" + moveSuffix);
+            case "DREDNAW_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_STONESURGE" + moveSuffix);
+            case "CORVIKNIGHT_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_WIND_RAGE" + moveSuffix);
+            case "TOXTRICITY_LOW_KEY_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_STUN_SHOCK" + moveSuffix);        
+            case "TOXTRICITY_AMPED_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_STUN_SHOCK" + moveSuffix);
+            case "TOXTRICITY_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_STUN_SHOCK" + moveSuffix);
+            case "ALCREMIE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_FINALE" + moveSuffix);
+            case "DURALUDON_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_DEPLETION" + moveSuffix);
+            case "ORBEETLE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_GRAVITAS" + moveSuffix);
+            case "COALOSSAL_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_VOLCALITH" + moveSuffix);
+            case "SANDACONDA_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_SANDBLAST" + moveSuffix);
+            case "GRIMMSNARL_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_SNOOZE" + moveSuffix);
+            case "FLAPPLE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_TARTNESS" + moveSuffix);
+            case "APPLETUN_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_SWEETNESS" + moveSuffix);
+            case "HATTERENE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_SMITE" + moveSuffix);
+            case "COPPERAJAH_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_STEELSURGE" + moveSuffix);
+            case "MELMETAL_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_MELTDOWN" + moveSuffix);
+            case "KINGLER_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_FOAM_BURST" + moveSuffix);
+            case "CENTISKORCH_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_CENTIFERNO" + moveSuffix);
+            case "CINDERACE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_FIREBALL" + moveSuffix);
+            case "RILLABOOM_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_DRUM_SOLO" + moveSuffix);
+            case "INTELEON_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_HYDRO_SNIPE" + moveSuffix);
+            case "URSHIFU_SINGLESTRIKE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_ONE_BLOW" + moveSuffix);
+            case "URSHIFU_RAPIDSTRIKE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_RAPID_FLOW" + moveSuffix);
+            case "BLASTOISE_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_CANNONADE" + moveSuffix);
+            case "VENUSAUR_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "GMAX_VINE_LASH" + moveSuffix);
+            default:
+                return null;
+        }
+    }
+
+    static getDynamaxAttack(pokemonId: any, moveType: any, allMoves: any, maxMoveLevel: any) {
+        
+        console.log(pokemonId, moveType, allMoves, maxMoveLevel);
+        if (pokemonId.endsWith("_GIGANTAMAX")) {
+            return this.getGigantamaxAttack(pokemonId, allMoves, maxMoveLevel);
+        } else {
+            const move = allMoves.find((m: any) => {
+                return m.type === moveType && m.moveId && m.moveId.startsWith("MAX_") && (m.moveId).endsWith(maxMoveLevel === 1 ? "" : maxMoveLevel.toString());
+            });
+            console.log(move)
+            if (!move) {
+                return null;
+            } else {
+                return move;
+            }
+        }
+    }
+
     static getTypeWeaknesses(type: string, allTypes: any[]) {
         const objType = allTypes.find((t: any) => t.type === type);
         let weaknesses: { [key: string]: number } = {};
@@ -184,6 +288,25 @@ export class PoGoAPI {
         const effectiveness = (defenderFirstTypeWeaknesses[this.formatTypeName(move.type)] ?? 1) * (defenderSecondTypeWeaknesses[this.formatTypeName(move.type)] ?? 1);
         
         return effectiveness;
+    }
+
+    static async getDamageAttackDynamax(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, maxMoveLevel?: any) {
+        const raid = raidMode ? raidMode : "normal";
+        if (raid !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raid);
+        }
+        const types = await this.getTypes();
+        const effectiveness = this.getEfectiveness(defendingPokemon, move, types);
+        return Calculator.calculateDamage(
+            move.power,
+            Calculator.getEffectiveAttack(attackingPokemon.stats.baseAttack, attackerStats[1], attackerStats[0]), 
+            Calculator.getEffectiveDefense(defendingPokemon.stats.baseDefense, defenderStats[2], defenderStats[0]),
+            attackingPokemon.type == move.type || attackingPokemon?.type2 == move.type ? 1.2 : 1, 
+            effectiveness,
+            move.type,
+            bonusAttacker,
+            bonusDefender,
+        )
     }
 
     static async getDamageAttack(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any) {
@@ -701,8 +824,13 @@ export class PoGoAPI {
 
     }
 
+    static AdvancedSimulationDynamax(attackers: any[][], defender: any, attackersQuickMove: any[][], attackersCinematicMove: any[][], attackersStats: any[][], defenderLargeAttack: any, defenderTargetAttack: any, raidMode: any) {
+
+
+    }
+
     static formatMoveName(moveName: string) {
-        return moveName.replace("_FAST", "").replaceAll("_", " ").replaceAll("PLUS", "+").toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        return moveName.replace("_FAST", "").replaceAll("_", " ").replaceAll("PLUS", "+").toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ").replace("2", "").replace("3", "");
     }
 
     static formatTypeName(typeName: string) {
