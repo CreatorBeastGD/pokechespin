@@ -12,6 +12,10 @@ export class PoGoAPI {
         });
         return await response.json();
     }
+
+    static getVersion() {
+        return "1.9.0";
+    }
     
     static async getTypes () {
         const response = await fetch(API + "types.json");

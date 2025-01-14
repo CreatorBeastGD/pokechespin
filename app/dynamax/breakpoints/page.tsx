@@ -12,6 +12,7 @@ const BreakpointsPage = () => {
     const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
     const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(null);
     const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(null);
+    const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(null);
     const [raidMode, setRaidMode] = useState<any>("normal");
     const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
     const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
@@ -25,12 +26,16 @@ const BreakpointsPage = () => {
     const [error, setError] = useState<any>(null);
     const [allBreakpoints, setAllBreakpoints] = useState<any>(null);
     const [allBreakpointsCinematic, setAllBreakpointsCinematic] = useState<any>(null);
+    const [allBreakpointsMax, setAllBreakpointsMax] = useState<any>(null);
     const [calculatedBreakpoints, setCalculatedBreakpoints] = useState<any>(null);
     const [calculatedBreakpointsCinematic, setCalculatedBreakpointsCinematic] = useState<any>(null);
+    const [calculatedBreakpointsMax, setCalculatedBreakpointsMax] = useState<any>(null);
     const [min, setMin] = useState<any>(null);
     const [max, setMax] = useState<any>(null);
     const [minCinematic, setMinCinematic] = useState<any>(null);
     const [maxCinematic, setMaxCinematic] = useState<any>(null);
+    const [minMax, setMinMax] = useState<any>(null);
+    const [maxMax, setMaxMax] = useState<any>(null);
     const [defenderStatsLoad, setDefenderStatsLoad] = useState<any>(null);
     const [attackerMaxMove, setAttackerMaxMove] = useState<any>(null);
       useEffect(() => {
@@ -68,22 +73,24 @@ const BreakpointsPage = () => {
             const attackerCinematicAttack = urlParams.get('attacker_cinematic_attack'+member+""+slot);
             const attackerMaxMove = urlParams.get('attacker_max_moves'+member+""+slot) || '1,0,0';
             const raidmode = urlParams.get('raid_mode') || 'normal';
-            const attackerBonuses = urlParams.get('attacker_bonuses') || 'EXTREME,false,false,0';
-            const defenderBonuses = urlParams.get('defender_bonuses') || 'EXTREME,false,false,0';
             const weather = urlParams.get('weather') || 'EXTREME';
             const defenderStats = urlParams.get('defender_stats') || '50,15,15,15';
 
 
             if (attacker) {setAttackingPokemon(PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0])} ;
             if (defender) {setDefendingPokemon(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0])};
-            if (attackerFastAttack) {setSelectedQuickMoveAttacker(PoGoAPI.getMovePBByID(attackerFastAttack, allMoves))};
+            const attackerMM = attackerMaxMove.split(',').map((move: string) => parseInt(move));
+            setAttackerMaxMove(attackerMM);
+            if (attackerFastAttack) {
+              const fastAttack = PoGoAPI.getMovePBByID(attackerFastAttack, allMoves)
+              setSelectedQuickMoveAttacker(fastAttack)
+              const maxAttack = PoGoAPI.getDynamaxAttack(attacker, fastAttack.type, allMoves, attackerMM[0]);
+              setSelectedMaxMoveAttacker(maxAttack)
+            };
             if (attackerCinematicAttack) {setSelectedChargedMoveAttacker(PoGoAPI.getMovePBByID(attackerCinematicAttack, allMoves))};
             setRaidMode(raidmode);
-            setBonusAttacker(attackerBonuses.split(','));
-            setBonusDefender(defenderBonuses.split(','));
             setWeather(weather);
             setDefenderStatsLoad(defenderStats.split(',').map((stat: string) => parseInt(stat)));
-            setAttackerMaxMove(attackerMaxMove.split(',').map((move: string) => parseInt(move)));
             
             if (!attacker || !defender || !attackerFastAttack || !attackerCinematicAttack) {
                 setError("Missing parameters");
@@ -100,10 +107,13 @@ const BreakpointsPage = () => {
             
             const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker);
             const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker);
+            const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker);
             setAllBreakpoints(breakpoints);
             setCalculatedBreakpoints(true);
             setAllBreakpointsCinematic(breakpointsCinematic);
             setCalculatedBreakpointsCinematic(true);
+            setAllBreakpointsMax(breakpointsMax);
+            setCalculatedBreakpointsMax(true);
             
             const { min, max } = getMinMax(breakpoints);
             setMin(min);
@@ -112,6 +122,10 @@ const BreakpointsPage = () => {
             const { min: minCinematic, max: maxCinematic } = getMinMax(breakpointsCinematic);
             setMinCinematic(minCinematic);
             setMaxCinematic(maxCinematic);
+
+            const { min: minMax, max: maxMax } = getMinMax(breakpointsMax);
+            setMinMax(minMax);
+            setMaxMax(maxMax);
         }
       }, [paramsLoaded]);
 
@@ -161,22 +175,18 @@ const BreakpointsPage = () => {
       };
 
       const prettierRaidMode = (raidMode: string) => {
-        if (raidMode === "raid-t1") {
-          return "Tier 1 Raid";
-        } else if (raidMode === "raid-t3") {
-          return "Tier 3 Raid";
-        } else if (raidMode === "raid-t4") {
-          return "Tier 4 Raid";
-        } else if (raidMode === "raid-mega") {
-          return "Mega Raid";
-        } else if (raidMode === "raid-t5") {
-          return "Tier 5 Raid";
-        } else if (raidMode === "raid-elite") {
-          return "Elite Raid";
-        } else if (raidMode === "raid-primal") {
-          return "Primal Raid";
-        } else if (raidMode === "raid-mega-leg") {
-          return "Mega Legendary Raid";
+        if (raidMode === "raid-t1-dmax") {
+          return "Tier 1 Dynamax Raid";
+        } else if (raidMode === "raid-t2-dmax") {
+          return "Tier 2 Dynamax Raid";
+        } else if (raidMode === "raid-t3-dmax") {
+          return "Tier 3 Dynamax Raid";
+        } else if (raidMode === "raid-t4-dmax") {
+          return "Tier 4 Dynamax Raid";
+        } else if (raidMode === "raid-t5-dmax") {
+          return "Tier 5 Dynamax Raid";
+        } else if (raidMode === "raid-t6-gmax") {
+          return "Gigantamax Raid";
         } else {
           return "Gym Battle";
         }
@@ -212,12 +222,12 @@ const BreakpointsPage = () => {
                     <CardHeader>
                         <CardTitle>Breakpoints</CardTitle>
                         <CardDescription>
-                            Breakpoints for {PoGoAPI.getPokemonNamePB(attackingPokemon.pokemonId, allEnglishText)} with {PoGoAPI.getMoveNamePB(selectedQuickMoveAttacker.moveId, allEnglishText)} and {PoGoAPI.getMoveNamePB(selectedChargedMoveAttacker.moveId, allEnglishText)} against {prettierRaidMode(raidMode)} Boss {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} {raidMode === "normal" ? ("(Level " + defenderStatsLoad[0] + " " + defenderStatsLoad[1] + "-" + defenderStatsLoad[2] + "-" + defenderStatsLoad[3] + ")") : ""} in {weather} weather.
+                            Breakpoints for {PoGoAPI.getPokemonNamePB(attackingPokemon.pokemonId, allEnglishText)} with {PoGoAPI.getMoveNamePB(selectedQuickMoveAttacker.moveId, allEnglishText)}, {PoGoAPI.getMoveNamePB(selectedChargedMoveAttacker.moveId, allEnglishText)} and {PoGoAPI.formatMoveName(selectedMaxMoveAttacker.moveId)} Lv.{attackerMaxMove[0]} against {prettierRaidMode(raidMode)} Boss {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} {raidMode === "normal" ? ("(Level " + defenderStatsLoad[0] + " " + defenderStatsLoad[1] + "-" + defenderStatsLoad[2] + "-" + defenderStatsLoad[3] + ")") : ""}.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-row justify-center space-x-4">
-                            <a href={`/${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
+                            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
                                 <button className="w-full h-full">
                                     Go Back
                                 </button>
@@ -289,8 +299,38 @@ const BreakpointsPage = () => {
                         </tr>
                     ))}
                     </tbody>
-                </table></div>
-                
+                </table>
+
+                <h2>Breakpoints for {PoGoAPI.formatMoveName(selectedMaxMoveAttacker.moveId)}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>IVs/Level</th>
+                      {allBreakpointsMax.map((_: any, index: any) => (
+                        <th className="text-xs" key={index} style={{ padding: '0 5px' }}> {(index / 2) + 20}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allBreakpointsMax[0]?.map((_: any, ivIndex: any) => (
+                      <tr key={ivIndex}>
+                        <td>{ivIndex} IVs</td>
+                        {allBreakpointsMax.map((level: any, levelIndex: any) => (
+                          <td key={levelIndex} style={{ 
+                            textAlign: 'center',
+                            backgroundColor: getColor(level[ivIndex], minMax, maxMax), 
+                            borderBottom: (level[ivIndex] !== level[ivIndex + 1] ? '1px solid #000' : 'none'),
+                            borderRight: levelIndex < allBreakpointsMax.length - 1 && allBreakpointsMax[levelIndex][ivIndex] !== allBreakpointsMax[levelIndex + 1][ivIndex] ? '1px solid #000' : 'none'
+                            }}>
+                            {level[ivIndex]}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+              </div>  
             </div>
 
         ) : (

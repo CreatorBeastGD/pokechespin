@@ -12,6 +12,7 @@ const BreakpointsPage = () => {
     const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
     const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(null);
     const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(null);
+    const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(null);
     const [raidMode, setRaidMode] = useState<any>("normal");
     const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
     const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);

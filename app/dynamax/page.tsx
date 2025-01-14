@@ -145,6 +145,11 @@ export default function Home() {
       if (defenderStats !== null) {
         handleChangedStatsDefender(defenderStats.split(",").map((stat: string) => parseInt(stat)));
       }
+
+      const newUrlParams = new URLSearchParams(window.location.search);
+      newUrlParams.delete('member');
+      newUrlParams.delete('slot');
+      window.history.replaceState({}, '', `${window.location.pathname}?${newUrlParams}`);
   
       setLoaded(true);
     }
@@ -233,6 +238,13 @@ export default function Home() {
         ) : memberArray
       );
       setSelectedQuickMoveAttacker(newMoveList);
+
+      const newMaxMoveAttackerList = selectedMaxMoveAttacker.map((memberArray: any[], index: number) =>
+        index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
+          slotIndex === slot - 1 && move ? PoGoAPI.getDynamaxAttack(attackingPokemon[member-1][slot-1].pokemonId, move.type, allMoves, maxMoves[member-1][slot-1][0]) : m
+        ) : memberArray
+      );
+      setSelectedMaxMoveAttacker(newMaxMoveAttackerList);
     }
   };
 
@@ -340,7 +352,7 @@ export default function Home() {
 
   function checkBreakpoints(event: React.MouseEvent<HTMLButtonElement>): void {
     if (defenderStats && attackingPokemon && defendingPokemon && selectedQuickMoveAttacker && selectedChargedMoveAttacker) {
-      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}`;
+      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;
       router.push(newUrl);
     } else {
       alert("Please select all required fields before checking breakpoints! (Attacker Pokémon, Defender Pokémon, Attacker's Fast Attack, Attacker's Charged Attack)");
@@ -350,14 +362,8 @@ export default function Home() {
   const handleBarChange = (bar: string, value: number) => {
     if (bar === "member") {
       setSelectedMember(value);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set("member", value.toString());
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     } else if (bar === "slot") {
       setSelectedPokemonSlot(value);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set("slot", value.toString());
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
   }
 
@@ -371,7 +377,9 @@ export default function Home() {
         Pokémon GO Damage (and PC) Calculator</h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
       </div>
-      <p className="italic text-sm font-bold">Now running Dynamax simulations!</p>
+      <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">
+        <p className="italic text-sm font-bold">Back to Gym and Raid Simulations</p>
+      </a>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
@@ -394,8 +402,8 @@ export default function Home() {
             <Tabs defaultValue="pokemon-1" className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
                 <TabsTrigger value="pokemon-1" className={attackingPokemon[selectedMember-1][0] !== null ? selectedChargedMoveAttacker[selectedMember-1][0] !== null && selectedQuickMoveAttacker[selectedMember-1][0] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P1</TabsTrigger>
-                <TabsTrigger value="pokemon-2" className={attackingPokemon[selectedMember-1][1] !== null ? selectedChargedMoveAttacker[selectedMember-1][1] !== null && selectedQuickMoveAttacker[selectedMember-1][1] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P2</TabsTrigger>
-                <TabsTrigger value="pokemon-3" className={attackingPokemon[selectedMember-1][2] !== null ? selectedChargedMoveAttacker[selectedMember-1][2] !== null && selectedQuickMoveAttacker[selectedMember-1][2] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P3</TabsTrigger>
+                <TabsTrigger value="pokemon-2" className={attackingPokemon[selectedMember-1][1] !== null ? selectedChargedMoveAttacker[selectedMember-1][1] !== null && selectedQuickMoveAttacker[selectedMember-1][1] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 2)}>P2</TabsTrigger>
+                <TabsTrigger value="pokemon-3" className={attackingPokemon[selectedMember-1][2] !== null ? selectedChargedMoveAttacker[selectedMember-1][2] !== null && selectedQuickMoveAttacker[selectedMember-1][2] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 3)}>P3</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -509,7 +517,7 @@ export default function Home() {
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
               </button>
-              <a href={"https://pokemongo-damage-calculator.vercel.app"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+              <a href={"https://pokemongo-damage-calculator.vercel.app/dynamax"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
                   Clean this setup
                 </button>
@@ -564,7 +572,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.9</p>
+      <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />

@@ -254,9 +254,13 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
         <h1 className="mb-10 title">
-        Pokémon GO Damage (and PC) Calculator</h1>
+        Pokémon GO Damage (and PC) Calculator
+        </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
+      <a href="https://pokemongo-damage-calculator.vercel.app/dynamax" className="link">
+        <p className="italic text-sm font-bold">(NEW) Dynamax Calculator!</p>
+      </a>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
@@ -446,7 +450,7 @@ export default function Home() {
         </Card>
       </div>
       
-      <p className="bottomtext">Version 1.8.1</p>
+      <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>
       <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
