@@ -132,6 +132,7 @@ export default function Home() {
       const quickMoveDefender = searchParams.get("defender_fast_attack");
       const chargedMoveDefender = searchParams.get("defender_cinematic_attack");
       const defenderStats = searchParams.get("defender_stats");
+      const raidMode = searchParams.get("raid_mode");
   
       if (defender !== null) {
         handleDefenderSelect(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0]);
@@ -144,6 +145,9 @@ export default function Home() {
       }
       if (defenderStats !== null) {
         handleChangedStatsDefender(defenderStats.split(",").map((stat: string) => parseInt(stat)));
+      }
+      if (raidMode !== null) {
+        setRaidMode(raidMode);
       }
 
       const newUrlParams = new URLSearchParams(window.location.search);
