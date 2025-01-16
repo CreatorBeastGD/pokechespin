@@ -121,6 +121,23 @@ export default function SearchBarAttackerDynamax({
   }
   
   useEffect(() => {
+    onChangedMaxMoveStats(maxMoves, member, number);
+    
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }, [maxMoves]);
+
+  useEffect(() => {
+    
+    onChangedStats(stats, member, number);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }, [stats]);
+  
+  useEffect(() => {
     if (clickedSuggestion) {
       searchPokemon();
       setClickedSuggestion(false);
@@ -224,22 +241,6 @@ export default function SearchBarAttackerDynamax({
     });
   }
 
-  useEffect(() => {
-    onChangedMaxMoveStats(maxMoves, member, number);
-    
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [maxMoves]);
-
-  useEffect(() => {
-    
-    onChangedStats(stats, member, number);
-
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [stats]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -273,6 +274,8 @@ export default function SearchBarAttackerDynamax({
     setSuggestions([]);
     onClickedClearButton(member, slot)
   }
+
+  
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
@@ -346,6 +349,7 @@ export default function SearchBarAttackerDynamax({
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
           
             <Image
+                unoptimized
                 className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
                 alt={selectedPokemon.pokemonId}
