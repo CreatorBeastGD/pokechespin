@@ -208,7 +208,7 @@ export default function Home() {
       
       setTimeout(() => {
         setCleared(true);
-      }, 1000);
+      }, 100);
 
     }
     if (pokemon !== undefined) {
