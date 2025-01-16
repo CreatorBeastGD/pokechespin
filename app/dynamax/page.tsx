@@ -24,6 +24,11 @@ import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-butto
 import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 
 export default function Home() {
+  
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(4).fill(Array(3).fill(null)));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
@@ -48,14 +53,11 @@ export default function Home() {
   const [cleared, setCleared] = useState<boolean>(true);
 
 
-  const [selectedMember, setSelectedMember] = useState<number>(1);
-  const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(1);
+  const [selectedMember, setSelectedMember] = useState<number>(searchParams.get("member") ? parseInt(searchParams.get("member") as string) : 1);
+  const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(searchParams.get("slot") ? parseInt(searchParams.get("slot") as string) : 1);
 
   const [loaded, setLoaded] = useState<boolean>(false);
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
