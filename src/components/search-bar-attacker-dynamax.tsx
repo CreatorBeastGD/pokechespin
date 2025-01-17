@@ -352,7 +352,7 @@ export default function SearchBarAttackerDynamax({
                 unoptimized
                 className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
-                alt={selectedPokemon.pokemonId}
+                alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
                 height={400}
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}

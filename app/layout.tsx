@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Pokémon GO Damage Calculator",
-  description: "Calculate the damage output of your Pokémon in Pokémon GO!",
+  title: "Pokémon GO Damage Calculator | PokéChespin",
+  description: "Calculate the damage output of your Pokémon in Pokémon GO! Simulate battles and raids, and find out the best moveset for your Pokémon.",
 };
 
 export default function RootLayout({

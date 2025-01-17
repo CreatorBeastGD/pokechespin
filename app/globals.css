@@ -45,6 +45,10 @@ body {
   overflow: visible !important;
 }
 
+.textslate {
+  @apply text-slate-400;
+}
+
 #breakpoints-container * {
   transform: none !important;
   position: static !important;

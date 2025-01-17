@@ -254,7 +254,7 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
         <h1 className="mb-10 title">
-        Pokémon GO Damage (and PC) Calculator
+        Pokémon GO Damage Calculator
         </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
@@ -457,7 +457,7 @@ export default function Home() {
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-      <p></p>
+      <h1 className="textslate">Pokémon GO Damage Calculator</h1>
     </div>
   );
 }
