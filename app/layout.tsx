@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react";
+import BuyMeACoffeeIcon from "@/components/buy-me-a-coffee";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,9 +28,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="canonical" href="https://pokechespin.net" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -42,6 +40,18 @@ export default function RootLayout({
         }>
           {children}
         </Suspense>
+        <div className="flex flex-col items-center justify-center space-x-3 mt-4 mb-4">
+          <p className="textslate text-xs text-center w-1/2 text-left">
+            CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
+          </p>
+          <p className="textslate text-xs text-center w-1/2 text-right mb-2">
+            2025 CreatorBeastGD.
+          </p>
+          <div className="flex flex-row items-center justify-center space-x-2 bg-black p-2 rounded-lg text-white text-xs w-1/2 border-2 border-white border-opacity-10">
+            <a href="https://buymeacoffee.com/creatorbeastgd" className=""><BuyMeACoffeeIcon/></a>
+            <p>Buy me a Chespin!</p>
+          </div>
+        </div>
         
         <Analytics />
       </body>
