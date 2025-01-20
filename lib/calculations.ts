@@ -126,7 +126,7 @@ export class Calculator {
         "raid-t2-dmax": 5000,
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
-        "raid-t5-dmax": 60000,
+        "raid-t5-dmax": 20000,
         "raid-t6-gmax": 90000,
       }
 
