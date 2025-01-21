@@ -15,27 +15,29 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   defender,
   quickMove,
   chargedMove,
-  quickMoveDefender,
-  chargedMoveDefender,
+  largeAttack,
+  targetAttack,
   attackerStats,
   defenderStats,
   raidMode,
   bonusAttacker,
   bonusDefender,
-  allEnglishText
+  allEnglishText,
+  maxMoves
 }: {
   attacker: any;
   defender: any;
   quickMove: any;
   chargedMove: any;
-  quickMoveDefender: any;
-  chargedMoveDefender: any;
+  largeAttack: any;
+  targetAttack: any;
   attackerStats: any;
   defenderStats: any;
   raidMode: string;
   bonusAttacker: any;
   bonusDefender: any;
   allEnglishText: any;
+  maxMoves: any;
 }) {
   
   const searchParams = useSearchParams();
@@ -99,7 +101,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, quickMoveDefender, chargedMoveDefender]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
@@ -120,22 +122,20 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   }
 
   const calculateDamage = async () => {
-    if (!attacker || !defender || !quickMove || !chargedMove || !quickMoveDefender || !chargedMoveDefender) return;
+    if (!attacker || !defender || !quickMove || !chargedMove || !largeAttack || !targetAttack) return;
 
     setLoading(true);
     // Both should have the same weather boost.
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
-    const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
-    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, enraged, peopleCount);
+    const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]]; 
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
-    setQau({attackerQuickAttackUses, defenderQuickAttackUses});
-    setCau({attackerChargedAttackUses, defenderChargedAttackUses});
+    setQau({attackerQuickAttackUses, defenderLargeAttackUses});
+    setCau({attackerChargedAttackUses, defenderTargetAttackUses});
     setFaints(attackerFaints);
     setGraphic(battleLog);
-    setAttackerDamage(attackerDamage);
   };
 
   const handleSwitch = (checked: boolean, handle: any) => {
@@ -205,36 +205,14 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
-      <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/>Defender Pokémon can enrage.</p>
-        <p>Set number of teams: ({teamCount})</p>
-        <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
-        <p>Set number of groups: ({})</p>
-        <Slider onValueChange={(value) => handleRelobbyTime(value)} defaultValue={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
-        <p>Set number of teams: {peopleCount} </p>
-        <Slider onValueChange={(value) => handlePeopleCount(value)} defaultValue={[peopleCount]} max={20} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
-      </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}
-      {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
+      {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && largeAttack && targetAttack && (
         <div className="mt-4 space-y-4">
-          <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
-          </p>
-          <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
-          </p>
-          <p>
-            <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
-          </p>
-          <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times (per team), dealing an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
-          </p>
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
@@ -271,7 +249,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                       <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
+                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? item.attackerID.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
                           <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}
                         </div>
                         <div className="flex flex-col space-y-1">
@@ -281,10 +259,10 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                         </div>
                       </div>
                     ) : (
-                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 bg-slate-200 p-2 rounded-lg"}>
+                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + (item.energy ? "bg-pink-300" : "bg-slate-200") + " p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</p>
+                          {!item.energy && <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? item.attackerID.pokemonId : defender.pokemonId), allEnglishText)}</p>}
                         </div>
                         <div className="flex flex-col space-y-1">
                           {(item.relobby === true || item.relobby === false) ? 
@@ -296,7 +274,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                             (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
                             (item.purifiedgem ? "Purified Gem used." : 
                               item.subdued ? "Defender Pokémon Subdued." :
-                               item.enraged ? "Defender Pokémon Enraged." : ""
+                               item.enraged ? "Defender Pokémon Enraged." : 
+                               item.energy ? (item.energy == 100 ? "Starting Dynamax phase." : "Energy gained: " + item.energy) : "" 
                             )}
                           <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                         </div>

@@ -569,6 +569,24 @@ export default function Home() {
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
               />
             </CardContent>
+            <CardContent>
+              <CardDescription>Max Battle Simulation</CardDescription>
+              <CalculateButtonSimulateAdvancedDynamax 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                quickMove={selectedQuickMoveAttacker} 
+                chargedMove={selectedChargedMoveAttacker}
+                largeAttack={selectedQuickMoveDefender}
+                targetAttack={selectedChargedMoveDefender}
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                raidMode={raidMode}
+                maxMoves={maxMoves}
+              />
+            </CardContent>
         </Card>
       </div>
       
