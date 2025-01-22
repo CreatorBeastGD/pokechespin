@@ -126,9 +126,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
-    const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]]; 
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -262,7 +260,6 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                       <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + (item.energy ? "bg-pink-300" : "bg-slate-200") + " p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          {!item.energy && <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? item.attackerID.pokemonId : defender.pokemonId), allEnglishText)}</p>}
                         </div>
                         <div className="flex flex-col space-y-1">
                           {(item.relobby === true || item.relobby === false) ? 
