@@ -154,9 +154,6 @@ export default function SearchBarAttacker({
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     console.log(searchParam)
     try {
-      if (searchParam === "HO_OH" || searchParam === "HO-OH") {
-        searchParam = "HO_OH";
-      }
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
@@ -336,9 +333,10 @@ export default function SearchBarAttacker({
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
           
             <Image
+              unoptimized
                 className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
-                alt={selectedPokemon.pokemonId}
+                alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
                 height={400}
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}

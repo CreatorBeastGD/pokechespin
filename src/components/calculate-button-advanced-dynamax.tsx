@@ -9,6 +9,7 @@ import { Switch } from "./ui/switch";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function CalculateButtonSimulateAdvancedDynamax({
   attacker,

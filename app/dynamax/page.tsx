@@ -24,6 +24,11 @@ import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-butto
 import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 
 export default function Home() {
+  
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(4).fill(Array(3).fill(null)));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
@@ -45,15 +50,14 @@ export default function Home() {
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
 
+  const [cleared, setCleared] = useState<boolean>(true);
 
-  const [selectedMember, setSelectedMember] = useState<number>(1);
-  const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(1);
+
+  const [selectedMember, setSelectedMember] = useState<number>(searchParams.get("member") ? parseInt(searchParams.get("member") as string) : 1);
+  const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(searchParams.get("slot") ? parseInt(searchParams.get("slot") as string) : 1);
 
   const [loaded, setLoaded] = useState<boolean>(false);
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
@@ -132,6 +136,7 @@ export default function Home() {
       const quickMoveDefender = searchParams.get("defender_fast_attack");
       const chargedMoveDefender = searchParams.get("defender_cinematic_attack");
       const defenderStats = searchParams.get("defender_stats");
+      const raidMode = searchParams.get("raid_mode");
   
       if (defender !== null) {
         handleDefenderSelect(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0]);
@@ -145,6 +150,9 @@ export default function Home() {
       if (defenderStats !== null) {
         handleChangedStatsDefender(defenderStats.split(",").map((stat: string) => parseInt(stat)));
       }
+      if (raidMode !== null) {
+        setRaidMode(raidMode);
+      }
 
       const newUrlParams = new URLSearchParams(window.location.search);
       newUrlParams.delete('member');
@@ -157,12 +165,15 @@ export default function Home() {
 
   const handleAttackerSelect = (pokemon: any, member: any, slot: any) => {
     if (pokemon === null) {
+      setCleared(false);
+      const newSearchParams = new URLSearchParams(window.location.search);
       const newAttackingPokemon = attackingPokemon.map((memberArray: any[], index: number) => 
         index === member - 1 ? memberArray.map((poke: any, slotIndex: number) => 
           slotIndex === slot - 1 ? null : poke
         ) : memberArray
       );
       setAttackingPokemon(newAttackingPokemon);
+      newSearchParams.delete(`attacker${member}${slot}`);
 
       const newQuickMoveList = selectedQuickMoveAttacker.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
@@ -170,6 +181,7 @@ export default function Home() {
         ) : memberArray
       );
       setSelectedQuickMoveAttacker(newQuickMoveList);
+      newSearchParams.delete(`attacker_fast_attack${member}${slot}`);
 
       const newChargedMoveList = selectedChargedMoveAttacker.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
@@ -177,6 +189,7 @@ export default function Home() {
         ) : memberArray
       );
       setSelectedChargedMoveAttacker(newChargedMoveList);
+      newSearchParams.delete(`attacker_cinematic_attack${member}${slot}`);
 
       const newStats = attackerStats.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((stat: any, slotIndex: number) =>
@@ -184,6 +197,7 @@ export default function Home() {
         ) : memberArray
       );
       setAttackerStats(newStats);
+      newSearchParams.delete(`attacker_stats${member}${slot}`);
 
       const newMaxMoveList = maxMoves.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
@@ -191,6 +205,13 @@ export default function Home() {
         ) : memberArray
       );
       setMaxMoves(newMaxMoveList);
+      newSearchParams.delete(`attacker_max_moves${member}${slot}`);
+      window.history.replaceState({}, "", `${window.location.pathname}?${newSearchParams}`);
+      
+      setTimeout(() => {
+        setCleared(true);
+      }, 100);
+
     }
     if (pokemon !== undefined) {
       const newAttackingPokemon = attackingPokemon.map((memberArray: any[], index: number) => 
@@ -200,27 +221,9 @@ export default function Home() {
       );
       setAttackingPokemon(newAttackingPokemon);
     }
+    
   };
 
-  useEffect(() => {
-    //console.log(attackingPokemon)
-  }, [attackingPokemon]);
-
-  useEffect(() => {
-    //console.log(selectedQuickMoveAttacker);
-  }, [selectedQuickMoveAttacker]);
-
-  useEffect(() => {
-    //(selectedChargedMoveAttacker);
-  }, [selectedChargedMoveAttacker]);
-
-  useEffect(() => {
-    //console.log(attackerStats);
-  }, [attackerStats]);
-
-  useEffect(() => {
-    //console.log(maxMoves)
-  }, [maxMoves]);
 
   const handleDefenderSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
@@ -300,23 +303,6 @@ export default function Home() {
     setDefenderStats(stats);
   };
 
-  const handleBonusChangeAttacker = (bonus: any) => {
-    setBonusAttacker(bonus);
-  };
-
-  const handleBonusChangeDefender = (bonus: any) => {
-    setBonusDefender(bonus);
-  };
-
-
-  const handleBonusChange = (value: string) => {
-    setBonusAttacker([value, bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]]);
-
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("weather", value);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }
-
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
 
@@ -374,7 +360,7 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
         <h1 className="title">
-        Pokémon GO Damage (and PC) Calculator</h1>
+        Pokémon GO Damage Calculator</h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
       </div>
       <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">
@@ -389,9 +375,9 @@ export default function Home() {
             <CardDescription>Set an attacking Team</CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
           </CardHeader>
-          {(pokemonList && searchBarNames && allMoves && loaded) ? (
+          {(pokemonList && searchBarNames && allMoves && loaded && cleared) ? (
           <CardContent>
-            <Tabs defaultValue="member-1" className="">
+            <Tabs defaultValue={"member-"+(selectedMember)+""} className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
                 <TabsTrigger value="member-1" onClick={() => handleBarChange("member", 1)}>M1</TabsTrigger>
                 <TabsTrigger value="member-2" onClick={() => handleBarChange("member", 2)}>M2</TabsTrigger>
@@ -399,7 +385,7 @@ export default function Home() {
                 <TabsTrigger value="member-4" onClick={() => handleBarChange("member", 4)}>M4</TabsTrigger>
               </TabsList>
             </Tabs>
-            <Tabs defaultValue="pokemon-1" className="">
+            <Tabs defaultValue={"pokemon-"+(selectedPokemonSlot)+""} className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
                 <TabsTrigger value="pokemon-1" className={attackingPokemon[selectedMember-1][0] !== null ? selectedChargedMoveAttacker[selectedMember-1][0] !== null && selectedQuickMoveAttacker[selectedMember-1][0] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 1)}>P1</TabsTrigger>
                 <TabsTrigger value="pokemon-2" className={attackingPokemon[selectedMember-1][1] !== null ? selectedChargedMoveAttacker[selectedMember-1][1] !== null && selectedQuickMoveAttacker[selectedMember-1][1] !== null ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500" : "bg-red-500 text-white data-[state=active]:bg-red-500" } onClick={() => handleBarChange("slot", 2)}>P2</TabsTrigger>
@@ -597,7 +583,7 @@ export default function Home() {
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-      <p></p>
+      
     </div>
   );
 }

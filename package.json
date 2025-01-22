@@ -1,6 +1,6 @@
 {
   "name": "pogocalc",
-  "version": "1.9.0",
+  "version": "1.9.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
