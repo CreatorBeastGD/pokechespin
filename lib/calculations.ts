@@ -108,7 +108,7 @@ export class Calculator {
         8002: 0.38,
         8003: 0.5,
         8004: 0.6,
-        8005: 1.4,
+        8005: 0.7,
         8006: 0.85,
     };
 
@@ -126,7 +126,7 @@ export class Calculator {
         "raid-t2-dmax": 5000,
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
-        "raid-t5-dmax": 20000,
+        "raid-t5-dmax": 17500,
         "raid-t6-gmax": 90000,
       }
 

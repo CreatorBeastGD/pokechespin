@@ -14,7 +14,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.9.3";
+        return "1.9.3.1";
     }
     
     static async getTypes () {
@@ -393,7 +393,7 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t4-dmax") {
             convertedStats = [8004, 15, 15, 20000];
         } else if (raidMode === "raid-t5-dmax") {
-            convertedStats = [8005, 15, 15, 60000];
+            convertedStats = [8005, 15, 15, 17500];
         } else if (raidMode === "raid-t6-gmax") {
             convertedStats = [8006, 15, 15, 90000];
         } else {

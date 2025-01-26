@@ -47,7 +47,7 @@ export default function RootLayout({
           <p className="textslate text-xs text-center w-1/2 text-right mb-2">
             2025 CreatorBeastGD.
           </p>
-          <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white text-xs w-1/2 border-2 border-white border-opacity-10">
+          <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white bg-black text-xs w-1/2 border-2 border-white border-opacity-10">
             <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center"><BuyMeACoffeeIcon/>
               <p>Buy me a Chespin!</p>
             </a>
