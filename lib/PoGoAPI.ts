@@ -855,7 +855,18 @@ export class PoGoAPI {
         return attackerFaints.every((team) => team.every((pokemon) => pokemon === 1));
     }
 
-    static async AdvancedSimulationDynamax(attackers: any[][], defender: any, attackersQuickMove: any[][], attackersCinematicMove: any[][], attackersStats: any[][][], defenderLargeAttack: any, defenderTargetAttack: any, raidMode: any, attackerMaxMoves: any[][]) {
+    static async AdvancedSimulationDynamax(
+        attackers: any[][], 
+        defender: any, 
+        attackersQuickMove: any[][], 
+        attackersCinematicMove: any[][], 
+        attackersStats: any[][][], 
+        defenderLargeAttack: any, 
+        defenderTargetAttack: any, 
+        raidMode: any, 
+        attackerMaxMoves: any[][],
+        strategy?: any
+    ) {
         console.log(attackers, defender, attackersQuickMove, attackersCinematicMove, attackersStats, defenderLargeAttack, defenderTargetAttack, raidMode);
         
         let defenderStats = this.convertStats([40,15,15,15], raidMode);
@@ -906,7 +917,6 @@ export class PoGoAPI {
 
         let targeted = false;
         let target = 0;
-        
 
         const types = await this.getTypes();
 
@@ -949,7 +959,8 @@ export class PoGoAPI {
                         maxEnergy = 100;
                     }
                     maxEnergyGain += maxEnergy;
-                    battleLog.push({"turn": time,"attacker":"attacker", "attackerID": attackers[i][activePokemon[i]], "move": attackerMove[i].moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth});
+                    console.log(time)
+                    battleLog.push({"turn": time,"attacker":"attacker", "attackerID": attackers[i][activePokemon[i]], "move": attackerMove[i].moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i});
                     // End of simulation
                     if (this.sumAllElements(attackerDamage) >= defenderHealth) {
                         battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
@@ -1026,7 +1037,7 @@ export class PoGoAPI {
                         attackerFaint[i] = true;
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo[i]});
                         activePokemon[i]++;
-                        attackerDamageStart[i] = -1001;
+                        attackerDamageStart[i] = -1002;
                         tdo[i] = 0;
                     }
                 }
@@ -1050,6 +1061,8 @@ export class PoGoAPI {
 
             if (this.everyoneFaints(attackerFaints)) {
                 simGoing = false;
+                battleLog.push({"turn": time, "lost": true});
+
             }
 
             time++;

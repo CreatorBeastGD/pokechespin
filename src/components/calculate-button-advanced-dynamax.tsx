@@ -248,7 +248,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                       <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? item.attackerID.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
+                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.attackerID.pokemonId) : defender.pokemonId), allEnglishText)}</span>{item.attacker === "attacker" && (" (member " + (item.member+1) + ")")}</p>
                           <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}
                         </div>
                         <div className="flex flex-col space-y-1">
@@ -267,7 +267,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                             (<p className="text-sm text-slate-700">
                               {(item.relobby ? "All party fainted. Relobby is needed." : 
                             (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : 
-                            (<></>)}
+                            (item.lost ? "Your team has lost." : "")}
                           {item.dodge ? 
                             (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
                             (item.purifiedgem ? "Purified Gem used." : 
