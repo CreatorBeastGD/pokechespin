@@ -490,12 +490,12 @@ export default function Home() {
             <p className="italic text-slate-700 text-sm">Raid difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 
-                <option key={"raid-t1-dmax"} value={"raid-t1-dmax"}>Tier-1 Dynamax Raid (1700HP) </option>
-                <option key={"raid-t2-dmax"} value={"raid-t2-dmax"}>Tier-2 Dynamax Raid (5000HP) </option>
-                <option key={"raid-t3-dmax"} value={"raid-t3-dmax"}>Tier-3 Dynamax Raid (10000HP) </option>
-                <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Dynamax Raid (20000HP) </option>
-                <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Dynamax Raid (60000HP) BETA </option>
-                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Raid (90000HP) </option>
+                <option key={"raid-t1-dmax"} value={"raid-t1-dmax"}>Tier-1 Max Battle (1700HP) </option>
+                <option key={"raid-t2-dmax"} value={"raid-t2-dmax"}>Tier-2 Max Battle (5000HP) </option>
+                <option key={"raid-t3-dmax"} value={"raid-t3-dmax"}>Tier-3 Max Battle (10000HP) </option>
+                <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
+                <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (17500HP) </option>
+                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (90000HP) </option>
 
               </select>
 
@@ -540,7 +540,8 @@ export default function Home() {
                 raidMode={raidMode}
               />
             </CardContent>
-            <CardContent>
+            {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
+              <CardContent>
               <CardDescription> Damage dealt per MAX attack</CardDescription>
               <CalculateButtonDynamax
                 allEnglishText={allEnglishText}
@@ -555,6 +556,7 @@ export default function Home() {
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
               />
             </CardContent>
+            )}
         </Card>
       </div>
       
