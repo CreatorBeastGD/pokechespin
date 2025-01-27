@@ -59,6 +59,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [strategy, setStrategy] = useState<string[]>(searchParams.get("strategy")?.split(",") ?? ["dmg", "dmg", "dmg", "dmg"]);
+  const [win, setWin] = useState<boolean | null>(null);
+  const [phases, setPhases] = useState<number>(0);
   
   useEffect(() => {
     const loadParams = () => {
@@ -132,7 +134,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -140,6 +142,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau({attackerChargedAttackUses, defenderTargetAttackUses});
     setFaints(attackerFaints);
     setGraphic(battleLog);
+    setWin(win);
+    setPhases(dynamaxPhases);
   };
 
   const handleSwitch = (checked: boolean, handle: any) => {
@@ -231,25 +235,15 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time within given conditions. ({getRaidTime(raidMode)} seconds)
+            The chosen team has {win == true ? "WON" : "LOST"} in {Math.ceil(time / 500) / 2} seconds after {phases} Dynamax phases.
           </p>)}
           
           <p className="text-sm text-slate-700 italic">
-            This simulation takes in consideration a team of {teamCount} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)} casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
+            This simulation doesn't take in count any time spent during Dynamax phases.
           </p>
           <p className="text-sm text-slate-700 italic">
-            The simulation  {avoidCharged ? "takes" : "does not take"}  into consideration the use of dodges. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {relobbyTime} seconds in this simulation.
+            All attackers will dodge if a Targeted Attack is coming to it. This will reduce the damage taken by 50%.
           </p>
-          {avoidCharged && (
-            <p className="text-sm text-slate-700 italic">
-              The simulation takes into consideration that the attacker will dodge the next Charged Attack if it doesn't faint. This will reduce the damage taken by 75%.
-            </p>
-          )}
-          {enraged && (
-            <p className="text-sm text-slate-700 italic">
-              The simulation takes into consideration that the defender Pokémon can enrage. 8 purified gems need to be used in order to subdue an enraged Pokémon. {peopleCount === 1 ? "Using 8 purified gems while raiding solo is not possible (MAX. 5)" : ""}
-            </p>
-            )}
         {graphic && (
           <Card className="mt-4">
             <CardHeader>
@@ -260,7 +254,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               <CardDescription>
                 <div className="flex flex-col space-y-4">
                   {graphic.slice(0, visibleEntries).map((item: any, index: number) => (
-                    item.damage ? (
+                    (item.damage || item.damage === 0) ? (
                       <div key={index} className={"grid grid-cols-2 space-x-7 " + (item.attacker === "attacker" ? (item.dynamax ?"bg-pink-200" :"bg-green-200") : "bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
@@ -274,7 +268,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                         </div>
                       </div>
                     ) : (
-                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + ((item.dynamax || item.energy) ? "bg-pink-200" : "bg-slate-200") + " p-2 rounded-lg"}>
+                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + ((item.dynamax || item.energyGain) ? "bg-pink-200" : "bg-slate-200") + " p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
                           {(item.heal || item.dynamax) && (<p className="text-sm text-slate-700">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.attackerID.pokemonId) : defender.pokemonId), allEnglishText)}</span>{item.attacker === "attacker" && (" (member " + (item.member+1) + ")")}</p>)}
@@ -290,7 +284,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                             (item.purifiedgem ? "Purified Gem used." : 
                               item.subdued ? "Defender Pokémon Subdued." :
                                item.enraged ? "Defender Pokémon Enraged." : 
-                               item.energy ? ("Energy gained: " + item.energy) : 
+                               item.energyGain ? ("Energy gained: " + item.energyGain) : 
                                item.shield ? "Shield used." :
                                item.heal ? "Heal used." : ""
                             )}

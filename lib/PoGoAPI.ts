@@ -14,7 +14,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.9.3.1";
+        return "1.10";
     }
     
     static async getTypes () {
@@ -266,7 +266,6 @@ export class PoGoAPI {
             const move = allMoves.find((m: any) => {
                 return m.type === moveType && m.moveId && m.moveId.startsWith("MAX_") && (m.moveId).endsWith(maxMoveLevel === 1 ? "" : maxMoveLevel.toString());
             });
-            console.log(move)
             if (!move) {
                 return null;
             } else {
@@ -867,7 +866,7 @@ export class PoGoAPI {
     }
 
     static everyoneFaints(attackerFaints: any[][]) {
-        return attackerFaints.every((team) => team.every((pokemon) => pokemon === 1));
+        return attackerFaints.every((team) => team.every((pokemon) => pokemon === true));
     }
 
     static getDamageMultiplier(raidMode: any) {
@@ -884,25 +883,37 @@ export class PoGoAPI {
     static getHigherElementIndex(arr: any[]) {
         return arr.reduce((acc, val, index) => val > arr[acc] ? index : acc, 0);
     }
+    
 
     static getHigherElementIndexNotDead(arr: any[], faints: any[]) {
-        const highestIndex = arr.reduce((acc, val, index) => val > arr[acc] && faints[index] === 0 ? index : acc, 0);
-        
-        // Verificar si todos los elementos están muertos
-        const allDead = faints.every(faint => faint !== 0);
-        
-        // Si todos están muertos, devolver el índice 3
-        return allDead ? 3 : highestIndex;
+        let indexList = [];
+        let valueList = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (faints[i] === false) {
+                indexList.push(i);
+                valueList.push(arr[i]);
+            }
+        }
+        console.log(indexList)
+        if (indexList.length === 0) {
+            return 3;
+        } else {
+            return indexList[this.getHigherElementIndex(valueList)];
+        }
     }
 
-    static allActiveMembersFullyHealed(health: any[][], maxHealth: any[][], selected: any[]) {
-        return health.every((team, index) => team.every((pokemon, index2) => pokemon === maxHealth[index][index2] || selected[index][index2] === 0));
+    static allActiveMembersFullyHealed(health: any[][], selected: any[]) {
+        for (let i = 0; i < selected.length; i++) {
+            if (health[i][selected[i]] > 0) {
+                return false;
+            }
+        }
+        return true
+
     }
 
     static chooseRandomTargetWithShieldsOrAny(shields: any[][], selected: any[]) {
         // Obtener los valores de shields basados en los índices de selected
-        console.log('Shields:', shields);
-        console.log('Selected:', selected);
         let list = [];
 
         for (let i = 0; i < selected.length; i++) {
@@ -911,7 +922,6 @@ export class PoGoAPI {
             }
         }
 
-        console.log('Attackers with Shields:', list);
     
         // Si hay atacantes con escudos, elegir uno aleatorio
         if (list.length > 0) {
@@ -936,8 +946,6 @@ export class PoGoAPI {
         attackerMaxMoves: any[][],
         strategy: string[] = []
     ) {
-        console.log(attackers, defender, attackersQuickMove, attackersCinematicMove, attackersStats, defenderLargeAttack, defenderTargetAttack, raidMode);
-        
         let defenderStats = this.convertStats([40,15,15,15], raidMode);
         
         let attackerDamageStart = [-1, -1, -1, -1];
@@ -947,25 +955,25 @@ export class PoGoAPI {
         let defenderEnergy = 300;
         let activePokemon = [0, 0, 0, 0];
         const attackerMaxHP = [[
-            Calculator.getEffectiveStamina(attackers[0][0].stats.baseStamina, attackersStats[0][0][3], attackersStats[0][0][0]),
-            Calculator.getEffectiveStamina(attackers[0][1].stats.baseStamina, attackersStats[0][1][3], attackersStats[0][1][0]),
-            Calculator.getEffectiveStamina(attackers[0][2].stats.baseStamina, attackersStats[0][2][3], attackersStats[0][2][0])
+            Math.floor(Calculator.getEffectiveStamina(attackers[0][0].stats.baseStamina, attackersStats[0][0][3], attackersStats[0][0][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[0][1].stats.baseStamina, attackersStats[0][1][3], attackersStats[0][1][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[0][2].stats.baseStamina, attackersStats[0][2][3], attackersStats[0][2][0]))
         ], [
-            Calculator.getEffectiveStamina(attackers[1][0].stats.baseStamina, attackersStats[1][0][3], attackersStats[1][0][0]),
-            Calculator.getEffectiveStamina(attackers[1][1].stats.baseStamina, attackersStats[1][1][3], attackersStats[1][1][0]),
-            Calculator.getEffectiveStamina(attackers[1][2].stats.baseStamina, attackersStats[1][2][3], attackersStats[1][2][0])
+            Math.floor(Calculator.getEffectiveStamina(attackers[1][0].stats.baseStamina, attackersStats[1][0][3], attackersStats[1][0][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[1][1].stats.baseStamina, attackersStats[1][1][3], attackersStats[1][1][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[1][2].stats.baseStamina, attackersStats[1][2][3], attackersStats[1][2][0]))
         ], [
-            Calculator.getEffectiveStamina(attackers[2][0].stats.baseStamina, attackersStats[2][0][3], attackersStats[2][0][0]),
-            Calculator.getEffectiveStamina(attackers[2][1].stats.baseStamina, attackersStats[2][1][3], attackersStats[2][1][0]),
-            Calculator.getEffectiveStamina(attackers[2][2].stats.baseStamina, attackersStats[2][2][3], attackersStats[2][2][0])
+            Math.floor(Calculator.getEffectiveStamina(attackers[2][0].stats.baseStamina, attackersStats[2][0][3], attackersStats[2][0][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[2][1].stats.baseStamina, attackersStats[2][1][3], attackersStats[2][1][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[2][2].stats.baseStamina, attackersStats[2][2][3], attackersStats[2][2][0]))
         ], [
-            Calculator.getEffectiveStamina(attackers[3][0].stats.baseStamina, attackersStats[3][0][3], attackersStats[3][0][0]),
-            Calculator.getEffectiveStamina(attackers[3][1].stats.baseStamina, attackersStats[3][1][3], attackersStats[3][1][0]),
-            Calculator.getEffectiveStamina(attackers[3][2].stats.baseStamina, attackersStats[3][2][3], attackersStats[3][2][0])
+            Math.floor(Calculator.getEffectiveStamina(attackers[3][0].stats.baseStamina, attackersStats[3][0][3], attackersStats[3][0][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[3][1].stats.baseStamina, attackersStats[3][1][3], attackersStats[3][1][0])),
+            Math.floor(Calculator.getEffectiveStamina(attackers[3][2].stats.baseStamina, attackersStats[3][2][3], attackersStats[3][2][0]))
         ]];
         let attackerHealth = attackerMaxHP.map(team => team.map(pokemon => pokemon));
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
-        let attackerFaints = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        
         let attackerEvades = [false, false, false, false];
         let attackerFaint = [false, false, false, false];
         let attackerDamage = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
@@ -988,6 +996,9 @@ export class PoGoAPI {
         let shieldHP = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
         let shieldHPMAX = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
+        let win = false;
+        let dynamaxPhases = 0;
+
         for (let i = 0 ; i < 4 ; i++) {
             for (let j = 0 ; j < 3 ; j++) {
                 shieldHP[i][j] = 0;
@@ -1009,20 +1020,27 @@ export class PoGoAPI {
                 // Percentage of health remaining after one targeted and one large attack
                 tankScore[i][j] = ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0]) - this.getDamageMultiplier(raidMode) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderLargeAttack, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode)) + (Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0]) - this.getDamageMultiplier(raidMode) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderTargetAttack, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode))) / 2
                 // Highest PS
-                let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : 0.16);
+                let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : (attackerMaxMoves[i][activePokemon[i]][2] === 3 ? 0.16 : 0));
                 let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
                 healScore[i][j] = healAmount
             }
         }
 
-        activePokemon = [this.getHigherElementIndex(tankScore[0]), this.getHigherElementIndex(tankScore[1]), this.getHigherElementIndex(tankScore[2]), this.getHigherElementIndex(tankScore[3])];
-        console.log(activePokemon);
+        // activePokemon = [this.getHigherElementIndex(tankScore[0]), this.getHigherElementIndex(tankScore[1]), this.getHigherElementIndex(tankScore[2]), this.getHigherElementIndex(tankScore[3])];
+        // console.log(activePokemon);
 
         let targeted = false;
         let target = 0;
 
 
         const dynamaxDelays = this.getDynamaxRaidDelays(raidMode);
+        defenderDamageStart = -dynamaxDelays[0];
+
+        let attackerFaints = [[false, false, false], [false, false, false], [false, false, false], [false, false, false]];
+        let totalfaints = 0;
+
+        let pokemonCanParticipate = [[true, true, true], [true, true, true], [true, true, true], [true, true, true]];
+        console.log(pokemonCanParticipate)
 
         while (this.sumAllElements(attackerDamage) <= defenderHealth) {
             for (let i = 0 ; i < 4 ; i++) {
@@ -1073,12 +1091,12 @@ export class PoGoAPI {
                         maxEnergy = 100;
                     }
                     maxEnergyGain += maxEnergy;
-                    console.log(time)
                     battleLog.push({"turn": time,"attacker":"attacker", "attackerID": attackers[i][activePokemon[i]], "move": attackerMove[i].moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i});
-                    // End of simulation
+                    // End of simulation, defender faints
                     if (this.sumAllElements(attackerDamage) >= defenderHealth) {
                         battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
                         simGoing = false;
+                        win = true;
                         break;
                     }
                 }
@@ -1090,13 +1108,14 @@ export class PoGoAPI {
                 }
             }
             if (maxEnergyGain > 0 && simGoing) {
-                battleLog.push({"turn": time, "attacker": "energy", "energy": maxEnergy});
+                battleLog.push({"turn": time, "attacker": "energy", "energyGain": maxEnergy});
                 maxEnergyGain = 0;
             }
             if (maxEnergy >= 100) {
                 maxEnergy = 0;
                 attackerDamageStart = [-1000, -1000, -1000, -1000];
                 defenderDamageStart = -3000;
+                dynamaxPhases++;
                 // Attackers swap their pokemon to match their role
                 for (let i = 0 ; i < 4 ; i++) {
                     if (strategy[i] === "dmg") {
@@ -1113,57 +1132,58 @@ export class PoGoAPI {
                 // Order for Heal -> Heal -> Shield -> Attack
                 for (let turn = 0 ; turn < 3 ; turn++) {
                     for (let i = 0 ; i < 4 ; i++) {
-                        const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0]);
-                        const maxMoveDamage = this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode);
-                        if (strategy[i] === "dmg") {
-                            // Attacker will cast its max move
-                            const projectedDamage = maxMoveDamage;
-                            tdo[i] += projectedDamage;
-                            attackerDamage[i][activePokemon[i]] += projectedDamage;
-                            battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "move": dmaxAttack.moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i, "dynamax": true});
-                        } else if (strategy[i] === "tank") {
-                            console.log("Tank " + i)
-                            console.log("Shield HP: " + shieldHP[i][activePokemon[i]])
-                            console.log("Shield HP MAX: " + shieldHPMAX[i][activePokemon[i]])
-                            console.log("Attacker Max Move: " + attackerMaxMoves[i][activePokemon[i]][1])
-                            if (attackerMaxMoves[i][activePokemon[i]][1] > 0 && shieldHP[i][activePokemon[i]] <= ((shieldHPMAX[i][activePokemon[i]]) - (20 * attackerMaxMoves[i][activePokemon[i]][1]))) {
-                                shieldHP[i][activePokemon[i]] += (20 * attackerMaxMoves[i][activePokemon[i]][1]);
-                                battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "shield": true, "member": i, "dynamax": true});
-                            } else {  
+                        if (activePokemon[i] < 3) {
+                            const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0]);
+                            const maxMoveDamage = this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode);
+                            if (strategy[i] === "dmg") {
+                                // Attacker will cast its max move
                                 const projectedDamage = maxMoveDamage;
                                 tdo[i] += projectedDamage;
                                 attackerDamage[i][activePokemon[i]] += projectedDamage;
-                                
                                 battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "move": dmaxAttack.moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i, "dynamax": true});
-                            }
-                        } else if (strategy[i] === "heal") {
-                            if (attackerMaxMoves[i][activePokemon[i]][2] > 0 && this.allActiveMembersFullyHealed(attackerHealth, attackerMaxHP, activePokemon)) {
-                                let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : 0.16);
-                                let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
-                                for (let j = 0 ; j < 4 ; j++) {
-                                    attackerHealth[j][activePokemon[j]] += healAmount;
-                                    if (attackerHealth[j][activePokemon[j]] > attackerMaxHP[j][activePokemon[j]]) {
-                                        attackerHealth[j][activePokemon[j]] = attackerMaxHP[j][activePokemon[j]];
-                                    }
+                            } else if (strategy[i] === "tank") {
+                                if (attackerMaxMoves[i][activePokemon[i]][1] > 0 && shieldHP[i][activePokemon[i]] <= ((shieldHPMAX[i][activePokemon[i]]) - (20 * attackerMaxMoves[i][activePokemon[i]][1]))) {
+                                    shieldHP[i][activePokemon[i]] += (20 * attackerMaxMoves[i][activePokemon[i]][1]);
+                                    battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "shield": true, "member": i, "dynamax": true});
+                                } else {  
+                                    const projectedDamage = maxMoveDamage;
+                                    tdo[i] += projectedDamage;
+                                    attackerDamage[i][activePokemon[i]] += projectedDamage;
+                                    
+                                    battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "move": dmaxAttack.moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i, "dynamax": true});
                                 }
-                                battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "heal": true, "member": i, "dynamax": true});
-                            }
-                            else if (attackerMaxMoves[i][activePokemon[i]][1] > 0 && shieldHP[i][activePokemon[i]] < (shieldHPMAX[i][activePokemon[i]]) - (20 * attackerMaxMoves[i][activePokemon[i]][1])) {
-                                shieldHP[i][activePokemon[i]] += (20 * attackerMaxMoves[i][activePokemon[i]][1]);
-                                battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "shield": true, "member": i, "dynamax": true});
-                            } else {
-                                const projectedDamage = maxMoveDamage;
-                                tdo[i] += projectedDamage;
-                                attackerDamage[i][activePokemon[i]] += projectedDamage;
-                                
-                            battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "move": dmaxAttack.moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i, "dynamax": true});
+                            } else if (strategy[i] === "heal") {
+                                if (attackerMaxMoves[i][activePokemon[i]][2] > 0 && !this.allActiveMembersFullyHealed(defenderDamage, activePokemon)) {
+                                    let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : 0.16);
+                                    let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
+                                    for (let j = 0 ; j < 4 ; j++) {
+                                        defenderDamage[j][activePokemon[j]] -= healAmount;
+                                        if (defenderDamage[j][activePokemon[j]] < 0) {
+                                            defenderDamage[j][activePokemon[j]] = 0;
+                                        }
+                                        //console.log("Healed pokémon: " + defenderDamage[j][activePokemon[j]] + "/" + attackerHealth[j][activePokemon[j]]);
+                                    }
+                                    battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "heal": true, "member": i, "dynamax": true});
+                                }
+                                else if (attackerMaxMoves[i][activePokemon[i]][1] > 0 && shieldHP[i][activePokemon[i]] < (shieldHPMAX[i][activePokemon[i]]) - (20 * attackerMaxMoves[i][activePokemon[i]][1])) {
+                                    shieldHP[i][activePokemon[i]] += (20 * attackerMaxMoves[i][activePokemon[i]][1]);
+                                    battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "shield": true, "member": i, "dynamax": true});
+                                } else {
+                                    const projectedDamage = maxMoveDamage;
+                                    tdo[i] += projectedDamage;
+                                    attackerDamage[i][activePokemon[i]] += projectedDamage;
+                                    
+                                battleLog.push({"turn": time, "attacker": "attacker", "attackerID": attackers[i][activePokemon[i]], "move": dmaxAttack.moveId, "damage": projectedDamage, "energy": attackerEnergy[i][activePokemon[i]], "stackedDamage": this.sumAllElements(attackerDamage), "health": defenderHealth, "member": i, "dynamax": true});
+                                }
                             }
                         }
                         
                     }
+                    // Defender faints, end of simulation
                     if (this.sumAllElements(attackerDamage) >= defenderHealth) {
                         battleLog.push({"turn": time, "attacker": "defender", "relobby": false});
                         simGoing = false;
+                        win = true;
                         break;
                     }
                 }
@@ -1219,7 +1239,6 @@ export class PoGoAPI {
                         defenderDamage[target][activePokemon[target]] += finalDamageReduced;
                         attackerEnergy[target][activePokemon[target]] += Math.floor(finalDamage / 2);
                         battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]]});
-                        console.log("Defender deals damage " + finalDamageReduced + " with move " + defenderMove.moveId + " at time " + time + " to attacker " + target);
                     }
                 } else {
                     for (let i = 0 ; i < 4 ; i++) {
@@ -1237,21 +1256,25 @@ export class PoGoAPI {
                             defenderDamage[i][activePokemon[i]] += finalDamageReduced;
                             attackerEnergy[i][activePokemon[i]] += Math.floor(finalDamage / 2);
                             battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]]});
-                            console.log("Defender deals damage " + finalDamageReduced + " with move " + defenderMove.moveId + " at time " + time + " to attacker " + i);
                         }
                     }
                 }
                 // Attacker faints
                 for (let i = 0 ; i < 4 ; i++) {
                     if (defenderDamage[i][activePokemon[i]] >= attackerHealth[i][activePokemon[i]]) {
+                        console.log(activePokemon)
                         attackerEnergy[i][activePokemon[i]] = 0;
-                        attackerFaints[i][activePokemon[i]]++;
+                        attackerFaints[i][activePokemon[i]] = true;
                         defenderDamage[i][activePokemon[i]] = 0;
+                        totalfaints++;
                         attackerFaint[i] = true;
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo[i]});
                         activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
                         attackerDamageStart[i] = -1000;
                         tdo[i] = 0;
+                        console.log(attackerFaints)
+                        console.log("Attacker " + i + " fainted at time " + time);
+                        console.log(activePokemon)
                     }
                 }
             }
@@ -1275,6 +1298,7 @@ export class PoGoAPI {
             if (this.everyoneFaints(attackerFaints)) {
                 simGoing = false;
                 battleLog.push({"turn": time, "lost": true});
+                win = false;
 
             }
 
@@ -1286,37 +1310,9 @@ export class PoGoAPI {
             
         }
         console.log("Simulation was done! " + time);
+        console.log(totalfaints);
         console.log(attackerDamage);
-        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage};
-            
-
-        // attackers is an array where the first index is the member, and the second index is the pokemon
-
-        // Each member has a team of 3 pokémon, and each pokémon has a quick move and a charged move
-
-        // Only one pokemon from each member is attacking at a time, which is considered the "active" pokémon
-
-        // There is a bar of energy that is shared between all members.
-
-        // The energy bar will be filled with any attack that is casted by the members.
-
-        // Once the energy bar reaches 100, dynamax phase will occur
-
-        // Dynamax phase will last 3 turns, and the energy bar will be reset to 0
-
-        // Dynamax phase doesnt contribute to time.
-
-        // During dynamax phase, each member may cast a max attack, max shield or max heal if they have them available
-
-        // Defender will attack each window of time, given by its raid mode
-
-        // A member may dodge a targeted attack, reducing the damage by 50%
-
-        // A large attack will deal damage to all active pokémon
-
-        // A targeted attack will deal damage to one pokémon, selected by random, or the last one to set up shields.
-
-        // 
+        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }
 
     static formatMoveName(moveName: string) {

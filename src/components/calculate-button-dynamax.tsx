@@ -33,10 +33,7 @@ export default function CalculateButtonDynamax({
   const [effStamina, setEffStamina] = useState<number | null>(0);
 
   
-  console.log(move);
   useEffect(() => {
-    console.log("CHANGED");
-    console.log(move);
     setDamage(0);
     setHealth(0);
   }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, maxLevel]);

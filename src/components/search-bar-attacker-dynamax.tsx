@@ -99,17 +99,36 @@ export default function SearchBarAttackerDynamax({
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    setTimeout(() => {
+      if (moveId !== "") {
+        console.log("attacker_fast_attack"+member+""+number);
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      } else {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete("attacker_fast_attack"+member+""+number);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }
+    }, 1);
   };
 
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    console.log(moveId);
+    setTimeout(() => {
+      if (moveId !== "") {
+        console.log("attacker_cinematic_attack"+member+""+number);
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      } else {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }
+    }, 1);
   }
 
   const handleStatsSelect = (stats: any) => {
@@ -183,11 +202,13 @@ export default function SearchBarAttackerDynamax({
       onSelect(response, member, number);
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
       setAvailableForms(allForms);// Construir nueva URL
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
-      newSearchParams.delete("attacker_fast_attack"+member+""+number);
-      newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      setTimeout(() => {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
+        newSearchParams.delete("attacker_fast_attack"+member+""+number);
+        newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }, 1);
     } finally {
       setLoading(false);
     }
@@ -202,12 +223,13 @@ export default function SearchBarAttackerDynamax({
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
       onSelect(response, member, number);
-      const newSearchParams = new URLSearchParams(searchParams.toString());    
-      newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
-      newSearchParams.delete("attacker_fast_attack"+member+""+number);
-      newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
-      
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      setTimeout(() => {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
+        newSearchParams.delete("attacker_fast_attack"+member+""+number);
+        newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }, 1);
     } finally {
       setLoading(false);
     }

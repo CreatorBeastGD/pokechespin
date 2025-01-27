@@ -109,7 +109,7 @@ export class Calculator {
         8003: 0.5,
         8004: 0.6,
         8005: 0.7,
-        8006: 0.85,
+        8006: 1.035,
     };
 
       private static RAID_BOSS_HP: { [raidMode: string]: number } = {
@@ -127,7 +127,7 @@ export class Calculator {
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
         "raid-t5-dmax": 17500,
-        "raid-t6-gmax": 90000,
+        "raid-t6-gmax": 120000,
       }
 
       static getRaidBossHP(raidMode: string) {

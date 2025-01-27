@@ -505,7 +505,7 @@ export default function Home() {
                 <option key={"raid-t3-dmax"} value={"raid-t3-dmax"}>Tier-3 Max Battle (10000HP) </option>
                 <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (17500HP) </option>
-                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (90000HP) </option>
+                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (120000HP) </option>
 
               </select>
 
@@ -569,7 +569,7 @@ export default function Home() {
             )}
             {allPokemonSelected() ? (
               <CardContent>
-                <CardDescription>Max Battle Simulation</CardDescription>
+                <CardDescription>Max Battle Simulation (Beta)</CardDescription>
                 <CalculateButtonSimulateAdvancedDynamax 
                   allEnglishText={allEnglishText}
                   attacker={attackingPokemon} 
@@ -588,7 +588,7 @@ export default function Home() {
               </CardContent>
             ) : (
               <CardContent>
-                <p>You must select all Pokémon and moves to be able to simulate a Max Battle! (All boxes should be displayed in green)</p>
+                <CardDescription>You must select all Pokémon and moves to be able to simulate a Max Battle! (All boxes should be displayed in green)</CardDescription>
               </CardContent>
             )
             }
