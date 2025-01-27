@@ -10,6 +10,7 @@ import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { Calculator } from "../../lib/calculations";
 
 export default function CalculateButtonSimulateAdvancedDynamax({
   attacker,
@@ -53,7 +54,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [teamCount, setTeamCount] = useState<number>(parseInt(searchParams.get("pokemon_team_number") ?? "6"));
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
   const [avoidCharged, setAvoidCharged] = useState<boolean>(searchParams.get("can_dodge") === "true");
-  const [attackerDamage, setAttackerDamage] = useState<number>(0);
+  const [attackerDamage, setAttackerDamage] = useState<any[][]>([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
   const [loading, setLoading] = useState<boolean>(false);
   const [visibleEntries, setVisibleEntries] = useState(50);
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
@@ -128,6 +129,16 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       return "Normal";
     }
   }
+  
+  const sumAllDamage = () => {
+    let sum = 0;
+    for (let i = 0; i < attackerDamage.length; i++) {
+      for (let j = 0; j < attackerDamage[i].length; j++) {
+        sum += attackerDamage[i][j];
+      }
+    }
+    return sum;
+  }
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove || !largeAttack || !targetAttack) return;
@@ -144,6 +155,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setGraphic(battleLog);
     setWin(win);
     setPhases(dynamaxPhases);
+    setAttackerDamage(attackerDamage);
   };
 
   const handleSwitch = (checked: boolean, handle: any) => {
@@ -162,7 +174,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setQau(0);
     setCau(0);
     setGraphic(null);
-    setAttackerDamage(0);
+    setAttackerDamage([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
   }, [strategy]);
 
   useEffect(() => {
@@ -170,7 +182,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setQau(0);
     setCau(0);
     setGraphic(null);
-    setAttackerDamage(0);
+    setAttackerDamage([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
   } , [raidMode]);
 
   const getRequiredPeople = (raidMode: string) => {
@@ -235,14 +247,30 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            The chosen team has {win == true ? "WON" : "LOST"} in {Math.ceil(time / 500) / 2} seconds after {phases} Dynamax phases.
+            The chosen team has {win == true ? "WON" : "LOST"} the Max Battle in {Math.ceil(time / 500) / 2} seconds after {phases} Dynamax phases.
           </p>)}
+
+          {win == false && (
+            <p> The defender Pokémon has {Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)-sumAllDamage()}/{Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)} HP left.</p>
+          )}
           
           <p className="text-sm text-slate-700 italic">
             This simulation doesn't take in count any time spent during Dynamax phases.
           </p>
           <p className="text-sm text-slate-700 italic">
             All attackers will dodge if a Targeted Attack is coming to it. This will reduce the damage taken by 50%.
+          </p>
+
+          <p className="text-sm text-slate-700 italic">
+            All members will swap to their best Pokémon following their role when starting a new Dynamax phase, and will change to their best tank when finishing it.
+          </p>
+
+          <p className="text-sm text-slate-700 italic">
+            The defender Pokémon will become enraged when 300s of simulation are reached, dealing x4 damage. Will also become desperate when 360s of simulation are reached, instant-killing everything upon attack.
+          </p>
+
+          <p className="text-sm text-slate-700 italic font-bold">
+            Dynamax Simulator is in beta, results may not be accurate and more updates are planned for the future. Please report any bugs to CreatorBeastGD via Reddit or GitHub.
           </p>
         {graphic && (
           <Card className="mt-4">
@@ -282,11 +310,11 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                           {item.dodge ? 
                             (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
                             (item.purifiedgem ? "Purified Gem used." : 
-                              item.subdued ? "Defender Pokémon Subdued." :
-                               item.enraged ? "Defender Pokémon Enraged." : 
+                              item.desperate ? "The defender Pokémon is getting desperate!" :
+                               item.enraged ? "Defender Pokémon' attacks are getting stronger!." : 
                                item.energyGain ? ("Energy gained: " + item.energyGain) : 
-                               item.shield ? "Shield used." :
-                               item.heal ? "Heal used." : ""
+                               item.shield ? "Shield used by member " + (item.member+1) :
+                               item.heal ? "Heal used by member " + (item.member+1) : ""
                             )}
                           <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                         </div>

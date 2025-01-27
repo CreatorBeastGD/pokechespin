@@ -52,10 +52,16 @@ export default function RootLayout({
               <p>Buy me a Chespin!</p>
             </a>
           </div>
+          <p className="textslate text-xs text-center w-1/2 text-right mb-2 mt-2">
+            Thanks for 1000 views! 🎉
+          </p>
         </div>
         
-        <Analytics />
+        
       </body>
     </html>
   );
 }
+
+
+// <Analytics /> disabled due to limitations

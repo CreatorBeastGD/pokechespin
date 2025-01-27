@@ -869,8 +869,12 @@ export class PoGoAPI {
         return attackerFaints.every((team) => team.every((pokemon) => pokemon === true));
     }
 
-    static getDamageMultiplier(raidMode: any) {
-        if (raidMode === "raid-t5-dmax") {
+    static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean) {
+        if (desperate) {
+            return 999;
+        } if (enraged) {
+            return 4;
+        } if (raidMode === "raid-t5-dmax") {
           return 2;
         }
         return 1;
@@ -990,6 +994,7 @@ export class PoGoAPI {
         let firstDmgReduction = [false, false, false, false];
         let attackerMove: (typeof attackersQuickMove[0][0] | typeof attackersCinematicMove[0][0] | null)[] = [null, null, null, null];
         let defenderMove = null;
+        let enraged = false;
         let desperate = false;
         let simGoing = true;
 
@@ -1047,7 +1052,7 @@ export class PoGoAPI {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
-                    const projectedDamageDefender = this.getDamageMultiplier(raidMode) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
+                    const projectedDamageDefender = this.getDamageMultiplier(raidMode, enraged, desperate) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
                     if (projectedDamageDefender < attackerHealth[i][activePokemon[i]]) {
                         // Attacker i evades the move
                         attackerEvades[i] = true;
@@ -1226,7 +1231,7 @@ export class PoGoAPI {
                 
                 if (targeted) {
                     if (activePokemon[target] < 3) {
-                        const projectedDamageDefender = (attackerEvades[target] ? 1 : 2) * this.getDamageMultiplier(raidMode) * this.getDamage(defender, attackers[target][activePokemon[target]], defenderMove, types, defenderStats, attackersStats[target][activePokemon[target]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
+                        const projectedDamageDefender = (attackerEvades[target] ? 1 : 2) * this.getDamageMultiplier(raidMode, enraged, desperate) * this.getDamage(defender, attackers[target][activePokemon[target]], defenderMove, types, defenderStats, attackersStats[target][activePokemon[target]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
                         const finalDamage = Math.floor(projectedDamageDefender);
                         let finalDamageReduced = finalDamage;
                         if (finalDamage > shieldHP[target][activePokemon[target]]) {
@@ -1243,7 +1248,7 @@ export class PoGoAPI {
                 } else {
                     for (let i = 0 ; i < 4 ; i++) {
                         if (activePokemon[i] < 3) {
-                            const projectedDamageDefender = this.getDamageMultiplier(raidMode) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
+                            const projectedDamageDefender = this.getDamageMultiplier(raidMode, enraged, desperate) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode);
                             const finalDamage = Math.floor(projectedDamageDefender);
                             let finalDamageReduced = finalDamage;
                             if (finalDamage > shieldHP[i][activePokemon[i]]) {
@@ -1299,10 +1304,17 @@ export class PoGoAPI {
                 simGoing = false;
                 battleLog.push({"turn": time, "lost": true});
                 win = false;
-
             }
 
             time++;
+
+            if (time === 300000) {
+                enraged = true;
+                battleLog.push({"turn": time, "enraged": true});
+            } if (time === 360000) {
+                desperate = true;
+                battleLog.push({"turn": time, "desperate": true});
+            }
             if (!simGoing) {
                 break;
             }
