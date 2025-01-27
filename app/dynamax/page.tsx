@@ -221,8 +221,18 @@ export default function Home() {
       );
       setAttackingPokemon(newAttackingPokemon);
     }
-    
   };
+
+  function allPokemonSelected() {
+    for (let i = 0; i < attackingPokemon.length; i++) {
+      for (let j = 0; j < attackingPokemon[i].length; j++) {
+        if (attackingPokemon[i][j] === null || attackingPokemon[i][j] === undefined || selectedQuickMoveAttacker[i][j] === null || selectedQuickMoveAttacker[i][j] === undefined || selectedChargedMoveAttacker[i][j] === null || selectedChargedMoveAttacker[i][j] === undefined) {
+          return false;
+        }
+      }
+    }
+    return true
+  }
 
 
   const handleDefenderSelect = (pokemon: any) => {
@@ -557,6 +567,31 @@ export default function Home() {
               />
             </CardContent>
             )}
+            {allPokemonSelected() ? (
+              <CardContent>
+                <CardDescription>Max Battle Simulation</CardDescription>
+                <CalculateButtonSimulateAdvancedDynamax 
+                  allEnglishText={allEnglishText}
+                  attacker={attackingPokemon} 
+                  defender={defendingPokemon} 
+                  quickMove={selectedQuickMoveAttacker} 
+                  chargedMove={selectedChargedMoveAttacker}
+                  largeAttack={selectedQuickMoveDefender}
+                  targetAttack={selectedChargedMoveDefender}
+                  attackerStats={attackerStats}
+                  defenderStats={defenderStats}
+                  bonusAttacker={bonusAttacker}
+                  bonusDefender={bonusDefender}
+                  raidMode={raidMode}
+                  maxMoves={maxMoves}
+                />
+              </CardContent>
+            ) : (
+              <CardContent>
+                <p>You must select all Pokémon and moves to be able to simulate a Max Battle! (All boxes should be displayed in green)</p>
+              </CardContent>
+            )
+            }
         </Card>
       </div>
       

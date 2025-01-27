@@ -58,7 +58,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [visibleEntries, setVisibleEntries] = useState(50);
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
-
+  const [strategy, setStrategy] = useState<string[]>(searchParams.get("strategy")?.split(",") ?? ["dmg", "dmg", "dmg", "dmg"]);
   
   useEffect(() => {
     const loadParams = () => {
@@ -67,6 +67,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       const pokemon_team_number = searchParams.get("pokemon_team_number");
       const relobby_time = searchParams.get("relobby_time");
       const teams_number = searchParams.get("teams_number");
+      const strategy = searchParams.get("strategy");
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
@@ -82,6 +83,10 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       }
       if (teams_number) {
         setPeopleCount(parseInt(teams_number));
+      }
+
+      if (strategy) {
+        setStrategy(strategy.split(","));
       }
     }
 
@@ -127,7 +132,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage } = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -143,18 +148,10 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
   useEffect(() => {
 
-    setTeamCount(teamCount);
-    setRelobbyTime(relobbyTime);
-    setAvoidCharged(avoidCharged);
-    setPeopleCount(peopleCount);
-    setEnraged(enraged);
+    setStrategy(strategy);
     
     const sp = new URLSearchParams(searchParams.toString());
-    sp.set("can_dodge", avoidCharged.toString());
-    sp.set("enraged", enraged.toString());
-    sp.set("pokemon_team_number", teamCount.toString());
-    sp.set("relobby_time", relobbyTime.toString());
-    sp.set("teams_number", peopleCount.toString());
+    sp.set("strategy", strategy.join(","));
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -162,7 +159,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [teamCount, relobbyTime, avoidCharged, peopleCount, enraged]);
+  }, [strategy]);
 
   useEffect(() => {
     setTime(0);
@@ -198,12 +195,31 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   function handlePeopleCount(value: number[]): void {
     setPeopleCount(value[0]);
   }
-
+  const handleStrategyChange = (index: number, value: string) => {
+    const newStrategies = [...strategy];
+    newStrategies[index] = value;
+    setStrategy(newStrategies);
+  };
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
+      <div>
+      {Array.from({ length: 4 }, (_, i) => (
+        <div key={i}>
+          <label>Member {i + 1} Strategy:</label>
+          <select className="w-full p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            value={strategy[i]}
+            onChange={(e) => handleStrategyChange(i, e.target.value)}
+          >
+            <option value="dmg">DPS</option>
+            <option value="tank">Tank</option>
+            <option value="heal">Healer</option>
+          </select>
+        </div>
+      ))}
+    </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
@@ -245,7 +261,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                 <div className="flex flex-col space-y-4">
                   {graphic.slice(0, visibleEntries).map((item: any, index: number) => (
                     item.damage ? (
-                      <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
+                      <div key={index} className={"grid grid-cols-2 space-x-7 " + (item.attacker === "attacker" ? (item.dynamax ?"bg-pink-200" :"bg-green-200") : "bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
                           <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.attackerID.pokemonId) : defender.pokemonId), allEnglishText)}</span>{item.attacker === "attacker" && (" (member " + (item.member+1) + ")")}</p>
@@ -258,9 +274,10 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                         </div>
                       </div>
                     ) : (
-                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + (item.energy ? "bg-pink-300" : "bg-slate-200") + " p-2 rounded-lg"}>
+                      <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 " + ((item.dynamax || item.energy) ? "bg-pink-200" : "bg-slate-200") + " p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
+                          {(item.heal || item.dynamax) && (<p className="text-sm text-slate-700">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.attackerID.pokemonId) : defender.pokemonId), allEnglishText)}</span>{item.attacker === "attacker" && (" (member " + (item.member+1) + ")")}</p>)}
                         </div>
                         <div className="flex flex-col space-y-1">
                           {(item.relobby === true || item.relobby === false) ? 
@@ -273,7 +290,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                             (item.purifiedgem ? "Purified Gem used." : 
                               item.subdued ? "Defender Pokémon Subdued." :
                                item.enraged ? "Defender Pokémon Enraged." : 
-                               item.energy ? (item.energy == 100 ? "Starting Dynamax phase." : "Energy gained: " + item.energy) : "" 
+                               item.energy ? ("Energy gained: " + item.energy) : 
+                               item.shield ? "Shield used." :
+                               item.heal ? "Heal used." : ""
                             )}
                           <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                         </div>
