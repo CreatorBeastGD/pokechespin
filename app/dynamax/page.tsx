@@ -41,8 +41,10 @@ export default function Home() {
   const [maxMoves, setMaxMoves] = useState<any|null>(Array(4).fill(Array(3).fill([1,0,0])));
   const [defenderStats, setDefenderStats] = useState<any | null>([40, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("raid-t1-dmax");
-  const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(4).fill(Array(3).fill(["EXTREME", false, false, 0])));
-  const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
+  
+  const [weather, setWeather] = useState<any>(searchParams.get("weather") ? searchParams.get("weather") : "EXTREME");
+  const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(4).fill(Array(3).fill([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0])));
+  const [bonusDefender, setBonusDefender] = useState<any[]>([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0]);
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
   const [searchBarNames, setSearchBarNames] = useState<any>(null);
   const [allMoves, setAllMoves] = useState<any>(null);
@@ -243,6 +245,20 @@ export default function Home() {
       setSelectedChargedMoveDefender(null);
     }
   };
+  
+
+  const handleWeatherSelect = (weatherBoost: any) => {
+    setWeather(weatherBoost);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("weather", weatherBoost);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+    setBonusAttacker(Array(4).fill(Array(3).fill([weatherBoost, false, false, 0])))
+    
+    setBonusDefender([weatherBoost, bonusDefender[1], bonusDefender[2], bonusDefender[3]]);
+  }
+    
 
   const handleQuickMoveSelectAttacker = (moveId: any, move: any, member: any, slot: any) => {
     if (move !== undefined) {
@@ -497,6 +513,17 @@ export default function Home() {
             <CardContent>
               
             
+            <p className="italic text-slate-700 text-sm">Weather: </p>
+              <select onChange={(e) => handleWeatherSelect(e.target.value)} value={weather} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                <option key={"EXTREME"} value={"EXTREME"}>Extreme</option>
+                <option key={"CLOUDY"} value={"CLOUDY"}>Cloudy</option>
+                <option key={"RAINY"} value={"RAINY"}>Rainy</option>
+                <option key={"SUNNY"} value={"SUNNY"}>Sunny</option>
+                <option key={"PARTLY_CLOUDY"} value={"PARTLY_CLOUDY"}>Partly Cloudy</option>
+                <option key={"WINDY"} value={"WINDY"}>Windy</option>
+                <option key={"SNOW"} value={"SNOW"}>Snow</option>
+                <option key={"FOG"} value={"FOG"}>Fog</option>
+              </select>
             
             <p className="italic text-slate-700 text-sm">Raid difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
@@ -509,6 +536,8 @@ export default function Home() {
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (120000HP) </option>
 
               </select>
+
+
 
               {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
                 <p className="italic text-slate-700 text-sm">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
@@ -589,6 +618,7 @@ export default function Home() {
                   bonusDefender={bonusDefender}
                   raidMode={raidMode}
                   maxMoves={maxMoves}
+                  weather={weather}
                 />
               </CardContent>
             ) : (

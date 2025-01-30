@@ -25,7 +25,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   bonusAttacker,
   bonusDefender,
   allEnglishText,
-  maxMoves
+  maxMoves,
+  weather
 }: {
   attacker: any;
   defender: any;
@@ -40,6 +41,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   bonusDefender: any;
   allEnglishText: any;
   maxMoves: any;
+  weather: any;
 }) {
   
   const searchParams = useSearchParams();
@@ -51,7 +53,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [cau, setCau] = useState<any | null>({ attackerChargedAttackUses: 0, defenderChargedAttackUses: 0 });
   const [graphic, setGraphic] = useState<any | null>(null);
   const [faints, setFaints] = useState<any | null>(null);
-  const [teamCount, setTeamCount] = useState<number>(parseInt(searchParams.get("pokemon_team_number") ?? "6"));
+  const [helperBonus, sethelperBonus] = useState<number>(parseInt(searchParams.get("helper_bonus") ?? "0"));
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
   const [avoidCharged, setAvoidCharged] = useState<boolean>(searchParams.get("can_dodge") === "true");
   const [attackerDamage, setAttackerDamage] = useState<any[][]>([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
@@ -60,6 +62,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [strategy, setStrategy] = useState<string[]>(searchParams.get("strategy")?.split(",") ?? ["dmg", "dmg", "dmg", "dmg"]);
+  const [shroom, setShroom] = useState<string[]>(searchParams.get("shroom")?.split(",") ?? ["false", "false", "false", "false"]);
   const [win, setWin] = useState<boolean | null>(null);
   const [phases, setPhases] = useState<number>(0);
   
@@ -67,10 +70,11 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     const loadParams = () => {
       const dodge = searchParams.get("can_dodge");
       const enraged = searchParams.get("enraged");
-      const pokemon_team_number = searchParams.get("pokemon_team_number");
+      const helper_bonus = searchParams.get("helper_bonus");
       const relobby_time = searchParams.get("relobby_time");
       const teams_number = searchParams.get("teams_number");
       const strategy = searchParams.get("strategy");
+      const shroom = searchParams.get("shroom");
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
@@ -78,8 +82,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       if (enraged) {
         setEnraged(enraged === "true");
       }
-      if (pokemon_team_number) {
-        setTeamCount(parseInt(pokemon_team_number));
+      if (helper_bonus) {
+        sethelperBonus(parseInt(helper_bonus));
       }
       if (relobby_time) {
         setRelobbyTime(parseInt(relobby_time));
@@ -90,6 +94,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
       if (strategy) {
         setStrategy(strategy.split(","));
+      }
+      if (shroom) {
+        setShroom(shroom.split(","));
       }
     }
 
@@ -145,7 +152,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -168,6 +175,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("strategy", strategy.join(","));
+    sp.set("shroom", shroom.join(","));
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -175,7 +183,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
     setAttackerDamage([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
-  }, [strategy]);
+  }, [strategy, shroom]);
 
   useEffect(() => {
     setTime(0);
@@ -204,8 +212,12 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setRelobbyTime(value[0]);
   }
 
-  function handleTeamCount(value: number[]): void {
-    setTeamCount(value[0]);
+  function handleHelperBonus(value: number[]): void {
+    sethelperBonus(value[0]);
+
+    const sp = new URLSearchParams(searchParams.toString());
+    sp.set("helper_bonus", value[0].toString());
+    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
   }
 
   function handlePeopleCount(value: number[]): void {
@@ -216,6 +228,13 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     newStrategies[index] = value;
     setStrategy(newStrategies);
   };
+
+  const handleShroomChange = (index: number, value: string) => {
+    const newShrooms = [...shroom];
+    newShrooms[index] = value;
+    setShroom(newShrooms);
+  }
+
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -223,9 +242,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       </Button>
       <div>
       {Array.from({ length: 4 }, (_, i) => (
-        <div key={i}>
+        <div className="flex flex-row items-center space-y-2 space-x-3" key={i}>
           <label>Member {i + 1} Strategy:</label>
-          <select className="w-full p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+          <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
             value={strategy[i]}
             onChange={(e) => handleStrategyChange(i, e.target.value)}
           >
@@ -233,9 +252,21 @@ export default function CalculateButtonSimulateAdvancedDynamax({
             <option value="tank">Tank</option>
             <option value="heal">Healer</option>
           </select>
+          <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            value={shroom[i]}
+            onChange={(e) => handleShroomChange(i, e.target.value)}
+          >
+            <option value="false">No shrooms</option>
+            <option value="true">Shroom (x2)</option>
+          </select>
+          
         </div>
       ))}
     </div>
+    
+    <p>Helper Bonus ({helperBonus})</p>
+        <Slider onValueChange={(value) => handleHelperBonus(value)} defaultValue={[helperBonus]} max={4} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+        
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
