@@ -181,11 +181,28 @@ export class Calculator {
           return Math.max(1, (stamina + iv) * this.getCPM(level));
       }
 
-      static getEffectiveStaminaForRaid(stamina: number, iv: number, level: number, raidMode: string) {
+      static getEffectiveStaminaForRaid(stamina: number, iv: number, level: number, raidMode: string, pokemonId?:string) {
         if (raidMode === "normal") {
           return this.getEffectiveStamina(stamina, iv, level);
         } else {
-          
+          if (pokemonId) {
+            return this.getEffectiveDMAXHP(raidMode, pokemonId);
+          } else {
+            return this.RAID_BOSS_HP[raidMode];
+          }
+        }
+      }
+
+      static getEffectiveDMAXHP(raidMode: string, pokemonId: string) {
+        if (raidMode === "raid-t5-dmax") {
+          if (pokemonId === "ARTICUNO") {
+            return 17500;
+          } if (pokemonId === "ZAPDOS") {
+            return 13000;
+          } else {
+            return 17500;
+          }
+        } else {
           return this.RAID_BOSS_HP[raidMode];
         }
       }

@@ -876,9 +876,19 @@ export class PoGoAPI {
             return 4;
         } if (raidMode === "raid-t5-dmax") {
           return 2;
+        } if (raidMode === "raid-t6-gmax") {
+            return 0.9;
         }
         return 1;
-      }
+    }
+
+    static getDefenseMultiplier(raidMode: any) {
+        if (raidMode === "raid-t6-gmax") {
+            return (1/0.9);
+        } else {
+            return 1;
+        }
+    }
 
     static getHigherElement(arr: any[]) {
         return arr.reduce((acc, val) => Math.max(acc, val), 0);
@@ -976,7 +986,7 @@ export class PoGoAPI {
             Math.floor(Calculator.getEffectiveStamina(attackers[3][2].stats.baseStamina, attackersStats[3][2][3], attackersStats[3][2][0]))
         ]];
         let attackerHealth = attackerMaxHP.map(team => team.map(pokemon => pokemon));
-        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId);
         
         let attackerEvades = [false, false, false, false];
         let attackerFaint = [false, false, false, false];
@@ -1097,7 +1107,7 @@ export class PoGoAPI {
                 firstDmgReduction[i] = false;
                 // Attacker i deals damage
                 if (attackerMove[i] !== null && attackerDamageStart[i] > -1 && time === attackerDamageStart[i] + attackerMove[i].damageWindowStartMs && activePokemon[i] < 3) {
-                    const projectedDamage = this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode);
+                    const projectedDamage = Math.floor(this.getDefenseMultiplier(raidMode) * this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode));
                     tdo[i] += projectedDamage;
                     attackerDamage[i][activePokemon[i]] += projectedDamage;
                     
@@ -1154,7 +1164,7 @@ export class PoGoAPI {
                     for (let i = 0 ; i < 4 ; i++) {
                         if (activePokemon[i] < 3) {
                             const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0]);
-                            const maxMoveDamage = this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode);
+                            const maxMoveDamage = Math.floor(this.getDefenseMultiplier(raidMode) * this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0] , raidMode));
                             if (strategy[i] === "dmg") {
                                 // Attacker will cast its max move
                                 const projectedDamage = maxMoveDamage;

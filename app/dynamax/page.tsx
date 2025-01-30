@@ -22,6 +22,7 @@ import SearchBarAttackerDynamax from "@/components/search-bar-attacker-dynamax";
 import SearchBarDefenderDynamax from "@/components/search-bar-defender-dynamax";
 import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-button-advanced-dynamax";
 import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
+import { Calculator } from "../../lib/calculations";
 
 export default function Home() {
   
@@ -504,10 +505,14 @@ export default function Home() {
                 <option key={"raid-t2-dmax"} value={"raid-t2-dmax"}>Tier-2 Max Battle (5000HP) </option>
                 <option key={"raid-t3-dmax"} value={"raid-t3-dmax"}>Tier-3 Max Battle (10000HP) </option>
                 <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
-                <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (17500HP) </option>
+                <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (120000HP) </option>
 
               </select>
+
+              {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
+                <p className="italic text-slate-700 text-sm">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
+                )}
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
