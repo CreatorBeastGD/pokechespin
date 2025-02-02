@@ -14,7 +14,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.10.2";
+        return "1.11";
     }
     
     static async getTypes () {
@@ -1001,9 +1001,11 @@ export class PoGoAPI {
         let attackerDamageStart = [-1, -1, -1, -1];
         let defenderDamageStart = -1;
 
-        let attackerEnergy = [[0,0,0], [0,0,0], [0,0,0], [0,0,0]];
+        let attackerEnergy = attackers.map(() => [0, 0, 0]);
         let defenderEnergy = 300;
-        let activePokemon = [0, 0, 0, 0];
+        let activePokemon = attackers.map(() => 0);
+        /*
+
         const attackerMaxHP = [[
             Math.floor(Calculator.getEffectiveStamina(attackers[0][0].stats.baseStamina, attackersStats[0][0][3], attackersStats[0][0][0])),
             Math.floor(Calculator.getEffectiveStamina(attackers[0][1].stats.baseStamina, attackersStats[0][1][3], attackersStats[0][1][0])),
@@ -1021,16 +1023,23 @@ export class PoGoAPI {
             Math.floor(Calculator.getEffectiveStamina(attackers[3][1].stats.baseStamina, attackersStats[3][1][3], attackersStats[3][1][0])),
             Math.floor(Calculator.getEffectiveStamina(attackers[3][2].stats.baseStamina, attackersStats[3][2][3], attackersStats[3][2][0]))
         ]];
+        */
+        const attackerMaxHP = attackers.map((team, i) => 
+            team.map((pokemon, j) => 
+            Math.floor(Calculator.getEffectiveStamina(pokemon.stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0]))
+            )
+        );
+
         let attackerHealth = attackerMaxHP.map(team => team.map(pokemon => pokemon));
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId);
         
         let attackerEvades = [false, false, false, false];
         let attackerFaint = [false, false, false, false];
-        let attackerDamage = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        let defenderDamage = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        let attackerDamage = attackers.map(() => [0, 0, 0]);
+        let defenderDamage = attackers.map(() => [0, 0, 0]);
         let tdo = [0, 0, 0, 0];
-        let attackerQuickAttackUses = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        let attackerChargedAttackUses = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        let attackerQuickAttackUses = attackers.map(() => [0, 0, 0]);
+        let attackerChargedAttackUses = attackers.map(() => [0, 0, 0]);
         let maxEnergy = 0;
         let maxEnergyGain = 0;
         let defenderLargeAttackUses = 0;
@@ -1044,13 +1053,13 @@ export class PoGoAPI {
         let desperate = false;
         let simGoing = true;
 
-        let shieldHP = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        let shieldHPMAX = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        let shieldHP = attackers.map(() => [0, 0, 0]);
+        let shieldHPMAX = attackers.map(() => [0, 0, 0]);
 
         let win = false;
         let dynamaxPhases = 0;
 
-        for (let i = 0 ; i < 4 ; i++) {
+        for (let i = 0 ; i < attackers.length ; i++) {
             for (let j = 0 ; j < 3 ; j++) {
                 shieldHP[i][j] = 0;
                 shieldHPMAX[i][j] = attackerMaxMoves[i][j][1] * 60;
@@ -1064,7 +1073,7 @@ export class PoGoAPI {
         const types = await this.getTypes();
         const allMoves = await this.getAllMovesPB();
 
-        for (let i = 0 ; i < 4 ; i++) {
+        for (let i = 0 ; i < attackers.length ; i++) {
             for (let j = 0 ; j < 3 ; j++) {
                 // Damage that can be done in one max attack
                 dmgScore[i][j] = this.getDamage(attackers[i][j], defender, this.getDynamaxAttack(attackers[i][j].pokemonId, attackersQuickMove[i][j].type, allMoves , attackerMaxMoves[i][j][0]), types, attackersStats[i][j], defenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode);
@@ -1083,7 +1092,7 @@ export class PoGoAPI {
             }
         }
         
-        console.log(tankScore)
+        // console.log(tankScore)
 
         // activePokemon = [this.getHigherElementIndex(tankScore[0]), this.getHigherElementIndex(tankScore[1]), this.getHigherElementIndex(tankScore[2]), this.getHigherElementIndex(tankScore[3])];
         // console.log(activePokemon);
@@ -1095,19 +1104,19 @@ export class PoGoAPI {
         const dynamaxDelays = this.getDynamaxRaidDelays(raidMode);
         defenderDamageStart = -dynamaxDelays[0];
 
-        let attackerFaints = [[false, false, false], [false, false, false], [false, false, false], [false, false, false]];
+        let attackerFaints = attackers.map(() => [false, false, false]);
         let totalfaints = 0;
 
         const activeDPS = [false, false, false, false];
 
-        let pokemonCanParticipate = [[true, true, true], [true, true, true], [true, true, true], [true, true, true]];
-        console.log(pokemonCanParticipate)
+        let pokemonCanParticipate = attackers.map(() => [true, true, true]);
+        // console.log(pokemonCanParticipate)
 
         let shrooms = shroom.map((shroom) => shroom === "true");
-        console.log(shrooms)
+        // console.log(shrooms)
 
         while (this.sumAllElements(attackerDamage) <= defenderHealth) {
-            for (let i = 0 ; i < 4 ; i++) {
+            for (let i = 0 ; i < attackers.length ; i++) {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
@@ -1181,7 +1190,7 @@ export class PoGoAPI {
                 defenderDamageStart = -3000;
                 dynamaxPhases++;
                 // Attackers swap their pokemon to match their role
-                for (let i = 0 ; i < 4 ; i++) {
+                for (let i = 0 ; i < attackers.length ; i++) {
                     if (strategy[i] === "dmg") {
                         activePokemon[i] = this.getHigherElementIndexNotDead(dmgScore[i], attackerFaints[i]);
                     } else if (strategy[i] === "tank") {
@@ -1200,7 +1209,7 @@ export class PoGoAPI {
                 // Order for Tank -> Shield -> Attack
                 // Order for Heal -> Heal -> Shield -> Attack
                 for (let turn = 0 ; turn < 3 ; turn++) {
-                    for (let i = 0 ; i < 4 ; i++) {
+                    for (let i = 0 ; i < attackers.length ; i++) {
                         if (activePokemon[i] < 3) {
                             const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0]);
                             const maxMoveDamage = Math.floor(this.getDefenseMultiplier(raidMode) * this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, 0], [weather, false, false, 0] , raidMode, ((shrooms[i] === true ? 2 : 1) * this.getHelperBonusDamage(helperBonus))));
@@ -1225,7 +1234,7 @@ export class PoGoAPI {
                                 if (attackerMaxMoves[i][activePokemon[i]][2] > 0 && !this.allActiveMembersFullyHealed(defenderDamage, activePokemon)) {
                                     let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : 0.16);
                                     let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
-                                    for (let j = 0 ; j < 4 ; j++) {
+                                    for (let j = 0 ; j < attackers.length ; j++) {
                                         defenderDamage[j][activePokemon[j]] -= healAmount;
                                         if (defenderDamage[j][activePokemon[j]] < 0) {
                                             defenderDamage[j][activePokemon[j]] = 0;
@@ -1258,7 +1267,7 @@ export class PoGoAPI {
                 }
 
                 // Tank score gets recalculated.
-                for (let i = 0 ; i < 4; i++) {
+                for (let i = 0 ; i < attackers.length; i++) {
                     activeDPS[i] = false;
                     for (let j = 0 ; j < 3 ; j++) {
                         tankScore[i][j] = (
@@ -1271,7 +1280,7 @@ export class PoGoAPI {
                 }
 
                 // Attackers swap their pokemon back to their best tank
-                for (let i = 0 ; i < 4 ; i++) {
+                for (let i = 0 ; i < attackers.length ; i++) {
                     if (strategy[i] === "dmg") {
                         activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
                     } else if (strategy[i] === "tank") {
@@ -1324,7 +1333,7 @@ export class PoGoAPI {
                         battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]]});
                     }
                 } else {
-                    for (let i = 0 ; i < 4 ; i++) {
+                    for (let i = 0 ; i < attackers.length ; i++) {
                         if (activePokemon[i] < 3) {
                             const projectedDamageDefender = this.getDamageMultiplier(raidMode, enraged, desperate) * this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], raidMode);
                             const finalDamage = Math.floor(projectedDamageDefender);
@@ -1343,7 +1352,7 @@ export class PoGoAPI {
                     }
                 }
                 // Attacker faints
-                for (let i = 0 ; i < 4 ; i++) {
+                for (let i = 0 ; i < attackers.length ; i++) {
                     if (defenderDamage[i][activePokemon[i]] >= attackerHealth[i][activePokemon[i]]) {
                         console.log(activePokemon)
                         attackerEnergy[i][activePokemon[i]] = 0;
@@ -1368,7 +1377,7 @@ export class PoGoAPI {
                 defenderMove = null;
             }
 
-            for (let i = 0 ; i < 4 ; i++) {
+            for (let i = 0 ; i < attackers.length ; i++) {
                 if (attackerDamageStart[i] < -1) {
                     attackerDamageStart[i]++;
                 }

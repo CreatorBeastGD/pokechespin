@@ -23,6 +23,7 @@ import SearchBarDefenderDynamax from "@/components/search-bar-defender-dynamax";
 import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-button-advanced-dynamax";
 import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 import { Calculator } from "../../lib/calculations";
+import { Slider } from "@/components/ui/slider";
 
 export default function Home() {
   
@@ -30,20 +31,21 @@ export default function Home() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(4).fill(Array(3).fill(null)));
+  const [numMembers, setNumMembers] = useState<number>(searchParams.get("num_members") ? parseInt(searchParams.get("num_members") as string) : 4);
+  const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(numMembers).fill(Array(3).fill(null)));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
-  const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
-  const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
-  const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(Array(4).fill(Array(3).fill(null)));
+  const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
+  const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
+  const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
-  const [attackerStats, setAttackerStats] = useState<any>(Array(4).fill(Array(3).fill([50, 15, 15, 15])));
-  const [maxMoves, setMaxMoves] = useState<any|null>(Array(4).fill(Array(3).fill([1,0,0])));
+  const [attackerStats, setAttackerStats] = useState<any>(Array(numMembers).fill(Array(3).fill([50, 15, 15, 15])));
+  const [maxMoves, setMaxMoves] = useState<any|null>(Array(numMembers).fill(Array(3).fill([1,0,0])));
   const [defenderStats, setDefenderStats] = useState<any | null>([40, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("raid-t1-dmax");
   
   const [weather, setWeather] = useState<any>(searchParams.get("weather") ? searchParams.get("weather") : "EXTREME");
-  const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(4).fill(Array(3).fill([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0])));
+  const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(numMembers).fill(Array(3).fill([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0])));
   const [bonusDefender, setBonusDefender] = useState<any[]>([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0]);
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
   const [searchBarNames, setSearchBarNames] = useState<any>(null);
@@ -61,6 +63,62 @@ export default function Home() {
 
   const [loaded, setLoaded] = useState<boolean>(false);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+      
+      
+    searchParams.set("num_members", numMembers.toString());
+    setTimeout(() => {
+      for (let j = numMembers + 1; j < 4 ; j++) {
+        for (let i = 1; i <= 3; i++) {
+          searchParams.delete(`attacker${j}${i}`);
+          searchParams.delete(`attacker_fast_attack${j}${i}`);
+          searchParams.delete(`attacker_cinematic_attack${j}${i}`);
+          searchParams.delete(`attacker_stats${j}${i}`);
+          searchParams.delete(`attacker_max_moves${j}${i}`);
+          console.log("attacker" + j + i + "");
+        }
+      }
+      window.history.replaceState({}, "", `${window.location.pathname}?${searchParams.toString()}`);
+    }, 1);
+  }, [numMembers]);
+
+  const handleNumMembersChange = (value: number[]) => {
+    const newNumMembers = value[0];
+
+    if (selectedMember > newNumMembers)  {
+      setSelectedMember(newNumMembers);
+    }
+
+    const newAttackingPokemon = [...attackingPokemon.slice(0, newNumMembers)];
+    const newSelectedQuickMoveAttacker = [...selectedQuickMoveAttacker.slice(0, newNumMembers)];
+    const newSelectedMaxMoveAttacker = [...selectedMaxMoveAttacker.slice(0, newNumMembers)];
+    const newSelectedChargedMoveAttacker = [...selectedChargedMoveAttacker.slice(0, newNumMembers)];
+    const newAttackerStats = [...attackerStats.slice(0, newNumMembers)];
+    const newMaxMoves = [...maxMoves.slice(0, newNumMembers)];
+    const newBonusAttacker = [...bonusAttacker.slice(0, newNumMembers)];
+
+    // Add new empty arrays if increasing the number of members
+    while (newAttackingPokemon.length < newNumMembers) {
+      newAttackingPokemon.push(Array(3).fill(null));
+      newSelectedQuickMoveAttacker.push(Array(3).fill(null));
+      newSelectedMaxMoveAttacker.push(Array(3).fill(null));
+      newSelectedChargedMoveAttacker.push(Array(3).fill(null));
+      newAttackerStats.push(Array(3).fill([50, 15, 15, 15]));
+      newMaxMoves.push(Array(3).fill([1, 0, 0]));
+      newBonusAttacker.push(Array(3).fill(["EXTREME", false, false, 0]));
+      
+    }
+
+    setNumMembers(newNumMembers);
+    setAttackingPokemon(newAttackingPokemon);
+    setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
+    setSelectedMaxMoveAttacker(newSelectedMaxMoveAttacker);
+    setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    setAttackerStats(newAttackerStats);
+    setMaxMoves(newMaxMoves);
+    setBonusAttacker(newBonusAttacker);
+  };
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
@@ -97,13 +155,13 @@ export default function Home() {
   useEffect(() => {
     if (allDataLoaded) {
       // Fetch data from params
-      const newAttackingPokemon = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => attackingPokemon[i][j]));
-      const newQuickMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedQuickMoveAttacker[i][j]));
-      const newChargedMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedChargedMoveAttacker[i][j]));
-      const newStats = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => attackerStats[i][j]));
-      const newMaxMoveList = Array.from({ length: 4 }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
+      const newAttackingPokemon = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => attackingPokemon[i][j]));
+      const newQuickMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedQuickMoveAttacker[i][j]));
+      const newChargedMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedChargedMoveAttacker[i][j]));
+      const newStats = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => attackerStats[i][j]));
+      const newMaxMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
   
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= numMembers; i++) {
         for (let j = 1; j <= 3; j++) {
           const attacker = searchParams.get(`attacker${i}${j}`);
           const quickMove = searchParams.get(`attacker_fast_attack${i}${j}`);
@@ -397,19 +455,22 @@ export default function Home() {
       
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
+        
           <CardHeader>
             <CardTitle>Attacking Team</CardTitle>
             <CardDescription>Set an attacking Team</CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
+            <CardDescription>Select the number of members in your team ({numMembers})</CardDescription>
+            <Slider onValueChange={handleNumMembersChange} value={[numMembers]} min={1} max={4} step={1} className="w-[60%] mb-1" color={"bg-blue-500"} />
           </CardHeader>
+          
           {(pokemonList && searchBarNames && allMoves && loaded && cleared) ? (
           <CardContent>
-            <Tabs defaultValue={"member-"+(selectedMember)+""} className="">
+            <Tabs defaultValue={"member-"+(selectedMember)+""} value={"member-"+(selectedMember)+""} className="">
               <TabsList className="flex flex-row items-center space-x-4 w-full">
-                <TabsTrigger value="member-1" onClick={() => handleBarChange("member", 1)}>M1</TabsTrigger>
-                <TabsTrigger value="member-2" onClick={() => handleBarChange("member", 2)}>M2</TabsTrigger>
-                <TabsTrigger value="member-3" onClick={() => handleBarChange("member", 3)}>M3</TabsTrigger>
-                <TabsTrigger value="member-4" onClick={() => handleBarChange("member", 4)}>M4</TabsTrigger>
+                {attackingPokemon.map((i: any, idx: any) => {
+                  return <TabsTrigger key={idx} value={`member-${idx + 1}`} onClick={() => handleBarChange("member", idx + 1)}>M{idx+1}</TabsTrigger>
+                })}
               </TabsList>
             </Tabs>
             <Tabs defaultValue={"pokemon-"+(selectedPokemonSlot)+""} className="">
@@ -423,7 +484,7 @@ export default function Home() {
             <div>
             
           <p className="text-primary text-sm my-2 mx-2">Checking member {selectedMember}, Pokémon slot {selectedPokemonSlot}...</p>
-            {Array.from({ length: 4 }, (_, memberIndex) => (
+            {Array.from({ length: numMembers }, (_, memberIndex) => (
               <div key={memberIndex}>
                 {Array.from({ length: 3 }, (_, slotIndex) => (
                   selectedMember === memberIndex + 1 && selectedPokemonSlot === slotIndex + 1 && (

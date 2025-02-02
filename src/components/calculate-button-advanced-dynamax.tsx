@@ -56,7 +56,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [helperBonus, sethelperBonus] = useState<number>(parseInt(searchParams.get("helper_bonus") ?? "0"));
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
   const [avoidCharged, setAvoidCharged] = useState<boolean>(searchParams.get("can_dodge") === "true");
-  const [attackerDamage, setAttackerDamage] = useState<any[][]>([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+  const [attackerDamage, setAttackerDamage] = useState<any[][]>(attacker.map(() => [0,0,0]));
   const [loading, setLoading] = useState<boolean>(false);
   const [visibleEntries, setVisibleEntries] = useState(50);
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
@@ -152,7 +152,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -182,7 +182,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setQau(0);
     setCau(0);
     setGraphic(null);
-    setAttackerDamage([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+    setAttackerDamage(attacker.map(() => [0,0,0]));
   }, [strategy, shroom]);
 
   useEffect(() => {
@@ -190,27 +190,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setQau(0);
     setCau(0);
     setGraphic(null);
-    setAttackerDamage([[0,0,0],[0,0,0],[0,0,0],[0,0,0]]);
+    setAttackerDamage(attacker.map(() => [0,0,0]));
   } , [raidMode]);
-
-  const getRequiredPeople = (raidMode: string) => {
-    
-    return (( ((time ?? 0) / 1000) / getRaidTime(raidMode))*peopleCount).toFixed(2);
-  }
-
-  const getRaidTime = (raidMode: string) => {
-    let raidTime = 0;
-    if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4") {
-      raidTime = 180;
-    } else {
-      raidTime = 300;
-    }
-    return raidTime;
-  }
-
-  function handleRelobbyTime(value: number[]): void {
-    setRelobbyTime(value[0]);
-  }
 
   function handleHelperBonus(value: number[]): void {
     sethelperBonus(value[0]);
@@ -220,9 +201,6 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
   }
 
-  function handlePeopleCount(value: number[]): void {
-    setPeopleCount(value[0]);
-  }
   const handleStrategyChange = (index: number, value: string) => {
     const newStrategies = [...strategy];
     newStrategies[index] = value;
@@ -241,7 +219,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
         Simulate
       </Button>
       <div>
-      {Array.from({ length: 4 }, (_, i) => (
+      {Array.from({ length: attacker.length }, (_, i) => (
         <div className="flex flex-row items-center space-y-2 space-x-3" key={i}>
           <label>Member {i + 1} Strategy:</label>
           <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
