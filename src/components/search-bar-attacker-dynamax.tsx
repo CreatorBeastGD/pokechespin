@@ -101,7 +101,7 @@ export default function SearchBarAttackerDynamax({
     onQuickMoveSelect(moveId, move, member, number);
     setTimeout(() => {
       if (moveId !== "") {
-        console.log("attacker_fast_attack"+member+""+number);
+        //console.log("attacker_fast_attack"+member+""+number);
         const newSearchParams = new URLSearchParams(searchParams.toString());
         newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
@@ -116,10 +116,10 @@ export default function SearchBarAttackerDynamax({
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
-    console.log(moveId);
+    //console.log(moveId);
     setTimeout(() => {
       if (moveId !== "") {
-        console.log("attacker_cinematic_attack"+member+""+number);
+        //console.log("attacker_cinematic_attack"+member+""+number);
         const newSearchParams = new URLSearchParams(searchParams.toString());
         newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
