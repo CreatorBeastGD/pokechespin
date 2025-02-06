@@ -160,7 +160,7 @@ export class Calculator {
           //console.log(power, attack ,defense, STAB, effectiveness, type, shroomBonus);
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
-          const modifiers = shroomBonus * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
+          const modifiers = (shroomBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
           return Math.floor(
               0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers 
           ) + 1;
