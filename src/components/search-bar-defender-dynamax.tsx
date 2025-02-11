@@ -7,14 +7,8 @@ import { Button } from "./ui/button";
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
-import { Slider } from "./ui/slider";
 import { Calculator } from "../../lib/calculations";
-import { Select, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SelectContent } from "@radix-ui/react-select";
-import { Data } from "../../lib/special-data";
-import { Switch } from "./ui/switch";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { init } from "next/dist/compiled/webpack/webpack";
+import { useSearchParams, usePathname } from "next/navigation";
 
 
 interface SearchBarAttackerProps {
@@ -52,6 +46,14 @@ export default function SearchBarDefenderDynamax({
     member,
     number
   }: SearchBarAttackerProps, ) {
+    const raidModeLevelMultiplier = raidMode === "normal" ? 40 : 
+                                  raidMode === "raid-t1-dmax" ? 8001 : 
+                                  raidMode === "raid-t2-dmax" ? 8002 :
+                                  raidMode === "raid-t3-dmax" ? 8003 :
+                                  raidMode === "raid-t4-dmax" ? 8004 :
+                                  raidMode === "raid-t5-dmax" ? 8005 :
+                                  raidMode === "raid-t6-gmax" ? 8006 : 1;
+  
   const [pokemon, setPokemon] = useState<string>("");
   const [pokemonData, setPokemonData] = useState<any>(null);
   const [selectedForm, setSelectedForm] = useState<string>("normal");
@@ -59,7 +61,7 @@ export default function SearchBarDefenderDynamax({
   const [error, setError] = useState<string | null>(null);
   const [selectedQuickMove, setSelectedQuickMove] = useState<string | null>(null);
   const [selectedChargedMove, setSelectedChargedMove] = useState<string | null>(null);
-  const [stats, setStats] = useState<any>([50, 15, 15, 15]);
+  const [stats, setStats] = useState<any>([raidModeLevelMultiplier, 15, 15, 15]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
   const [availableForms, setAvailableForms] = useState<any[]>([]);
@@ -76,7 +78,6 @@ export default function SearchBarDefenderDynamax({
     if (!initialLoad.current && initialValues) {
       initialLoad.current = true;
       if (initialValues.attacker) searchPokemonInit(initialValues.attacker);
-      if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
       //console.log("Initial values loaded");
@@ -96,14 +97,6 @@ export default function SearchBarDefenderDynamax({
     onChargedMoveSelect(moveId, move, member, number);
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("defender_cinematic_attack", moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }
-
-  const handleStatsSelect = (stats: any) => {
-    setStats(stats);
-    onChangedStats(stats, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("defender_stats", stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
@@ -188,15 +181,6 @@ export default function SearchBarDefenderDynamax({
     setSelectedChargedMove(null);
   };
 
-  // [level, attack, defense, stamina]
-  const handleChangeStat = (value: number[], index: number) => {
-    setStats((prev: any) => {
-      const newStats = [...prev];
-      newStats[index] = value[0];
-      return newStats;
-    });
-  }
-
   // Bonuses = [weather-boost, shadow, mega, friendship]
   const handleBonusChange = (bonusIndex: number, value: any) => {
     setSelectedBonuses((prev: any) => {
@@ -239,9 +223,9 @@ export default function SearchBarDefenderDynamax({
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
-  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], stats[0]);
-  const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
-  const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
+  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], raidModeLevelMultiplier);
+  const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, stats[2], raidModeLevelMultiplier);
+  const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, stats[3], raidModeLevelMultiplier);
 
   const raidmode = raidMode ? raidMode : "normal";
 
@@ -325,7 +309,7 @@ export default function SearchBarDefenderDynamax({
                   onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
-                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ""}</CardTitle>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
@@ -349,7 +333,7 @@ export default function SearchBarDefenderDynamax({
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
-                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
+                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power ?? 0}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
                   </CardContent>
                 </Card>)

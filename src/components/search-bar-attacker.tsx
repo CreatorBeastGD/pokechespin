@@ -9,12 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { Calculator } from "../../lib/calculations";
-import { Select, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SelectContent } from "@radix-ui/react-select";
-import { Data } from "../../lib/special-data";
 import { Switch } from "./ui/switch";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { init } from "next/dist/compiled/webpack/webpack";
+import { useSearchParams, usePathname } from "next/navigation";
 
 
 interface SearchBarAttackerProps {

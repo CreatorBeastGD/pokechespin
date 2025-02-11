@@ -4,12 +4,10 @@ import { useState, useEffect } from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge"
-import { CardHeader, Card, CardTitle, CardContent, CardFooter, CardDescription } from "./ui/card";
-import { Switch } from "./ui/switch";
+import { CardHeader, Card, CardTitle, CardContent, CardDescription } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { Calculator } from "../../lib/calculations";
 
 export default function CalculateButtonSimulateAdvancedDynamax({

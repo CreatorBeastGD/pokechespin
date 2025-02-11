@@ -1,10 +1,9 @@
-import { get } from "http";
+
 import nextConfig from "../next.config";
 import { Calculator } from "./calculations";
 
 const API = nextConfig.API_URL;
 const API_PB = nextConfig.API_PB_URL;
-const API_STATIC_PB = nextConfig.API_STATIC_PB_URL;
 
 export class PoGoAPI {
     static async getAllPokemon() {

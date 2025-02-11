@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge"
-import { CardHeader, Card, CardTitle, CardContent, CardFooter, CardDescription } from "./ui/card";
+import { CardHeader, Card, CardTitle, CardContent, CardDescription } from "./ui/card";
 
 export default function CalculateButtonSimulate({
   attacker,
