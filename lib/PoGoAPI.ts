@@ -14,7 +14,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.11.1";
+        return "1.11.2";
     }
     
     static async getTypes () {
@@ -894,7 +894,7 @@ export class PoGoAPI {
         } if (enraged) {
             return 4;
         } if (raidMode === "raid-t5-dmax") {
-          return 2;
+          return (2 * defender.stats.baseAttack + 22.5) / (defender.stats.baseAttack + 15);
         } if (raidMode === "raid-t6-gmax") {
             return 0.9;
         }
