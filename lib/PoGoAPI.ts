@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.11.2";
+        return "1.12";
     }
     
     static async getTypes () {
@@ -382,7 +382,7 @@ export class PoGoAPI {
         );
     }
 
-    static getDamageEnraged(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, attackEnraged?: boolean) {
+    static getDamageEnraged(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, attackEnraged?: boolean, damageMultiplier?: any) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
@@ -396,7 +396,7 @@ export class PoGoAPI {
             attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
             move.type,
-            1,
+            ((damageMultiplier || damageMultiplier !== 0) ? damageMultiplier : 1),
             bonusAttacker,
             bonusDefender
         );
@@ -593,10 +593,15 @@ export class PoGoAPI {
         relobbyTime?: any,
         enraged?: any,
         peopleCount?: any,
+        partyPower?: any
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
+
+        let partyPowerCounter = 0;
+        let partyPowerLimit = (partyPower ? (peopleCount === 2 ? 18 : (peopleCount === 3 ? 9 : (peopleCount > 3 ? 6 : -1))) : -1);
+        let partyPowerActivated = false;
 
         let time = 0;
 
@@ -643,6 +648,8 @@ export class PoGoAPI {
         let purifiedGemCooldown = -1;
         
         let simGoing = true
+
+        let multiplier = 1;
 
         while (attackerDamage <= defenderHealth) {
             // Attacker can cast a move
@@ -698,6 +705,12 @@ export class PoGoAPI {
                         purifiedGemCooldown = -5001;
                     }
 
+                    // Attacker can activate its Party Power´
+                    if (partyPowerCounter === partyPowerLimit && !partyPowerActivated) {
+                        partyPowerActivated = true;
+                        partyPowerCounter = 0;
+                    }
+
                     // 8 Purified gems have been used, the defender subdues
                     if (enraged && purifiedGemsCount >= 8 && isEnraged) {
                         isEnraged = false;
@@ -710,12 +723,19 @@ export class PoGoAPI {
             // Attacker deals damage
             if (attackerMove !== null && attackerDamageStart > -1 && time === attackerDamageStart + attackerMove.damageWindowStartMs) 
             {
+                if (attackerMove.energyDelta < 0 && partyPowerActivated) {
+                    partyPowerActivated = false;
+                    multiplier = 2;
+                } else if (attackerMove.energyDelta >= 0 && partyPowerCounter < partyPowerLimit) {
+                    partyPowerCounter++;
+                }
+
                 for (let i = 0; i < peopleCount && simGoing; i++) {
-                    const projectedDamage = (isEnraged ? 
-                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false) : 
-                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode)
-                    )
                     
+                    const projectedDamage = (isEnraged ? 
+                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier) : 
+                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier)
+                    )
                     tdo += projectedDamage / peopleCount;
                     
                     attackerDamage += projectedDamage;
@@ -724,7 +744,7 @@ export class PoGoAPI {
                     if (defenderEnergy > 100) {
                         defenderEnergy = 100;
                     }
-                    battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth});
+                    battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth, "partypower": (multiplier == 2)});
                     // End of simulation
                     if (attackerDamage >= defenderHealth) {
                         //console.log("Defender faints at time " + time + ", end of simulation.");
@@ -733,6 +753,8 @@ export class PoGoAPI {
                         break;
                     }
                 }
+                
+                multiplier = 1;
 
                 // Defender is a shadow raid boss and reaches 60% of health, it will enrage
                 if (simGoing && enraged && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.6 && !hasEnraged) {

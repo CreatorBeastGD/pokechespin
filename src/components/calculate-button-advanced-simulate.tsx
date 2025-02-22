@@ -55,6 +55,7 @@ export default function CalculateButtonSimulateAdvanced({
   const [visibleEntries, setVisibleEntries] = useState(50);
   const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
+  const [partyPower, setPartyPower] = useState<boolean>(searchParams.get("party_power") === "true");
 
   
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function CalculateButtonSimulateAdvanced({
       const pokemon_team_number = searchParams.get("pokemon_team_number");
       const relobby_time = searchParams.get("relobby_time");
       const teams_number = searchParams.get("teams_number");
+      const party_power = searchParams.get("party_power");
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
@@ -79,6 +81,9 @@ export default function CalculateButtonSimulateAdvanced({
       }
       if (teams_number) {
         setPeopleCount(parseInt(teams_number));
+      }
+      if (party_power) {
+        setPartyPower(party_power === "true");
       }
     }
 
@@ -131,7 +136,7 @@ export default function CalculateButtonSimulateAdvanced({
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, enraged, peopleCount);
+      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, enraged, peopleCount, partyPower);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -153,6 +158,7 @@ export default function CalculateButtonSimulateAdvanced({
     setAvoidCharged(avoidCharged);
     setPeopleCount(peopleCount);
     setEnraged(enraged);
+    setPartyPower(partyPower);
     
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("can_dodge", avoidCharged.toString());
@@ -160,6 +166,7 @@ export default function CalculateButtonSimulateAdvanced({
     sp.set("pokemon_team_number", teamCount.toString());
     sp.set("relobby_time", relobbyTime.toString());
     sp.set("teams_number", peopleCount.toString());
+    sp.set("party_power", partyPower.toString());
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -167,7 +174,7 @@ export default function CalculateButtonSimulateAdvanced({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [teamCount, relobbyTime, avoidCharged, peopleCount, enraged]);
+  }, [teamCount, relobbyTime, avoidCharged, peopleCount, enraged, partyPower]);
 
   useEffect(() => {
     setTime(0);
@@ -211,7 +218,8 @@ export default function CalculateButtonSimulateAdvanced({
       </Button>
       <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/>Defender Pokémon can enrage.</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/> Defender Pokémon can enrage.</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPartyPower)} checked={partyPower}/> Use Party Power {peopleCount === 1 && ("(Not available for 1 team)")}</p>
         <p>Set the number of Pokémon in the team: ({teamCount})</p>
         <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set custom relobby time ({relobbyTime} seconds):</p>
@@ -228,7 +236,7 @@ export default function CalculateButtonSimulateAdvanced({
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}.
           </p>
           <p>
             <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
@@ -261,6 +269,11 @@ export default function CalculateButtonSimulateAdvanced({
               The simulation takes into consideration that the defender Pokémon can enrage. 8 purified gems need to be used in order to subdue an enraged Pokémon. {peopleCount === 1 ? "Using 8 purified gems while raiding solo is not possible (MAX. 5)" : ""}
             </p>
             )}
+          {partyPower && peopleCount > 1 && (
+            <p className="text-sm text-slate-700 italic">
+              The simulation takes into consideration the Party Power feature, which will double the damage of the next Charged Attack after {peopleCount === 2 ? 18 : peopleCount === 3 ? 9 : 6} Fast Attacks are used.
+            </p>
+          )}
         {graphic && (
           <Card className="mt-4">
             <CardHeader>
@@ -272,7 +285,7 @@ export default function CalculateButtonSimulateAdvanced({
                 <div className="flex flex-col space-y-4">
                   {graphic.slice(0, visibleEntries).map((item: any, index: number) => (
                     item.damage ? (
-                      <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? " bg-green-200" : " bg-red-200") + " p-2 rounded-xl"}>
+                      <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? (item.partypower ? " bg-green-200 shadow-lg shadow-cyan-500 ring" : " bg-green-200") : " bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
                           <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker.pokemonId : defender.pokemonId), allEnglishText)}</span></p>
