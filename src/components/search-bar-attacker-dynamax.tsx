@@ -170,7 +170,7 @@ export default function SearchBarAttackerDynamax({
       setPokemonData(response);
       onSelect(response, member, number);
       //console.log();
-      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId);
+      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && p.pokemonId !== "URSHIFU_GIGANTAMAX");
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -195,7 +195,7 @@ export default function SearchBarAttackerDynamax({
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response, member, number);
-      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
+      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX");
       setAvailableForms(allForms);// Construir nueva URL
       setTimeout(() => {
         const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -432,7 +432,6 @@ export default function SearchBarAttackerDynamax({
                 <CardContent>
                   <CardDescription className="text-slate-300">Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).type)}</CardDescription>
                   <CardDescription className="text-slate-300">Power: {(PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).power ?? 0}</CardDescription>
-                  <CardDescription className="text-slate-300">Energy: {(PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).energyDelta ?? 0}</CardDescription>
                   <CardDescription className="text-slate-300">Duration: {PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves).durationMs / 1000}s</CardDescription>
                 </CardContent>
               </Card>

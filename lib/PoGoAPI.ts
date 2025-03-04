@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.12";
+        return "1.12.1";
     }
     
     static async getTypes () {
@@ -244,9 +244,9 @@ export class PoGoAPI {
                 return allMoves.find((m: any) => m.moveId === "GMAX_DRUM_SOLO" + moveSuffix);
             case "INTELEON_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_HYDRO_SNIPE" + moveSuffix);
-            case "URSHIFU_SINGLESTRIKE_GIGANTAMAX":
+            case "URSHIFU_SINGLE_STRIKE_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_ONE_BLOW" + moveSuffix);
-            case "URSHIFU_RAPIDSTRIKE_GIGANTAMAX":
+            case "URSHIFU_RAPID_STRIKE_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_RAPID_FLOW" + moveSuffix);
             case "BLASTOISE_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_CANNONADE" + moveSuffix);
@@ -258,7 +258,7 @@ export class PoGoAPI {
     }
 
     static getDynamaxAttack(pokemonId: any, moveType: any, allMoves: any, maxMoveLevel: any) {
-        
+        console.log(pokemonId);
         if (pokemonId.endsWith("_GIGANTAMAX")) {
             return this.getGigantamaxAttack(pokemonId, allMoves, maxMoveLevel);
         } else {
