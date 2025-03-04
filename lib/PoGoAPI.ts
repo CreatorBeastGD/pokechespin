@@ -258,7 +258,7 @@ export class PoGoAPI {
     }
 
     static getDynamaxAttack(pokemonId: any, moveType: any, allMoves: any, maxMoveLevel: any) {
-        console.log(pokemonId);
+        //console.log(pokemonId);
         if (pokemonId.endsWith("_GIGANTAMAX")) {
             return this.getGigantamaxAttack(pokemonId, allMoves, maxMoveLevel);
         } else {
