@@ -56,7 +56,7 @@ export default function RootLayout({
             Thanks for 1000 views! 🎉
           </p>
         </div>
-        
+        <Analytics />
         
       </body>
     </html>
