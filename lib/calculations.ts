@@ -162,14 +162,14 @@ export class Calculator {
         bonusAttacker?: any,
         bonusDefender?: any
       ) {
-          console.log("Power: "+power 
+          /*console.log("Power: "+power 
             +"  Attack Stat: "+ attack 
             +"  Defense Stat: "+ defense 
             +"  STAB Bonus: "+ STAB 
             +"  Effectiveness Bonus:"+ effectiveness 
             +"  Friendship Bonus: "+(this.getFriendshipBonus(bonusAttacker[3]))
             +"  Weather Bonus: "+(this.getWeatherBoostBonus(type, bonusAttacker[0]))
-            );
+            );*/
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (shroomBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
