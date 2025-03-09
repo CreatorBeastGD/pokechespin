@@ -45,7 +45,7 @@ export default function RootLayout({
             CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
           </p>
           <p className="textslate text-lg text-center w-1/2 text-left mt-2">
-            If you are enjoying this page, consider supporting my by buying me a cooffee, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
+            If you enjoy this page, consider supporting me by buying me a cooffee, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
           </p>
           <p className="textslate text-xs text-center w-1/2 text-right mb-2 mt-2">
             2025 CreatorBeastGD.
