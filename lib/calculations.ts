@@ -109,7 +109,7 @@ export class Calculator {
         8003: 0.5,
         8004: 0.6,
         8005: 0.7,
-        8006: 1.035,
+        8006: 0.765,
     };
 
       private static RAID_BOSS_HP: { [raidMode: string]: number } = {
@@ -127,7 +127,7 @@ export class Calculator {
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
         "raid-t5-dmax": 17500,
-        "raid-t6-gmax": 120000,
+        "raid-t6-gmax": 60000,
       }
 
       static getRaidBossHP(raidMode: string) {
@@ -143,7 +143,12 @@ export class Calculator {
       }
 
       static getFriendshipBonus(friendship: number) {
-        return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        const seasonFriendshipBonus = true;
+        if (!seasonFriendshipBonus) {
+          return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        } else {
+          return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : 1;
+        }
       }
 
       static calculateDamage(
@@ -157,7 +162,14 @@ export class Calculator {
         bonusAttacker?: any,
         bonusDefender?: any
       ) {
-          //console.log(power, attack ,defense, STAB, effectiveness, type, shroomBonus);
+          console.log("Power: "+power 
+            +"  Attack Stat: "+ attack 
+            +"  Defense Stat: "+ defense 
+            +"  STAB Bonus: "+ STAB 
+            +"  Effectiveness Bonus:"+ effectiveness 
+            +"  Friendship Bonus: "+(this.getFriendshipBonus(bonusAttacker[3]))
+            +"  Weather Bonus: "+(this.getWeatherBoostBonus(type, bonusAttacker[0]))
+            );
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (shroomBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
@@ -171,11 +183,11 @@ export class Calculator {
       }
 
       static getEffectiveAttack(attack: number, iv: number, level: number) {
-        return Math.max(1, (attack + iv) * this.getCPM(level));
+        return Math.max(1, Math.ceil((attack + iv) * this.getCPM(level)* 100000) / 100000);
       }
 
       static getEffectiveDefense(defense: number, iv: number, level: number) {
-          return Math.max(1, (defense + iv) * this.getCPM(level));
+          return Math.max(1, Math.ceil((defense + iv) * this.getCPM(level) * 100000) / 100000);
       }
 
       static getEffectiveStamina(stamina: number, iv: number, level: number) {

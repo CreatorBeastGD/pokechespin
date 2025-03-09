@@ -317,10 +317,10 @@ export default function SearchBarAttacker({
 
           <p>Stats (PC: {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
           {raidmode === "normal" ? (<></>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Stat changes won't be affected.</p>)}
-          <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {Math.floor(effAttack)})</span></p>
+          <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {effAttack })</span></p>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
-          <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {Math.floor(effDefense)})</span></p> 
+          <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {effDefense})</span></p> 
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
           
           <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
@@ -356,7 +356,7 @@ export default function SearchBarAttacker({
             <p className="italic text-slate-700">
               <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
             </p>
-            <p>Friendship level ({selectedBonuses[3]})</p>
+            <p>Friendship level ({selectedBonuses[3]}) <span className="italic text-xs">(Doubled this season!)</span></p>
             <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[0]} max={4} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
           </div>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Bonuses won't be affected.</p>)}
           <div className="flex flex-row space-x-4">
