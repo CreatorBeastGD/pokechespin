@@ -61,6 +61,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [strategy, setStrategy] = useState<string[]>(searchParams.get("strategy")?.split(",") ?? ["dmg", "dmg", "dmg", "dmg"]);
   const [shroom, setShroom] = useState<string[]>(searchParams.get("shroom")?.split(",") ?? ["false", "false", "false", "false"]);
+  const [friendship, setFriendship] = useState<number[]>(searchParams.get("friendship")?.split(",").map((x) => parseInt(x)) ?? [0,0,0,0]);
   const [win, setWin] = useState<boolean | null>(null);
   const [phases, setPhases] = useState<number>(0);
   
@@ -73,6 +74,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       const teams_number = searchParams.get("teams_number");
       const strategy = searchParams.get("strategy");
       const shroom = searchParams.get("shroom");
+      const fs = searchParams.get("friendship");
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
@@ -89,12 +91,14 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       if (teams_number) {
         setPeopleCount(parseInt(teams_number));
       }
-
       if (strategy) {
         setStrategy(strategy.split(","));
       }
       if (shroom) {
         setShroom(shroom.split(","));
+      }
+      if (fs) {
+        setFriendship(fs.split(",").map((x) => parseInt(x)));
       }
     }
 
@@ -150,7 +154,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus, friendship);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -174,6 +178,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("strategy", strategy.join(","));
     sp.set("shroom", shroom.join(","));
+    sp.set("friendship", friendship.join(","));
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -181,7 +186,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(attacker.map(() => [0,0,0]));
-  }, [strategy, shroom]);
+  }, [strategy, shroom, friendship]);
 
   useEffect(() => {
     setTime(0);
@@ -211,15 +216,21 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setShroom(newShrooms);
   }
 
+  const handleFriendshipChange = (index: number, value: number) => {
+    const newFriendship = [...friendship];
+    newFriendship[index] = value;
+    setFriendship(newFriendship);
+  }
+
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
-      <div>
+      <div className="w-full">
       {Array.from({ length: attacker.length }, (_, i) => (
         <div className="flex flex-row items-center space-y-2 space-x-3" key={i}>
-          <label>Member {i + 1} Strategy:</label>
+          <label >Member {i + 1} Strategy:</label>
           <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
             value={strategy[i]}
             onChange={(e) => handleStrategyChange(i, e.target.value)}
@@ -235,7 +246,10 @@ export default function CalculateButtonSimulateAdvancedDynamax({
             <option value="false">No shrooms</option>
             <option value="true">Shroom (x2)</option>
           </select>
-          
+          <div className="flex flex-col w-[25%]">
+            <label>Friendship: ({friendship[i]})</label>
+            <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+          </div>
         </div>
       ))}
     </div>

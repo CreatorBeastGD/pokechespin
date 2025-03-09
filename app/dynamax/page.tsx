@@ -598,6 +598,10 @@ export default function Home() {
 
               </select>
 
+            <p className="italic text-slate-700 text-sm">
+              *DEV NOTE*. Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation. I'll try to add the possibility for attackers to not use their Charged Attack next ^^.
+            </p>
+
 
 
               {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
