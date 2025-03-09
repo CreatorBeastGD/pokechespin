@@ -127,7 +127,7 @@ export class Calculator {
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
         "raid-t5-dmax": 17500,
-        "raid-t6-gmax": 60000,
+        "raid-t6-gmax": 90000,
       }
 
       static getRaidBossHP(raidMode: string) {
