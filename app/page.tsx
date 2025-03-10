@@ -15,6 +15,7 @@ import CalculateButtonSimulate from "@/components/calculate-button-simulate";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import CookieBanner from "@/components/cookie-banner";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -464,6 +465,9 @@ export default function Home() {
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
       <h1 className="textslate">Pokémon GO Damage Calculator</h1>
+      
+      <CookieBanner />
     </div>
+    
   );
 }

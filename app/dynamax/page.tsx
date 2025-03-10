@@ -24,6 +24,7 @@ import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-butto
 import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 import { Calculator } from "../../lib/calculations";
 import { Slider } from "@/components/ui/slider";
+import CookieBanner from "@/components/cookie-banner";
 
 export default function Home() {
   
@@ -704,6 +705,7 @@ export default function Home() {
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
       
+      <CookieBanner />
     </div>
   );
 }

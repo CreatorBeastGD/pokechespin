@@ -1,3 +1,6 @@
+"use client"
+
+import CookieBanner from "@/components/cookie-banner";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 
 
@@ -17,6 +20,8 @@ export default function Page() {
                   Go to Dynamax Calculator
                 </button>
             </a>
+            <CookieBanner />
         </div>
+        
     );
 }

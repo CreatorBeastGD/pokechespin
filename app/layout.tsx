@@ -1,9 +1,11 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react";
 import BuyMeACoffeeIcon from "@/components/buy-me-a-coffee";
+import CookieBanner from "@/components/cookie-banner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -55,12 +57,8 @@ export default function RootLayout({
               <p>Buy me a Chespin!</p>
             </a>
           </div>
-          <p className="textslate text-xs text-center w-1/2 text-right mb-2 mt-2">
-            Thanks for 1000 views! 🎉
-          </p>
         </div>
         <Analytics />
-        
       </body>
     </html>
   );
