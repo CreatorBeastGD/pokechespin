@@ -179,7 +179,7 @@ export default function Home() {
             newChargedMoveList[i - 1][j - 1] = PoGoAPI.getMovePBByID(chargedMove, allMoves);
           }
           if (stats !== null) {
-            newStats[i - 1][j - 1] = stats.split(",").map((stat: string) => parseInt(stat));
+            newStats[i - 1][j - 1] = stats.split(",").map((stat: string) => parseFloat(stat));
           }
           if (maxMoveStats !== null) {
             newMaxMoveList[i - 1][j - 1] = maxMoveStats.split(",").map((stat: string) => parseInt(stat));
@@ -445,7 +445,8 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
         <h1 className="title">
-        Pokémon GO Damage Calculator</h1>
+          PokéChespin for Max Battles
+        </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
       </div>
       <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">

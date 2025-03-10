@@ -292,7 +292,13 @@ export default function SearchBarAttackerDynamax({
     onClickedClearButton(member, slot)
   }
 
-  
+  const getMaxSpiritLevel = (stamina: number) => {
+    if (stamina === 0) {
+      return 0;
+    } else {
+      return (0.08*(1+(stamina/2)))
+    }
+  }
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
@@ -387,13 +393,17 @@ export default function SearchBarAttackerDynamax({
           </div>
           <div className="grid grid-cols-1 mb-4">
             <p>Max moves</p>
-            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Attack {maxMoves[0] === 3 ? "MAX" : maxMoves[0]}</p>
+            <p className="text-red-600">Max Attack {maxMoves[0] === 3 ? "MAX" : maxMoves[0]}</p>
            
             <Slider  onValueChange={(value) => handleChangeMaxMoves(value, 0)} defaultValue={[maxMoves[0]]} min={1} max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
            
-            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Guard {maxMoves[1] === 3 ? "MAX" : maxMoves[1]}</p>
+            <p className="text-red-600">Max Guard {maxMoves[1] === 3 ? "MAX" : maxMoves[1]}</p>
             <Slider onValueChange={(value) => handleChangeMaxMoves(value, 1)} defaultValue={[maxMoves[1]]}  max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
-            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Max Spirit {maxMoves[2] === 3 ? "MAX" : maxMoves[2]}</p>
+            <div className="flex flex-row justify-between w-[60%]">
+            <p className="text-red-600">Max Spirit {maxMoves[2] === 3 ? "MAX" : maxMoves[2]}</p>
+            {maxMoves[2] > 0 && <p className="text-red-600 ">({Math.floor(Math.floor(effStamina)*getMaxSpiritLevel(maxMoves[2]))}HP healed per use)</p>}
+
+            </div>
             <Slider onValueChange={(value) => handleChangeMaxMoves(value, 2)} defaultValue={[maxMoves[2]]} max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
 
 

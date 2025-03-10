@@ -53,7 +53,6 @@ export default function CalculateButtonSimulateAdvanced({
   const [attackerDamage, setAttackerDamage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [visibleEntries, setVisibleEntries] = useState(50);
-  const [enraged, setEnraged] = useState<boolean>(searchParams.get("enraged") === "true");
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [partyPower, setPartyPower] = useState<boolean>(searchParams.get("party_power") === "true");
 
@@ -61,7 +60,6 @@ export default function CalculateButtonSimulateAdvanced({
   useEffect(() => {
     const loadParams = () => {
       const dodge = searchParams.get("can_dodge");
-      const enraged = searchParams.get("enraged");
       const pokemon_team_number = searchParams.get("pokemon_team_number");
       const relobby_time = searchParams.get("relobby_time");
       const teams_number = searchParams.get("teams_number");
@@ -69,9 +67,6 @@ export default function CalculateButtonSimulateAdvanced({
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
-      }
-      if (enraged) {
-        setEnraged(enraged === "true");
       }
       if (pokemon_team_number) {
         setTeamCount(parseInt(pokemon_team_number));
@@ -123,6 +118,12 @@ export default function CalculateButtonSimulateAdvanced({
       return "Primal";
     } else if (raidMode === "raid-mega-leg") {
       return "Mega Legendary";
+    } else if (raidMode === "raid-t1-shadow") {
+      return "Tier 1 Shadow";
+    } else if (raidMode === "raid-t3-shadow") {
+      return "Tier 3 Shadow";
+    } else if (raidMode === "raid-t5-shadow") {
+      return "Tier 5 Shadow";
     } else {
       return "Normal";
     }
@@ -134,9 +135,9 @@ export default function CalculateButtonSimulateAdvanced({
     setLoading(true);
     // Both should have the same weather boost.
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
-    const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], bonusDefender[2], bonusDefender[3]];
+    const defenderBonusesMod = [bonusAttacker[0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, enraged, peopleCount, partyPower);
+      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -157,12 +158,10 @@ export default function CalculateButtonSimulateAdvanced({
     setRelobbyTime(relobbyTime);
     setAvoidCharged(avoidCharged);
     setPeopleCount(peopleCount);
-    setEnraged(enraged);
     setPartyPower(partyPower);
     
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("can_dodge", avoidCharged.toString());
-    sp.set("enraged", enraged.toString());
     sp.set("pokemon_team_number", teamCount.toString());
     sp.set("relobby_time", relobbyTime.toString());
     sp.set("teams_number", peopleCount.toString());
@@ -174,7 +173,7 @@ export default function CalculateButtonSimulateAdvanced({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [teamCount, relobbyTime, avoidCharged, peopleCount, enraged, partyPower]);
+  }, [teamCount, relobbyTime, avoidCharged, peopleCount, partyPower]);
 
   useEffect(() => {
     setTime(0);
@@ -218,7 +217,6 @@ export default function CalculateButtonSimulateAdvanced({
       </Button>
       <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
-        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnraged)} checked={enraged}/> Defender Pokémon can enrage.</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPartyPower)} checked={partyPower}/> Use Party Power {peopleCount === 1 && ("(Not available for 1 team)")}</p>
         <p>Set the number of Pokémon in the team: ({teamCount})</p>
         <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
@@ -236,13 +234,13 @@ export default function CalculateButtonSimulateAdvanced({
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}.
           </p>
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
           </p>
           <p>
-            <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
+            <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
           </p>
           <p>
             <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times (per team), dealing an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
@@ -250,7 +248,7 @@ export default function CalculateButtonSimulateAdvanced({
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time within given conditions. ({getRaidTime(raidMode)} seconds)
+            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true&& raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time with these given conditions. ({getRaidTime(raidMode)} seconds.)
           </p>)}
           
           <p className="text-sm text-slate-700 italic">
@@ -264,7 +262,7 @@ export default function CalculateButtonSimulateAdvanced({
               The simulation takes into consideration that the attacker will dodge the next Charged Attack if it doesn't faint. This will reduce the damage taken by 75%.
             </p>
           )}
-          {enraged && (
+          {raidMode.endsWith("shadow") && (
             <p className="text-sm text-slate-700 italic">
               The simulation takes into consideration that the defender Pokémon can enrage. 8 purified gems need to be used in order to subdue an enraged Pokémon. {peopleCount === 1 ? "Using 8 purified gems while raiding solo is not possible (MAX. 5)" : ""}
             </p>

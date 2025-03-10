@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.12.3";
+        return "1.13";
     }
     
     static async getTypes () {
@@ -311,6 +311,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
+            bonusDefender = [bonusDefender[0], false, false, 0];
         }
         const types = await this.getTypes();
         const effectiveness = this.getEfectiveness(defendingPokemon, move, types);
@@ -331,6 +332,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
+            bonusDefender = [bonusDefender[0], false, false, 0];
         }
         const types = await this.getTypes();
         const effectiveness = this.getEfectiveness(defendingPokemon, move, types);
@@ -364,6 +366,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
+            bonusDefender = [bonusDefender[0], false, false, 0];
         }
         //console.log(attacker.pokemonId + " " + defender.pokemonId);
         //console.log(attackerStats);
@@ -386,6 +389,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
+            bonusDefender = [bonusDefender[0], false, false, 0];
         }
         //console.log(types);
         const effectiveness = this.getEfectiveness(defender, move, types);
@@ -405,17 +409,17 @@ export class PoGoAPI {
     static convertStats(defenderStats: any, raidMode: any) {
         let convertedStats = [];
         if (raidMode === "raid-t1") {
-            convertedStats = [20, 15, 15, 600];
+            convertedStats = [5001, 15, 15, 600];
         } else if (raidMode === "raid-t3") {
-            convertedStats = [30, 15, 15, 3600];
+            convertedStats = [5003, 15, 15, 3600];
         } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
-            convertedStats = [40, 15, 15, 9000];
+            convertedStats = [5005, 15, 15, 9000];
         } else if (raidMode === "raid-t5") {
-            convertedStats = [40, 15, 15, 15000];
+            convertedStats = [5005, 15, 15, 15000];
         } else if (raidMode === "raid-elite") {
-            convertedStats = [40, 15, 15, 20000];
+            convertedStats = [5005, 15, 15, 20000];
         } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
-            convertedStats = [40, 15, 15, 22500];
+            convertedStats = [5005, 15, 15, 22500];
         } else if (raidMode === "raid-t1-dmax") {
             convertedStats = [8001, 15, 15, 1700];
         } else if (raidMode === "raid-t2-dmax") {
@@ -428,6 +432,12 @@ export class PoGoAPI {
             convertedStats = [8005, 15, 15, 17500];
         } else if (raidMode === "raid-t6-gmax") {
             convertedStats = [8006, 15, 15, 90000];
+        } else if (raidMode === "raid-t1-shadow") {
+            convertedStats = [6001, 15, 15, 600];
+        } else if (raidMode === "raid-t3-shadow") {
+            convertedStats = [6003, 15, 15, 3600];
+        } else if (raidMode === "raid-t5-shadow") {
+            convertedStats = [6005, 15, 15, 15000];
         } else {
             convertedStats = defenderStats;
         }
@@ -435,13 +445,13 @@ export class PoGoAPI {
     }
 
     static getRaidHealth (raidMode: any) {
-        if (raidMode === "raid-t1") {
+        if (raidMode === "raid-t1" || raidMode === "raid-t1-shadow") {
             return 600;
-        } else if (raidMode === "raid-t3") {
+        } else if (raidMode === "raid-t3" || raidMode === "raid-t3-shadow") {
             return 3600;
         } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
             return 9000;
-        } else if (raidMode === "raid-t5") {
+        } else if (raidMode === "raid-t5" || raidMode === "raid-t5-shadow") {
             return 15000;
         } else if (raidMode === "raid-elite") {
             return 20000;
@@ -591,14 +601,13 @@ export class PoGoAPI {
         teamCount: any,
         avoids?: any,
         relobbyTime?: any,
-        enraged?: any,
+        enraged: boolean = raidMode.endsWith("shadow"),
         peopleCount?: any,
         partyPower?: any
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
-
         let partyPowerCounter = 0;
         let partyPowerLimit = (partyPower ? (peopleCount === 2 ? 18 : (peopleCount === 3 ? 9 : (peopleCount > 3 ? 6 : -1))) : -1);
         let partyPowerActivated = false;

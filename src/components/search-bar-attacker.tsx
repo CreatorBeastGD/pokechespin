@@ -46,6 +46,9 @@ export default function SearchBarAttacker({
     initialValues,
     paramsLoaded
   }: SearchBarAttackerProps, ) {
+
+    const raidModeLevelMultiplier = PoGoAPI.convertStats([40, 15, 15, 15], raidMode)[0];
+
   const [pokemon, setPokemon] = useState<string>("");
   const [pokemonData, setPokemonData] = useState<any>(null);
   const [selectedForm, setSelectedForm] = useState<string>("normal");
@@ -64,12 +67,12 @@ export default function SearchBarAttacker({
   const initialLoad = useRef(false);
 
 
-
   useEffect(() => {
     //console.log(initialValues);
     if (!initialLoad.current && initialValues && paramsLoaded) {
       initialLoad.current = true;
       if (initialValues.attacker) searchPokemonInit(initialValues.attacker);
+      console.log(initialValues.attackerStats);
       if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
       if (initialValues.bonusAttacker) {
         const normalizedBonuses = initialValues.bonusAttacker.map((bonus: any, index: number) => {
@@ -77,7 +80,6 @@ export default function SearchBarAttacker({
           if (index === 3) return parseInt(bonus); // Último es número
           return bonus === "true"; // Conviértelo en booleano
         });
-
         handleBonusSelect(normalizedBonuses);
       }
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
@@ -258,12 +260,13 @@ export default function SearchBarAttacker({
   };
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
-  
-  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], stats[0]);
-  const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, stats[2], stats[0]);
-  const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, stats[3], stats[0]);
 
   const raidmode = raidMode ? raidMode : "normal";
+  
+  const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, (slot == 1 ? stats[1] : (slot == 2 && raidMode === "normal") ? stats[1] : 15), slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidModeLevelMultiplier);
+  const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15), slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidModeLevelMultiplier);
+  const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15), slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidModeLevelMultiplier);
+
 
   //console.log(selectedPokemon? selectedPokemon : "null");
 
@@ -316,7 +319,6 @@ export default function SearchBarAttacker({
           </select>
 
           <p>Stats (PC: {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
-          {raidmode === "normal" ? (<></>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Stat changes won't be affected.</p>)}
           <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {effAttack })</span></p>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
@@ -328,25 +330,27 @@ export default function SearchBarAttacker({
           
             <Image
               unoptimized
-                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
+                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + ((selectedBonuses[1] === true && (slot === 1 || (slot === 2 && raidMode === "normal"))) ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
                 alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
                 height={400}
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
             />
+          {(slot === 1 || (slot === 2 && raidMode === "normal")) && 
           <div className="grid grid-cols-1">
-            <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
-            <p>Level: {stats[0]}</p>
-            <Slider onValueChange={(value) => handleChangeStat(value, 0)} defaultValue={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
-            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Attack: </p>
-            <Slider onValueChange={(value) => handleChangeStat(value, 1)} defaultValue={[stats[1]]} max={15} step={1} className="w-[60%] mb-1" color={stats[1] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-            <p className={stats[2] == 15 ? "text-red-600" : "text-yellow-600"}>Defense: </p>
-            <Slider onValueChange={(value) => handleChangeStat(value, 2)} defaultValue={[stats[2]]} max={15} step={1} className="w-[60%] mb-1" color={stats[2] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-            <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
-            <Slider onValueChange={(value) => handleChangeStat(value, 3)} defaultValue={[stats[3]]} max={15} step={1} className="w-[60%] mb-5" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-          </div>
-          {raidmode ? (
+          <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
+          <p>Level: {stats[0]}</p>
+          <Slider onValueChange={(value) => handleChangeStat(value, 0)} defaultValue={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
+          <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Attack: </p>
+          <Slider onValueChange={(value) => handleChangeStat(value, 1)} defaultValue={[stats[1]]} max={15} step={1} className="w-[60%] mb-1" color={stats[1] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
+          <p className={stats[2] == 15 ? "text-red-600" : "text-yellow-600"}>Defense: </p>
+          <Slider onValueChange={(value) => handleChangeStat(value, 2)} defaultValue={[stats[2]]} max={15} step={1} className="w-[60%] mb-1" color={stats[2] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
+          <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
+          <Slider onValueChange={(value) => handleChangeStat(value, 3)} defaultValue={[stats[3]]} max={15} step={1} className="w-[60%] mb-5" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
+        </div>
+          }
+          {raidmode === "normal" ? (
           <div className="grid grid-cols-1 mb-4 space-y-2">
             <p>Bonuses</p>
             
@@ -357,7 +361,7 @@ export default function SearchBarAttacker({
               <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
             </p>
             <p>Friendship level ({selectedBonuses[3]}) <span className="italic text-xs">(Doubled this season!)</span></p>
-            <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[0]} max={4} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
+            <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[selectedBonuses[3]]} max={4} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
           </div>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Bonuses won't be affected.</p>)}
           <div className="flex flex-row space-x-4">
             <div>

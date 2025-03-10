@@ -110,6 +110,12 @@ export class Calculator {
         8004: 0.6,
         8005: 0.7,
         8006: 0.765,
+        5001: 0.5974,
+        5003: 0.73,
+        5005: 0.7899,
+        6001: 0.5974,
+        6003: 0.76,
+        6005: 0.82,
     };
 
       private static RAID_BOSS_HP: { [raidMode: string]: number } = {
@@ -128,6 +134,9 @@ export class Calculator {
         "raid-t4-dmax": 20000,
         "raid-t5-dmax": 17500,
         "raid-t6-gmax": 90000,
+        "raid-t1-shadow": 600,
+        "raid-t3-shadow": 3600,
+        "raid-t5-shadow": 15000,
       }
 
       static getRaidBossHP(raidMode: string) {
@@ -208,9 +217,7 @@ export class Calculator {
 
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string) {
         if (raidMode === "raid-t5-dmax") {
-          if (pokemonId === "ARTICUNO") {
-            return 17500;
-          } if (pokemonId === "ZAPDOS") {
+          if (pokemonId === "ZAPDOS") {
             return 13000;
           } else {
             return 17500;

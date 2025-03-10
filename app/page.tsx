@@ -116,10 +116,10 @@ export default function Home() {
           setSelectedChargedMoveDefender(chargedAttack);
         }
         if (attackerStats) {
-          setAttackerStats(attackerStats.split(",").map((stat: string) => parseInt(stat)));
+          setAttackerStats(attackerStats.split(",").map((stat: string) => parseFloat(stat)));
         }
         if (defenderStats) {
-          setDefenderStats(defenderStats.split(",").map((stat: string) => parseInt(stat)));
+          setDefenderStats(defenderStats.split(",").map((stat: string) => parseFloat(stat)));
         }
         //console.log("BA", bonusAttacker);
         if (bonusAttacker) {
@@ -223,6 +223,12 @@ export default function Home() {
       return "Primal";
     } else if (raidMode === "raid-mega-leg") {
       return "Mega Legendary";
+    } else if (raidMode === "raid-t1-shadow") {
+      return "Tier 1 Shadow";
+    } else if (raidMode === "raid-t3-shadow") {
+      return "Tier 3 Shadow";
+    } else if (raidMode === "raid-t5-shadow") {
+      return "Tier 5 Shadow";
     } else {
       return "Normal";
     }
@@ -252,12 +258,12 @@ export default function Home() {
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
         <h1 className="mb-10 title">
-        Pokémon GO Damage Calculator
+        PokéChespin for Raids
         </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
       <a href="https://pokemongo-damage-calculator.vercel.app/dynamax" className="link">
-        <p className="italic text-sm font-bold">(NEW) Dynamax Calculator!</p>
+        <p className="italic text-sm font-bold">Dynamax Calculator and Simulator</p>
       </a>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
@@ -369,7 +375,9 @@ export default function Home() {
                 <option key={"raid-mega-leg"} value={"raid-mega-leg"}>Mega Legendary Raid (22500HP) </option>
                 <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
                 <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
-
+                <option key={"raid-t1-shadow"} value={"raid-t1-shadow"}>Tier-1 Shadow Raid (600HP) </option>
+                <option key={"raid-t3-shadow"} value={"raid-t3-shadow"}>Tier-3 Shadow Raid (3600HP) </option>
+                <option key={"raid-t5-shadow"} value={"raid-t5-shadow"}>Tier-5 Shadow Raid (15000HP) </option>
               </select>
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
