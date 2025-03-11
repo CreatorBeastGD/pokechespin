@@ -289,10 +289,6 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           <p className="text-sm text-slate-700 italic">
             The defender Pokémon will become enraged when 300s of simulation are reached, dealing x4 damage. Will also become desperate when 360s of simulation are reached, instant-killing everything upon attack.
           </p>
-
-          <p className="text-sm text-slate-700 italic font-bold">
-            Dynamax Simulator is in beta, results may not be accurate and more updates are planned for the future. Please report any bugs to CreatorBeastGD via Reddit or GitHub.
-          </p>
         {graphic && (
           <Card className="mt-4">
             <CardHeader>

@@ -25,6 +25,7 @@ import CalculateButtonDynamax from "@/components/calculate-button-dynamax";
 import { Calculator } from "../../lib/calculations";
 import { Slider } from "@/components/ui/slider";
 import CookieBanner from "@/components/cookie-banner";
+import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 
 export default function Home() {
   
@@ -652,7 +653,7 @@ export default function Home() {
               />
             </CardContent>
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
-              <CardContent>
+            <CardContent>
               <CardDescription> Damage dealt per MAX attack</CardDescription>
               <CalculateButtonDynamax
                 allEnglishText={allEnglishText}
@@ -668,6 +669,34 @@ export default function Home() {
               />
             </CardContent>
             )}
+            <CardContent>
+              <CardDescription> Damage received from Large Attack</CardDescription>
+              <CalculateButtonMaxBoss
+                allEnglishText={allEnglishText}
+                attacker={defendingPokemon} 
+                defender={attackingPokemon[selectedMember-1][selectedPokemonSlot-1]} 
+                move={selectedQuickMoveDefender}
+                attackerStats={defenderStats}
+                defenderStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
+                bonusAttacker={bonusDefender}
+                bonusDefender={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                raidMode={raidMode} 
+                isLarge={true}/>
+            </CardContent>
+            <CardContent>
+              <CardDescription> Damage received from Targeted Attack</CardDescription>
+              <CalculateButtonMaxBoss
+                allEnglishText={allEnglishText}
+                attacker={defendingPokemon} 
+                defender={attackingPokemon[selectedMember-1][selectedPokemonSlot-1]} 
+                move={selectedChargedMoveDefender}
+                attackerStats={defenderStats}
+                defenderStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
+                bonusAttacker={bonusDefender}
+                bonusDefender={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                raidMode={raidMode} 
+                isLarge={false}/>
+            </CardContent>
             {allPokemonSelected() ? (
               <CardContent>
                 <CardDescription>Max Battle Simulation (Beta)</CardDescription>
@@ -694,7 +723,13 @@ export default function Home() {
               </CardContent>
             )
             }
+            <CardContent>
+              <p className="text-sm text-slate-700 italic font-bold">
+                Dynamax Simulator is in beta, results may not be accurate and more updates are planned for the future. Please report any bugs to CreatorBeastGD via Reddit or GitHub.
+              </p>
+            </CardContent>
         </Card>
+        
       </div>
       
       <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>

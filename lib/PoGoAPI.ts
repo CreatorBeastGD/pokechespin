@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.13";
+        return "1.14";
     }
     
     static async getTypes () {
@@ -368,9 +368,7 @@ export class PoGoAPI {
             defenderStats = this.convertStats(defenderStats, raid);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
-        //console.log(attacker.pokemonId + " " + defender.pokemonId);
-        //console.log(attackerStats);
-        //console.log(defenderStats);
+        console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 

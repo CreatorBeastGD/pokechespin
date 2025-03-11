@@ -400,8 +400,8 @@ export default function SearchBarAttackerDynamax({
             <p className="text-red-600">Max Guard {maxMoves[1] === 3 ? "MAX" : maxMoves[1]}</p>
             <Slider onValueChange={(value) => handleChangeMaxMoves(value, 1)} defaultValue={[maxMoves[1]]}  max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
             <div className="flex flex-row justify-between w-[60%]">
-            <p className="text-red-600">Max Spirit {maxMoves[2] === 3 ? "MAX" : maxMoves[2]}</p>
-            {maxMoves[2] > 0 && <p className="text-red-600 ">({Math.floor(Math.floor(effStamina)*getMaxSpiritLevel(maxMoves[2]))}HP healed per use)</p>}
+            <p className="text-red-600 ">Max Spirit {maxMoves[2] === 3 ? "MAX" : maxMoves[2]}</p>
+            {maxMoves[2] > 0 && <p className="text-red-600 italic text-xs">({Math.floor(Math.floor(effStamina)*getMaxSpiritLevel(maxMoves[2]))}HP/use)</p>}
 
             </div>
             <Slider onValueChange={(value) => handleChangeMaxMoves(value, 2)} defaultValue={[maxMoves[2]]} max={3} step={1} className="w-[60%] mb-1" color={"bg-red-800"}/>
