@@ -42,7 +42,7 @@ export default function CalculateButtonMaxBoss({
     const types = await PoGoAPI.getTypes();
     const attackingPoke = attacker;
     const defendingPoke = defender;
-    const attackingStats = attackerStats;
+    const attackingStats = PoGoAPI.convertStats(attackerStats, raidMode);
     const defendingStats = defenderStats;
     const bonusAttacking = bonusAttacker;
     const bonusDefending = bonusDefender;
