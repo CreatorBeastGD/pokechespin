@@ -602,13 +602,16 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE*. Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation. I'll try to add the possibility for attackers to not use their Charged Attack next ^^.
+              *DEV NOTE* "Prioritise Energy generation" is now implemented, thanks for your patience!
+            </p>
+            <p className="italic text-slate-700 text-sm mt-2">
+              Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
             </p>
 
 
 
               {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
-                <p className="italic text-slate-700 text-sm">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
+                <p className="italic text-slate-700 text-sm mt-2">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
                 )}
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">

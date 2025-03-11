@@ -9,6 +9,7 @@ import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calculator } from "../../lib/calculations";
+import { Switch } from "./ui/switch";
 
 export default function CalculateButtonSimulateAdvancedDynamax({
   attacker,
@@ -64,6 +65,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [friendship, setFriendship] = useState<number[]>(searchParams.get("friendship")?.split(",").map((x) => parseInt(x)) ?? [0,0,0,0]);
   const [win, setWin] = useState<boolean | null>(null);
   const [phases, setPhases] = useState<number>(0);
+  const [prioritiseEnergy, setPrioritiseEnergy] = useState<boolean>(searchParams.get("prioritise_energy") === "true");
   
   useEffect(() => {
     const loadParams = () => {
@@ -154,7 +156,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus, friendship);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -171,6 +173,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     handle(checked);
   }
 
+
+
   useEffect(() => {
 
     setStrategy(strategy);
@@ -179,6 +183,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     sp.set("strategy", strategy.join(","));
     sp.set("shroom", shroom.join(","));
     sp.set("friendship", friendship.join(","));
+    sp.set("prioritise_energy", prioritiseEnergy.toString());
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -186,7 +191,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(attacker.map(() => [0,0,0]));
-  }, [strategy, shroom, friendship]);
+  }, [strategy, shroom, friendship, prioritiseEnergy]);
 
   useEffect(() => {
     setTime(0);
@@ -201,6 +206,13 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("helper_bonus", value[0].toString());
+
+    setTime(0);
+    setQau(0);
+    setCau(0);
+    setGraphic(null);
+    setAttackerDamage(attacker.map(() => [0,0,0]));
+
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
   }
 
@@ -255,8 +267,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     </div>
     
     <p>Helper Bonus ({helperBonus})</p>
-        <Slider onValueChange={(value) => handleHelperBonus(value)} defaultValue={[helperBonus]} max={4} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
-        
+    <Slider onValueChange={(value) => handleHelperBonus(value)} defaultValue={[helperBonus]} max={4} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+
+    <p className="mt-2"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseEnergy)} checked={prioritiseEnergy}/> Prioritise Energy generation </p>    
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
@@ -272,7 +285,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)-sumAllDamage()}/{Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)} HP left.</p>
+            <p> The defender Pokémon has {Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">

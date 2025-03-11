@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.14";
+        return "1.15";
     }
     
     static async getTypes () {
@@ -1026,7 +1026,8 @@ export class PoGoAPI {
         shroom: string[] = [],
         weather: string = "EXTREME",
         helperBonus: number = 0,
-        friendship: any[] = [0,0,0,0]
+        friendship: any[] = [0,0,0,0],
+        prioritiseEnergy: boolean,
     ) {
         let defenderStats = this.convertStats([40,15,15,15], raidMode);
         
@@ -1165,7 +1166,15 @@ export class PoGoAPI {
                 if (!firstDmgReduction[i]) {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
-                        if (attackerEnergy[i][activePokemon[i]] >= -attackersCinematicMove[i][activePokemon[i]].energyDelta) {
+                        const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, ((shrooms[i] === true ? 2 : 1) * this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus))));
+                        const maxEnergyQuickAttack = Calculator.getMaxEnergyGain(projectedDamageQuick, defenderHealth);
+                        const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, ((shrooms[i] === true ? 2 : 1) * this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus))));
+                        const maxEnergyCinematicAttack = Calculator.getMaxEnergyGain(projectedDamageCinematic, defenderHealth);
+                        if ((attackerEnergy[i][activePokemon[i]] >= -attackersCinematicMove[i][activePokemon[i]].energyDelta) 
+                            && (!prioritiseEnergy ||
+                                (prioritiseEnergy && (maxEnergyCinematicAttack * (attackersQuickMove[i][activePokemon[i]].durationMs / attackersCinematicMove[i][activePokemon[i]].durationMs) >= maxEnergyQuickAttack))
+                            )
+                        ) {
                             // Attacker of member i casts a charged move
                                 attackerDamageStart[i] = time - 1;
                                 attackerMove[i] = attackersCinematicMove[i][activePokemon[i]];
