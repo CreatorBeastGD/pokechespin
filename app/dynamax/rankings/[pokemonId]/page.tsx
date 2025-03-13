@@ -71,6 +71,7 @@ export default function rankingsPage() {
     useEffect(() => {
         
         const urlSP = new URLSearchParams(window.location.search);
+        let load = false;
         if (allDataLoaded) {
             const pokemonId = sp.pokemonId;
             if (pokemonId && typeof pokemonId === 'string') {
@@ -89,7 +90,7 @@ export default function rankingsPage() {
                 if (defenderFastAttack !== null) {
                     setLargeMove(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves));
                 } 
-                
+
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
@@ -101,12 +102,16 @@ export default function rankingsPage() {
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    load=true;
                 } else {
                     const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
                     router.push(newUrl);
+
                 }
             }
+            if (load) {
                 setEverythingLoaded(true);
+            }
         }
     }, [allDataLoaded]);
 
