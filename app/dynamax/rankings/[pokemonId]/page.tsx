@@ -1,7 +1,7 @@
 "use client"
 
 import CookieBanner from "@/components/cookie-banner";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { PoGoAPI } from "../../../../lib/PoGoAPI";
 import { useEffect, useState } from "react";
 import Image from 'next/image';
@@ -31,6 +31,7 @@ export default function rankingsPage() {
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
     
+    const router = useRouter();
     const sp = useParams();
 
     useEffect(() => {
@@ -73,21 +74,25 @@ export default function rankingsPage() {
         if (allDataLoaded) {
             const pokemonId = sp.pokemonId;
             if (pokemonId && typeof pokemonId === 'string') {
+
                 const pokemon = PoGoAPI.getPokemonPBByID(pokemonId, pokemonList)[0];
                 setPokemonInfo(pokemon);
                 
                 const defenderChargedAttack = urlSP.get("defender_cinematic_attack");
-                if (defenderChargedAttack) {
+                
+                if (defenderChargedAttack !== null) {
                     setTargetedMove(PoGoAPI.getMovePBByID(defenderChargedAttack, allMoves));
-                }
+                } 
 
                 const defenderFastAttack = urlSP.get("defender_fast_attack");
-                if (defenderFastAttack) {
+                
+                if (defenderFastAttack !== null) {
                     setLargeMove(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves));
-                }
+                } 
                 
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
-                if (raidMode) {
+
+                if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
                     const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves,types);
                     setBestAttackers(bestAttackers);
@@ -96,7 +101,10 @@ export default function rankingsPage() {
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
-                } 
+                } else {
+                    const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
+                    router.push(newUrl);
+                }
             }
                 setEverythingLoaded(true);
         }
