@@ -1,23 +1,18 @@
 "use client"
 
 import React, { use, useEffect, useState } from "react";
-import Image from "next/image";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import SearchBarAttacker from "@/components/search-bar-attacker";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import CalculateButton from "@/components/calculate-button";
-import CalculateButtonSimulate from "@/components/calculate-button-simulate";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SearchBarAttackerDynamax from "@/components/search-bar-attacker-dynamax";
 import SearchBarDefenderDynamax from "@/components/search-bar-defender-dynamax";
 import CalculateButtonSimulateAdvancedDynamax from "@/components/calculate-button-advanced-dynamax";
@@ -77,7 +72,6 @@ export default function Home() {
           searchParams.delete(`attacker_cinematic_attack${j}${i}`);
           searchParams.delete(`attacker_stats${j}${i}`);
           searchParams.delete(`attacker_max_moves${j}${i}`);
-          console.log("attacker" + j + i + "");
         }
       }
       window.history.replaceState({}, "", `${window.location.pathname}?${searchParams.toString()}`);
@@ -633,7 +627,7 @@ export default function Home() {
               </div>
 
               <CardDescription>(NEW) View Rankings {(defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) ? "" : "(Select a defender and its attacks first)"}</CardDescription>
-              <Button className="w-full py-2 text-white bg-primary rounded-lg" 
+              <Button className="glow w-full py-2 text-white bg-primary rounded-lg" 
                 onClick={() => {
                   if (defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) {
                     const newUrl = `${window.location.origin}${window.location.pathname}/rankings/${defendingPokemon.pokemonId}?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;

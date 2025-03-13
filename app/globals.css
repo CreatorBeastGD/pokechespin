@@ -69,6 +69,23 @@ body {
   align-items: center !important;
 }
 
+/* styles/globals.css */
+@keyframes glow {
+  0% {
+    @apply bg-primary
+  }
+  50% {
+    @apply bg-gray-500
+  }
+  100% {
+    @apply bg-primary
+  }
+}
+
+.glow {
+  animation: glow 1.5s infinite;
+}
+
 #bmc-wbtn img {
   margin-right: 10px !important;
 }
