@@ -109,7 +109,12 @@ export default function rankingsPage() {
     }
 
     const copyLinkToClipboard = () => {
-        const url = window.location.href;
+        const urlSP = new URLSearchParams();
+        urlSP.set("defender_fast_attack", largeMove?.moveId);
+        urlSP.set("defender_cinematic_attack", targetedMove?.moveId);
+        urlSP.set("raid_mode", raidMode);
+        urlSP.set("defender", pokemonInfo?.pokemonId);
+        const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
         }).catch((err) => {
