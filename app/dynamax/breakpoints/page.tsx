@@ -99,6 +99,12 @@ const BreakpointsPage = () => {
             else {
                 setParamsLoaded(true);
             }
+
+            const urlSP = new URLSearchParams(window.location.search);
+            urlSP.delete('member');
+            urlSP.delete('slot');
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlSP}`);
+            
             
         }
       }, [allDataLoaded]);
@@ -336,11 +342,12 @@ const BreakpointsPage = () => {
 
         ) : (
             error ? <p>{error}
-            <a href={`/${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
+            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
                                 <button className="w-full">
                                     Go Back
                                 </button>
-                            </a></p> : <p>Loading...</p>
+                            </a>
+                            </p> : <p>Loading...</p>
         )}
         
         <CookieBanner />

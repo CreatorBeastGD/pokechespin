@@ -26,6 +26,7 @@ import { Calculator } from "../../lib/calculations";
 import { Slider } from "@/components/ui/slider";
 import CookieBanner from "@/components/cookie-banner";
 import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   
@@ -44,7 +45,7 @@ export default function Home() {
   const [attackerStats, setAttackerStats] = useState<any>(Array(numMembers).fill(Array(3).fill([50, 15, 15, 15])));
   const [maxMoves, setMaxMoves] = useState<any|null>(Array(numMembers).fill(Array(3).fill([1,0,0])));
   const [defenderStats, setDefenderStats] = useState<any | null>([40, 15, 15, 15]);
-  const [raidMode, setRaidMode] = useState<any>("raid-t1-dmax");
+  const [raidMode, setRaidMode] = useState<any>(searchParams.get("raidMode") ? searchParams.get("raidMode") : "raid-t1-dmax");
   
   const [weather, setWeather] = useState<any>(searchParams.get("weather") ? searchParams.get("weather") : "EXTREME");
   const [bonusAttacker, setBonusAttacker] = useState<any[]>(Array(numMembers).fill(Array(3).fill([searchParams.get("weather") ? searchParams.get("weather") : "EXTREME", false, false, 0])));
@@ -67,8 +68,6 @@ export default function Home() {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-      
-      
     searchParams.set("num_members", numMembers.toString());
     setTimeout(() => {
       for (let j = numMembers + 1; j < 4 ; j++) {
@@ -124,6 +123,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
+      
+
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
       setAllPokemonPB(pokemonlist);
       //console.log("Fetched all Pokémon from PokeBattler API");
@@ -149,9 +150,6 @@ export default function Home() {
       setAllDataLoaded(true);
     };
     fetchAllPokemonPB();
-
-
-    
   }, []);
 
   useEffect(() => {
@@ -163,6 +161,11 @@ export default function Home() {
       const newStats = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => attackerStats[i][j]));
       const newMaxMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
   
+      const newUrlParams = new URLSearchParams(window.location.search);
+      newUrlParams.delete('member');
+      newUrlParams.delete('slot');
+      window.history.replaceState({}, '', `${window.location.pathname}?${newUrlParams}`);
+      
       for (let i = 1; i <= numMembers; i++) {
         for (let j = 1; j <= 3; j++) {
           const attacker = searchParams.get(`attacker${i}${j}`);
@@ -217,10 +220,6 @@ export default function Home() {
         setRaidMode(raidMode);
       }
 
-      const newUrlParams = new URLSearchParams(window.location.search);
-      newUrlParams.delete('member');
-      newUrlParams.delete('slot');
-      window.history.replaceState({}, '', `${window.location.pathname}?${newUrlParams}`);
   
       setLoaded(true);
     }
@@ -607,6 +606,11 @@ export default function Home() {
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
             </p>
+            {(raidMode === "raid-t6-gmax") && (
+              <p className="italic text-slate-700 text-sm mt-2">
+                Gigantamax bosses have a 0.9 multiplier applied to their defense. Results may be slightly inaccurate.
+              </p>
+            )}
 
 
 
@@ -628,18 +632,31 @@ export default function Home() {
               </button>
               </div>
 
+              <CardDescription>(NEW) View Rankings {(defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) ? "" : "(Select a defender and its attacks first)"}</CardDescription>
+              <Button className="w-full py-2 text-white bg-primary rounded-lg" 
+                onClick={() => {
+                  if (defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) {
+                    const newUrl = `${window.location.origin}${window.location.pathname}/rankings/${defendingPokemon.pokemonId}?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;
+                    router.push(newUrl);
+                  }
+                }}>
+                Rankings
+              </Button>
+            </CardContent>
+
+            <CardContent>
               <CardDescription> Damage dealt per fast attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
                 attacker={attackingPokemon[selectedMember-1][selectedPokemonSlot-1]} 
                 defender={defendingPokemon} 
-                move={selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1]} 
+                move={selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
                 bonusAttacker={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                />
+              />
             </CardContent>
             <CardContent>
               <CardDescription> Damage dealt per charged attack</CardDescription>

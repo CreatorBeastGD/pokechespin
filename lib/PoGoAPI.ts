@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.15";
+        return "1.16";
     }
     
     static async getTypes () {
@@ -24,6 +24,11 @@ export class PoGoAPI {
     static async getAllPokemonPB() {
         const response = await fetch(API_PB + "pokemon");
         return (await response.json()).pokemon;
+    }
+
+    static async getAvailableMaxPokemonPB() {
+        const response = await fetch(API_PB + "raids");
+        return (await response.json()).dynamaxPokemon;
     }
     
     static async getAllMovesPB() {
@@ -322,7 +327,7 @@ export class PoGoAPI {
             attackingPokemon.type == move.type || attackingPokemon?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
             move.type,
-            1,
+            this.getDefenseMultiplier(raidMode),
             bonusAttacker,
             bonusDefender,
         )
@@ -343,7 +348,7 @@ export class PoGoAPI {
             attackingPokemon.type == move.type || attackingPokemon?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
             move.type,
-            1,
+            this.getDefenseMultiplier(raidMode),
             bonusAttacker,
             bonusDefender,
         );
@@ -1010,6 +1015,77 @@ export class PoGoAPI {
             default:
                 return 1;
         }
+    }
+
+    static getBestQuickMove(pokemon: any, boss: any, types: any, raidMode?: string, allMoves?: any) {
+        let bestMove = null;
+        let bestDamage = 0;
+        pokemon.quickMoves.forEach((move: any) => {
+            let moveData = this.getMovePBByID(move, allMoves);
+            moveData.power = 10;
+            const damage = this.getDamage(pokemon, boss, moveData, types, [40,15,15,15], [40,15,15,15], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1, 1);
+            console.log("Quick Move: " + moveData.moveId + " Damage: " + damage);
+            if (damage > bestDamage) {
+                bestMove = moveData;
+                bestDamage = damage;
+            }
+        });
+        return bestMove;
+    }
+
+    static getBestDefendersDynamax(
+        boss: any,
+        pokemonList: any,
+        availableDmaxPoke: any,
+        raidMode: string,
+        allMoves: any,
+        types: any,
+        bossLargeAttack: any,
+        bossTargetAttack: any
+    ) {
+        const attackerStat = [40,15,15,15]
+        const defenderStat = this.convertStats([40,15,15,15], raidMode);
+        const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
+        const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
+        let graphic: { pokemon: any; large:number; targetAverage:number; tankScore: number; }[] = [];
+        availableDmaxPoke.forEach((defender: string) => {
+            const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
+            const percentAfterLarge = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+            const percentAfterTargetBestCase = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+            const percentAfterTargetWorstCase = Math.max(0,((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+
+            const tankScore = ((Math.max(0, percentAfterLarge + (percentAfterTargetBestCase + percentAfterTargetWorstCase)/2)  / 2))
+            console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetAverage: ((percentAfterTargetBestCase + percentAfterTargetWorstCase)/2),  tankScore: tankScore});
+        })
+        console.log(graphic)
+        return graphic.sort((a, b) => b.tankScore - a.tankScore);
+    }
+
+    static GetBestAttackersDynamax(
+        boss: any,
+        pokemonList: any,
+        availableDmaxPoke: any,
+        raidMode: string,
+        allMoves: any,
+        types: any
+    ) {
+        const attackerStat = [40,15,15,15]
+        const defenderStat = this.convertStats([40,15,15,15], raidMode);
+        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; }[] = [];
+        availableDmaxPoke.forEach((attacker: string) => {
+            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
+            const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3);
+            //console.log(maxMove)
+            const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
+            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone});
+        });
+        return attackersStat.sort((a, b) => b.damage - a.damage);
     }
 
     static async AdvancedSimulationDynamax(
