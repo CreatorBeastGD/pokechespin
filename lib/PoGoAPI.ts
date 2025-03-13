@@ -373,7 +373,7 @@ export class PoGoAPI {
             defenderStats = this.convertStats(defenderStats, raid);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
-        console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
+        //console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 
@@ -1024,7 +1024,7 @@ export class PoGoAPI {
             let moveData = this.getMovePBByID(move, allMoves);
             moveData.power = 10;
             const damage = this.getDamage(pokemon, boss, moveData, types, [40,15,15,15], [40,15,15,15], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1, 1);
-            console.log("Quick Move: " + moveData.moveId + " Damage: " + damage);
+            //console.log("Quick Move: " + moveData.moveId + " Damage: " + damage);
             if (damage > bestDamage) {
                 bestMove = moveData;
                 bestDamage = damage;
@@ -1050,18 +1050,22 @@ export class PoGoAPI {
         let graphic: { pokemon: any; large:number; targetAverage:number; tankScore: number; }[] = [];
         availableDmaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
+
+            console.log("HP of " + pokemonData.pokemonId +": "+ Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]) + " After attack: " + this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))
             const percentAfterLarge = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                - Math.max(0, (this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+            
             const percentAfterTargetBestCase = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+            
             const percentAfterTargetWorstCase = Math.max(0,((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
+                - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
 
             const tankScore = ((Math.max(0, percentAfterLarge + (percentAfterTargetBestCase + percentAfterTargetWorstCase)/2)  / 2))
-            console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
             graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetAverage: ((percentAfterTargetBestCase + percentAfterTargetWorstCase)/2),  tankScore: tankScore});
         })
-        console.log(graphic)
+        //console.log(graphic)
         return graphic.sort((a, b) => b.tankScore - a.tankScore);
     }
 
@@ -1549,7 +1553,7 @@ export class PoGoAPI {
             
         }
         console.log("Simulation was done! " + time);
-        console.log(attackerDamage);
+        //console.log(attackerDamage);
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }
 

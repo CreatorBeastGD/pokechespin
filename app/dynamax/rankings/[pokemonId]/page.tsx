@@ -91,10 +91,8 @@ export default function rankingsPage() {
                     setRaidMode(raidMode);
                     const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves,types);
                     setBestAttackers(bestAttackers);
-                    console.log(bestAttackers);
                     const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves,types, defenderFastAttack, defenderChargedAttack);
                     setBestDefenders(bestDefenders);
-                    console.log(bestDefenders)
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);

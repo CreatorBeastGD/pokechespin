@@ -72,7 +72,6 @@ export default function SearchBarAttacker({
     if (!initialLoad.current && initialValues && paramsLoaded) {
       initialLoad.current = true;
       if (initialValues.attacker) searchPokemonInit(initialValues.attacker);
-      console.log(initialValues.attackerStats);
       if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
       if (initialValues.bonusAttacker) {
         const normalizedBonuses = initialValues.bonusAttacker.map((bonus: any, index: number) => {
