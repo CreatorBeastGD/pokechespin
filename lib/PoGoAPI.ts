@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.16.1";
+        return "1.16.2";
     }
     
     static async getTypes () {
@@ -1047,7 +1047,7 @@ export class PoGoAPI {
         const defenderStat = this.convertStats([40,15,15,15], raidMode);
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
-        let graphic: { pokemon: any; large:number; targetAverage:number; tankScore: number; }[] = [];
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; }[] = [];
         availableDmaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
 
@@ -1055,18 +1055,28 @@ export class PoGoAPI {
             const percentAfterLarge = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 - Math.max(0, (this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
             
-            const percentAfterTargetBestCase = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+            const percentAfterTargetBestCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
             
-            const percentAfterTargetWorstCase = Math.max(0,((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+            const percentAfterTargetWorstCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
 
-            const tankScore = ((Math.max(0, percentAfterLarge + (percentAfterTargetBestCase + percentAfterTargetWorstCase)/2)  / 2))
+            const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetAverage: ((percentAfterTargetBestCase + percentAfterTargetWorstCase)/2),  tankScore: tankScore});
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore});
         })
         //console.log(graphic)
-        return graphic.sort((a, b) => b.tankScore - a.tankScore);
+        return graphic.sort((a, b) => {
+            if (a.tankScore > b.tankScore) {
+                return -1;
+            } else if (a.tankScore < b.tankScore) {
+                return 1;
+            } else {
+                return b.targetBest - a.targetBest;
+            }
+        }
+            
+        );
     }
 
     static GetBestAttackersDynamax(

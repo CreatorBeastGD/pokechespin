@@ -174,10 +174,10 @@ export default function rankingsPage() {
                         <Separator className="mt-4"/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
                             <p>This calculations don't take in account Weather Boost, Friendship Bonus and Helper Bonus</p>
-                            <p>DMG shown in each Pokémon is the damage dealt with their Max Move.</p>
-                            <p>PtB means "Percent to Best", which represents how close is this attacker to the best one.</p>
+                            <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
+                            <p>"Percent to Best" represents how close one attacker is to the best one.</p>
                             <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This percentage represents HP% left after one Large Move.</p>
-                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This percentage represents HP% left after one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario.</p>
+                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This percentage represents HP% left after one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario. Negative numbers are not shown on these values, but are taken in consideration on the average.</p>
                             <p>Tank Score is the average of Large Tankiness and Target Tankiness.</p>
                         </CardDescription>
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
@@ -207,16 +207,28 @@ export default function rankingsPage() {
                                                     height={50}
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
-                                                <div>
-                                                    <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                <div className="space-y-1 w-full">
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                    </div>
                                                     <Separator className="mt-1 mb-1"/>
-                                                    <p><span className="text-sm font-bold">Max Move</span> {(attacker.pokemon.pokemonId).endsWith("GIGANTAMAX") ? "G-Max" : "Max"} {PoGoAPI.getMoveNamePB(attacker.maxMove.moveId, allEnglishText)}</p>
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-xl font-bold text-black">DMG</h3>
-                                                    <p>{attacker.damage}</p>
-                                                    <h3 className="text-xl font-bold text-black mt-2">PtB</h3>
-                                                    <p>{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2)}%</p>
+                                                    
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        <p className="text-sm font-bold">Max Move</p>
+                                                        <p>{(attacker.pokemon.pokemonId).endsWith("GIGANTAMAX") ? "G-Max" : "Max"} {PoGoAPI.getMoveNamePB(attacker.maxMove.moveId, allEnglishText)}</p>
+                                                    </div>
+                                                    
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+
+                                                        <h3 className="text-sm font-bold text-black">Damage</h3>
+                                                        <p>{attacker.damage}</p>
+                                                    </div>
+                                                    <Separator/>
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        
+                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
+                                                        <p>{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2)}%</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </Card>
@@ -254,8 +266,9 @@ export default function rankingsPage() {
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
-                                                        <p>{(defender.targetAverage*100).toFixed(2)}%</p>
+                                                        <p><span className="text-blue-600">{(defender.targetBest*100).toFixed(2)}% </span>/ <span className="text-sm">{(defender.targetWorst*100).toFixed(2)}%</span> <span className="text-xs">(avg. {(defender.targetAvg*100).toFixed(2)}%)</span></p>
                                                     </div>
+                                                    <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
                                                         <p className="font-bold">{(defender.tankScore*100).toFixed(2)}%</p>
