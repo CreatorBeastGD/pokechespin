@@ -227,7 +227,7 @@ export default function rankingsPage() {
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p>{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2)}%</p>
+                                                        <p className="font-bold text-black">{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2)}%</p>
                                                     </div>
                                                 </div>
                                             </div>
