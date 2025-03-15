@@ -109,6 +109,7 @@ export class Calculator {
         8003: 0.5,
         8004: 0.6,
         8005: 0.7,
+        8005243: 0.8,
         8006: 0.765,
         5001: 0.5974,
         5003: 0.73,
@@ -219,6 +220,8 @@ export class Calculator {
         if (raidMode === "raid-t5-dmax") {
           if (pokemonId === "ZAPDOS") {
             return 13000;
+          } if (pokemonId === "RAIKOU") {
+            return 20000;
           } else {
             return 17500;
           }

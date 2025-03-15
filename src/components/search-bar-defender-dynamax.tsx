@@ -46,13 +46,6 @@ export default function SearchBarDefenderDynamax({
     member,
     number
   }: SearchBarAttackerProps, ) {
-    const raidModeLevelMultiplier = raidMode === "normal" ? 40 : 
-                                  raidMode === "raid-t1-dmax" ? 8001 : 
-                                  raidMode === "raid-t2-dmax" ? 8002 :
-                                  raidMode === "raid-t3-dmax" ? 8003 :
-                                  raidMode === "raid-t4-dmax" ? 8004 :
-                                  raidMode === "raid-t5-dmax" ? 8005 :
-                                  raidMode === "raid-t6-gmax" ? 8006 : 1;
   
   const [pokemon, setPokemon] = useState<string>("");
   const [pokemonData, setPokemonData] = useState<any>(null);
@@ -61,6 +54,8 @@ export default function SearchBarDefenderDynamax({
   const [error, setError] = useState<string | null>(null);
   const [selectedQuickMove, setSelectedQuickMove] = useState<string | null>(null);
   const [selectedChargedMove, setSelectedChargedMove] = useState<string | null>(null);
+  
+  let raidModeLevelMultiplier = (pokemon !== "" ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, pokemon) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
   const [stats, setStats] = useState<any>([raidModeLevelMultiplier, 15, 15, 15]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
@@ -116,6 +111,7 @@ export default function SearchBarDefenderDynamax({
     setError(null);
     try {
       const response = PoGoAPI.getPokemonPBByID(pokemonD.pokemonId, pokemonList)[0];
+      raidModeLevelMultiplier = (response ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, response.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
       setPokemonData(response);
       onSelect(response, member, number);
       //console.log();
@@ -140,6 +136,7 @@ export default function SearchBarDefenderDynamax({
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
+      raidModeLevelMultiplier = (response ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, response.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
       setPokemonData(response);
       onSelect(response, member, number);
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList);
@@ -161,6 +158,7 @@ export default function SearchBarDefenderDynamax({
     handleChargedMoveSelect("", null);
     try {
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
+      raidModeLevelMultiplier = (response ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, response.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
       setPokemonData(response);
       onSelect(response, member, number);
       const newSearchParams = new URLSearchParams(searchParams.toString());    
@@ -222,6 +220,8 @@ export default function SearchBarDefenderDynamax({
   };
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
+
+  raidModeLevelMultiplier = (selectedPokemon ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, selectedPokemon.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
   
   const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], raidModeLevelMultiplier);
   const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, stats[2], raidModeLevelMultiplier);

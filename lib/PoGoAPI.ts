@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.16.2";
+        return "1.16.3";
     }
     
     static async getTypes () {
@@ -315,7 +315,7 @@ export class PoGoAPI {
     static async getDamageAttackDynamax(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, maxMoveLevel?: any) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
-            defenderStats = this.convertStats(defenderStats, raid);
+            defenderStats = this.convertStats(defenderStats, raid, defendingPokemon.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
         const types = await this.getTypes();
@@ -336,7 +336,7 @@ export class PoGoAPI {
     static async getDamageAttack(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
-            defenderStats = this.convertStats(defenderStats, raid);
+            defenderStats = this.convertStats(defenderStats, raid, defendingPokemon.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
         const types = await this.getTypes();
@@ -370,7 +370,7 @@ export class PoGoAPI {
     ) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
-            defenderStats = this.convertStats(defenderStats, raid);
+            defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
         //console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
@@ -409,7 +409,7 @@ export class PoGoAPI {
         );
     }
 
-    static convertStats(defenderStats: any, raidMode: any) {
+    static convertStats(defenderStats: any, raidMode: any, defenderId?: any) {
         let convertedStats = [];
         if (raidMode === "raid-t1") {
             convertedStats = [5001, 15, 15, 600];
@@ -432,7 +432,15 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t4-dmax") {
             convertedStats = [8004, 15, 15, 20000];
         } else if (raidMode === "raid-t5-dmax") {
-            convertedStats = [8005, 15, 15, 17500];
+            if (defenderId) {
+                if (defenderId === "RAIKOU") {
+                    convertedStats = [8005243, 15, 15, 20000];
+                } else {
+                    convertedStats = [8005, 15, 15, 20000];
+                }
+            } else {
+                convertedStats = [8005, 15, 15, 17500];
+            }
         } else if (raidMode === "raid-t6-gmax") {
             convertedStats = [8006, 15, 15, 90000];
         } else if (raidMode === "raid-t1-shadow") {
@@ -1044,7 +1052,7 @@ export class PoGoAPI {
         bossTargetAttack: any
     ) {
         const attackerStat = [40,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode);
+        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
         let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; }[] = [];
@@ -1088,7 +1096,7 @@ export class PoGoAPI {
         types: any
     ) {
         const attackerStat = [40,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode);
+        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; }[] = [];
         availableDmaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
@@ -1119,7 +1127,7 @@ export class PoGoAPI {
         friendship: any[] = [0,0,0,0],
         prioritiseEnergy: boolean,
     ) {
-        let defenderStats = this.convertStats([40,15,15,15], raidMode);
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
         
         let attackerDamageStart = [-1, -1, -1, -1];
         let defenderDamageStart = -1;
