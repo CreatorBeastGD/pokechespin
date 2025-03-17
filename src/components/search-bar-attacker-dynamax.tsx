@@ -295,9 +295,14 @@ export default function SearchBarAttackerDynamax({
   const getMaxSpiritLevel = (stamina: number) => {
     if (stamina === 0) {
       return 0;
-    } else {
-      return (0.08*(1+(stamina/2)))
+    } else if (stamina === 1) {
+      return 0.08;
+    } else if (stamina === 2) {
+      return 0.12;
+    } else if (stamina === 3) {
+      return 0.16;
     }
+    return 0;
   }
 
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
