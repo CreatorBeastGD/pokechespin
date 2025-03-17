@@ -25,11 +25,15 @@ export default function rankingsPage() {
     const [targetedMove, setTargetedMove] = useState<any>(null);
     const [largeMove , setLargeMove] = useState<any>(null);
     const [raidMode, setRaidMode] = useState<string>("raid-t1-dmax");
+    const [weather, setWeather] = useState<string>("EXTREME");
     const [dmaxPokemon, setDmaxPokemon] = useState<any>(null);
     const [types, setTypes] = useState<any>(null);
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
+
+    const [showBestAttackers, setShowBestAttackers] = useState<boolean>(false);
+    const [showBestDefenders, setShowBestDefenders] = useState<boolean>(false);
     
     const router = useRouter();
     const sp = useParams();
@@ -91,13 +95,19 @@ export default function rankingsPage() {
                     setLargeMove(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves));
                 } 
 
+                const weatherBoost = urlSP.get("weather") ?? "EXTREME";
+                if (weather) {
+                    setWeather(weatherBoost);
+                }
+
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
+
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves,types);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
                     setBestAttackers(bestAttackers);
-                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves,types, defenderFastAttack, defenderChargedAttack);
+                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost);
                     setBestDefenders(bestDefenders);
                     urlSP.delete("member");
                     urlSP.delete("slot");
@@ -106,8 +116,9 @@ export default function rankingsPage() {
                 } else {
                     const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
                     router.push(newUrl);
-
                 }
+
+                
             }
             if (load) {
                 setEverythingLoaded(true);
@@ -125,6 +136,7 @@ export default function rankingsPage() {
         urlSP.set("defender_cinematic_attack", targetedMove?.moveId);
         urlSP.set("raid_mode", raidMode);
         urlSP.set("defender", pokemonInfo?.pokemonId);
+        urlSP.set("weather", weather);
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -132,6 +144,18 @@ export default function rankingsPage() {
           console.error("Failed to copy: ", err);
         });
       };
+
+    const toggleShowAllAttackers = () => {
+        setShowBestAttackers(!showBestAttackers);
+    }
+
+    const toggleShowAllDefenders = () => {
+        setShowBestDefenders(!showBestDefenders);
+    }
+
+    const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
+    const defendersToShow = showBestDefenders ? bestDefenders : bestDefenders?.slice(0, 5);
+
 
     return (
         <>
@@ -173,7 +197,8 @@ export default function rankingsPage() {
                         <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Star Max Battle</h3>
                         <Separator className="mt-4"/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
-                            <p>This calculations don't take in account Weather Boost, Friendship Bonus and Helper Bonus</p>
+                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
+                            <p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>
                             <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
                             <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This percentage represents HP% left after one Large Move.</p>
@@ -189,13 +214,13 @@ export default function rankingsPage() {
                         <CardHeader className="text-xl font-bold">Best Attackers</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
-                                <p>These are the best attackers to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} star Max Battle.</p>
+                                <p>These are the best attackers to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} star Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
                                 
                             </CardDescription>
                             
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
-                                    {bestAttackers?.map((attacker: any, index: number) => (
+                                    {attackersToShow?.map((attacker: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
                                                 <Image
@@ -233,19 +258,22 @@ export default function rankingsPage() {
                                             </div>
                                         </Card>
                                     ))}
+                                    <button onClick={toggleShowAllAttackers} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                                        {showBestAttackers ? "Show Top 5 only" : "Show All"}
+                                    </button>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
-                        <CardHeader className="text-xl font-bold">Best Defenders</CardHeader>
+                        <CardHeader className="text-xl font-bold">Best Tanks</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
-                                <p>These are the best defenders to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} star Max Battle.</p>
+                                <p>These are the best tanks to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} star Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
-                                    {bestDefenders?.map((defender: any, index: number) => (
+                                    {defendersToShow?.map((defender: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
                                                 <Image
@@ -277,6 +305,9 @@ export default function rankingsPage() {
                                             </div>
                                         </Card>
                                     ))}
+                                    <button onClick={toggleShowAllDefenders} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                                        {showBestDefenders ? "Show Top 5 only" : "Show All"}
+                                    </button>
                                 </div>
                             </div>
                         </CardContent>
