@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.16.5";
+        return "1.17";
     }
     
     static async getTypes () {
@@ -1039,6 +1039,49 @@ export class PoGoAPI {
             }
         });
         return bestMove;
+    }
+
+    static getGeneralBestDefendersDynamax(
+        boss: any,
+        pokemonList: any,
+        availableDmaxPoke: any,
+        raidMode: string,
+        allMoves: any,
+        types: any,
+        weather: string
+    ) {
+        const attackerStat = [40,15,15,15]
+        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; }[] = [];
+        const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
+        bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+        availableDmaxPoke.forEach((defender: string) => {
+            const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
+            let percentAfterLarge = 0;
+            let percentAfterTargetBestCase = 0;
+            let percentAfterTargetWorstCase = 0;
+            for (let i = 0; i < bossMoves.length; i++) {
+                const move = bossMoves[i];
+                percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
+                percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
+            }
+            const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore});
+        })
+        return graphic.sort((a, b) => {
+            if (a.tankScore > b.tankScore) {
+                return -1;
+            } else if (a.tankScore < b.tankScore) {
+                return 1;
+            } else {
+                return b.targetBest - a.targetBest;
+            }
+        })
+
     }
 
     static getBestDefendersDynamax(

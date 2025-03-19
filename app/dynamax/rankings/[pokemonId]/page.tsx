@@ -31,9 +31,13 @@ export default function rankingsPage() {
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
+    const [generalBestDefenders, setGeneralBestDefenders] = useState<any>(null);
 
     const [showBestAttackers, setShowBestAttackers] = useState<boolean>(false);
     const [showBestDefenders, setShowBestDefenders] = useState<boolean>(false);
+    const [showGeneralBestDefenders, setShowGeneralBestDefenders] = useState<boolean>(false);
+
+    const [generalMode, setGeneralMode] = useState<boolean>(false);
     
     const router = useRouter();
     const sp = useParams();
@@ -100,6 +104,11 @@ export default function rankingsPage() {
                     setWeather(weatherBoost);
                 }
 
+                const general = urlSP.get("general") ? urlSP.get("general") === "true" : false;
+                if (general) {
+                    setShowGeneralBestDefenders(general);
+                }
+
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
 
 
@@ -109,6 +118,20 @@ export default function rankingsPage() {
                     setBestAttackers(bestAttackers);
                     const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost);
                     setBestDefenders(bestDefenders);
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    setGeneralBestDefenders(bestGeneralDefenders);
+                    urlSP.delete("member");
+                    urlSP.delete("slot");
+                    window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    load=true;
+                } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
+                    setRaidMode(raidMode);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    setBestAttackers(bestAttackers);
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    setGeneralBestDefenders(bestGeneralDefenders);
+                    setGeneralMode(true);
+                    setShowGeneralBestDefenders(true);
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
@@ -132,11 +155,15 @@ export default function rankingsPage() {
 
     const copyLinkToClipboard = () => {
         const urlSP = new URLSearchParams();
-        urlSP.set("defender_fast_attack", largeMove?.moveId);
-        urlSP.set("defender_cinematic_attack", targetedMove?.moveId);
+        if (!generalMode) {
+            
+            urlSP.set("defender_fast_attack", largeMove?.moveId);
+            urlSP.set("defender_cinematic_attack", targetedMove?.moveId);
+        }
         urlSP.set("raid_mode", raidMode);
         urlSP.set("defender", pokemonInfo?.pokemonId);
         urlSP.set("weather", weather);
+        urlSP.set("general", showGeneralBestDefenders.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -153,8 +180,17 @@ export default function rankingsPage() {
         setShowBestDefenders(!showBestDefenders);
     }
 
+    const toggleGeneralDefenders = () => {
+        setShowGeneralBestDefenders(!showGeneralBestDefenders);
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("general", showGeneralBestDefenders ? "false" : "true");
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
+    const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
-    const defendersToShow = showBestDefenders ? bestDefenders : bestDefenders?.slice(0, 5);
+    const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
 
     return (
@@ -188,17 +224,25 @@ export default function rankingsPage() {
                             height={150}
                             style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
                         />
-                        <div>
-                            <h3 className="text-xl font-bold text-black">Large Move: {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)}</h3>
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-bold text-black">Targeted Move: {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)}</h3>
-                        </div>
+                        {generalMode ? (
+                            <div>
+                                <h3 className="text-xl font-bold text-black">No moves were selected.</h3>
+                            </div>
+                        ) :(
+                            <>
+                                <div>
+                                    <h3 className="text-xl font-bold text-black">Large Move: {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)}</h3>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-black">Targeted Move: {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)}</h3>
+                                </div>
+                            </>
+                        )}
                         <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Star Max Battle</h3>
                         <Separator className="mt-4"/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
                             <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
-                            <p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>
+                            {!generalMode && (<p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>)}
                             <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
                             <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This percentage represents HP% left after one Large Move.</p>
@@ -208,6 +252,7 @@ export default function rankingsPage() {
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
                         </button>
+                        
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
@@ -220,6 +265,13 @@ export default function rankingsPage() {
                             
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
+                                    
+                                    
+                                    <div className="flex flex-row items-center justify-between space-x-4 w-full">
+                                        <button onClick={toggleShowAllAttackers} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {showBestAttackers ? "Show Top 5 only" : "Show All"}
+                                        </button>
+                                    </div>
                                     {attackersToShow?.map((attacker: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
@@ -235,6 +287,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                        <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     
@@ -258,21 +311,27 @@ export default function rankingsPage() {
                                             </div>
                                         </Card>
                                     ))}
-                                    <button onClick={toggleShowAllAttackers} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                                        {showBestAttackers ? "Show Top 5 only" : "Show All"}
-                                    </button>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
-                        <CardHeader className="text-xl font-bold">Best Tanks</CardHeader>
+                        <CardHeader className="text-xl font-bold">Best Tanks {showGeneralBestDefenders ? "in general" : ""}</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best tanks to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} star Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
+                                    
+                                    <div className="flex flex-row items-center justify-between space-x-4 w-full">
+                                        <button onClick={toggleShowAllDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {showBestDefenders ? "Show Top 5 only" : "Show All"}
+                                        </button>
+                                        {!generalMode && (<button onClick={toggleGeneralDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {showGeneralBestDefenders ? "Show Best Defenders" : "Show General Best Defenders"}
+                                        </button>)}
+                                    </div>
                                     {defendersToShow?.map((defender: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
@@ -286,7 +345,10 @@ export default function rankingsPage() {
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
                                                 <div className="space-y-1">
-                                                    <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                        <p className="text-sm italic textgray">#{index+1}</p>
+                                                    </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
@@ -305,9 +367,7 @@ export default function rankingsPage() {
                                             </div>
                                         </Card>
                                     ))}
-                                    <button onClick={toggleShowAllDefenders} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                                        {showBestDefenders ? "Show Top 5 only" : "Show All"}
-                                    </button>
+                                    
                                 </div>
                             </div>
                         </CardContent>

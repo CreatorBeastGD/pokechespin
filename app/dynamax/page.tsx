@@ -595,7 +595,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* "Prioritise Energy generation" is now implemented, thanks for your patience!
+              *DEV NOTE* Added a "General" button in Rankings to check the best tanks in general for one Pokémon. In addition to that, if no moves are selected, only the general tanks will be shown.
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
@@ -626,10 +626,10 @@ export default function Home() {
               </button>
               </div>
 
-              <CardDescription>(NEW) View Rankings {(defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) ? "" : "(Select a defender and its attacks first)"}</CardDescription>
+              <CardDescription>(NEW) View Rankings {(defendingPokemon) ? "" : "(Select a defender first!)"}</CardDescription>
               <Button className="glow w-full py-2 text-white bg-primary rounded-lg" 
                 onClick={() => {
-                  if (defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) {
+                  if (defendingPokemon) {
                     const newUrl = `${window.location.origin}${window.location.pathname}/rankings/${defendingPokemon.pokemonId}?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;
                     router.push(newUrl);
                   }
