@@ -22,7 +22,7 @@
     "html2canvas": "^1.4.1",
     "http-proxy-middleware": "^3.0.3",
     "lucide-react": "^0.469.0",
-    "next": "^15.1.2",
+    "next": "^15.2.3",
     "nextjs": "^0.0.3",
     "pogocalc": "file:",
     "react": "^18.3.1",
