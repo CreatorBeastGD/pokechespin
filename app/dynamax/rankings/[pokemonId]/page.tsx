@@ -245,9 +245,9 @@ export default function rankingsPage() {
                             {!generalMode && (<p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>)}
                             <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
-                            <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This percentage represents HP% left after one Large Move.</p>
-                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This percentage represents HP% left after one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario. Negative numbers are not shown on these values, but are taken in consideration on the average.</p>
-                            <p>Tank Score is the average of Large Tankiness and Target Tankiness.</p>
+                            <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This number represents the Damage taken from one Large Attack.</p>
+                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario.</p>
+                            <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
                         </CardDescription>
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
@@ -352,16 +352,16 @@ export default function rankingsPage() {
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
-                                                        <p>{(defender.large*100).toFixed(2)}%</p>
+                                                        <p>{(defender.large.toFixed(2))}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
-                                                        <p><span className="text-blue-600">{(defender.targetBest*100).toFixed(2)}% </span>/ <span className="text-sm">{(defender.targetWorst*100).toFixed(2)}%</span> <span className="text-xs">(avg. {(defender.targetAvg*100).toFixed(2)}%)</span></p>
+                                                        <p><span className="text-blue-600">{(defender.targetBest.toFixed(2))} </span>/ <span className="text-sm">{(defender.targetWorst.toFixed(2))}</span> <span className="text-xs">(avg. {(defender.targetAvg.toFixed(2))})</span></p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">{(defender.tankScore*100).toFixed(2)}%</p>
+                                                        <p className="font-bold">{(defender.tankScore.toFixed(2))}</p>
                                                     </div>
                                                 </div>
                                             </div>
