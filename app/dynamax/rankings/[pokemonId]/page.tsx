@@ -3,11 +3,12 @@
 import CookieBanner from "@/components/cookie-banner";
 import { useParams, useRouter } from "next/navigation";
 import { PoGoAPI } from "../../../../lib/PoGoAPI";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 
 
 
@@ -28,6 +29,7 @@ export default function rankingsPage() {
     const [weather, setWeather] = useState<string>("EXTREME");
     const [dmaxPokemon, setDmaxPokemon] = useState<any>(null);
     const [types, setTypes] = useState<any>(null);
+    const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -97,7 +99,12 @@ export default function rankingsPage() {
                 
                 if (defenderFastAttack !== null) {
                     setLargeMove(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves));
-                } 
+                }
+
+                const prioritiseFastAtt = urlSP.get("prioritise_fast_attack") ? urlSP.get("prioritise_fast_attack") === "true" : false;
+                if (prioritiseFastAtt) {
+                    setPrioritiseFast(prioritiseFastAtt);
+                }
 
                 const weatherBoost = urlSP.get("weather") ?? "EXTREME";
                 if (weather) {
@@ -187,11 +194,41 @@ export default function rankingsPage() {
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
+    
 
     const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
+
+    defenderList?.sort((a: any, b: any) => {
+        if (prioritiseFast) {
+            if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
+            if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
+            return 0;
+        } else {
+            return a.tankScore - b.tankScore;
+        }
+    });
+
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
+
+    const handleSwitch = (checked: boolean, handle: any) => {
+        handle(checked);
+        defenderList?.sort((a: any, b: any) => {
+            if (checked) {
+                if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
+                if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
+                return 0;
+            } else {
+                return a.tankScore - b.tankScore;
+            }
+        });
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("prioritise_fast_attack", checked.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+    }
 
     return (
         <>
@@ -252,7 +289,7 @@ export default function rankingsPage() {
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
                         </button>
-                        
+                        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast)} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
@@ -286,7 +323,11 @@ export default function rankingsPage() {
                                                 />
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                        <div>
+                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.getMoveNamePB(attacker.fastMove.moveId, allEnglishText)}</p>
+                                                        </div>
+                                                        
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
@@ -346,7 +387,10 @@ export default function rankingsPage() {
                                                 />
                                                 <div className="space-y-1">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                        <div>
+                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.getMoveNamePB(defender.fastMove.moveId, allEnglishText)} ({defender.fastMove.durationMs/1000}s)</p>
+                                                        </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
@@ -361,7 +405,7 @@ export default function rankingsPage() {
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">{(defender.tankScore.toFixed(2))}</p>
+                                                        <p className="font-bold">{((defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2))}</p>
                                                     </div>
                                                 </div>
                                             </div>

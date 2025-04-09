@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.17.1";
+        return "1.17.2";
     }
     
     static async getTypes () {
@@ -1041,6 +1041,29 @@ export class PoGoAPI {
         return bestMove;
     }
 
+    static getFastestQuickMove(pokemon: any, boss: any, types: any, raidMode?: string, allMoves?: any) {
+        let bestMove = null;
+        let bestDuration = 99999999;
+        let bestDamage = 0;
+        pokemon.quickMoves.forEach((move: any) => {
+            let moveData = this.getMovePBByID(move, allMoves);
+            moveData.power = 10;
+            const damage = this.getDamage(pokemon, boss, moveData, types, [40,15,15,15], [40,15,15,15], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1, 1);
+            if (moveData.durationMs < bestDuration) {
+                bestMove = moveData;
+                bestDamage = damage;
+                bestDuration = moveData.durationMs;
+            } else if (moveData.durationMs == bestDuration) {
+                if (damage > bestDamage) {
+                    bestMove = moveData;
+                    bestDamage = damage;
+                    bestDuration = moveData.durationMs;
+                }
+            }
+        });
+        return bestMove;
+    }
+
     static getGeneralBestDefendersDynamax(
         boss: any,
         pokemonList: any,
@@ -1048,11 +1071,11 @@ export class PoGoAPI {
         raidMode: string,
         allMoves: any,
         types: any,
-        weather: string
+        weather: string,
     ) {
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
-        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; }[] = [];
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
         const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
         bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
         availableDmaxPoke.forEach((defender: string) => {
@@ -1073,7 +1096,7 @@ export class PoGoAPI {
                 percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
             }
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore});
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
         })
         return graphic.sort((a, b) => {
             if (a.tankScore > b.tankScore) {
@@ -1084,7 +1107,6 @@ export class PoGoAPI {
                 return b.targetBest - a.targetBest;
             }
         })
-
     }
 
     static getBestDefendersDynamax(
@@ -1096,13 +1118,13 @@ export class PoGoAPI {
         types: any,
         bossLargeAttack: any,
         bossTargetAttack: any,
-        weather: string
+        weather: string,
     ) {
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
-        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; }[] = [];
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
         availableDmaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
 
@@ -1118,7 +1140,7 @@ export class PoGoAPI {
             const percentAfterTargetWorstCase = this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss))
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore});
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
         })
         //console.log(graphic)
         return graphic.sort((a, b) => {
@@ -1145,7 +1167,7 @@ export class PoGoAPI {
     ) {
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
-        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; }[] = [];
+        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any;}[] = [];
         availableDmaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
@@ -1153,7 +1175,7 @@ export class PoGoAPI {
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3);
             console.log(weather)
             const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
-            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone});
+            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
         });
         return attackersStat.sort((a, b) => b.damage - a.damage);
     }
