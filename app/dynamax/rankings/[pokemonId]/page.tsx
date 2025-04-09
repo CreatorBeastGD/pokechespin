@@ -171,6 +171,7 @@ export default function rankingsPage() {
         urlSP.set("defender", pokemonInfo?.pokemonId);
         urlSP.set("weather", weather);
         urlSP.set("general", showGeneralBestDefenders.toString());
+        urlSP.set("prioritise_fast_attack", prioritiseFast.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
