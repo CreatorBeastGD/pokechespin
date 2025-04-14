@@ -12,14 +12,17 @@ export default function Page() {
             <p className="text-white text-lg">Calculate the damage output of your Pokémon in Pokémon GO! Simulate battles and raids, and find out the best moveset for your Pokémon.</p>
             <a href={"https://pokemongo-damage-calculator.vercel.app/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
-                  Go to Gym and Raids Calculator
+                  Go to PokéChespin for Raids
                 </button>
             </a>
             <a href={"https://pokemongo-damage-calculator.vercel.app/dynamax"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
-                  Go to Dynamax Calculator
+                  Go to PokéChespin for Max Battles
                 </button>
             </a>
+            <div>
+                <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a> for you donation! ♥️</p>
+            </div>
             <CookieBanner />
         </div>
         

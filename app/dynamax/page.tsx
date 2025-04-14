@@ -595,7 +595,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* Added a "General" button in Rankings to check the best tanks in general for one Pokémon. In addition to that, if no moves are selected, only the general tanks will be shown.
+              *DEV NOTE* I'm planning on adding some tweaks to rankings, adding more options such as bringing back the "Remaining HP%" option, and doing an average between both options. Thanks u/soraliink for the donation!
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
@@ -626,8 +626,8 @@ export default function Home() {
               </button>
               </div>
 
-              <CardDescription>(NEW) View Rankings {(defendingPokemon) ? "" : "(Select a defender first!)"}</CardDescription>
-              <Button className="glow w-full py-2 text-white bg-primary rounded-lg" 
+              <CardDescription>View Rankings {(defendingPokemon) ? "" : "(Select a defender first!)"}</CardDescription>
+              <Button className="w-full py-2 text-white bg-primary rounded-lg" 
                 onClick={() => {
                   if (defendingPokemon) {
                     const newUrl = `${window.location.origin}${window.location.pathname}/rankings/${defendingPokemon.pokemonId}?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;
