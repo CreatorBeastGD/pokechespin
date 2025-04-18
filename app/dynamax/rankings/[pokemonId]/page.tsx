@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import { Calculator } from "../../../../lib/calculations";
 
 
 
@@ -30,6 +31,7 @@ export default function rankingsPage() {
     const [dmaxPokemon, setDmaxPokemon] = useState<any>(null);
     const [types, setTypes] = useState<any>(null);
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
+    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_DMG");
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -106,6 +108,11 @@ export default function rankingsPage() {
                     setPrioritiseFast(prioritiseFastAtt);
                 }
 
+                const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_DMG";
+                if (rankingDisplay) {
+                    setRankingDisplay(rankingDisplay);
+                }
+
                 const weatherBoost = urlSP.get("weather") ?? "EXTREME";
                 if (weather) {
                     setWeather(weatherBoost);
@@ -172,6 +179,7 @@ export default function rankingsPage() {
         urlSP.set("weather", weather);
         urlSP.set("general", showGeneralBestDefenders.toString());
         urlSP.set("prioritise_fast_attack", prioritiseFast.toString());
+        urlSP.set("ranking_display", rankingDisplay);
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -196,16 +204,38 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
     
+    
+    const getHPPercent = (tankScore: number, baseStamina: number) => {
+        return (tankScore / Calculator.getEffectiveStamina(baseStamina, 15, 40) * 100);
+    }
+
+    const getAverageTankScore = (hpdmg: number, hpper: number) => {
+        return (hpdmg + hpper) / 2;
+    }   
 
     const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
 
     defenderList?.sort((a: any, b: any) => {
         if (prioritiseFast) {
+            if (rankingDisplay === "HP_DMG") {
+                return a.fastMove.durationMs * a.tankScore - b.fastMove.durationMs * b.tankScore;
+            } else if (rankingDisplay === "HP_PERCENT") {
+                return (a.fastMove.durationMs * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - b.fastMove.durationMs * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            } else if (rankingDisplay === "AVG") {
+                return a.fastMove.durationMs * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - b.fastMove.durationMs * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            }
             if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
             if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
             return 0;
         } else {
-            return a.tankScore - b.tankScore;
+            if (rankingDisplay === "HP_DMG") {
+                return a.tankScore - b.tankScore;
+            } else if (rankingDisplay === "HP_PERCENT") {
+                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            } else if (rankingDisplay === "AVG") {
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            }
+            return 0;
         }
     });
 
@@ -228,7 +258,27 @@ export default function rankingsPage() {
         newSearchParams.set("prioritise_fast_attack", checked.toString());
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
 
+
+    function handleRankingConfig(value: string): void {
+        setRankingDisplay(value);
+        
+        defenderList?.sort((a: any, b: any) => {
+            if (value === "HP_DMG") {
+                return a.tankScore - b.tankScore;
+            } else if (value === "HP_PERCENT") {
+                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            } else if (value === "AVG") {
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+            }
+            return 0;
+        });
+        
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("ranking_display", value);
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
     return (
@@ -290,7 +340,15 @@ export default function rankingsPage() {
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
                         </button>
-                        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast)} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast)} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        
+                            <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
+                            <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                                <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
+                                <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
+                                <option key={"AVG"} value={"AVG"}>Average</option>
+                            </select>
+                        
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
@@ -397,16 +455,16 @@ export default function rankingsPage() {
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
-                                                        <p>{(defender.large.toFixed(2))}</p>
+                                                        <p>{rankingDisplay === "HP_DMG" ? (defender.large.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
-                                                        <p><span className="text-blue-600">{(defender.targetBest.toFixed(2))} </span>/ <span className="text-sm">{(defender.targetWorst.toFixed(2))}</span> <span className="text-xs">(avg. {(defender.targetAvg.toFixed(2))})</span></p>
+                                                        <p><span className="text-blue-600">{rankingDisplay === "HP_DMG" ? (defender.targetBest.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2)} </span>/ <span className="text-sm">{rankingDisplay === "HP_DMG" ? (defender.targetWorst.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2)}</span> <span className="text-xs">(avg. {rankingDisplay === "HP_DMG" ? (defender.targetAvg.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2)})</span></p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">{((defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2))}</p>
+                                                        <p className="font-bold">{((((rankingDisplay === "HP_DMG" ? (defender.tankScore) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina)) : getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina))) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1))).toFixed(2))}</p>
                                                     </div>
                                                 </div>
                                             </div>

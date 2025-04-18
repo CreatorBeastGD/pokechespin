@@ -13,7 +13,7 @@ export class PoGoAPI {
     }
 
     static getVersion() {
-        return "1.17.2.1";
+        return "1.17.3";
     }
     
     static async getTypes () {

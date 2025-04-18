@@ -595,7 +595,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* I'm planning on adding some tweaks to rankings, adding more options such as bringing back the "Remaining HP%" option, and doing an average between both options. Thanks u/soraliink for the donation!
+              *DEV NOTE* New options for Max Rankings are live on v1.17.3. Thanks u/soraliink for the donation!
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
