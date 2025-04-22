@@ -31,7 +31,7 @@ export default function rankingsPage() {
     const [dmaxPokemon, setDmaxPokemon] = useState<any>(null);
     const [types, setTypes] = useState<any>(null);
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
-    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_DMG");
+    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -108,7 +108,7 @@ export default function rankingsPage() {
                     setPrioritiseFast(prioritiseFastAtt);
                 }
 
-                const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_DMG";
+                const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_PERCENT";
                 if (rankingDisplay) {
                     setRankingDisplay(rankingDisplay);
                 }
@@ -341,14 +341,12 @@ export default function rankingsPage() {
                             Copy ranking link
                         </button>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast)} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
-                        
                             <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
                             <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-                                <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
                                 <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
+                                <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
                                 <option key={"AVG"} value={"AVG"}>Average</option>
                             </select>
-                        
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">

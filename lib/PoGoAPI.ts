@@ -6,14 +6,15 @@ const API = nextConfig.API_URL;
 const API_PB = nextConfig.API_PB_URL;
 
 export class PoGoAPI {
+    
+    static getVersion() {
+        return "1.17.4";
+    }
+
     static async getAllPokemon() {
         const response = await fetch(API + "pokedex.json", {
         });
         return await response.json();
-    }
-
-    static getVersion() {
-        return "1.17.3";
     }
     
     static async getTypes () {
