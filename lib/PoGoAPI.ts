@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.17.4";
+        return "1.17.4.1";
     }
 
     static async getAllPokemon() {
@@ -1254,6 +1254,7 @@ export class PoGoAPI {
         let enraged = false;
         let desperate = false;
         let simGoing = true;
+        let dealtDamage = false;
 
         let shieldHP = attackers.map(() => [0, 0, 0]);
         let shieldHPMAX = attackers.map(() => [0, 0, 0]);
@@ -1302,9 +1303,15 @@ export class PoGoAPI {
         let targeted = false;
         let target = 0;
 
+        // Roll for the first move of the defender
+        targeted = Math.random() > (defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) ? true : false;
+        defenderMove = !targeted ? defenderLargeAttack : defenderTargetAttack;
 
         const dynamaxDelays = this.getDynamaxRaidDelays(raidMode);
-        defenderDamageStart = -dynamaxDelays[0];
+        defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
+
+        console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
+        //
 
         let attackerFaints = attackers.map(() => [false, false, false]);
         let totalfaints = 0;
@@ -1323,7 +1330,7 @@ export class PoGoAPI {
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
                     const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, enraged, desperate, defender));
-                    if (projectedDamageDefender < attackerHealth[i][activePokemon[i]]) {
+                    if (projectedDamageDefender < attackerHealth[i][activePokemon[i]] ) {
                         // Attacker i evades the move
                         attackerEvades[i] = true;
                         firstDmgReduction[i] = true;
@@ -1394,10 +1401,13 @@ export class PoGoAPI {
                 battleLog.push({"turn": time, "attacker": "energy", "energyGain": maxEnergy});
                 maxEnergyGain = 0;
             }
+
+            // Max Phase
             if (maxEnergy >= 100) {
                 maxEnergy = 0;
-                attackerDamageStart = [-1000, -1000, -1000, -1000];
-                defenderDamageStart = -3000;
+                attackerDamageStart = [0, 0, 0, 0];
+                dealtDamage = true;
+                defenderDamageStart = -1000;
                 dynamaxPhases++;
                 // Attackers swap their pokemon to match their role
                 for (let i = 0 ; i < attackers.length ; i++) {
@@ -1504,22 +1514,13 @@ export class PoGoAPI {
             // Defender can cast a move
             if (simGoing && defenderDamageStart == -1) {
                 defenderDamageStart = time - 1;
-                // Defender can select its charged move
-                if (Math.random() > defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) {
-                    defenderDamageStart = time - 1;
-                    defenderMove = defenderLargeAttack;
-                    defenderLargeAttackUses++;
-
-                    targeted = false;
-                } else {
-                    defenderDamageStart = time - 1;
-                    defenderMove = defenderTargetAttack;
+                if (defenderMove.moveId === defenderTargetAttack.moveId) {
                     defenderTargetAttackUses++;
-
-                    targeted = true;
+                    
                     // Will choose a target a random attacker with shields, if there are no attackers with shields, will choose a random attacker
                     target = this.chooseRandomTargetWithShieldsOrAny(shieldHP, activePokemon);
-
+                } else {
+                    defenderLargeAttackUses++;
                 }
             }
 
@@ -1602,12 +1603,23 @@ export class PoGoAPI {
                         //console.log(activePokemon)
                     }
                 }
+                dealtDamage = true;
             }
 
             // Defender has finished casting its move
-            if (simGoing && defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
+            if (simGoing && dealtDamage && defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
+                // Defender can select its charged move
+                if (Math.random() > defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) {
+                    defenderMove = defenderTargetAttack;
+                    targeted = true;
+                } else {
+                    defenderMove = defenderLargeAttack;
+                    targeted = false;
+                }
                 defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
-                defenderMove = null;
+                target = 33;
+                dealtDamage = false;
+                console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
             }
 
             for (let i = 0 ; i < attackers.length ; i++) {
