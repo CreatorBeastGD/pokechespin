@@ -1174,7 +1174,7 @@ export class PoGoAPI {
             const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3);
-            console.log(weather)
+            //console.log(weather)
             const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
             attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
         });
@@ -1310,7 +1310,7 @@ export class PoGoAPI {
         const dynamaxDelays = this.getDynamaxRaidDelays(raidMode);
         defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
 
-        console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
+        //console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
         //
 
         let attackerFaints = attackers.map(() => [false, false, false]);
@@ -1619,7 +1619,7 @@ export class PoGoAPI {
                 defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
                 target = 33;
                 dealtDamage = false;
-                console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
+                // console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
             }
 
             for (let i = 0 ; i < attackers.length ; i++) {
