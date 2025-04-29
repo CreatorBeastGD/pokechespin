@@ -595,7 +595,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* New options for Max Rankings are live on v1.17.3. Thanks u/soraliink for the donation!
+              *DEV NOTE* Entei stats have been updated for Tier 5 Max Battles on v1.17.4.2 Thanks u/soraliink for the donation!
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.

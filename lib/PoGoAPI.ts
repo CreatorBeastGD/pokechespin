@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.17.4.1";
+        return "1.17.4.2";
     }
 
     static async getAllPokemon() {
@@ -436,6 +436,8 @@ export class PoGoAPI {
             if (defenderId) {
                 if (defenderId === "RAIKOU") {
                     convertedStats = [8005243, 15, 15, 20000];
+                } else if (defenderId === "ENTEI") {
+                    convertedStats = [8005244, 15, 15, 20000];
                 } else {
                     convertedStats = [8005, 15, 15, 20000];
                 }
