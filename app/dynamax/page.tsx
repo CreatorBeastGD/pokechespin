@@ -393,17 +393,17 @@ export default function Home() {
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
-      return "Tier 1 Dynamax";
+      return "Tier 1 Max Battle";
     } else if (raidMode === "raid-t2-dmax") {
-      return "Tier 2 Dynamax";
+      return "Tier 2 Max Battle";
     } else if (raidMode === "raid-t3-dmax") {
-      return "Tier 3 Dynamax";
+      return "Tier 3 Max Battle";
     } else if (raidMode === "raid-t4-dmax") {
-      return "Tier 4 Dynamax";
+      return "Tier 4 Max Battle";
     } else if (raidMode === "raid-t5-dmax") {
-      return "Tier 5 Dynamax";
+      return "Tier 5 Max Battle";
     } else if (raidMode === "raid-t6-gmax") {
-      return "Gigantamax";
+      return "Gigantamax Battle";
     }
   }
 
@@ -565,7 +565,7 @@ export default function Home() {
               <CardTitle>Results</CardTitle>
               <CardDescription>Assumming the following stats:</CardDescription>
               <CardDescription>Attacker: {attackingPokemon[selectedMember-1][selectedPokemonSlot-1] !== null ? PoGoAPI.getPokemonNamePB((attackingPokemon[selectedMember-1][selectedPokemonSlot-1])?.pokemonId, allEnglishText)  + " (Level " + attackerStats[selectedMember-1][selectedPokemonSlot-1][0] + " " + attackerStats[selectedMember-1][selectedPokemonSlot-1][1] + "-" + attackerStats[selectedMember-1][selectedPokemonSlot-1][2] + "-" + attackerStats[selectedMember-1][selectedPokemonSlot-1][3] + ")" : "TBD"}</CardDescription>
-              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (bonusDefender[1] !== false ? "Shadow " : "") + (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
+              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (bonusDefender[1] !== false ? "Shadow " : "") + (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
               
@@ -595,7 +595,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* Entei stats have been updated for Tier 5 Max Battles on v1.17.4.2 Thanks u/soraliink for the donation!
+              *DEV NOTE* Suicune stats have been updated for Tier 5 Max Battles on v1.17.5 and adjusted some numbers. All values should be more precise now :). Thanks u/soraliink for the donation!
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.

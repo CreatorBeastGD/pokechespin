@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.17.4.2";
+        return "1.17.5";
     }
 
     static async getAllPokemon() {
@@ -292,9 +292,9 @@ export class PoGoAPI {
             if (objType.doubleDamageFrom.includes(t.type)) {
                 weaknesses[t.type] = 1.6;
             } else if (objType.halfDamageFrom.includes(t.type)) {
-                weaknesses[t.type] = 0.63;
+                weaknesses[t.type] = 0.625;
             } else if (objType.noDamageFrom.includes(t.type)) {
-                weaknesses[t.type] = 0.39;
+                weaknesses[t.type] = 0.390625;
             }
         });
     
@@ -437,7 +437,9 @@ export class PoGoAPI {
                 if (defenderId === "RAIKOU") {
                     convertedStats = [8005243, 15, 15, 20000];
                 } else if (defenderId === "ENTEI") {
-                    convertedStats = [8005244, 15, 15, 20000];
+                    convertedStats = [8005244, 15, 15, 26500];
+                } else if (defenderId === "SUICUNE") {
+                    convertedStats = [8005245, 15, 15, 22000];
                 } else {
                     convertedStats = [8005, 15, 15, 20000];
                 }
@@ -938,7 +940,7 @@ export class PoGoAPI {
         } if (enraged) {
             return 4;
         } if (raidMode === "raid-t5-dmax") {
-          return (2 * defender.stats.baseAttack + 22.5) / (defender.stats.baseAttack + 15);
+          return 2;
         } if (raidMode === "raid-t6-gmax") {
             return 0.9;
         }
@@ -1655,7 +1657,7 @@ export class PoGoAPI {
 
             
         }
-        console.log("Simulation was done! " + time);
+        //console.log("Simulation was done! " + time);
         //console.log(attackerDamage);
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }

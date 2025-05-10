@@ -111,6 +111,7 @@ export class Calculator {
         8005: 0.7,
         8005243: 0.8,
         8005244: 0.75,
+        8005245: 0.9,
         8006: 0.765,
         5001: 0.5974,
         5003: 0.73,
@@ -173,7 +174,8 @@ export class Calculator {
         bonusAttacker?: any,
         bonusDefender?: any
       ) {
-          /*console.log("Power: "+power 
+        /*
+          console.log("Power: "+power 
             +"  Attack Stat: "+ attack 
             +"  Defense Stat: "+ defense 
             +"  STAB Bonus: "+ STAB 
@@ -184,6 +186,9 @@ export class Calculator {
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (shroomBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
+          
+          // console.log(0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers );
+          
           return Math.floor(
               0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers 
           ) + 1;
@@ -225,6 +230,8 @@ export class Calculator {
             return 20000;
           } else if (pokemonId === "ENTEI") {
             return 26500;
+          } else if (pokemonId === "SUICUNE") {
+            return 22000;
           } else {
             return 17500;
           }
