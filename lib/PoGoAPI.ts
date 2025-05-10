@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.17.5";
+        return "1.17.5.1";
     }
 
     static async getAllPokemon() {
@@ -1095,10 +1095,10 @@ export class PoGoAPI {
                 percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterLarge*i)) / (i+1);
                 //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
-                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
                 //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
-                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
             }
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
@@ -1139,10 +1139,10 @@ export class PoGoAPI {
             const percentAfterLarge = this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss))
             //const percentAfterTargetBestCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
             //    - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
-            const percentAfterTargetBestCase = this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss))
+            const percentAfterTargetBestCase = this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss))
             //const percentAfterTargetWorstCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
             //    - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
-            const percentAfterTargetWorstCase = this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss))
+            const percentAfterTargetWorstCase = this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss))
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
             graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
