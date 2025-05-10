@@ -285,7 +285,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {Calculator.getEffectiveStaminaForRaid(1,1,1,raidMode)-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)} HP left.</p>
+            <p> The defender Pokémon has {Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">
