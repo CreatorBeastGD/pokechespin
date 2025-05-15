@@ -155,13 +155,16 @@ export class Calculator {
       }
 
       static getFriendshipBonus(friendship: number) {
-        const seasonFriendshipBonus = true;
-        if (!seasonFriendshipBonus) {
-          return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
-        } else {
-          return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : 1;
-        }
+      // El bonus de amistad es falso a partir del 3 de junio de 2025
+      const now = new Date();
+      // Meses en JS empiezan en 0, así que junio es 5
+      const seasonFriendshipBonus = now < new Date(2025, 5, 3);
+      if (!seasonFriendshipBonus) {
+        return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+      } else {
+        return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : 1;
       }
+}
 
       static calculateDamage(
         power: number,

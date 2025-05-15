@@ -595,10 +595,10 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* Suicune stats have been updated for Tier 5 Max Battles on v1.17.5 and adjusted some numbers. All values should be more precise now :). Thanks u/soraliink for the donation!
+              *DEV NOTE* Zacian And Zamazenta' MAX Behemoth Blade and MAX Behemoth Bash are available in Max Battle Simulator. You must select "Gigantamax Zacian - Crowned Sword" or "Gigantamax Zamazenta - Crowned Shield" in the Attacker Pokémon slot to use them as their MAX move.
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
-              Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation. Helper Bonus is not accurate and needs further investigation.
+              Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation.
             </p>
             {(raidMode === "raid-t6-gmax") && (
               <p className="italic text-slate-700 text-sm mt-2">

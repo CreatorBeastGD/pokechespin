@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.17.5.1";
+        return "1.17.6";
     }
 
     static async getAllPokemon() {
@@ -258,6 +258,10 @@ export class PoGoAPI {
                 return allMoves.find((m: any) => m.moveId === "GMAX_CANNONADE" + moveSuffix);
             case "VENUSAUR_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_VINE_LASH" + moveSuffix);
+            case "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BASH" + moveSuffix);
+            case "ZACIAN_CROWNED_SWORD_GIGANTAMAX":
+                return allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BLADE" + moveSuffix);
             default:
                 return null;
         }
