@@ -1,0 +1,305 @@
+"use client";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import React from "react";
+import { PoGoAPI } from "../../lib/PoGoAPI";
+
+const novedades = [
+    {
+		title: "v1.18",
+		desc: "+ Added this page.\n hey folks! make sure you read the notice below this one. :)",
+		date: "2025-05-18",
+	},
+	{
+		title: "Max Battles Notice",
+		desc: "Hi! I am aware of the new Max Battle mechanics regarding targeted attacks dealing double the damage as well as the dodging reduction. I prefer waiting for a bit longer to check if this change is definitive or not.",
+		date: "2025-05-18",
+	},{
+		title: "v1.17.6",
+		desc: "+ Added Zacian and Zamazenta' Max moves for Max Battles.\nThese moves are selectable when selecting 'Giganamax Zacian Crowned Sword' or 'Giganamax Zamazenta Crowned Shield' as the attacker, and will have the same stats as a Steel Type GMax move.",
+		date: "2025-05-15",
+	},{
+		title: "v1.17.5.1",
+		desc: "+ Fixed HP r+emaining on Max Battle Simulator. \n+ Tweaked damage reduction on targeted moves.",
+		date: "2025-05-10",
+	},{
+        title: "v1.17.5",
+        desc: "+ Added Suicune stats on Tier 5 Max Battles.\n Adjusted some values on effectivenes and Tier 5 multipler. \n+ Some texts were changed.",
+        date: "2025-05-10",
+    },{
+        title: "v1.17.4.2",
+        desc: "+ Changed Dynamax Entei stats for Tier 5 Max Battles. \n CPM: 0.7 -> 0.75 \n HP: 20000 -> 26500",
+        date: "2025-04-29",
+    },{
+        title: "v1.17.4.1",
+        desc: "+ A small tweak on Max Battle Simulation. Now after each max phase is completed, the boss' delay is restarted, and will select a different move.",
+        date: "2025-04-24",
+    },{
+        title: "v1.17.4",
+        desc: "+ changed default option of tanks on Max Rankings.",
+        date: "2025-04-22"
+    },{
+        title: "v1.17.3",
+        desc: "+New options for Max Rankings are now live. You can select if tanks are ordered by HP taken from an attack, HP% taken from an attack, or an average between these two.",
+        date: "2025-04-18",
+    },{
+        title: "v1.17.2.1",
+        desc: "+ Links support for 'prioritise fast attacks' for max rankings were added",
+        date: "2025-04-09",
+    },{
+        title: "v1.17.2",
+        desc: "+ Added the possibility to priroritise the use of fastest attacks (fast attacks with 0.5s duration) on Max Ranking page.",
+        date: "2025-04-09",
+    },{
+        title: "v1.17.1",
+        desc: "+ Changed how 'Best Tanks' are calculated, now displays damage taken from attacks rather than percent of HP left. This will indicate which mons are more valuable to power their shields up.",
+        date: "2025-03-24",
+    },{
+        title: "v1.17",
+        desc: "+ Added a 'Show General Best Defenders' button to show an average tankiness score between all possible moves of a Max Boss. \n+ Changed the constraint of 'Rankings' button on dynamax page. Now it's not required to have a moveset selected for the defender. If not all moves were selected, now the best tanks in general will be shown. \n+ Minor text changes.",
+        date: "2025-04-19",
+    },{
+        title: "v1.16.5",
+        desc: "+ Max spirit healing was wrongly shown. This has been fixed.",
+        date: "2025-03-17",
+    },{
+        title: "v1.16.4",
+        desc: "+ Added weather boost compatibility on max rankings page. All older links will still have 'extreme' weather as its weather.\n+ Now only the top 5 tanks and attackers will be shown by default. User will have to press a button if it wants to check all tanks or all attackers.",
+        date: "2025-03-17",
+    },{
+        title: "v1.16.3",
+        desc: "+ Updated Raikou's CPM and HP for 5 star Max Battle",
+        date: "2025-03-15",
+    },{
+        title: "v1.16.2",
+        desc: "+ 'Large Tankiness' on rankings improved, now showing remaining HP after the best and worst case, and showing the average between them (negative values not shown, but used on the average)",
+        date: "2025-03-14",
+    },{
+        title: "v1.16.1",
+        desc: "+ Fixed the fact that ranking bosses dealt x4 damage, now they deal what they should do. \n+ Added some special effecto to 'View Ranking' button to make it check out more.",
+        date: "2025-03-13",
+    },{
+        title: "v1.16",
+        desc: "+ Added a 'Rankings' page to Max Battles! In this new page, you can check the best attackers and defenders for any boss you want! \n+ + Fixed an issue with breakpoints on max battles.",
+        date: "2025-03-13",
+    },{
+        title: "v1.15",
+        desc: "+ Added 'Prioritise Energy Regeneration' option on Max Battle Simulator.",
+        date: "2025-03-11",
+    },{
+        title: "v1.14",
+        desc: "+ Added Damage dealt by defender by large and targeted move information on Max Battles",
+        date: "2025-03-11",
+    },{
+        title: "v1.13",
+        desc: "+ Added shadow raids. \n+ Tweaked most of raid boss CPM due to lack of accuracy.\n+ Deleted 'Enrage' option on raid advanced simulator. \n+ Defender stats on raids should display correctly according to its raid boss CPM.\n+ Defender' stat and bonus menu disabled when user has any raid option in use.\n+ Added how much HP a pokemon will heal on max battles. This will be displayed next to Max Spirit level on a Pokémon.\n+ Fixed an issue where links wouldn't save half levels correctly.",
+        date: "2025-03-10",
+    },{
+        title: "v1.12.3",
+        desc: "+Added Friendship Bonus to Max Battles.",
+        date: "2025-03-09",
+    },{
+        title: "v1.12.2",
+        desc: "+ Changed Gigantamax Battle's CPM and HP.\n+ Doubled friendship bonuses.\n+ Full effective attack and defense are now visible on screen.",
+        date: "2025-03-09",
+    },{
+        title: "v1.12.1",
+        desc: "~ Fixed a bug where Gigantamax Urshifu couldn't have any GMax move.",
+        date: "2025-03-04",
+    },{
+        title: "v1.12",
+        desc: "+ Added Party Power to raid simulations! This option is only available if there is more than one player in the simulation.",
+        date: "2025-02-22",
+    },{
+        title: "v1.11.2",
+        desc: "~ Small tweak on tier-5 dynamax damage multiplier",
+        date: "2025-02-11",
+    },{
+        title: "v1.11",
+        desc: "+ Added the possibility to change the team size on Dynamax Simulator (from 1 to 4) \n~ Fixing some errors.\nThanks @flavioebn for your contribution!",
+        date: "2025-01-30",
+    },{
+        title: "v1.10.2",
+        desc: "+ Added Helper Bonus, Weather Boost and Shrooms Bonus to max battle simulator\n+ Added varying HP on tier-5 dmax battles (Default value is 17500 still, but Zapdos will have 13000)\n+ Added damage and defense multiplicator of 0.9 against Gmax bosses.",
+        date: "2025-01-30",
+    },{
+        title: "v1.10.1",
+        desc: "+ Improved tank score on max battle simulator.",
+        date: "2025-01-30",
+    },{
+        title: "v1.10",
+        desc: "+ Added Max Battle simulator! This option is available on /dynamax page, and you will be able to use it once you have selected all Pokémon on all members. You can select a certain strategy for each member of the group.\n+ Fixed a bug where attacks wouldn't load properly on links on /dynamax\n+ Changed gigantamax battle stats",
+        date: "2025-01-27",
+    },{
+        title: "v1.9.3.1",
+        desc: "+ Added energy gain information on attacks\n+ Fixed an error where you could use any max move on dynamax damage calculator if you selected some max move and then changed it to other pokemon.\n+ Defender Pokemon's charged moves are now saved on link.\n+ Changed tier 5 dyamax' CPM and HP (now 0.7 and 17500, was 1.4 and 20000)\n+ Added black background on 'buy me a chespin' button",
+        date: "2025-01-26",
+    },{
+        title: "v1.9.3",
+        desc: "+ Added BuyMeACoffee button to support the development of this page.",
+        date: "2025-01-18",
+    },{
+        title: "v1.9.2",
+        desc: "~ Small bug fix",
+        date: "2025-01-16",
+    },{
+        title: "v1.9.1",
+        desc: "+ Solved problem with 'clear' button and links on Dynamax page.",
+        date: "2025-01-16",
+    },{
+        title: "v1.9",
+        desc: "+ Added a new page to calculate dynamax damage. This page is work in progress, since a simulator is also planned. Max Moves can be configured, and a total of 12 Pokémon can be configured on 4 different teams. Breakpoints of attackers can be checked, and Max Moves will be displayed.\n+ Changed this project's name to PokéChespin.",
+        date: "2025-01-14",
+    },{
+        title: "v1.8.1",
+        desc: "+ Added advanced simulation config on link.",
+        date: "2025-01-11",
+    },{
+        title: "v1.8",
+        desc: "+ Added the possibility for a Defender Pokémon to enrage.\n+ Added the possibility of configuring how many members are simulating the raid.\n+ Added the possibility of setting the amount of pokémon in a team.\n+ Added the possibility of setting a custom relobby time.",
+        date: "2025-01-09",
+    },{
+        title: "v1.7.1.1",
+        desc: "+ Added shadow effect",
+        date: "2025-01-07",
+    },{
+        title: "v1.7.1",
+        desc: "+ Fixed defenderBonus not correctly being read on breakpoints.",
+        date: "2025-01-06",
+    },{
+        title: "v1.7",
+        desc: "+ Added breakpoint page, where you can check all breakpoints of any pokémon against another one.\n+ Fixed simulation bugs.",
+        date: "2025-01-06",
+    },{
+        title: "v1.6",
+        desc: "+ Added links! Now you can share your configurations with anyone!",
+        date: "2025-01-05",
+    },{
+        title: "v1.5.3",
+        desc: "~ Small tweaks",
+        date: "2025-01-05",
+    },{
+        title: "v1.5.2",
+        desc: "+ Added Ignore Relobby Time and Dodge Charged Attack flags for advanced simulation.\n+ Fixed a bug where an attacker could deal more damage if it had exactly 0HP left.\n+ Added dodge information on battle sequence.",
+        date: "2025-01-05",
+    },{
+        title: "v1.5.1.2",
+        desc: "+ Added more info on advanced simulation sequence",
+        date: "2025-01-05",
+    },{
+        title: "v1.5.1.1",
+        desc: "+ Reduced relobby time window (10s -> 8s)",
+        date: "2025-01-04",
+    },{
+        title: "v1.5.1",
+        desc: "+ Altered some delays on advanced simulation (Cooldown when faint -> 3000 > 1000)\n+ Defender health on advanced simulation fixed\n+ Added more information on result of advanced simulation",
+        date: "2025-01-04",
+    },{
+        title: "v1.5",
+        desc: "+ Added advanced simulation!\n +Weather now displaying in results.\n+ 'Normal' raid difficulty changed to 'Gym Battle'.",
+        date: "2025-01-04",
+    },{
+        title: "v1.4.2.1",
+        desc: "+ Added jumping Chespins",
+        date: "2025-01-04",
+    },{
+        title: "v1.4.2",
+        desc: "~ Fix on Megaevolutions",
+        date: "2025-01-04",
+    },{
+        title: "v1.4.1.1",
+        desc: "~ Corrected boss CP",
+        date: "2025-01-04",
+    },{
+        title: "v1.4.1",
+        desc: "- Fixed an issue with undefined names of Pikachu's",
+        date: "2025-01-04",
+    },{
+        title: "v1.4",
+        desc: "+ PokeBattler API integration\n+ Better searching",
+        date: "2025-01-04",
+    },{
+        title: "v1.3.2",
+        desc: "+ Fixed search bar, changed ho-oh and lugia's sacred fire ++ and aeroblast++ availability.",
+        date: "2025-01-02",
+    },{        
+        title: "v1.3.1",
+        desc: "~ Minor text changes",
+        date: "2025-01-02",
+    },{
+        title: "v1.3",
+        desc: "+ Added Raid Boss PC, now displayed on Defender Pokémon PC\n+ Added Stat Bonuses, such as Weather Boost (x1.2), Shadow Pokémon Boost (x1.2), Mega Boost (x1.3) and Friendship Level (x1.03, x1.05, x1.07, x1.1)\n+ Added additional text info on time to defeat using fast and charged attacks simulation\n- Fixed an issue where Mega Raids would have 300 seconds instead of 180 seconds.\n- Fixed an issue where Shedinja could have 0 effective stamina.\n- Fixed an issue where IVs would interferee on raid boss stats.\n? Weather Boost can be set different on Attacker Pokémon and Defender Pokémon",
+        date: "2025-01-02",
+    },{
+        title: "v1.2",
+        desc: "+ Added raid bosses functionality (It may not display completely accurate stats, needs further investigation)",
+        date: "2025-01-02",
+    },{
+        title: "v1.1",
+        desc: "+ Alternate forms of Pokémon now showing on the app\n+ Added special moves: Dragon Ascent, Roar of Time, Spacial Rend, Aeroblast+, Aeroblast++, Sacred Fire+, Sacred Fire++, Moongeist Beam, Sunseel Strike\n+ Fixed issue where Dialga and Palkia don't show their basic forme asset\n+ Added some simple styling",
+        date: "2025-01-01",
+    },{
+        title: "v1.0",
+        desc: "+ Initial release of the app\n+ Welcome to Pokémon GO Damage Calculator!",
+        date: "2024-12-31",
+    },
+];
+
+export default function WhatsNewPage() {
+	return (
+		<div className="flex flex-col flex-row items-center justify-center space-y-4">
+			<div className="flex flex-row items-center justify-center space-x-4">
+				<img
+					src="/favicon.ico"
+					alt="Favicon"
+					className="inline-block mr-2 favicon"
+				/>
+				<h1 className="mb-10 title">PokéChespin News <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
+				<img
+					src="/favicon.ico"
+					alt="Favicon"
+					className="inline-block mr-2 favicon"
+				/>
+			</div>
+			<a
+				href="https://pokemongo-damage-calculator.vercel.app/pokemon-go-damage-calculator"
+				className="link"
+			>
+				<p className="italic text-sm font-bold">Back to Main Page</p>
+			</a>
+			<p className="linktext">
+				Made by{" "}
+				<a
+					className="link"
+					href="https://github.com/CreatorBeastGD"
+				>
+					CreatorBeastGD
+				</a>
+			</p>
+			<div className="flex justify-center min-h-screen py-8 px-8">
+				<div className="w-full">
+					<div className="space-y-4">
+						{novedades.map((item, idx) => (
+							<Card key={idx}>
+								<CardHeader>
+									<div className="flex justify-between items-center">
+										<h2 className="text-xl font-semibold">{item.title}</h2>
+										<span className="text-sm text-muted-foreground">
+											{item.date}
+										</span>
+									</div>
+								</CardHeader>
+								<CardContent>
+									{item.desc.split("\n").map((line, i) => (
+										<p key={i} className="text-sm text-muted-foreground mb-2">
+											{line}
+										</p>
+									))}
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}

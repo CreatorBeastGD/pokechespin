@@ -263,9 +263,14 @@ export default function Home() {
         </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
-      <a href="https://pokemongo-damage-calculator.vercel.app/dynamax" className="link">
-        <p className="italic text-sm font-bold">Dynamax Calculator and Simulator</p>
+      <div className="flex flex-row items-center justify-center space-x-4">
+        <a href="https://pokemongo-damage-calculator.vercel.app/dynamax" className="link">
+        <p className="italic text-sm font-bold">Dynamax Simulator</p>
       </a>
+      <a href="https://pokemongo-damage-calculator.vercel.app/whatsnew" className="link">
+        <p className="italic text-sm font-bold">What's New</p>
+      </a>
+      </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">

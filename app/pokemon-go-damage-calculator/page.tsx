@@ -20,6 +20,11 @@ export default function Page() {
                   Go to PokéChespin for Max Battles
                 </button>
             </a>
+            <a href={"https://pokemongo-damage-calculator.vercel.app/whatsnew"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                <button className="w-full ">
+                  See what's new!
+                </button>
+            </a>
             <div>
                 <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a> for you donation! ♥️</p>
             </div>

@@ -444,9 +444,14 @@ export default function Home() {
         </h1>
       <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
       </div>
-      <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">
-        <p className="italic text-sm font-bold">Back to Gym and Raid Simulations</p>
+      <div className="flex flex-row items-center justify-center space-x-4">
+        <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">
+        <p className="italic text-sm font-bold">Raid Simulator</p>
       </a>
+      <a href="https://pokemongo-damage-calculator.vercel.app/whatsnew" className="link">
+        <p className="italic text-sm font-bold">Whats New</p>
+      </a>
+      </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
@@ -595,7 +600,7 @@ export default function Home() {
               </select>
 
             <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* Zacian And Zamazenta' MAX Behemoth Blade and MAX Behemoth Bash are available in Max Battle Simulator. You must select "Gigantamax Zacian - Crowned Sword" or "Gigantamax Zamazenta - Crowned Shield" in the Attacker Pokémon slot to use them as their MAX move.
+              *DEV NOTE* Hey! I have added a brand new "What's New" page which you can check whenever you want! This will be the last dev note here, next notes will be in this new page. Thank you for using PokéChespin!
             </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation.
