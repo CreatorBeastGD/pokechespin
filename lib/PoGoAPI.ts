@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.18";
+        return "1.18.1";
     }
 
     static async getAllPokemon() {
@@ -29,7 +29,8 @@ export class PoGoAPI {
 
     static async getAvailableMaxPokemonPB() {
         const response = await fetch(API_PB + "raids");
-        return (await response.json()).dynamaxPokemon;
+        // return (await response.json()).dynamaxPokemon;
+        return Calculator.DynamaxPokemon;
     }
     
     static async getAllMovesPB() {
@@ -249,7 +250,7 @@ export class PoGoAPI {
             case "RILLABOOM_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_DRUM_SOLO" + moveSuffix);
             case "INTELEON_GIGANTAMAX":
-                return allMoves.find((m: any) => m.moveId === "GMAX_HYDRO_SNIPE" + moveSuffix);
+                return allMoves.find((m: any) => m.moveId === "GMAX_HYDROSNIPE" + moveSuffix);
             case "URSHIFU_SINGLE_STRIKE_GIGANTAMAX":
                 return allMoves.find((m: any) => m.moveId === "GMAX_ONE_BLOW" + moveSuffix);
             case "URSHIFU_RAPID_STRIKE_GIGANTAMAX":

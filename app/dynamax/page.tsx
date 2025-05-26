@@ -599,9 +599,6 @@ export default function Home() {
 
               </select>
 
-            <p className="italic text-slate-700 text-sm">
-              *DEV NOTE* Hey! I have added a brand new "What's New" page which you can check whenever you want! This will be the last dev note here, next notes will be in this new page. Thank you for using PokéChespin!
-            </p>
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation.
             </p>
@@ -610,8 +607,6 @@ export default function Home() {
                 Gigantamax bosses have a 0.9 multiplier applied to their defense. Results may be slightly inaccurate.
               </p>
             )}
-
-
 
               {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
                 <p className="italic text-slate-700 text-sm mt-2">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>

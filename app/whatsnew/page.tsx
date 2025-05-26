@@ -5,6 +5,11 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 
 const novedades = [
     {
+        title: "v1.18.1",
+        desc: "+ Changed 'Avaliable Dynamax Pokémon' list for Max Rankings. From now on, i'll be maintaining this list! \n~ Fixed an issue with GMAX Inteleon not being able to select its GMax move.",
+        date: "2025-05-26",
+    },
+    {
 		title: "v1.18",
 		desc: "+ Added this page.\n hey folks! make sure you read the notice below this one. :)",
 		date: "2025-05-18",
