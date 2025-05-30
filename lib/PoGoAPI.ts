@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.18.1";
+        return "1.19";
     }
 
     static async getAllPokemon() {
@@ -105,13 +105,19 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
-        
-        if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
-            pokemonId = "HO_OH";
-        }
-        //console.log(pokemonId);
-        return (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
+    if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
+        pokemonId = "HO_OH";
     }
+    let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
+    if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
+        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
+        pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
+    } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
+        pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
+    }
+    return pokemon;
+}
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
         return (pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num);
@@ -133,6 +139,13 @@ export class PoGoAPI {
         const move = moveList.find((move: any) => move.moveId === moveId);
         if (!move) {
           throw new Error(`Move with ID ${moveId} not found`);
+        }
+        if (moveId === "BEHEMOTH_BLADE") {
+            move.power = 200;
+            move.energyDelta = -100;
+        } else if (moveId === "BEHEMOTH_BASH") {
+            move.power = 125;
+            move.energyDelta = -50;
         }
         return move;
     }
@@ -272,6 +285,18 @@ export class PoGoAPI {
         //console.log(pokemonId);
         if (pokemonId.endsWith("_GIGANTAMAX")) {
             return this.getGigantamaxAttack(pokemonId, allMoves, maxMoveLevel);
+        } else if (pokemonId == "ZACIAN_CROWNED_SWORD_FORM") {
+            // Special case for Zacian's Max Behemoth Blade
+            const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
+            let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BLADE" );
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
+            return move;
+        } else if (pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+            // Special case for Zamazenta's Max Behemoth Bash
+            const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
+            let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BASH" );
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
+            return move;
         } else {
             const move = allMoves.find((m: any) => {
                 return m.type === moveType && m.moveId && m.moveId.startsWith("MAX_") && (m.moveId).endsWith(maxMoveLevel === 1 ? "" : maxMoveLevel.toString());

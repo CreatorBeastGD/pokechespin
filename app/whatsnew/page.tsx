@@ -5,6 +5,12 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 
 const novedades = [
     {
+        title: "v1.19 (Zacian and Zamazenta)",
+        desc: "+ Changed Zacian and Zamazenta' behaviour on Max Battles and Raids. \n >>> Both Pokémon have their signature charged moves available (Behemoth Blade / Behemoth Bash) \n >>> Their Max Moves are now considered as Dynamax moves (Therefore, 250/300/350 power) \n >>> Both Pokémon are now shown on Max Rankings.",
+        date: "2025-05-30",
+    }
+    ,
+    {
         title: "v1.18.1",
         desc: "+ Changed 'Avaliable Dynamax Pokémon' list for Max Rankings. From now on, i'll be maintaining this list! \n~ Fixed an issue with GMAX Inteleon not being able to select its GMax move.",
         date: "2025-05-26",

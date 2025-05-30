@@ -1,6 +1,6 @@
 {
-  "name": "pogocalc",
-  "version": "1.18.1",
+  "name": "pokechespin",
+  "version": "1.19",
   "private": true,
   "scripts": {
     "dev": "next dev",

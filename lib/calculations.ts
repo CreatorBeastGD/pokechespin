@@ -82,8 +82,8 @@ export class Calculator {
       "RILLABOOM_GIGANTAMAX",
       //"CINDERACE_GIGANTAMAX",
       //"INTELEON_GIGANTAMAX",
-      //"ZACIAN_CROWNED_SWORD_GIGANTAMAX",
-      //"ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX",
+      "ZACIAN_CROWNED_SWORD_FORM",
+      "ZAMAZENTA_CROWNED_SHIELD_FORM",
     ];
 
     private static CPM_VALUES: { [level: number]: number } = {
@@ -270,7 +270,8 @@ export class Calculator {
             +"  Effectiveness Bonus:"+ effectiveness 
             +"  Friendship Bonus: "+(this.getFriendshipBonus(bonusAttacker[3]))
             +"  Weather Bonus: "+(this.getWeatherBoostBonus(type, bonusAttacker[0]))
-            );*/
+            );
+            */
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (shroomBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
