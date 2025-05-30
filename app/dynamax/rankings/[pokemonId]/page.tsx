@@ -163,6 +163,12 @@ export default function rankingsPage() {
         }
     }, [allDataLoaded]);
 
+    useEffect(() => {
+        if (pokemonInfo && allEnglishText) {
+            document.title = `${PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} (${getStars(raidMode)} Star Max Battle) | PokéChespin Max Rankings`;
+        }
+    }, [pokemonInfo, allEnglishText]);
+
     const getStars = (raidMode: string) => {
         return raidMode === "normal" ? 5 : parseInt(raidMode.split("-")[1][1]);
     }
