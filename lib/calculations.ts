@@ -193,11 +193,14 @@ export class Calculator {
         8002: 0.38,
         8003: 0.5,
         8004: 0.6,
-        8005: 0.7,
+        8005: 0.8,
+        8005144: 0.7,
         8005243: 0.8,
         8005244: 0.75,
         8005245: 0.9,
         8006: 0.765,
+        8006003: 0.85,
+        8006068: 0.72,
         5001: 0.5974,
         5003: 0.73,
         5005: 0.7899,
@@ -220,8 +223,8 @@ export class Calculator {
         "raid-t2-dmax": 5000,
         "raid-t3-dmax": 10000,
         "raid-t4-dmax": 20000,
-        "raid-t5-dmax": 17500,
-        "raid-t6-gmax": 90000,
+        "raid-t5-dmax": 22500,
+        "raid-t6-gmax": 115000,
         "raid-t1-shadow": 600,
         "raid-t3-shadow": 3600,
         "raid-t5-shadow": 15000,
@@ -315,6 +318,8 @@ export class Calculator {
         if (raidMode === "raid-t5-dmax") {
           if (pokemonId === "ZAPDOS") {
             return 13000;
+          } else if (pokemonId === "MOLTRES" || pokemonId === "ARTICUNO") {
+            return 17500;
           } if (pokemonId === "RAIKOU") {
             return 20000;
           } else if (pokemonId === "ENTEI") {
@@ -322,9 +327,35 @@ export class Calculator {
           } else if (pokemonId === "SUICUNE") {
             return 22000;
           } else {
-            return 17500;
+            return this.RAID_BOSS_HP[raidMode];
           }
-        } else {
+        }
+        else if (raidMode === "raid-t6-gmax") {
+          if (pokemonId === "VENUSAUR_GIGANTAMAX") {
+            return 90000;
+          } else if (pokemonId === "CHARIZARD_GIGANTAMAX") {
+            return 90000;
+          } else if (pokemonId === "BLASTOISE_GIGANTAMAX") {
+            return 90000;
+          } else if (pokemonId === "GENGAR_GIGANTAMAX") {
+            return 90000;
+          } else if (pokemonId === "TOXTRICITY_GIGANTAMAX" || pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX") {
+            return 180000;
+          } else if (pokemonId === "LAPRAS_GIGANTAMAX") {
+            return 90000;
+          } else if (pokemonId === "KINGLER_GIGANTAMAX") {
+            return 115000;
+          } else if (pokemonId === "SNORLAX_GIGANTAMAX") {
+            return 115000;
+          } else if (pokemonId === "MACHAMP_GIGANTAMAX") {
+            return 115000;
+          } else if (pokemonId === "RILLABOOM_GIGANTAMAX") {
+            return 115000;
+          } else {
+            return this.RAID_BOSS_HP[raidMode];
+          }
+        } 
+        else {
           return this.RAID_BOSS_HP[raidMode];
         }
       }

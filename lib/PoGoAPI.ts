@@ -470,14 +470,38 @@ export class PoGoAPI {
                     convertedStats = [8005244, 15, 15, 26500];
                 } else if (defenderId === "SUICUNE") {
                     convertedStats = [8005245, 15, 15, 22000];
+                } else if (defenderId === "ARTICUNO" || defenderId === "MOLTRES") {
+                    convertedStats = [8005144, 15, 15, 17500];
+                } else if (defenderId === "ZAPDOS") {
+                    convertedStats = [8005144, 15, 15, 13000];
                 } else {
                     convertedStats = [8005, 15, 15, 20000];
                 }
             } else {
-                convertedStats = [8005, 15, 15, 17500];
+                convertedStats = [8005, 15, 15, 22500];
             }
         } else if (raidMode === "raid-t6-gmax") {
-            convertedStats = [8006, 15, 15, 90000];
+            if (defenderId) {
+                if (defenderId === "VENUSAUR_GIGANTAMAX" || defenderId === "CHARIZARD_GIGANTAMAX" || defenderId === "BLASTOISE_GIGANTAMAX") {
+                    convertedStats = [8006003, 15, 15, 90000];
+                }
+                else if (defenderId === "GENGAR_GIGANTAMAX" || defenderId === "LAPRAS_GIGANTAMAX") {
+                    convertedStats = [8006, 15, 15, 90000];
+                }
+                else if (defenderId === "MACHAMP_GIGANTAMAX") {
+                    convertedStats = [8006068, 15, 15, 115000];
+                }
+                else if (defenderId === "SNORLAX_GIGANTAMAX" || defenderId === "KINGLER_GIGANTAMAX") {
+                    convertedStats = [8006, 15, 15, 115000];
+                } else if (defenderId === "TOXTRICITY_AMPED_GIGANTAMAX" || defenderId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defenderId === "TOXTRICITY_GIGANTAMAX") {
+                    convertedStats = [8006, 15, 15, 180000];
+                } else {
+                    convertedStats = [8006, 15, 15, 115000];
+                }
+            }
+            else {
+                convertedStats = [8006, 15, 15, 115000];
+            }
         } else if (raidMode === "raid-t1-shadow") {
             convertedStats = [6001, 15, 15, 600];
         } else if (raidMode === "raid-t3-shadow") {
@@ -972,14 +996,18 @@ export class PoGoAPI {
         } if (raidMode === "raid-t5-dmax") {
           return 2;
         } if (raidMode === "raid-t6-gmax") {
-            return 0.9;
+            if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX") {
+                return 1.333;
+            } else {
+                return 1;
+            }
         }
         return 1;
     }
 
     static getDefenseMultiplier(raidMode: any) {
         if (raidMode === "raid-t6-gmax") {
-            return (1/0.9);
+            return (1);
         } else {
             return 1;
         }

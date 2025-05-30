@@ -595,21 +595,16 @@ export default function Home() {
                 <option key={"raid-t3-dmax"} value={"raid-t3-dmax"}>Tier-3 Max Battle (10000HP) </option>
                 <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
-                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (90000HP) </option>
+                <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (Varying) </option>
 
               </select>
 
             <p className="italic text-slate-700 text-sm mt-2">
               Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation.
             </p>
-            {(raidMode === "raid-t6-gmax") && (
-              <p className="italic text-slate-700 text-sm mt-2">
-                Gigantamax bosses have a 0.9 multiplier applied to their defense. Results may be slightly inaccurate.
-              </p>
-            )}
-
-              {(raidMode === "raid-t5-dmax" && defendingPokemon) && (
-                <p className="italic text-slate-700 text-sm mt-2">Tier 5 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
+            
+              {((raidMode === "raid-t5-dmax" || raidMode === "raid-t6-gmax") && defendingPokemon) && (
+                <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
                 )}
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
