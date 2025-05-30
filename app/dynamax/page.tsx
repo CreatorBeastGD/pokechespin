@@ -51,6 +51,7 @@ export default function Home() {
   const [imageLinks, setImageLinks] = useState<any>(null);
   const [allEnglishText, setAllEnglishText] = useState<any>(null);
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
+  const [types, setTypes] = useState<any>(null);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
 
   const [cleared, setCleared] = useState<boolean>(true);
@@ -140,6 +141,8 @@ export default function Home() {
       setAllEnglishText(text);
       //console.log(text);
       //console.log("Fetched all English text from PokeBattler API");
+      const typesData = await PoGoAPI.getTypes();
+      setTypes(typesData);
       
       setAllDataLoaded(true);
     };
@@ -433,6 +436,7 @@ export default function Home() {
     }
   }
 
+  
   //console.log(maxMoves);
 
   return (
@@ -604,7 +608,7 @@ export default function Home() {
             </p>
             
               {((raidMode === "raid-t5-dmax" || raidMode === "raid-t6-gmax") && defendingPokemon) && (
-                <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId)}HP</p>
+                <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId, PoGoAPI.hasDoubleWeaknesses(defendingPokemon.type, defendingPokemon.type2, types))}HP</p>
                 )}
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">

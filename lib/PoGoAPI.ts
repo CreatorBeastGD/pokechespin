@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.19";
+        return "1.19.1";
     }
 
     static async getAllPokemon() {
@@ -310,6 +310,45 @@ export class PoGoAPI {
                 return move;
             }
         }
+    }
+
+    static getTypeComboWeaknesses(allTypes: any[], type1: any, type2?: any) {
+        const type1Weaknesses = this.getTypeWeaknesses(type1, allTypes);
+        let type2Weaknesses: { [key: string]: number } = {};
+    
+        if (type2) {
+            type2Weaknesses = this.getTypeWeaknesses(type2, allTypes);
+        }
+    
+        const combinedWeaknesses: { [key: string]: number } = {};
+    
+        for (const type in type1Weaknesses) {
+            combinedWeaknesses[type] = type1Weaknesses[type];
+        }
+    
+        for (const type in type2Weaknesses) {
+            if (combinedWeaknesses[type]) {
+                combinedWeaknesses[type] *= type2Weaknesses[type];
+            } else {
+                combinedWeaknesses[type] = type2Weaknesses[type];
+            }
+        }
+    
+        return combinedWeaknesses;
+    }
+
+    static hasDoubleWeaknesses(type1: string, type2: string, allTypes: any[]) {
+        let t1 = this.formatTypeName(type1);
+        let t2 = type2 ? this.formatTypeName(type2) : null;
+        const weaknesses = this.getTypeComboWeaknesses(allTypes, t1, t2);
+    
+        for (const type in weaknesses) {
+            if (weaknesses[type] > 1.6) {
+                return true;
+            }
+        }
+    
+        return false;
     }
 
     static getTypeWeaknesses(type: string, allTypes: any[]) {
@@ -1297,8 +1336,13 @@ export class PoGoAPI {
             )
         );
 
+        const types = await this.getTypes();
+        const allMoves = await this.getAllMovesPB();
+
+        let hasWeakness = this.hasDoubleWeaknesses(defender.type, defender.type2, types);
+
         let attackerHealth = attackerMaxHP.map(team => team.map(pokemon => pokemon));
-        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId);
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId, hasWeakness);
         
         let attackerEvades = [false, false, false, false];
         let attackerFaint = [false, false, false, false];
@@ -1338,8 +1382,6 @@ export class PoGoAPI {
         let tankScore = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
         let healScore = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
-        const types = await this.getTypes();
-        const allMoves = await this.getAllMovesPB();
 
         for (let i = 0 ; i < attackers.length ; i++) {
             for (let j = 0 ; j < 3 ; j++) {

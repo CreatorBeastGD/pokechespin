@@ -66,6 +66,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [win, setWin] = useState<boolean | null>(null);
   const [phases, setPhases] = useState<number>(0);
   const [prioritiseEnergy, setPrioritiseEnergy] = useState<boolean>(searchParams.get("prioritise_energy") === "true");
+  const [types, setTypes] = useState<any[]>([]);
   
   useEffect(() => {
     const loadParams = () => {
@@ -157,6 +158,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setLoading(true);
     // Both should have the same weather boost.
     const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy);
+    setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -285,7 +287,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId)} HP left.</p>
+            <p> The defender Pokémon has {Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId,PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">

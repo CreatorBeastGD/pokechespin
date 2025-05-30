@@ -40,8 +40,9 @@ export default function CalculateButtonDynamax({
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
+    const types = await PoGoAPI.getTypes();
     const damage = await PoGoAPI.getDamageAttackDynamax(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, maxLevel);
-    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId);
+    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setHealth(remainingStamina);

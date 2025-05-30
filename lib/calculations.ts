@@ -302,19 +302,19 @@ export class Calculator {
           return Math.max(1, (stamina + iv) * this.getCPM(level));
       }
 
-      static getEffectiveStaminaForRaid(stamina: number, iv: number, level: number, raidMode: string, pokemonId?:string) {
+      static getEffectiveStaminaForRaid(stamina: number, iv: number, level: number, raidMode: string, pokemonId?:string, hasWeakness?: boolean) {
         if (raidMode === "normal") {
           return this.getEffectiveStamina(stamina, iv, level);
         } else {
           if (pokemonId) {
-            return this.getEffectiveDMAXHP(raidMode, pokemonId);
+            return this.getEffectiveDMAXHP(raidMode, pokemonId, hasWeakness ?? false);
           } else {
             return this.RAID_BOSS_HP[raidMode];
           }
         }
       }
 
-      static getEffectiveDMAXHP(raidMode: string, pokemonId: string) {
+      static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
         if (raidMode === "raid-t5-dmax") {
           if (pokemonId === "ZAPDOS") {
             return 13000;
@@ -327,7 +327,7 @@ export class Calculator {
           } else if (pokemonId === "SUICUNE") {
             return 22000;
           } else {
-            return this.RAID_BOSS_HP[raidMode];
+            return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
           }
         }
         else if (raidMode === "raid-t6-gmax") {
@@ -352,7 +352,7 @@ export class Calculator {
           } else if (pokemonId === "RILLABOOM_GIGANTAMAX") {
             return 115000;
           } else {
-            return this.RAID_BOSS_HP[raidMode];
+            return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
           }
         } 
         else {
