@@ -85,7 +85,7 @@ const BreakpointsPage = () => {
             if (attackerFastAttack) {
               const fastAttack = PoGoAPI.getMovePBByID(attackerFastAttack, allMoves)
               setSelectedQuickMoveAttacker(fastAttack)
-              const maxAttack = PoGoAPI.getDynamaxAttack(attacker, fastAttack.type, allMoves, attackerMM[0]);
+              const maxAttack = PoGoAPI.getDynamaxAttack(attacker, fastAttack.type, allMoves, attackerMM[0], fastAttack);
               setSelectedMaxMoveAttacker(maxAttack)
             };
             if (attackerCinematicAttack) {setSelectedChargedMoveAttacker(PoGoAPI.getMovePBByID(attackerCinematicAttack, allMoves))};

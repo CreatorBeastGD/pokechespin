@@ -355,7 +355,7 @@ export default function Home() {
     if (selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null && selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== undefined) {
       const newMaxMoveList = selectedMaxMoveAttacker.map((memberArray: any[], index: number) =>
         index === selectedMember - 1 ? memberArray.map((m: any, slotIndex: number) =>
-          slotIndex === selectedPokemonSlot - 1 ? PoGoAPI.getDynamaxAttack(attackingPokemon[selectedMember-1][selectedPokemonSlot-1].pokemonId, selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1].type, allMoves, maxMoves[selectedMember-1][selectedPokemonSlot-1][0]) : m
+          slotIndex === selectedPokemonSlot - 1 ? PoGoAPI.getDynamaxAttack(attackingPokemon[selectedMember-1][selectedPokemonSlot-1].pokemonId, selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1].type, allMoves, maxMoves[selectedMember-1][selectedPokemonSlot-1][0], selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1]) : m
         ) : memberArray
       );
       setSelectedMaxMoveAttacker(newMaxMoveList);

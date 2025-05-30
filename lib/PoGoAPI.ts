@@ -281,7 +281,7 @@ export class PoGoAPI {
         }
     }
 
-    static getDynamaxAttack(pokemonId: any, moveType: any, allMoves: any, maxMoveLevel: any) {
+    static getDynamaxAttack(pokemonId: any, moveType: any, allMoves: any, maxMoveLevel: any, moveSelected: any = null) {
         //console.log(pokemonId);
         if (pokemonId.endsWith("_GIGANTAMAX")) {
             return this.getGigantamaxAttack(pokemonId, allMoves, maxMoveLevel);
@@ -298,6 +298,9 @@ export class PoGoAPI {
             move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
             return move;
         } else {
+            if (moveSelected?.moveId.startsWith("HIDDEN_POWER_")) {
+                return allMoves.find((m: any) => m.moveId === "MAX_STRIKE" + (maxMoveLevel === 1 ? "" : maxMoveLevel.toString()));
+            }
             const move = allMoves.find((m: any) => {
                 return m.type === moveType && m.moveId && m.moveId.startsWith("MAX_") && (m.moveId).endsWith(maxMoveLevel === 1 ? "" : maxMoveLevel.toString());
             });
@@ -1235,7 +1238,7 @@ export class PoGoAPI {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
-            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3);
+            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             //console.log(weather)
             const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
             attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
@@ -1341,7 +1344,7 @@ export class PoGoAPI {
         for (let i = 0 ; i < attackers.length ; i++) {
             for (let j = 0 ; j < 3 ; j++) {
                 // Damage that can be done in one max attack
-                dmgScore[i][j] = this.getDamage(attackers[i][j], defender, this.getDynamaxAttack(attackers[i][j].pokemonId, attackersQuickMove[i][j].type, allMoves , attackerMaxMoves[i][j][0]), types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0], raidMode);
+                dmgScore[i][j] = this.getDamage(attackers[i][j], defender, this.getDynamaxAttack(attackers[i][j].pokemonId, attackersQuickMove[i][j].type, allMoves , attackerMaxMoves[i][j][0], attackersQuickMove[i][j]), types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0], raidMode);
                 // Percentage of health remaining after one targeted and one large attack
                 tankScore[i][j] = ((
                     ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
@@ -1493,7 +1496,7 @@ export class PoGoAPI {
                 for (let turn = 0 ; turn < 3 ; turn++) {
                     for (let i = 0 ; i < attackers.length ; i++) {
                         if (activePokemon[i] < 3) {
-                            const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0]);
+                            const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0], attackersQuickMove[i][activePokemon[i]]);
                             const maxMoveDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, ((shrooms[i] === true ? 2 : 1) * this.getHelperBonusDamage(helperBonus) * this.getDefenseMultiplier(raidMode))));
                             if (strategy[i] === "dmg") {
                                 // Attacker will cast its max move

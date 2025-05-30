@@ -321,7 +321,7 @@ export default function SearchBarAttackerDynamax({
   const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
-  const dynamaxMove = selectedQuickMove ? PoGoAPI.getDynamaxAttack(selectedPokemon?.pokemonId, (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves)).type, allMoves, maxMoves[0]) : null;
+  const dynamaxMove = selectedQuickMove ? PoGoAPI.getDynamaxAttack(selectedPokemon?.pokemonId, (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves)).type, allMoves, maxMoves[0], (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves))) : null;
   
   return (
     <>
