@@ -537,6 +537,8 @@ export class PoGoAPI {
                     convertedStats = [8006, 15, 15, 115000];
                 } else if (defenderId === "TOXTRICITY_AMPED_GIGANTAMAX" || defenderId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defenderId === "TOXTRICITY_GIGANTAMAX") {
                     convertedStats = [8006, 15, 15, 180000];
+                } else if (defenderId === "RILLABOOM_GIGANTAMAX" || defenderId === "CINDERACE_GIGANTAMAX" || defenderId === "INTELEON_GIGANTAMAX") {
+                    convertedStats = [8005245, 15, 15, 135000];
                 } else {
                     convertedStats = [8006, 15, 15, 115000];
                 }
