@@ -61,6 +61,9 @@ export default function SearchBarAttacker({
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
+  const [isImporting, setIsImporting] = useState<boolean>(false);
+
+  const [importMaxMove, setImportMaxMove] = useState<number[]>([1, 0, 0]);
   
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -258,6 +261,88 @@ export default function SearchBarAttacker({
     setSuggestions([]);
   };
 
+  const exportPokemon = () => {
+    if (!pokemonData || !selectedQuickMove || !selectedChargedMove) {
+      setError("To export, please select a Pokémon and both moves.");
+      return;
+      
+    }
+
+    const exportData = {
+      pokemon: pokemonData.pokemonId,
+      stats: stats,
+      quickMove: selectedQuickMove ? selectedQuickMove : null,
+      chargedMove: selectedChargedMove ? selectedChargedMove : null,
+      bonuses: selectedBonuses,
+      maxmoves: importMaxMove,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${pokemonData.pokemonId.toLowerCase()}_attackerdata.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const importPokemon = async () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".json";
+      
+      input.onchange = async (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+              try {
+                  const data = JSON.parse(event.target?.result as string);
+                  if (data.pokemon && data.stats && data.quickMove && data.chargedMove && data.bonuses) {
+                      setIsImporting(true);
+                      try {
+                          // Primero obtenemos todos los datos necesarios
+                          const pokemonData = PoGoAPI.getPokemonPBByID(data.pokemon, pokemonList)[0];
+                          const quickMove = PoGoAPI.getMovePBByID(data.quickMove, allMoves);
+                          const chargedMove = PoGoAPI.getMovePBByID(data.chargedMove, allMoves);
+
+                          // Luego actualizamos todo en orden
+                          await searchPokemonInit(pokemonData);
+                          handleStatsSelect(data.stats);
+                          handleBonusSelect(data.bonuses);
+
+                          setImportMaxMove(data.maxmoves || [1, 0, 0]);
+
+                          // Pequeño delay para asegurar que el pokémon se cargó completamente
+                          setTimeout(() => {
+                              handleQuickMoveSelect(data.quickMove, quickMove);
+                              handleChargedMoveSelect(data.chargedMove, chargedMove);
+                              
+                              // Actualizamos la URL una sola vez al final
+                              const newSearchParams = new URLSearchParams(searchParams.toString());
+                              newSearchParams.set(slot === 1 ? "attacker" : "defender", pokemonData.pokemonId);
+                              newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", data.stats.join(","));
+                              newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", data.bonuses.join(","));
+                              newSearchParams.set(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack", data.quickMove);
+                              newSearchParams.set(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack", data.chargedMove);
+                              window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+                          }, 100);
+                      } finally {
+                          setIsImporting(false);
+                      }
+                  } else {
+                      setError("Invalid file format.");
+                  }
+              } catch (error) {
+                  setError("Error reading file: " + error);
+              }
+          };
+          reader.readAsText(file);
+      };
+      input.click();
+  };
+
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
 
   const raidmode = raidMode ? raidMode : "normal";
@@ -297,15 +382,19 @@ export default function SearchBarAttacker({
           ))}
         </ul>
       )}
-      <Button onClick={searchPokemon} className="mt-4 mb-2">Search</Button>
-      {loading && (
+      <div>
+        <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
+        {slot === 1 && (<Button onClick={exportPokemon} className="mt-4 mb-2 mr-2">Export</Button>)}
+        {slot === 1 && (<Button onClick={importPokemon} className="mt-4 mb-2">Import</Button>)}
+      </div>
+      {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}
       {error && <p>{error}</p>}
-      {pokemonData ? (
+      {pokemonData && !isImporting ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
           <p>Type(s): {PoGoAPI.formatTypeName(selectedPokemon.type) + (selectedPokemon.type2 ? " / " + PoGoAPI.formatTypeName(selectedPokemon.type2) : "")}</p>

@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.19.1";
+        return "1.20";
     }
 
     static async getAllPokemon() {
@@ -526,14 +526,11 @@ export class PoGoAPI {
             if (defenderId) {
                 if (defenderId === "VENUSAUR_GIGANTAMAX" || defenderId === "CHARIZARD_GIGANTAMAX" || defenderId === "BLASTOISE_GIGANTAMAX") {
                     convertedStats = [8006003, 15, 15, 90000];
-                }
-                else if (defenderId === "GENGAR_GIGANTAMAX" || defenderId === "LAPRAS_GIGANTAMAX") {
+                } else if (defenderId === "GENGAR_GIGANTAMAX" || defenderId === "LAPRAS_GIGANTAMAX") {
                     convertedStats = [8006, 15, 15, 90000];
-                }
-                else if (defenderId === "MACHAMP_GIGANTAMAX") {
+                } else if (defenderId === "MACHAMP_GIGANTAMAX") {
                     convertedStats = [8006068, 15, 15, 115000];
-                }
-                else if (defenderId === "SNORLAX_GIGANTAMAX" || defenderId === "KINGLER_GIGANTAMAX") {
+                } else if (defenderId === "SNORLAX_GIGANTAMAX" || defenderId === "KINGLER_GIGANTAMAX") {
                     convertedStats = [8006, 15, 15, 115000];
                 } else if (defenderId === "TOXTRICITY_AMPED_GIGANTAMAX" || defenderId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defenderId === "TOXTRICITY_GIGANTAMAX") {
                     convertedStats = [8006, 15, 15, 180000];

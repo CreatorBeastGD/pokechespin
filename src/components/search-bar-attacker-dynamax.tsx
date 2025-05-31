@@ -10,6 +10,7 @@ import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { Calculator } from "../../lib/calculations";
 import { useSearchParams, usePathname } from "next/navigation";
+import { clear } from "console";
 
 
 interface SearchBarAttackerProps {
@@ -19,6 +20,7 @@ interface SearchBarAttackerProps {
   onChangedStats: (stats: any, member: any, slot: any) => void;
   onClickedClearButton: (member:any, slot: any) => void;
   onChangedMaxMoveStats: (maxMoves: any, member: any, slot: any) => void;
+  onClickedImportButton: () => void;
   pokemonList: any;
   searchBarNames: any;
   allMoves: any;
@@ -38,6 +40,7 @@ export default function SearchBarAttackerDynamax({
     onChargedMoveSelect, 
     onChangedStats,
     onClickedClearButton,
+    onClickedImportButton,
     onChangedMaxMoveStats,
     raidMode, 
     pokemonList, 
@@ -64,6 +67,9 @@ export default function SearchBarAttackerDynamax({
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
   const [maxMoves, setMaxMoves] = useState<any>([1,0,0]);
+  const [isImporting, setIsImporting] = useState<boolean>(false);
+
+  const [exportBonus, setExportBonus] = useState<any[]>(["EXTREME", false, false, 0]);
   
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -305,6 +311,79 @@ export default function SearchBarAttackerDynamax({
     return 0;
   }
 
+  const exportPokemon = () => {
+    if (!pokemonData || !selectedQuickMove || !selectedChargedMove) {
+      setError("To export, please select a Pokémon and both moves.");
+      return;
+      
+    }
+
+    const exportData = {
+      pokemon: pokemonData.pokemonId,
+      stats: stats,
+      quickMove: selectedQuickMove ? selectedQuickMove : null,
+      chargedMove: selectedChargedMove ? selectedChargedMove : null,
+      bonuses: exportBonus,
+      maxmoves: maxMoves,
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${pokemonData.pokemonId.toLowerCase()}_attackerdata.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+const importPokemon = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    
+    input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            try {
+                const data = JSON.parse(event.target?.result as string);
+                if (data.pokemon && data.stats && data.quickMove && data.chargedMove && data.maxmoves) {
+                    setIsImporting(true);
+                    try {
+                        setExportBonus(data.bonuses || ["EXTREME", false, false, 0]);
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const prefix = `attacker`;
+
+                        urlParams.set(`${prefix}${member}${number}`, data.pokemon);
+                        urlParams.set(`${prefix}_stats${member}${number}`, data.stats.join(","));
+                        urlParams.set(`${prefix}_max_moves${member}${number}`, data.maxmoves.join(","));
+                        urlParams.set(`${prefix}_fast_attack${member}${number}`, data.quickMove);
+                        urlParams.set(`${prefix}_cinematic_attack${member}${number}`, data.chargedMove);
+
+                        const newUrl = `${pathname}?${urlParams.toString()}`;
+                        window.history.replaceState({}, '', newUrl);
+                        
+                        setTimeout(() => {
+                          onClickedImportButton();
+                        }, 100);
+
+                        
+                    } finally {
+                        setIsImporting(false);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                setError(`Error importing: ${error}`);
+                setIsImporting(false);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+};
   const selectedPokemon = pokemonData //? getSelectedForm() : null;
   
   const effAttack = Calculator.getEffectiveAttack(selectedPokemon?.stats?.baseAttack, stats[1], stats[0]);
@@ -345,8 +424,10 @@ export default function SearchBarAttackerDynamax({
           ))}
         </ul>
       )}
-      <Button onClick={searchPokemon} className="mt-4 mb-2">Search</Button>
-      <Button onClick={() => clearButton()} className="mt-4 mb-2 mx-2">Clear</Button>
+      <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
+      <Button onClick={exportPokemon} className="mt-4 mb-2 mr-2">Export</Button>
+      <Button onClick={importPokemon} className="mt-4 mb-2 mr-2" disabled={isImporting}>Import</Button>
+      <Button onClick={() => clearButton()} className="mt-4 mb-2 mr-2">Clear</Button>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />

@@ -5,6 +5,11 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 
 const novedades = [
     {
+        title: "v1.20",
+        desc: "+ Added 'Import' and 'Export' buttons to Raids and Max Battles pages. \n>>> Exporting will copy the ID, level, IVs, attacks, bonuses and max move levels in a JSON file, which can be imported.\n>>> At the moment, these buttons are only available for attackers. \n>>> Using this functionality on PC is recommended. \n>>> This is something really new for me, so if you detect any issues with it, please let me know!",
+        date: "2025-05-31",
+    },
+    {
         title: "v1.19.1",
         desc: "+ New default HP values and CPM for Tier 5 and Tier 6 Max Battles have been added.",
         date: "2025-05-30",

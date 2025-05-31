@@ -222,6 +222,62 @@ export default function Home() {
     }
   }, [allDataLoaded]);
 
+const handleLoadImportFromLink = (member: any, slot: any) => {
+    setCleared(false);
+
+    // ¡Lee los parámetros directamente de la URL actual!
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 1. Actualizar Pokémon primero
+    const pokemon = urlParams.get(`attacker${member}${slot}`);
+    console.log(`Loading Pokémon for member ${member}, slot ${slot}:`, pokemon);
+
+    if (pokemon) {
+        const newAttackingPokemon = [...attackingPokemon];
+        newAttackingPokemon[member - 1] = [...newAttackingPokemon[member - 1]];
+        newAttackingPokemon[member - 1][slot - 1] = PoGoAPI.getPokemonPBByID(pokemon, pokemonList)[0];
+        setAttackingPokemon(newAttackingPokemon);
+    }
+
+    // 2. Actualizar movimientos
+    const quickMove = urlParams.get(`attacker_fast_attack${member}${slot}`);
+    if (quickMove) {
+        const newQuickMoveList = [...selectedQuickMoveAttacker];
+        newQuickMoveList[member - 1] = [...newQuickMoveList[member - 1]];
+        newQuickMoveList[member - 1][slot - 1] = PoGoAPI.getMovePBByID(quickMove, allMoves);
+        setSelectedQuickMoveAttacker(newQuickMoveList);
+    }
+
+    const chargedMove = urlParams.get(`attacker_cinematic_attack${member}${slot}`);
+    if (chargedMove) {
+        const newChargedMoveList = [...selectedChargedMoveAttacker];
+        newChargedMoveList[member - 1] = [...newChargedMoveList[member - 1]];
+        newChargedMoveList[member - 1][slot - 1] = PoGoAPI.getMovePBByID(chargedMove, allMoves);
+        setSelectedChargedMoveAttacker(newChargedMoveList);
+    }
+
+    // 3. Actualizar stats
+    const stats = urlParams.get(`attacker_stats${member}${slot}`);
+    if (stats) {
+        const newStats = [...attackerStats];
+        newStats[member - 1] = [...newStats[member - 1]];
+        newStats[member - 1][slot - 1] = stats.split(",").map(s => parseFloat(s));
+        setAttackerStats(newStats);
+    }
+
+    // 4. Actualizar max moves
+    const maxMoveStats = urlParams.get(`attacker_max_moves${member}${slot}`);
+    if (maxMoveStats) {
+        const newMaxMoveList = [...maxMoves];
+        newMaxMoveList[member - 1] = [...newMaxMoveList[member - 1]];
+        newMaxMoveList[member - 1][slot - 1] = maxMoveStats.split(",").map(s => parseInt(s));
+        setMaxMoves(newMaxMoveList);
+    }
+    setTimeout(() => {
+        setCleared(true);
+    }, 100);
+};
+
   const handleAttackerSelect = (pokemon: any, member: any, slot: any) => {
     if (pokemon === null) {
       setCleared(false);
@@ -505,6 +561,7 @@ export default function Home() {
                       onChargedMoveSelect={handleChargedMoveSelectAttacker}
                       onChangedStats={handleChangedStatsAttacker}
                       onClickedClearButton={() => handleAttackerSelect(null, memberIndex + 1, slotIndex + 1)}
+                      onClickedImportButton={() => handleLoadImportFromLink(memberIndex + 1, slotIndex + 1)}
                       onChangedMaxMoveStats={handleChangeMaxMoveStats}
                       slot={slotIndex + 1}
                       paramsLoaded={paramsLoaded}
