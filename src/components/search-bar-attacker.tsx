@@ -543,7 +543,7 @@ export default function SearchBarAttacker({
           </div>
         </div>
       ) : (
-        (loading) ? (<p>No Pokémon selected</p>) : (<p>Importing data...</p>)
+        (!isImporting) ? (<p>No Pokémon selected</p>) : (<p>Importing data...</p>)
       )}
     </>
   );
