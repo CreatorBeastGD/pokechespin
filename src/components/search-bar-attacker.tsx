@@ -278,6 +278,7 @@ export default function SearchBarAttacker({
     };
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -306,6 +307,50 @@ export default function SearchBarAttacker({
                           const pokemonData = PoGoAPI.getPokemonPBByID(data.pokemon, pokemonList)[0];
                           const quickMove = PoGoAPI.getMovePBByID(data.quickMove, allMoves);
                           const chargedMove = PoGoAPI.getMovePBByID(data.chargedMove, allMoves);
+
+                          if (!(pokemonData.quickMoves).includes(data.quickMove)) 
+                        {
+                            setError("The selected Quick Move is not available for this Pokémon.");
+                            setIsImporting(false);
+                            return;
+                        }
+
+                          else if (!(pokemonData.cinematicMoves).includes(data.chargedMove)) {
+                              setError("The selected Charged Move is not available for this Pokémon.");
+                              setIsImporting(false);
+                              return;
+                          }
+                          
+                          else if (data.stats.length !== 4 || data.bonuses.length !== 4) {
+                              setError("Invalid data format in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.stats[0] < 1 || data.stats[0] > 51 || data.stats[1] < 0 || data.stats[1] > 15 || data.stats[2] < 0 || data.stats[2] > 15 || data.stats[3] < 0 || data.stats[3] > 15) {
+                              setError("Invalid stats in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 4) {
+                              setError("Invalid friendship level in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.maxmoves.length !== 3 || data.maxmoves.some((move: number) => move < 0 || move > 3)) {
+                              setError("Invalid max moves in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.maxmoves[0] < 1) {
+                              setError("Invalid max moves in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
 
                           // Luego actualizamos todo en orden
                           await searchPokemonInit(pokemonData);

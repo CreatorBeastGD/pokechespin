@@ -356,18 +356,65 @@ const importPokemon = async () => {
                         const urlParams = new URLSearchParams(window.location.search);
                         const prefix = `attacker`;
 
-                        urlParams.set(`${prefix}${member}${number}`, data.pokemon);
-                        urlParams.set(`${prefix}_stats${member}${number}`, data.stats.join(","));
-                        urlParams.set(`${prefix}_max_moves${member}${number}`, data.maxmoves.join(","));
-                        urlParams.set(`${prefix}_fast_attack${member}${number}`, data.quickMove);
-                        urlParams.set(`${prefix}_cinematic_attack${member}${number}`, data.chargedMove);
+                        const DataPokemon = PoGoAPI.getPokemonPBByID(data.pokemon, pokemonList)[0];
 
-                        const newUrl = `${pathname}?${urlParams.toString()}`;
-                        window.history.replaceState({}, '', newUrl);
+                       if (!(DataPokemon.quickMoves).includes(data.quickMove)) 
+                        {
+                            setError("The selected Quick Move is not available for this Pokémon.");
+                            setIsImporting(false);
+                            return;
+                        }
+
+                          else if (!(DataPokemon.cinematicMoves).includes(data.chargedMove)) {
+                              setError("The selected Charged Move is not available for this Pokémon.");
+                              setIsImporting(false);
+                              return;
+                          }
+                          
+                          else if (data.stats.length !== 4 || data.bonuses.length !== 4) {
+                              setError("Invalid data format in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.stats[0] < 1 || data.stats[0] > 51 || data.stats[1] < 0 || data.stats[1] > 15 || data.stats[2] < 0 || data.stats[2] > 15 || data.stats[3] < 0 || data.stats[3] > 15) {
+                              setError("Invalid stats in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 4) {
+                              setError("Invalid friendship level in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.maxmoves.length !== 3 || data.maxmoves.some((move: number) => move < 0 || move > 3)) {
+                              setError("Invalid max moves in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
+                         else if (data.maxmoves[0] < 1) {
+                              setError("Invalid max moves in the imported file.");
+                              setIsImporting(false);
+                              return;
+                          }
+
                         
-                        setTimeout(() => {
-                          onClickedImportButton();
-                        }, 100);
+                          urlParams.set(`${prefix}${member}${number}`, data.pokemon);
+                          urlParams.set(`${prefix}_stats${member}${number}`, data.stats.join(","));
+                          urlParams.set(`${prefix}_max_moves${member}${number}`, data.maxmoves.join(","));
+                          urlParams.set(`${prefix}_fast_attack${member}${number}`, data.quickMove);
+                          urlParams.set(`${prefix}_cinematic_attack${member}${number}`, data.chargedMove);
+
+                          const newUrl = `${pathname}?${urlParams.toString()}`;
+                          window.history.replaceState({}, '', newUrl);
+                          
+                          setTimeout(() => {
+                            onClickedImportButton();
+                          }, 100);
+                        
 
                         
                     } finally {
