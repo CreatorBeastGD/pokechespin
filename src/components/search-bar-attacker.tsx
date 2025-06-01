@@ -374,7 +374,9 @@ export default function SearchBarAttacker({
                               window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
                           }, 100);
                       } finally {
-                          setIsImporting(false);
+                          setTimeout(() => {
+                            setIsImporting(false);
+                          }, 100);
                       }
                   } else {
                       setError("Invalid file format.");
@@ -439,7 +441,7 @@ export default function SearchBarAttacker({
         </div>
       )}
       {error && <p>{error}</p>}
-      {pokemonData && !isImporting ? (
+      {(pokemonData && !isImporting) ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
           <p>Type(s): {PoGoAPI.formatTypeName(selectedPokemon.type) + (selectedPokemon.type2 ? " / " + PoGoAPI.formatTypeName(selectedPokemon.type2) : "")}</p>
@@ -541,7 +543,7 @@ export default function SearchBarAttacker({
           </div>
         </div>
       ) : (
-        <p>No Pokémon selected</p>
+        (loading) ? (<p>No Pokémon selected</p>) : (<p>Importing data...</p>)
       )}
     </>
   );
