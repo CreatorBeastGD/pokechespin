@@ -5,6 +5,11 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 
 const novedades = [
     {
+        title: "v1.20.0.1",
+        desc: "~ Changed some stats on Tier 6 Max Battles. \n>>>>>> Gigantamax Rillaboom, Gigantamax Cinderace and Gigantamax Inteleon\n >>>>>> HP: 135000 → 120000 \n + Updated this project's README file, it was about time to do that...",
+        date: "2025-06-02",
+    },
+    {
         title: "v1.20",
         desc: "+ Added 'Import' and 'Export' buttons to Raids and Max Battles pages. \n>>> Exporting will copy the ID, level, IVs, attacks, bonuses and max move levels in a JSON file, which can be imported.\n>>> At the moment, these buttons are only available for attackers. \n>>> Using this functionality on PC is recommended. \n>>> This is something really new for me, so if you detect any issues with it, please let me know!",
         date: "2025-05-31",
@@ -309,12 +314,12 @@ export default function WhatsNewPage() {
 									</div>
 								</CardHeader>
 								<CardContent>
-									{item.desc.split("\n").map((line, i) => (
-										<p key={i} className="text-sm text-muted-foreground mb-2">
-											{line}
-										</p>
-									))}
-								</CardContent>
+                                {item.desc.replace(/> ?/g, "\u00A0").split("\n").map((line, i) => (
+                                    <p key={i} className="text-sm text-muted-foreground mb-2">
+                                    {line}
+                                    </p>
+                                ))}
+                                </CardContent>
 							</Card>
 						))}
 					</div>

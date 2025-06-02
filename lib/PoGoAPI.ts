@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.20";
+        return "1.20.0.1";
     }
 
     static async getAllPokemon() {
@@ -535,7 +535,7 @@ export class PoGoAPI {
                 } else if (defenderId === "TOXTRICITY_AMPED_GIGANTAMAX" || defenderId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defenderId === "TOXTRICITY_GIGANTAMAX") {
                     convertedStats = [8006, 15, 15, 180000];
                 } else if (defenderId === "RILLABOOM_GIGANTAMAX" || defenderId === "CINDERACE_GIGANTAMAX" || defenderId === "INTELEON_GIGANTAMAX") {
-                    convertedStats = [8005245, 15, 15, 135000];
+                    convertedStats = [8005245, 15, 15, 120000];
                 } else {
                     convertedStats = [8006, 15, 15, 115000];
                 }

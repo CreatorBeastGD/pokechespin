@@ -1,15 +1,20 @@
 
-# Pokémon GO Damage Calculator
+# PokéChespin | Pokémon GO Damage Calculator
 
 This project is a Pokémon GO damage calculator that allows users to select attacking and defending Pokémon, choose their moves, and calculate the damage dealt in battles. The calculator takes into account various factors such as Pokémon stats, move power, and type effectiveness.
 
 ## Features
 
-- Select attacking and defending Pokémon
-- Choose quick and charged moves for both Pokémon (although only selecting attacks for the attacker is functional for now)
-- Calculate damage dealt per fast and charged attack
-- Simulate battles to determine the time to defeat using fast and charged attacks
-- Display results with detailed information about the damage calculations
+- Run Raid calculations and simulations, such as...
+    - Calculating how much damage does your attacker' quick or charged move deal against a defender.
+    - Simulating a raid with the difficulty and custom parameters of your choice.
+    - Checking your attacker' offensive breakpoints against a defender.
+
+- Run Max Battles calculations and simulations, such as...
+    - Calculating how much damage does your attacker' quick, charged or max move deal against a defender.
+    - Building up to 4 teams to run an advanced simulation of a Max Battle (BETA) with the difficulty and custom parameters of your choice.
+    - Calculating how much damage the defender will deal to your Pokémon with their large or targeted moves.
+    - Checking your attacker' offensive breakpoints against a defender.
 
 ## Installation
 
@@ -30,7 +35,7 @@ This project is a Pokémon GO damage calculator that allows users to select atta
 ## Usage
 
 > [!WARNING]
-> If you want to contribute to PokéChespin, you wlii need the .env files to execute this app locally! Contact me via email to get this file
+> If you want to contribute to PokéChespin, you will need the .env files to execute this app locally! Contact me via email to get this file
 
 1. Start the deployment server:
     ```bash

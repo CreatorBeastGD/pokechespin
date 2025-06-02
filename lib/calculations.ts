@@ -350,7 +350,7 @@ export class Calculator {
           } else if (pokemonId === "MACHAMP_GIGANTAMAX") {
             return 115000;
           } else if (pokemonId === "RILLABOOM_GIGANTAMAX" || pokemonId === "CINDERACE_GIGANTAMAX" || pokemonId === "INTELEON_GIGANTAMAX") {
-            return 135000;
+            return 120000;
           } else {
             return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
           }
