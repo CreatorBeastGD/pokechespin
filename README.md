@@ -29,6 +29,9 @@ This project is a Pokémon GO damage calculator that allows users to select atta
 
 ## Usage
 
+> [!WARNING]
+> If you want to contribute to PokéChespin, you wlii need the .env files to execute this app locally! Contact me via email to get this file
+
 1. Start the deployment server:
     ```bash
     npm run dev
@@ -48,6 +51,7 @@ Contributions are welcome! If you have any suggestions or improvements, please c
  - [Tailwind CSS](https://tailwindcss.com/)
  - [Shadcn](https://ui.shadcn.com)
  - [Pokémon GO API](https://pokemon-go-api.github.io/pokemon-go-api/)
+ - [PokéBattler API](https://www.pokebattler.com)
 
 ## License
 
