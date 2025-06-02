@@ -6,7 +6,7 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 const novedades = [
     {
         title: "v1.20.0.1",
-        desc: "~ Changed some stats on Tier 6 Max Battles. \n>>>>>> Gigantamax Rillaboom, Gigantamax Cinderace and Gigantamax Inteleon\n >>>>>> HP: 135000 → 120000 \n + Updated this project's README file, it was about time to do that...",
+        desc: "~ Changed some stats on Tier 6 Max Battles. \n>>>>>> Gigantamax Rillaboom, Gigantamax Cinderace and Gigantamax Inteleon\n >>>>>> ~ HP: 135000 → 120000 \n + Updated this project's README file, it was about time to do that...",
         date: "2025-06-02",
     },
     {
