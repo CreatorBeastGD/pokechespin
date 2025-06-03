@@ -495,7 +495,7 @@ export default function SearchBarAttacker({
             <p className="italic text-slate-700">
               <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
             </p>
-            <p>Friendship level ({selectedBonuses[3]}) <span className="italic text-xs">(Doubled this season!)</span></p>
+            <p>Friendship level ({selectedBonuses[3]}) </p>
             <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[selectedBonuses[3]]} max={4} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
           </div>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Bonuses won't be affected.</p>)}
           <div className="flex flex-row space-x-4">

@@ -5,6 +5,12 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 
 const novedades = [
     {
+        title: "v1.20.1",
+        desc:"+ Added better visuals for Max Rankings! \n"+
+            "- Removed double friendship bonus since Might and Mastery ended.",
+        date: "2025-06-03",
+    },
+    {
         title: "v1.20.0.1",
         desc: "~ Changed some stats on Tier 6 Max Battles. \n>>>>>> Gigantamax Rillaboom, Gigantamax Cinderace and Gigantamax Inteleon\n >>>>>> ~ HP: 135000 → 120000 \n + Updated this project's README file, it was about time to do that...",
         date: "2025-06-02",

@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Calculator } from "../../../../lib/calculations";
+import { Progress } from "@/components/ui/progress";
+import { parse } from "path";
 
 
 
@@ -287,6 +289,79 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
+    const GetLargeTankiness = (defender: any) => {
+        if (rankingDisplay === "HP_DMG") {
+            return defender.large.toFixed(2);
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return getHPPercent(defender.large, defender.pokemon.stats.baseStamina).toFixed(2);
+        } else if (rankingDisplay === "AVG") {
+            return getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2);
+        }
+        return 0;
+    }
+
+    const GetTargetBestTankiness = (defender: any) => {
+        if (rankingDisplay === "HP_DMG") {
+            return defender.targetBest.toFixed(2);
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina).toFixed(2);
+        } else if (rankingDisplay === "AVG") {
+            return getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2);
+        }
+        return 0;
+    }
+
+    const GetTargetWorstTankiness = (defender: any) => {
+        if (rankingDisplay === "HP_DMG") {
+            return defender.targetWorst.toFixed(2);
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina).toFixed(2);
+        } else if (rankingDisplay === "AVG") {
+            return getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2);
+        }
+        return 0;
+    }
+
+    const GetTargetAverageTankiness = (defender: any) => {
+        if (rankingDisplay === "HP_DMG") {
+            return ((defender.targetAvg) / 2).toFixed(2);
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina) / 2).toFixed(2);
+        } else if (rankingDisplay === "AVG") {
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)) / 2).toFixed(2);
+        }
+    }
+
+    const GetTankScore = (defender: any): string => {
+        if (rankingDisplay === "HP_DMG") {
+            return (defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+        } else if (rankingDisplay === "AVG") {
+            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+        }
+        return "0.00";
+    }
+
+    const GetColorForDefender = (defender: any) => {
+        return (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) == 1 ? "violet" :
+            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.75 ? "green" :
+            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.6 ? "yellow" :
+            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.5 ? "orange" : "red";
+
+    }
+
+
+    function GetValueToShow(defender: any): number | null | undefined {
+        if (rankingDisplay === "HP_DMG") {
+            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return 100 - parseFloat(GetTankScore(defender));
+        } else if (rankingDisplay === "AVG") {
+            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+        }
+    }
+
     return (
         <>
         {everythingLoaded ? (
@@ -377,13 +452,14 @@ export default function rankingsPage() {
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
                                                 <Image
                                                     unoptimized
-                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200  bg-white"}
+                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
                                                     src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks )}
                                                     alt={attacker?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
-                                                    width={50}
-                                                    height={50}
+                                                    width={80}
+                                                    height={80}
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
+                                                
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
@@ -409,7 +485,13 @@ export default function rankingsPage() {
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p className="font-bold text-black">{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2)}%</p>
+                                                        <p className="font-bold text-black">
+                                                            {((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[1]}</span> %
+                                                        </p>
+                                                    </div>
+                                                    <div className="w-full">
+                                                        <Progress color={(attacker.damage / attackersToShow[0].damage) === 1 ? "violet" : (attacker.damage / bestAttackers[0].damage) > 0.75 ? "green" : (attacker.damage / bestAttackers[0].damage) > 0.6 ? "yellow" : (attacker.damage / bestAttackers[0].damage) > 0.5 ? "orange" : "red"} value={(attacker.damage / bestAttackers[0].damage) * 100}/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -459,16 +541,19 @@ export default function rankingsPage() {
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
-                                                        <p>{rankingDisplay === "HP_DMG" ? (defender.large.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2)}</p>
+                                                        <p>{GetLargeTankiness(defender)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
-                                                        <p><span className="text-blue-600">{rankingDisplay === "HP_DMG" ? (defender.targetBest.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2)} </span>/ <span className="text-sm">{rankingDisplay === "HP_DMG" ? (defender.targetWorst.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2)}</span> <span className="text-xs">(avg. {rankingDisplay === "HP_DMG" ? (defender.targetAvg.toFixed(2)) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2) : getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2)})</span></p>
+                                                        <p>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className="text-xs">(avg. {GetTargetAverageTankiness(defender)})</span></p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">{((((rankingDisplay === "HP_DMG" ? (defender.tankScore) : rankingDisplay === "HP_PERCENT" ? (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina)) : getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina))) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1))).toFixed(2))}</p>
+                                                        <p className="font-bold">{GetTankScore(defender)}</p>
+                                                    </div>
+                                                    <div className="w-full">
+                                                        <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
                                                     </div>
                                                 </div>
                                             </div>
