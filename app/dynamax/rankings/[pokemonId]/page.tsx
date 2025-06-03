@@ -344,21 +344,30 @@ export default function rankingsPage() {
     }
 
     const GetColorForDefender = (defender: any) => {
-        return (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) == 1 ? "violet" :
-            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.75 ? "green" :
-            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.6 ? "yellow" :
-            (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.5 ? "orange" : "red";
+        if (rankingDisplay === "HP_PERCENT") {
+            return (GetValueToShow(defender)) === 1 * GetValueToShow(defendersToShow[0]) ? "violet" :
+            (GetValueToShow(defender)) > 0.75 * GetValueToShow(defendersToShow[0]) ? "green" :
+            (GetValueToShow(defender)) > 0.6 * GetValueToShow(defendersToShow[0]) ? "yellow" :
+            (GetValueToShow(defender)) > 0.5 * GetValueToShow(defendersToShow[0]) ? "orange" : "red";
+        } else {
+            return (GetValueToShow(defender)) == 100 ? "violet" :
+            (GetValueToShow(defender)) > 75 ? "green" :
+            (GetValueToShow(defender)) > 60 ? "yellow" :
+            (GetValueToShow(defender)) > 50 ? "orange" : "red";
+        }
 
     }
 
 
-    function GetValueToShow(defender: any): number | null | undefined {
+    function GetValueToShow(defender: any): number {
         if (rankingDisplay === "HP_DMG") {
             return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
         } else if (rankingDisplay === "HP_PERCENT") {
             return 100 - parseFloat(GetTankScore(defender));
         } else if (rankingDisplay === "AVG") {
             return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+        } else {
+            return 100;
         }
     }
 
@@ -487,7 +496,7 @@ export default function rankingsPage() {
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
                                                         <p className="font-bold text-black">
                                                             {((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[0]}
-                                                            <span className="text-xs align-top">.{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[1]}</span> %
+                                                            <span className="text-xs align-top">.{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
@@ -550,7 +559,20 @@ export default function rankingsPage() {
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">{GetTankScore(defender)}</p>
+                                                        <p className="font-bold">
+                                                        {
+                                                            (() => {
+                                                            const value = parseFloat(GetTankScore(defender));
+                                                            const [intPart, decPart] = value.toFixed(2).split(".");
+                                                            return (
+                                                                <>
+                                                                {intPart}
+                                                                <span className="text-xs align-top">.{decPart}</span>
+                                                                </>
+                                                            );
+                                                            })()
+                                                        }
+                                                        </p>
                                                     </div>
                                                     <div className="w-full">
                                                         <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
