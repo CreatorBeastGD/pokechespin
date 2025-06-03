@@ -26,7 +26,7 @@ export default function Page() {
                 </button>
             </a>
             <div>
-                <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a> for you donation! ♥️</p>
+                <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a>, Gerkenator and Someone for you donations! ♥️</p>
             </div>
             <CookieBanner />
         </div>
