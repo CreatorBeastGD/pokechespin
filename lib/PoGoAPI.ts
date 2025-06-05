@@ -1442,9 +1442,29 @@ export class PoGoAPI {
                         firstDmgReduction[i] = true;
                         attackerDamageStart[i] = -1002;
                         battleLog.push({"turn": time, "attacker": "attacker", "dodge": true, "member": i});
+                        if (hasParticle[i]) {
+                            // Attacker i uses the Max Orb
+                            battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
+                            maxEnergy += 10;
+                            if (maxEnergy > 100) {
+                                maxEnergy = 100;
+                            }
+                            maxEnergyGain += maxEnergy;
+                            hasParticle[i] = false;
+                        }
                     }
-
-                }
+                } 
+                if (hasParticle[i]) {
+                    // Attacker i uses the Max Orb
+                    attackerDamageStart[i] = -1002;
+                    battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
+                    maxEnergy += 10;
+                    if (maxEnergy > 100) {
+                        maxEnergy = 100;
+                    }
+                    maxEnergyGain += maxEnergy;
+                    hasParticle[i] = false;
+                } 
                 if (!firstDmgReduction[i]) {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
@@ -1511,7 +1531,7 @@ export class PoGoAPI {
             // Max Phase
             if (maxEnergy >= 100) {
                 maxEnergy = 0;
-                attackerDamageStart = [0, 0, 0, 0];
+                attackerDamageStart = [-1, -1, -1, -1];
                 dealtDamage = true;
                 defenderDamageStart = -1000;
                 dynamaxPhases++;
