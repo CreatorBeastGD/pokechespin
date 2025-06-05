@@ -1480,7 +1480,7 @@ export class PoGoAPI {
                         }
                     }
                 } 
-                else if (hasParticle[i]) {
+                if (hasParticle[i]) {
                     // Attacker i uses the Max Orb
                     attackerDamageStart[i] = -1002;
                     battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
@@ -1557,7 +1557,7 @@ export class PoGoAPI {
             // Max Phase
             if (maxEnergy >= 100) {
                 maxEnergy = 0;
-                attackerDamageStart = [0, 0, 0, 0];
+                attackerDamageStart = [-1, -1, -1, -1];
                 dealtDamage = true;
                 defenderDamageStart = -1000;
                 dynamaxPhases++;
