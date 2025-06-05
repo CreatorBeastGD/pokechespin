@@ -1430,7 +1430,31 @@ export class PoGoAPI {
         let shrooms = shroom.map((shroom) => shroom === "true");
         // console.log(shrooms)
 
-        while (this.sumAllElements(attackerDamage) <= defenderHealth) {
+        let hasParticle = [false, false, false, false];
+
+        while (this.sumAllElements(attackerDamage) <= defenderHealth) {            
+            // Each 15 seconds, one Max Orb generates
+            if (time % 15000 === 0 && time > 0) {
+                let ellegibleAttackers = [];
+                for (let i = 0; i < attackers.length; i++) {
+                    if (activePokemon[i] < 3 && !attackerFaints[i][activePokemon[i]] && pokemonCanParticipate[i][activePokemon[i]]) {
+                        ellegibleAttackers.push(i);
+                    }
+                }
+                if (ellegibleAttackers.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * ellegibleAttackers.length);
+                    hasParticle[ellegibleAttackers[randomIndex]] = true;
+                    battleLog.push({"turn": time, "attacker": "attacker", "particle": true, "member": ellegibleAttackers[randomIndex]});
+                }
+            }
+            // After 10 seconds of a Max Orb generation, if it was not claimed, it will be lost
+            if (time % 15000 === 10000 && time > 0) {
+                for (let i = 0; i < attackers.length; i++) {
+                    if (hasParticle[i]) {
+                        hasParticle[i] = false;
+                    }
+                }
+            }
             for (let i = 0 ; i < attackers.length ; i++) {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
@@ -1609,6 +1633,17 @@ export class PoGoAPI {
                         simGoing = false;
                         win = true;
                         break;
+                    }
+                }
+                
+                // Max phase ends, dead members will cheer
+                for (let i = 0 ; i < attackers.length ; i++) {
+                    if (activePokemon[i] == 3) {
+                        maxEnergy += 25;
+                        battleLog.push({"turn": time, "attacker": "attacker", "cheer": true, "member": i});
+                        if (maxEnergy > 100) {
+                            maxEnergy = 100;
+                        }
                     }
                 }
 
