@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.20.2.1";
+        return "1.21";
     }
 
     static async getAllPokemon() {
@@ -1381,6 +1381,10 @@ export class PoGoAPI {
         let tankScore = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
         let healScore = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
+        let hasParticle = [false, false, false, false];
+
+
+
 
         for (let i = 0 ; i < attackers.length ; i++) {
             for (let j = 0 ; j < 3 ; j++) {
@@ -1431,6 +1435,28 @@ export class PoGoAPI {
         // console.log(shrooms)
 
         while (this.sumAllElements(attackerDamage) <= defenderHealth) {
+            // Each 15 seconds, one Max Orb generates
+            if (time % 15000 === 0 && time > 0) {
+                let ellegibleAttackers = [];
+                for (let i = 0; i < attackers.length; i++) {
+                    if (activePokemon[i] < 3 && !attackerFaints[i][activePokemon[i]] && pokemonCanParticipate[i][activePokemon[i]]) {
+                        ellegibleAttackers.push(i);
+                    }
+                }
+                if (ellegibleAttackers.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * ellegibleAttackers.length);
+                    hasParticle[ellegibleAttackers[randomIndex]] = true;
+                    battleLog.push({"turn": time, "attacker": "attacker", "particle": true, "member": ellegibleAttackers[randomIndex]});
+                }
+            }
+            // After 10 seconds of a Max Orb generation, if it was not claimed, it will be lost
+            if (time % 15000 === 10000 && time > 0) {
+                for (let i = 0; i < attackers.length; i++) {
+                    if (hasParticle[i]) {
+                        hasParticle[i] = false;
+                    }
+                }
+            }
             for (let i = 0 ; i < attackers.length ; i++) {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
@@ -1442,9 +1468,29 @@ export class PoGoAPI {
                         firstDmgReduction[i] = true;
                         attackerDamageStart[i] = -1002;
                         battleLog.push({"turn": time, "attacker": "attacker", "dodge": true, "member": i});
+                        if (hasParticle[i]) {
+                            // Attacker i uses the Max Orb
+                            battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
+                            maxEnergy += 10;
+                            if (maxEnergy > 100) {
+                                maxEnergy = 100;
+                            }
+                            maxEnergyGain += maxEnergy;
+                            hasParticle[i] = false;
+                        }
                     }
-
-                }
+                } 
+                else if (hasParticle[i]) {
+                    // Attacker i uses the Max Orb
+                    attackerDamageStart[i] = -1002;
+                    battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
+                    maxEnergy += 10;
+                    if (maxEnergy > 100) {
+                        maxEnergy = 100;
+                    }
+                    maxEnergyGain += maxEnergy;
+                    hasParticle[i] = false;
+                } 
                 if (!firstDmgReduction[i]) {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
@@ -1591,6 +1637,14 @@ export class PoGoAPI {
                         break;
                     }
                 }
+
+                // End of Dynamax phase, dead allies cast their cheering
+                for (let c = 0 ; c < attackers.length; c++) {
+                    if (activePokemon[c] == 3) {
+                        maxEnergy += 25;
+                        battleLog.push({"turn": time, "attacker": "attacker", "cheer": true, "member": c});
+                    }
+                } 
 
                 // Tank score gets recalculated.
                 for (let i = 0 ; i < attackers.length; i++) {

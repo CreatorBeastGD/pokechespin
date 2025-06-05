@@ -219,11 +219,16 @@ export default function CalculateButtonSimulateAdvanced({
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPartyPower)} checked={partyPower}/> Use Party Power {peopleCount === 1 && ("(Not available for 1 team)")}</p>
         <p>Set the number of Pokémon in the team ({teamCount}):</p>
-        <Slider onValueChange={(value) => handleTeamCount(value)} defaultValue={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <Slider onValueChange={(value) => handleTeamCount(value)} value={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set custom relobby time ({relobbyTime} seconds):</p>
-        <Slider onValueChange={(value) => handleRelobbyTime(value)} defaultValue={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <Slider onValueChange={(value) => handleRelobbyTime(value)} value={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set number of teams ({peopleCount}): </p>
-        <Slider onValueChange={(value) => handlePeopleCount(value)} defaultValue={[peopleCount]} max={20} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+        <div className="flex flex-row items-center space-x-2">
+          <Slider onValueChange={(value) => handlePeopleCount(value)} value={[peopleCount]} max={20} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
+          <button onClick={() => handlePeopleCount([peopleCount == 1 ? peopleCount : peopleCount - 1])}  className="text-xs text-white red px-4 py-1 rounded">–</button>
+          <button onClick={() => handlePeopleCount([peopleCount == 20 ? peopleCount : peopleCount + 1])} className="text-xs text-white green px-4 py-1 rounded">+</button>
+        </div>
+
       </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
