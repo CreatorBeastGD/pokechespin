@@ -16,6 +16,12 @@ This project is a Pokémon GO damage calculator that allows users to select atta
     - Calculating how much damage the defender will deal to your Pokémon with their large or targeted moves.
     - Checking your attacker' offensive breakpoints against a defender.
 
+- Check the rankings of any Max Boss to know which are the best Tanks and best Attackers against one Boss.
+
+- Export any pokémon you like to import their data at any moment!
+
+- Copy any setup from the page to send it to anyone!
+
 ## Installation
 
 1. Clone the repository:
@@ -47,8 +53,6 @@ This project is a Pokémon GO damage calculator that allows users to select atta
 ## Contributing
 Contributions are welcome! If you have any suggestions or improvements, please create an issue or submit a pull request.
 
-
-    
 ## Acknowledgements
 
  - [Pokémon GO](https://pokemongolive.com/)
@@ -62,3 +66,6 @@ Contributions are welcome! If you have any suggestions or improvements, please c
 
 This project is licensed under the MIT License, check the LICENSE file for details.
 
+## Supporting
+
+You can always [buy me a Coffee](https://buymeacoffee.com/creatorbeastgd) to support the development of this app. Although it's not needed, it's greatly appreciated :)

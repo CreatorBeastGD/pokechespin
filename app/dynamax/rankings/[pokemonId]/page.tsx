@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Calculator } from "../../../../lib/calculations";
 import { Progress } from "@/components/ui/progress";
 import { parse } from "path";
+import Navbar from "@/components/navbar";
 
 
 
@@ -377,12 +378,16 @@ export default function rankingsPage() {
             <div className="flex flex-col flex-row items-center justify-center space-y-4">
                 <div className="flex flex-row items-center justify-center space-x-4">
                 <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
-                    <h1 className="title">
-                    PokéChespin Max Rankings
-                    </h1>
+                    <a href="/pokemon-go-damage-calculator">    
+                        <h1 className="title">
+                        PokéChespin Max Rankings
+                        </h1>
+                    </a>
                 <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
                 </div>
                 <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
+                
+                <Navbar/>
                 <h1 className="text-2xl font-bold">Best Attackers and Defenders for {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}</h1>
                 <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
                     <button className="w-full">
@@ -594,7 +599,6 @@ export default function rankingsPage() {
                     <AvatarFallback>CB</AvatarFallback>
                 </Avatar>
                 <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-                
                 <CookieBanner/>
             </div>
         ) : (
@@ -607,7 +611,9 @@ export default function rankingsPage() {
                 <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
                 </div>
                 <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-    
+                
+                <Navbar/>
+
                 <h1 className="text-2xl font-bold">Loading best Attackers and Defenders...</h1>
                 <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>
                 <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
@@ -616,7 +622,6 @@ export default function rankingsPage() {
                     <AvatarFallback>CB</AvatarFallback>
                 </Avatar>
                 <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-                
                 <CookieBanner/>
             </div>
         )}

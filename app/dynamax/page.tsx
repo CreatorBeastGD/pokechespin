@@ -22,6 +22,7 @@ import { Slider } from "@/components/ui/slider";
 import CookieBanner from "@/components/cookie-banner";
 import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 import { Button } from "@/components/ui/button";
+import Navbar from "@/components/navbar";
 
 export default function Home() {
   
@@ -499,21 +500,15 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+        <a href="/pokemon-go-damag-calculator">
         <h1 className="title">
           PokéChespin for Max Battles
         </h1>
+        </a>
       <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
       </div>
-      <div className="flex flex-row items-center justify-center space-x-4">
-        <a href="https://pokemongo-damage-calculator.vercel.app/" className="link">
-        <p className="italic text-sm font-bold">Raid Simulator</p>
-      </a>
-      <a href="https://pokemongo-damage-calculator.vercel.app/whatsnew" className="link">
-        <p className="italic text-sm font-bold">Whats New</p>
-      </a>
-      </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-      
+      <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
         

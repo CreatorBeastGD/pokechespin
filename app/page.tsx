@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CalculateButtonSimulateAdvanced from "@/components/calculate-button-advanced-simulate";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import CookieBanner from "@/components/cookie-banner";
+import Navbar from "@/components/navbar";
 
 export default function Home() {
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
@@ -258,21 +259,15 @@ export default function Home() {
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+        <a href="/pokemon-go-damage-calculator">
         <h1 className="mb-10 title">
         PokéChespin for Raids
         </h1>
+        </a>
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
       </div>
-      <div className="flex flex-row items-center justify-center space-x-4">
-        <a href="https://pokemongo-damage-calculator.vercel.app/dynamax" className="link">
-        <p className="italic text-sm font-bold">Dynamax Simulator</p>
-      </a>
-      <a href="https://pokemongo-damage-calculator.vercel.app/whatsnew" className="link">
-        <p className="italic text-sm font-bold">What's New</p>
-      </a>
-      </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-      
+      <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
           <CardHeader>

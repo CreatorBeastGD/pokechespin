@@ -5,6 +5,7 @@ import { PoGoAPI } from '../../lib/PoGoAPI';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import html2canvas from 'html2canvas';
 import CookieBanner from '@/components/cookie-banner';
+import Navbar from '@/components/navbar';
 
 
 
@@ -296,7 +297,9 @@ const BreakpointsPage = () => {
                                 </button>
                             </a></p> : <p>Loading...</p>
         )}
-        
+        <div className="flex flex-col items-center justify-center space-x-3 mt-4 mb-4">
+          <Navbar/>
+        </div>
         <CookieBanner />
         </>
     );

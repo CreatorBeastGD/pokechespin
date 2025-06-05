@@ -2,8 +2,16 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import React from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
+import Navbar from "@/components/navbar";
 
 const novedades = [
+    {
+        title: "1.20.2",
+        desc: "+ Added some new UI elements to PokéChespin." + 
+        "\n>>> Now, every page shows a new navigation bar below the title, which will allow you to navigate to the main page, raids, max battles and this page." + 
+        "\n>>> Clicking the title on each page will take you to the main page.",
+        date: "2025-06-05",
+    },
     {
         title: "v1.20.1",
         desc:"+ Added better visuals for Max Rankings! \n"+
@@ -284,20 +292,16 @@ export default function WhatsNewPage() {
 					alt="Favicon"
 					className="inline-block mr-2 favicon"
 				/>
-				<h1 className="mb-10 title">PokéChespin News <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
+				<a href="/pokemon-go-damage-calculator">
+                    <h1 className="mb-10 title">PokéChespin News <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
+                </a>
 				<img
 					src="/favicon.ico"
 					alt="Favicon"
 					className="inline-block mr-2 favicon"
 				/>
 			</div>
-			<a
-				href="https://pokemongo-damage-calculator.vercel.app/pokemon-go-damage-calculator"
-				className="link"
-			>
-				<p className="italic text-sm font-bold">Back to Main Page</p>
-			</a>
-			<p className="linktext">
+            <p className="linktext">
 				Made by{" "}
 				<a
 					className="link"
@@ -306,6 +310,7 @@ export default function WhatsNewPage() {
 					CreatorBeastGD
 				</a>
 			</p>
+            <Navbar/>
 			<div className="flex justify-center min-h-screen py-8 px-8">
 				<div className="w-full">
 					<div className="space-y-4">

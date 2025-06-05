@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from "react";
 import BuyMeACoffeeIcon from "@/components/buy-me-a-coffee";
 import CookieBanner from "@/components/cookie-banner";
+import Navbar from "@/components/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
