@@ -6,16 +6,6 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
-        title:"v1.21",
-        desc: "+ Added new functionality to the Max Battle Simulator! \n"+
-            ">>> Now, there will be Max Orbs spawning! \n"+
-            ">>>>>> One Max Orb will spawn each 15s on a random member and will be claimed by that member, adding +10 energy to the Max Meter\n"+
-            ">>> Dead members now will be able to cheer! This will add +25 energy each time one Max Phase is over.\n" +
-            "(These new featrues cannot be disabled at the moment, might change that in a few days if you want it ^^)\n" + 
-            "+ Added '+' and '-' buttons next to IVs, level and 'number of players (on raid simulator)' options",
-        date: "2025-06-06",
-    },
-    {
         title: "1.20.2.1",
         desc: "~ Changed stats on Tier 6 Max Battles. \n"+
             ">>>>>> Gigantamax Cinderace\n >>>>>> ~ HP: 120000 → 80000 \n"+

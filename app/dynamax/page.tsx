@@ -764,7 +764,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             </CardContent>
             {allPokemonSelected() ? (
               <CardContent>
-                <CardDescription>Max Battle Simulation (Beta) (NEW CHANGES)</CardDescription>
+                <CardDescription>Max Battle Simulation (Beta)</CardDescription>
                 <CalculateButtonSimulateAdvancedDynamax 
                   allEnglishText={allEnglishText}
                   attacker={attackingPokemon} 

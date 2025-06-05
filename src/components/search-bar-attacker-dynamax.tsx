@@ -244,13 +244,7 @@ export default function SearchBarAttackerDynamax({
   };
 
   // [level, attack, defense, stamina]
-    const handleChangeStat = (value: number[], index: number) => {
-    if (index === 0 && (value[0] < 1 || value[0] > 51)) {
-      return;
-    }
-    if (index > 0 && (value[0] < 0 || value[0] > 15)) {
-      return;
-    }
+  const handleChangeStat = (value: number[], index: number) => {
     setStats((prev: any) => {
       const newStats = [...prev];
       newStats[index] = value[0];
@@ -520,30 +514,15 @@ const importPokemon = async () => {
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
             />
           <div className="grid grid-cols-1">
-          <p>Level: {stats[0]}</p>
-          <div className="flex flex-row">
-            <Slider onValueChange={(value) => handleChangeStat(value, 0)} value={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1 mr-2" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
-            <button onClick={() => handleChangeStat([stats[0]-0.5], 0)} className="bg-blue-500 text-white px-4 rounded mr-2">–</button>
-            <button onClick={() => handleChangeStat([stats[0]+0.5], 0)} className="bg-blue-500 text-white px-4 rounded">+</button>
-          </div>
-          <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Attack: </p>
-          <div className="flex flex-row">
-            <Slider onValueChange={(value) => handleChangeStat(value, 1)} value={[stats[1]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[1] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-            <button onClick={() => handleChangeStat([stats[1]-1], 1)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-            <button onClick={() => handleChangeStat([stats[1]+1], 1)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-          </div>
-          <p className={stats[2] == 15 ? "text-red-600" : "text-yellow-600"}>Defense: </p>
-          <div className="flex flex-row">
-            <Slider onValueChange={(value) => handleChangeStat(value, 2)} value={[stats[2]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[2] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-            <button onClick={() => handleChangeStat([stats[2]-1], 2)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-            <button onClick={() => handleChangeStat([stats[2]+1], 2)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-          </div>
-          <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
-          <div className="flex flex-row">
-            <Slider onValueChange={(value) => handleChangeStat(value, 3)} value={[stats[3]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-            <button onClick={() => handleChangeStat([stats[3]-1], 3)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-            <button onClick={() => handleChangeStat([stats[3]+1], 3)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-          </div>
+            <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
+            <p>Level: {stats[0]}</p>
+            <Slider onValueChange={(value) => handleChangeStat(value, 0)} defaultValue={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
+            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Attack: </p>
+            <Slider onValueChange={(value) => handleChangeStat(value, 1)} defaultValue={[stats[1]]} max={15} step={1} className="w-[60%] mb-1" color={stats[1] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
+            <p className={stats[2] == 15 ? "text-red-600" : "text-yellow-600"}>Defense: </p>
+            <Slider onValueChange={(value) => handleChangeStat(value, 2)} defaultValue={[stats[2]]} max={15} step={1} className="w-[60%] mb-1" color={stats[2] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
+            <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
+            <Slider onValueChange={(value) => handleChangeStat(value, 3)} defaultValue={[stats[3]]} max={15} step={1} className="w-[60%] mb-5" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
           </div>
           <div className="grid grid-cols-1 mb-4">
             <p>Max moves</p>
