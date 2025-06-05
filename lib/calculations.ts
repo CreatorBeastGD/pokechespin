@@ -307,50 +307,49 @@ export class Calculator {
       }
 
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
-        if (raidMode === "raid-t5-dmax") {
-          if (pokemonId === "ZAPDOS") {
-            return 13000;
-          } else if (pokemonId === "MOLTRES" || pokemonId === "ARTICUNO") {
-            return 17500;
-          } if (pokemonId === "RAIKOU") {
-            return 20000;
-          } else if (pokemonId === "ENTEI") {
-            return 26500;
-          } else if (pokemonId === "SUICUNE") {
-            return 22000;
-          } else {
+    // Mapas para lookup rápido
+    const t5dmaxHP: Record<string, number> = {
+        ZAPDOS: 13000,
+        MOLTRES: 17500,
+        ARTICUNO: 17500,
+        RAIKOU: 20000,
+        ENTEI: 26500,
+        SUICUNE: 22000,
+    };
+
+    const t6gmaxHP: Record<string, number> = {
+        VENUSAUR_GIGANTAMAX: 90000,
+        CHARIZARD_GIGANTAMAX: 90000,
+        BLASTOISE_GIGANTAMAX: 90000,
+        GENGAR_GIGANTAMAX: 90000,
+        TOXTRICITY_GIGANTAMAX: 180000,
+        TOXTRICITY_LOW_KEY_GIGANTAMAX: 180000,
+        TOXTRICITY_AMPED_GIGANTAMAX: 180000,
+        LAPRAS_GIGANTAMAX: 90000,
+        KINGLER_GIGANTAMAX: 115000,
+        SNORLAX_GIGANTAMAX: 115000,
+        MACHAMP_GIGANTAMAX: 115000,
+        RILLABOOM_GIGANTAMAX: 120000,
+        INTELEON_GIGANTAMAX: 120000,
+        CINDERACE_GIGANTAMAX: 80000,
+    };
+
+    if (raidMode === "raid-t5-dmax") {
+        if (pokemonId in t5dmaxHP) {
+            return t5dmaxHP[pokemonId];
+        } else {
             return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
-          }
         }
-        else if (raidMode === "raid-t6-gmax") {
-          if (pokemonId === "VENUSAUR_GIGANTAMAX") {
-            return 90000;
-          } else if (pokemonId === "CHARIZARD_GIGANTAMAX") {
-            return 90000;
-          } else if (pokemonId === "BLASTOISE_GIGANTAMAX") {
-            return 90000;
-          } else if (pokemonId === "GENGAR_GIGANTAMAX") {
-            return 90000;
-          } else if (pokemonId === "TOXTRICITY_GIGANTAMAX" || pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX") {
-            return 180000;
-          } else if (pokemonId === "LAPRAS_GIGANTAMAX") {
-            return 90000;
-          } else if (pokemonId === "KINGLER_GIGANTAMAX") {
-            return 115000;
-          } else if (pokemonId === "SNORLAX_GIGANTAMAX") {
-            return 115000;
-          } else if (pokemonId === "MACHAMP_GIGANTAMAX") {
-            return 115000;
-          } else if (pokemonId === "RILLABOOM_GIGANTAMAX" || pokemonId === "CINDERACE_GIGANTAMAX" || pokemonId === "INTELEON_GIGANTAMAX") {
-            return 120000;
-          } else {
+    } else if (raidMode === "raid-t6-gmax") {
+        if (pokemonId in t6gmaxHP) {
+            return t6gmaxHP[pokemonId];
+        } else {
             return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
-          }
-        } 
-        else {
-          return this.RAID_BOSS_HP[raidMode];
         }
-      }
+    } else {
+        return this.RAID_BOSS_HP[raidMode];
+    }
+}
 
       /**
        * 

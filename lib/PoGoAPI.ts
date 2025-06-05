@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.20.2";
+        return "1.20.2.1";
     }
 
     static async getAllPokemon() {
@@ -483,77 +483,77 @@ export class PoGoAPI {
     }
 
     static convertStats(defenderStats: any, raidMode: any, defenderId?: any) {
-        let convertedStats = [];
-        if (raidMode === "raid-t1") {
-            convertedStats = [5001, 15, 15, 600];
-        } else if (raidMode === "raid-t3") {
-            convertedStats = [5003, 15, 15, 3600];
-        } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
-            convertedStats = [5005, 15, 15, 9000];
-        } else if (raidMode === "raid-t5") {
-            convertedStats = [5005, 15, 15, 15000];
-        } else if (raidMode === "raid-elite") {
-            convertedStats = [5005, 15, 15, 20000];
-        } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
-            convertedStats = [5005, 15, 15, 22500];
-        } else if (raidMode === "raid-t1-dmax") {
-            convertedStats = [8001, 15, 15, 1700];
-        } else if (raidMode === "raid-t2-dmax") {
-            convertedStats = [8002, 15, 15, 5000];
-        } else if (raidMode === "raid-t3-dmax") {
-            convertedStats = [8003, 15, 15, 10000];
-        } else if (raidMode === "raid-t4-dmax") {
-            convertedStats = [8004, 15, 15, 20000];
-        } else if (raidMode === "raid-t5-dmax") {
-            if (defenderId) {
-                if (defenderId === "RAIKOU") {
-                    convertedStats = [8005243, 15, 15, 20000];
-                } else if (defenderId === "ENTEI") {
-                    convertedStats = [8005244, 15, 15, 26500];
-                } else if (defenderId === "SUICUNE") {
-                    convertedStats = [8005245, 15, 15, 22000];
-                } else if (defenderId === "ARTICUNO" || defenderId === "MOLTRES") {
-                    convertedStats = [8005144, 15, 15, 17500];
-                } else if (defenderId === "ZAPDOS") {
-                    convertedStats = [8005144, 15, 15, 13000];
-                } else {
-                    convertedStats = [8005, 15, 15, 20000];
-                }
-            } else {
-                convertedStats = [8005, 15, 15, 22500];
-            }
-        } else if (raidMode === "raid-t6-gmax") {
-            if (defenderId) {
-                if (defenderId === "VENUSAUR_GIGANTAMAX" || defenderId === "CHARIZARD_GIGANTAMAX" || defenderId === "BLASTOISE_GIGANTAMAX") {
-                    convertedStats = [8006003, 15, 15, 90000];
-                } else if (defenderId === "GENGAR_GIGANTAMAX" || defenderId === "LAPRAS_GIGANTAMAX") {
-                    convertedStats = [8006, 15, 15, 90000];
-                } else if (defenderId === "MACHAMP_GIGANTAMAX") {
-                    convertedStats = [8006068, 15, 15, 115000];
-                } else if (defenderId === "SNORLAX_GIGANTAMAX" || defenderId === "KINGLER_GIGANTAMAX") {
-                    convertedStats = [8006, 15, 15, 115000];
-                } else if (defenderId === "TOXTRICITY_AMPED_GIGANTAMAX" || defenderId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defenderId === "TOXTRICITY_GIGANTAMAX") {
-                    convertedStats = [8006, 15, 15, 180000];
-                } else if (defenderId === "RILLABOOM_GIGANTAMAX" || defenderId === "CINDERACE_GIGANTAMAX" || defenderId === "INTELEON_GIGANTAMAX") {
-                    convertedStats = [8005245, 15, 15, 120000];
-                } else {
-                    convertedStats = [8006, 15, 15, 115000];
-                }
-            }
-            else {
-                convertedStats = [8006, 15, 15, 115000];
-            }
-        } else if (raidMode === "raid-t1-shadow") {
-            convertedStats = [6001, 15, 15, 600];
-        } else if (raidMode === "raid-t3-shadow") {
-            convertedStats = [6003, 15, 15, 3600];
-        } else if (raidMode === "raid-t5-shadow") {
-            convertedStats = [6005, 15, 15, 15000];
-        } else {
-            convertedStats = defenderStats;
+    // Mapas para valores fijos
+    const baseStats: Record<string, number[]> = {
+        "raid-t1": [5001, 15, 15, 600],
+        "raid-t3": [5003, 15, 15, 3600],
+        "raid-t4": [5005, 15, 15, 9000],
+        "raid-mega": [5005, 15, 15, 9000],
+        "raid-t5": [5005, 15, 15, 15000],
+        "raid-elite": [5005, 15, 15, 20000],
+        "raid-primal": [5005, 15, 15, 22500],
+        "raid-mega-leg": [5005, 15, 15, 22500],
+        "raid-t1-dmax": [8001, 15, 15, 1700],
+        "raid-t2-dmax": [8002, 15, 15, 5000],
+        "raid-t3-dmax": [8003, 15, 15, 10000],
+        "raid-t4-dmax": [8004, 15, 15, 20000],
+        "raid-t1-shadow": [6001, 15, 15, 600],
+        "raid-t3-shadow": [6003, 15, 15, 3600],
+        "raid-t5-shadow": [6005, 15, 15, 15000],
+    };
+
+    const t5dmaxStats: Record<string, number[]> = {
+        RAIKOU: [8005243, 15, 15, 20000],
+        ENTEI: [8005244, 15, 15, 26500],
+        SUICUNE: [8005245, 15, 15, 22000],
+        ARTICUNO: [8005144, 15, 15, 17500],
+        MOLTRES: [8005144, 15, 15, 17500],
+        ZAPDOS: [8005144, 15, 15, 13000],
+    };
+
+    const t6gmaxStats: Record<string, number[]> = {
+        VENUSAUR_GIGANTAMAX: [8006003, 15, 15, 90000],
+        CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 90000],
+        BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 90000],
+        GENGAR_GIGANTAMAX: [8006, 15, 15, 90000],
+        LAPRAS_GIGANTAMAX: [8006, 15, 15, 90000],
+        MACHAMP_GIGANTAMAX: [8006068, 15, 15, 115000],
+        SNORLAX_GIGANTAMAX: [8006, 15, 15, 115000],
+        KINGLER_GIGANTAMAX: [8006, 15, 15, 115000],
+        TOXTRICITY_AMPED_GIGANTAMAX: [8006, 15, 15, 180000],
+        TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006, 15, 15, 180000],
+        TOXTRICITY_GIGANTAMAX: [8006, 15, 15, 180000],
+        RILLABOOM_GIGANTAMAX: [8005245, 15, 15, 120000],
+        INTELEON_GIGANTAMAX: [8005245, 15, 15, 120000],
+        CINDERACE_GIGANTAMAX: [8006068, 15, 15, 80000],
+    };
+
+    // DMAX Tier 5
+    if (raidMode === "raid-t5-dmax") {
+        if (defenderId && t5dmaxStats[defenderId]) {
+            return t5dmaxStats[defenderId];
         }
-        return convertedStats;
+        // Default for t5-dmax
+        return [8005, 15, 15, defenderId ? 20000 : 22500];
     }
+
+    // GMAX Tier 6
+    if (raidMode === "raid-t6-gmax") {
+        if (defenderId && t6gmaxStats[defenderId]) {
+            return t6gmaxStats[defenderId];
+        }
+        // Default for t6-gmax
+        return [8006, 15, 15, 115000];
+    }
+
+    // Otros modos con valores fijos
+    if (baseStats[raidMode]) {
+        return baseStats[raidMode];
+    }
+
+    // Por defecto, devuelve los stats originales
+    return defenderStats;
+}
 
     static getRaidHealth (raidMode: any) {
         if (raidMode === "raid-t1" || raidMode === "raid-t1-shadow") {

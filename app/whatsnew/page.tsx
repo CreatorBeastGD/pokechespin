@@ -6,6 +6,13 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "1.20.2.1",
+        desc: "~ Changed stats on Tier 6 Max Battles. \n"+
+            ">>>>>> Gigantamax Cinderace\n >>>>>> ~ HP: 120000 → 80000 \n"+
+            ">>>>>> ~ CPM: 0.9 → 0.72\n",
+        date: "2025-06-05",
+    },
+    {
         title: "1.20.2",
         desc: "+ Added some new UI elements to PokéChespin." + 
         "\n>>> Now, every page shows a new navigation bar below the title, which will allow you to navigate to the main page, raids, max battles and this page." + 
