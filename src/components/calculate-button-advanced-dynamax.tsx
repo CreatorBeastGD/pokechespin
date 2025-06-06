@@ -337,7 +337,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                           {(item.relobby === true || item.relobby === false) ? 
                             (<p className="text-sm text-slate-700">
                               {(item.relobby ? "All party fainted. Relobby is needed." : 
-                            (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : 
+                            (item.attacker == "attacker" ? "Attacker has fainted." : "Max Battle boss has fainted."))}</p>) : 
                             (item.lost ? "Your team has lost." : "")}
                           {item.dodge ? 
                             (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
@@ -347,8 +347,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                                item.energyGain ? ("Energy gained: " + item.energyGain) : 
                                item.shield ? "Shield used by member " + (item.member+1) :
                                item.heal ? "Heal used by member " + (item.member+1) : 
-                               item.particle ? "Max Orb spawned on member " + (item.member+1) :
-                               item.maxOrb ? "Max Orb used by member " + (item.member+1) + " (+10 ENERGY)":
+                               item.particle ? "Max Orb has been generated on member " + (item.member+1) :
+                               item.maxOrb ? "Max Orb has been claimed by member " + (item.member+1) + " (+10 ENERGY)":
                                item.cheer ? "Cheer used by member " + (item.member+1) + " (+25 ENERGY)":"" 
                             )}
                           <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
