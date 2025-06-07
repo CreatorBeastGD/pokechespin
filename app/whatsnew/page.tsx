@@ -4,7 +4,13 @@ import React from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import Navbar from "@/components/navbar";
 
-const novedades = [{
+const novedades = [
+    {
+        title: "v1.21.0.1",
+        desc: "+ Added Gigantamax Cinderace to Max Rankings \n",
+        date: "2025-06-07",
+    },
+    {
         title:"v1.21",
         desc: "+ Added new functionality to the Max Battle Simulator! \n"+
             ">>> Now, there will be Max Orbs spawning! \n"+
