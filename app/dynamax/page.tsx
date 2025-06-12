@@ -55,6 +55,10 @@ export default function Home() {
   const [types, setTypes] = useState<any>(null);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
 
+  const [previewShroom, setPreviewShroom] = useState<boolean>(false);
+  const [previewFriendship, setPreviewFriendship] = useState<number>(0);
+  const [previewHelper, setPreviewHelper] = useState<number>(0);
+
   const [cleared, setCleared] = useState<boolean>(true);
 
 
@@ -655,9 +659,34 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
               </select>
 
-            <p className="italic text-slate-700 text-sm mt-2">
-              Friendship Bonus and Helper Bonus are only taken into account on Max Battle Simulation.
+              <p className="italic text-slate-700 text-sm mt-2">
+              Preview Bonuses (only used on calculations)
             </p>
+
+              <div className="flex flex-row items-center space-x-4 mt-2 mb-4 w-full">
+                <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                value={previewShroom.toString()}
+                onChange={(e) => setPreviewShroom(e.target.value === "true")}
+              >
+                <option value="false">No shrooms</option>
+                <option value="true">Shroom (x2)</option>
+              </select>
+
+              <div className="flex flex-col w-[25%]">
+                <label>Friendship level ({previewFriendship})</label>
+                <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+              </div>
+
+              <div className="flex flex-col w-[25%]">
+                <label>Helper bonus ({previewHelper})</label>
+                <Slider onValueChange={(value) => setPreviewHelper(value[0])} value={[previewHelper]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+              </div>
+
+              </div>
+
+              
+
+            
             
               {((raidMode === "raid-t5-dmax" || raidMode === "raid-t6-gmax") && defendingPokemon) && (
                 <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId, PoGoAPI.hasDoubleWeaknesses(defendingPokemon.type, defendingPokemon.type2, types))}HP</p>
@@ -698,9 +727,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 move={selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                bonusAttacker={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
               />
             </CardContent>
             <CardContent>
@@ -712,9 +742,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 move={selectedChargedMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                bonusAttacker={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
               />
             </CardContent>
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
@@ -727,10 +758,11 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 move={selectedMaxMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                bonusAttacker={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
               />
             </CardContent>
             )}
@@ -792,18 +824,20 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               <p className="text-sm text-slate-700 italic font-bold">
                 Dynamax Simulator is in beta, results may not be accurate and more updates are planned for the future. Please report any bugs to CreatorBeastGD via Reddit or GitHub.
               </p>
+              <p className="text-sm text-slate-700 italic font-bold mt-2"> 
+                Stats for future Legendary and Gigantamax Battles are not definitive and they use a default value. Their real stats will be added once their Max Battles are available in the game.
+              </p>
             </CardContent>
         </Card>
         
       </div>
       
       <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>
-      <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
-      <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
+      <p className="mb-4 bottomtext px-4">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
       
       <CookieBanner />
     </div>

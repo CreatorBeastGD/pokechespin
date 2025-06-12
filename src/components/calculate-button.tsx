@@ -14,7 +14,8 @@ export default function CalculateButton({
   bonusAttacker,
   bonusDefender,
   raidMode,
-  allEnglishText
+  allEnglishText,
+  additionalBonus = 1
 }: {
   attacker: any;
   defender: any;
@@ -25,6 +26,7 @@ export default function CalculateButton({
   bonusDefender: any;
   raidMode: string;
   allEnglishText: any;
+  additionalBonus?: any;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -38,7 +40,7 @@ export default function CalculateButton({
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
     const types = await PoGoAPI.getTypes();
-    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode);
+    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, additionalBonus);
     const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types));
     const remainingStamina = effStamina - damage;
     setDamage(damage);

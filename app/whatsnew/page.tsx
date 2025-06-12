@@ -6,6 +6,13 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "v1.22",
+        desc: "+ Added 'Preview Bonuses' to Max Battle Calculations. \n"+
+        "~ Minor text adjustements.\n"+
+        "- Fixed a bug on Max Battle Simulator where an attacker could receive double the energy on its first Fast Move.",
+        date: "2025-06-12",
+    },
+    {
         title: "v1.21.0.2",
         desc: "+ Added Gigantamax Inteleon to Max Rankings \n ~ Changed stats on Tier 6 Max Battles. \n"+
             ">>>>>> Gigantamax Inteleon\n >>>>>> ~ HP: 120000 → 135000 \n"+

@@ -458,13 +458,12 @@ export default function Home() {
       </div>
       
       <p className="bottomtext">Version {PoGoAPI.getVersion()}</p>
-      <p className="linktext">Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a></p>
       <Avatar className="mb-4">
         <AvatarImage src="https://github.com/CreatorBeastGD.png" alt="CreatorBeastGD" />
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-      <h1 className="textslate">Pokémon GO Damage Calculator</h1>
+      <h1 className="textslate">PokéChespin</h1>
       
       <CookieBanner />
     </div>

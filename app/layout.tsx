@@ -34,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        
         <Suspense fallback={
           
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
@@ -43,14 +44,17 @@ export default function RootLayout({
         }>
           {children}
         </Suspense>
-        <div className="flex flex-col items-center justify-center space-x-3 mt-4 mb-4">
-          <p className="textslate text-xs text-center w-1/2 text-left">
+        <div className="flex flex-col items-center justify-center space-y-3 mt-4 mb-4">
+          <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
           </p>
-          <p className="textslate text-lg text-center w-1/2 text-left mt-2">
+          <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             If you enjoy this page, consider supporting me by buying me a cooffee, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
           </p>
-          <p className="textslate text-xs text-center w-1/2 text-right mb-2 mt-2">
+          <p className="textslate text-xs w-1/2 justify-center text-center px-4">
+            Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a>
+          </p>
+          <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             2025 CreatorBeastGD.
           </p>
           <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white bg-black text-xs w-1/2 border-2 border-white border-opacity-10">
@@ -58,6 +62,7 @@ export default function RootLayout({
               <p>Buy me a Chespin!</p>
             </a>
           </div>
+          
         </div>
         <Analytics />
       </body>
