@@ -500,7 +500,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
       <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
-        <a href="/pokemon-go-damag-calculator">
+        <a href="/pokemon-go-damage-calculator">
         <h1 className="title">
           PokéChespin for Max Battles
         </h1>
