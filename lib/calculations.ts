@@ -82,7 +82,7 @@ export class Calculator {
       "MACHAMP_GIGANTAMAX",
       "RILLABOOM_GIGANTAMAX",
       "CINDERACE_GIGANTAMAX",
-      //"INTELEON_GIGANTAMAX",
+      "INTELEON_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
     ];
@@ -202,6 +202,7 @@ export class Calculator {
         8006: 0.765,
         8006003: 0.85,
         8006068: 0.72,
+        8006818: 0.81,
         5001: 0.5974,
         5003: 0.73,
         5005: 0.7899,
@@ -331,7 +332,7 @@ export class Calculator {
         SNORLAX_GIGANTAMAX: 115000,
         MACHAMP_GIGANTAMAX: 115000,
         RILLABOOM_GIGANTAMAX: 120000,
-        INTELEON_GIGANTAMAX: 120000,
+        INTELEON_GIGANTAMAX: 135000,
         CINDERACE_GIGANTAMAX: 80000,
     };
 

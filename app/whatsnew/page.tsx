@@ -6,6 +6,13 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "v1.21.0.2",
+        desc: "+ Added Gigantamax Inteleon to Max Rankings \n ~ Changed stats on Tier 6 Max Battles. \n"+
+            ">>>>>> Gigantamax Inteleon\n >>>>>> ~ HP: 120000 → 135000 \n"+
+            ">>>>>> ~ CPM: 0.9 → 0.81\n",
+        date: "2025-06-12",
+    },
+    {
         title: "v1.21.0.1",
         desc: "+ Added Gigantamax Cinderace to Max Rankings \n",
         date: "2025-06-07",
