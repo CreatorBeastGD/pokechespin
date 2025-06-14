@@ -463,7 +463,7 @@ export default function Home() {
         <AvatarFallback>CB</AvatarFallback>
       </Avatar>
       <p className="mb-4 bottomtext">Any issues? open a new issue or create a pull request on the <a className="link" href="https://github.com/CreatorBeastGD/pokemongo_damage_calculator/issues">repository</a> to help this project!</p>
-      <h1 className="textslate">PokéChespin</h1>
+      <h1 className="textslate">Pokémon GO Damage Calculator | PokéChespin</h1>
       
       <CookieBanner />
     </div>

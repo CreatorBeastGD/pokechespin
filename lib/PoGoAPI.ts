@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.22";
+        return "1.22.0.1";
     }
 
     static async getAllPokemon() {
@@ -524,7 +524,7 @@ export class PoGoAPI {
             TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006, 15, 15, 180000],
             TOXTRICITY_GIGANTAMAX: [8006, 15, 15, 180000],
             RILLABOOM_GIGANTAMAX: [8005245, 15, 15, 120000],
-            INTELEON_GIGANTAMAX: [8006818, 15, 15, 135000],
+            INTELEON_GIGANTAMAX: [8006818, 15, 15, 100000],
             CINDERACE_GIGANTAMAX: [8006068, 15, 15, 80000],
         };
 
@@ -585,7 +585,7 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t5-dmax") {
             return [9000, 9000]
         } else if (raidMode === "raid-t6-gmax") {
-            return [5000, 7000]
+            return [3000, 5000]
         } else {
             return [1000,1000]
         }
@@ -1031,8 +1031,6 @@ export class PoGoAPI {
 
     static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean, defender?: any) {
         if (desperate) {
-            return 999;
-        } if (enraged) {
             return 4;
         } if (raidMode === "raid-t5-dmax") {
           return 2;
@@ -1654,9 +1652,9 @@ export class PoGoAPI {
                     for (let j = 0 ; j < 3 ; j++) {
                         tankScore[i][j] = (
                             ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                           )  / 2
                     }
                 }
@@ -1802,14 +1800,13 @@ export class PoGoAPI {
 
             time++;
 
-            if (time === 300000) {
+            if ((raidMode.endsWith("gmax") && time === 150000) || (raidMode.endsWith("dmax") && time === 270000)) {
                 enraged = true;
                 battleLog.push({"turn": time, "enraged": true});
-            } if (time === 360000) {
+            } if ((raidMode.endsWith("gmax") && time === 180000) || (raidMode.endsWith("dmax") && time === 300000)) {
                 desperate = true;
                 battleLog.push({"turn": time, "desperate": true});
-            }
-            if (!simGoing) {
+            } if (!simGoing) {
                 break;
             }
 

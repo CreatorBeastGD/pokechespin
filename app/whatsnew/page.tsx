@@ -6,6 +6,20 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "v1.22.0.1",
+        desc: "~ Changed stats on Tier 6 Max Battles. \n"+
+            ">>>>>> Gigantamax Inteleon\n >>>>>> ~ HP: 135000 → 100000 \n"+
+            "~ Changed attack frequency on Tier 6 Max Battles. \n"+
+            ">>>>>> Spread Frequency: 5s → 3s \n"+
+            ">>>>>> Targeted Frequency: 7s → 5s \n"+
+            "~ Changed enrage timer on Max Battles. \n"+
+            ">>>>>> Enrage Timer (Dynamax): 360s → 300s \n"+
+            ">>>>>> Enrage Timer (Gigantamax): 360s → 180s \n",
+
+
+        date: "2025-06-14",        
+    },
+    {
         title: "v1.22",
         desc: "+ Added 'Preview Bonuses' to Max Battle Calculations. \n"+
         "~ Minor text adjustements.\n"+

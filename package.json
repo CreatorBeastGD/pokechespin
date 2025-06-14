@@ -1,6 +1,6 @@
 {
   "name": "pokechespin",
-  "version": "1.21.0.2",
+  "version": "1.22.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",

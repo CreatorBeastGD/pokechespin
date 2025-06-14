@@ -796,7 +796,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             </CardContent>
             {allPokemonSelected() ? (
               <CardContent>
-                <CardDescription>Max Battle Simulation (Beta) (NEW CHANGES)</CardDescription>
+                <CardDescription>Max Battle Simulation</CardDescription>
                 <CalculateButtonSimulateAdvancedDynamax 
                   allEnglishText={allEnglishText}
                   attacker={attackingPokemon} 
@@ -822,7 +822,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             }
             <CardContent>
               <p className="text-sm text-slate-700 italic font-bold">
-                Dynamax Simulator is in beta, results may not be accurate and more updates are planned for the future. Please report any bugs to CreatorBeastGD via Reddit or GitHub.
+                Using the simulator, be aware that there may be a huge difference in the playstyle between the simulation and a real life battle! This can give you an idea of how a max battle will go, but it can be improved by the player in real life!
               </p>
               <p className="text-sm text-slate-700 italic font-bold mt-2"> 
                 Stats for future Legendary and Gigantamax Battles are not definitive and they use a default value. Their real stats will be added once their Max Battles are available in the game.
