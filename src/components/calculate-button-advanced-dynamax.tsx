@@ -342,8 +342,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                           {item.dodge ? 
                             (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
                             (item.purifiedgem ? "Purified Gem used." : 
-                              item.desperate ? "The defender Pokémon is getting desperate!" :
-                               item.enraged ? "Defender Pokémon' attacks are getting stronger!." : 
+                              item.desperate ? "Defender Pokémon' attacks are getting stronger!" :
+                               item.enraged ? "The defender Pokémon is getting desperate!" : 
                                item.energyGain ? ("Energy gained: " + item.energyGain) : 
                                item.shield ? "Shield used by member " + (item.member+1) :
                                item.heal ? "Heal used by member " + (item.member+1) : 
