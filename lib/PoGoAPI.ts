@@ -1143,6 +1143,92 @@ export class PoGoAPI {
         return bestMove;
     }
 
+    static getAttackerTierList(
+        pokemonList: any,
+        allMoves: any,
+        types: any,
+    ) {
+        const availableDmaxPoke = Calculator.DynamaxPokemon;
+        const bossList = Calculator.GetBossesFromBossList();
+        let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
+        availableDmaxPoke.forEach((attacker: string) => {
+            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
+            let average = 0;
+            let counter = 0;
+            let versusBossList: { boss: any; pokemon: any; tier: number}[] = [];
+            bossList.forEach((boss: any) => {
+                const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
+                const raidMode = Calculator.FixedBosses[boss];
+                const quickMove: any = this.getBestQuickMove(pokemonData, bossData, types, raidMode, allMoves);
+                const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
+                const damageDone = this.getDamage(pokemonData, bossData, maxMove, types, [40,15,15,15], this.convertStats([40,15,15,15], raidMode, bossData.pokemonId), ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
+                counter++;
+                versusBossList.push({
+                    boss: bossData,
+                    pokemon: pokemonData,
+                    tier: damageDone,
+                });
+                average = (damageDone + (average * (counter - 1))) / counter;
+            });
+            tierList.push({
+                pokemon: pokemonData,
+                tier: average,
+                versus: versusBossList,
+            });
+            console.log("Pokemon: " + pokemonData.pokemonId + " Tier: " + average);
+        });
+        return tierList.sort((a, b) => b.tier - a.tier);
+    }
+
+    static getTierForPokemon(
+        pokemonId: string,
+        pokemonList: any,
+        allMoves: any,
+        types: any,
+        texts?: any,
+    ) {
+        const bossList = Calculator.GetBossesFromBossList();
+        let average = 0;
+        let counter = 0;
+        let versusBossList: { boss: any; pokemon: any; tier: number; maxmove: any}[] = [];
+        const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
+        bossList.forEach((boss: any) => {
+            const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
+            console.log(pokemonId);
+            const raidMode = Calculator.FixedBosses[boss];
+            const quickMove: any = this.getBestQuickMove(pokemonData, bossData, types, raidMode, allMoves);
+            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
+            const damageDone = this.getDamage(pokemonData, bossData, maxMove, types, [40,15,15,15], this.convertStats([40,15,15,15], raidMode, bossData.pokemonId), ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
+            counter++;
+            versusBossList.push({
+                boss: PoGoAPI.getPokemonNamePB(boss, texts),
+                pokemon: pokemonData,
+                tier: damageDone,
+                maxmove: PoGoAPI.getMoveNamePB(maxMove.moveId, texts),
+            });
+            average = (damageDone + (average * (counter - 1))) / counter;
+        });
+        return versusBossList;
+    }
+
+    /*
+{
+        const attackerStat = [40,15,15,15]
+        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any;}[] = [];
+        availableDmaxPoke.forEach((attacker: string) => {
+            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
+            const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
+            //console.log(weather)
+            const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
+            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
+        });
+        return attackersStat.sort((a, b) => b.damage - a.damage);
+    }
+    */
+
     static getFastestQuickMove(pokemon: any, boss: any, types: any, raidMode?: string, allMoves?: any) {
         let bestMove = null;
         let bestDuration = 99999999;

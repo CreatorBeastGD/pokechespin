@@ -29,6 +29,7 @@
     "pogocalc": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^2.15.3",
     "router": "^2.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
