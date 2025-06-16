@@ -6,6 +6,12 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "v1.22.0.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Hatenna, Hattrem and Hatterene",
+        date: "2025-06-16",
+    },
+    {
         title: "v1.22.0.1",
         desc: "~ Changed stats on Tier 6 Max Battles. \n"+
             ">>>>>> Gigantamax Inteleon\n >>>>>> ~ HP: 135000 → 100000 \n"+
