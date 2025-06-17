@@ -1121,7 +1121,7 @@ export class PoGoAPI {
             case 3:
                 return 1.188;
             case 4:
-                return 1.25;
+                return 1.2;
             default:
                 return 1;
         }
