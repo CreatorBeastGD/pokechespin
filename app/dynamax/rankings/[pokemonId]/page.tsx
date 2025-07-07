@@ -325,11 +325,11 @@ export default function rankingsPage() {
 
     const GetTargetAverageTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return ((defender.targetAvg) / 2).toFixed(2);
+            return ((defender.targetAvg)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina) / 2).toFixed(2);
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)) / 2).toFixed(2);
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina))).toFixed(2);
         }
     }
 
