@@ -70,7 +70,7 @@ export class Calculator {
       "HATENNA",
       "HATTREM",
       "HATTERENE",
-      //"SHUCKLE",
+      "SHUCKLE",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",

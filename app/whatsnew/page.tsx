@@ -6,6 +6,23 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "Dev notice",
+        desc: "Hey all! It has been a while since the last update, and I am aware of that. \n"+
+            "There are some different projects I am working on right now for my carreer, such as a couple videogames, and they are taking a lot of my time. \n"+
+            "There are some things that I have planned to do to PokeChéspin, things like Zacian and Zamazenta adventure effects, new sections regarding Max Battles and some other things I have in mind. \n"+
+            "From now on, I'll be updating the Max Ranking with new Pokémon for now. \n"+
+            "This has been a pretty rough month and it hasn't ended yet... Quite possibly 2 more months of work before I can get back to PokeChéspin seriously. \n"+
+            "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
+            "Thank you for your patience and support, enjoy PokéChespin! \n",
+        date: "2025-07-07",
+    },
+    {
+        title: "v1.22.0.3",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Shuckle",
+        date: "2025-07-07",
+    },
+    {
         title: "v1.22.0.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
             ">>>>>> Hatenna, Hattrem and Hatterene",
