@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.22.0.3";
+        return "1.22.0.4";
     }
 
     static async getAllPokemon() {
@@ -97,6 +97,9 @@ export class PoGoAPI {
     }
 
     static getMoveNamePB(moveId: string, textList: any) {
+        if (moveId === "DYNAMAX_CANNON") {
+            return "Dynamax Cannon";
+        }
         return this.formatMoveText(textList.moves[moveId], textList);
     }
 
@@ -105,19 +108,23 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
-    if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
-        pokemonId = "HO_OH";
+        if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
+            pokemonId = "HO_OH";
+        }
+        let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
+        if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
+            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
+            pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
+            pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ETERNATUS") {
+            pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
+            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+            pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+        }
+        return pokemon;
     }
-    let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
-    if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
-        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
-        pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
-    } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
-        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
-        pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
-    }
-    return pokemon;
-}
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
         return (pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num);
@@ -138,7 +145,19 @@ export class PoGoAPI {
     static getMovePBByID(moveId: string, moveList: any[]) {
         const move = moveList.find((move: any) => move.moveId === moveId);
         if (!move) {
-          throw new Error(`Move with ID ${moveId} not found`);
+            if (moveId === "DYNAMAX_CANNON") {
+                return {
+                    moveId: "DYNAMAX_CANNON",
+                    power: 215,
+                    durationMs: 1500,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_DRAGON",
+                    damageWindowStartMs: 1498,
+                    damageWindowEndMs: 1500,
+                    animationId: "DYNAMAX_CANNON",
+                };
+            }
+            throw new Error(`Move with ID ${moveId} not found`);
         }
         if (moveId === "BEHEMOTH_BLADE") {
             move.power = 200;
