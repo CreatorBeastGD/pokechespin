@@ -17,6 +17,14 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.22.1",
+        desc: "+ Changed behaviour of Zamazenta Crowned Shield on Max Battle Simulator.\n"+
+            ">>>>>> Zamazenta will start with one shield applied if it has Max Guard unlocked.\n"+
+            ">>>>>> Zamazenta will be able to have a max of (80 * level) barrier HP.\n"+
+            "+ Added extra information on how much shield HP has a Pokémon when they receive damage.",
+        date: "2025-07-12",
+    },
+    {
         title: "v1.22.0.4 (Eternatus)",
         desc: "~ Changed Eternatus moves:\n"+
             ">>>>>> Charged moves: - Cross Poison, + Sludge Bomb, + Hyper Beam, + Dynamax Cannon\n"+

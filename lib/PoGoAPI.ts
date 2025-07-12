@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.22.0.4";
+        return "1.22.1";
     }
 
     static async getAllPokemon() {
@@ -1391,6 +1391,10 @@ export class PoGoAPI {
             for (let j = 0 ; j < 3 ; j++) {
                 shieldHP[i][j] = 0;
                 shieldHPMAX[i][j] = attackerMaxMoves[i][j][1] * 60;
+                if (attackers[i][j].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+                    shieldHP[i][j] = attackerMaxMoves[i][j][1] * 20;
+                    shieldHPMAX[i][j] = attackerMaxMoves[i][j][1] * 80;
+                }
             }
         }
 
@@ -1403,6 +1407,7 @@ export class PoGoAPI {
             for (let j = 0 ; j < 3 ; j++) {
                 // Damage that can be done in one max attack
                 dmgScore[i][j] = this.getDamage(attackers[i][j], defender, this.getDynamaxAttack(attackers[i][j].pokemonId, attackersQuickMove[i][j].type, allMoves , attackerMaxMoves[i][j][0], attackersQuickMove[i][j]), types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0], raidMode);
+                
                 // Percentage of health remaining after one targeted and one large attack
                 tankScore[i][j] = ((
                     ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
@@ -1674,7 +1679,7 @@ export class PoGoAPI {
                             - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                          )  / 2
+                          ) / 2
                     }
                 }
 
@@ -1731,7 +1736,7 @@ export class PoGoAPI {
                         }
                         defenderDamage[target][activePokemon[target]] += finalDamageReduced;
                         attackerEnergy[target][activePokemon[target]] += Math.floor(finalDamage / 2);
-                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]]});
+                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]], "remainingShields": shieldHP[target][activePokemon[target]]});
                     }
                 } else {
                     for (let i = 0 ; i < attackers.length ; i++) {
@@ -1760,7 +1765,7 @@ export class PoGoAPI {
                             }
                             defenderDamage[i][activePokemon[i]] += finalDamageReduced;
                             attackerEnergy[i][activePokemon[i]] += Math.floor(finalDamage / 2);
-                            battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]]});
+                            battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]], "remainingShields": shieldHP[i][activePokemon[i]]});
                         }
                     }
                 }

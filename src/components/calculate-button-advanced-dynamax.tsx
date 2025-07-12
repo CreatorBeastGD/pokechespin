@@ -319,7 +319,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
                           <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.attackerID.pokemonId) : defender.pokemonId), allEnglishText)}</span>{item.attacker === "attacker" && (" (member " + (item.member+1) + ")")}</p>
-                          <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />Opponent's HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}
+                          <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />
+                          <p>Opponent's HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}</p>
+                          {item.attacker === "defender" && <p>Remaining Shield: {item.remainingShields ?? 0} HP</p>}
                         </div>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90" variant="default"><p className={"text-sm " + (item.move.endsWith("_FAST") ? "text-slate-400" : "text-red-300")}>Move: {PoGoAPI.getMoveNamePB(item.move, allEnglishText)}</p></Badge>
