@@ -17,6 +17,12 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.22.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Wailmer, Wailord",
+        date: "2025-07-15",
+    },
+    {
         title: "v1.22.1",
         desc: "+ Changed behaviour of Zamazenta Crowned Shield on Max Battle Simulator.\n"+
             ">>>>>> Zamazenta will start with one shield applied if it has Max Guard unlocked.\n"+

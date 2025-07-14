@@ -71,6 +71,8 @@ export class Calculator {
       "HATTREM",
       "HATTERENE",
       "SHUCKLE",
+      "WAILMER",
+      "WAILORD",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
