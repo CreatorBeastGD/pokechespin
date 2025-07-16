@@ -17,6 +17,15 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.23 (Some Styling!)",
+        desc: "+ Added styling to types. Now they are shown with a background color and rounded corners.\n"+
+              "+ Added bars to charged moves representing their energy cost.\n"+
+              "+ Attacks of the boss on Max Rankings now have a box like the one showing the move selector.\n"+
+              "+ Added a small dot indicator on Max Rankings indicating the type of the max move (attackers) or fast move (defenders).\n"+
+              "Do you like this new style? Let me know on Discord or Reddit!",
+        date: "2025-07-16",
+    },
+    {
         title: "v1.22.1.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Wailmer, Wailord",
