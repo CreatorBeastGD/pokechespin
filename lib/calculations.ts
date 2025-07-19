@@ -205,12 +205,14 @@ export class Calculator {
         8006003: 0.85,
         8006068: 0.72,
         8006818: 0.81,
+        8006131: 0.34, // What
         5001: 0.5974,
         5003: 0.73,
         5005: 0.7899,
         6001: 0.5974,
         6003: 0.76,
         6005: 0.82,
+        
     };
 
       private static RAID_BOSS_HP: { [raidMode: string]: number } = {
@@ -329,7 +331,7 @@ export class Calculator {
         TOXTRICITY_GIGANTAMAX: 180000,
         TOXTRICITY_LOW_KEY_GIGANTAMAX: 180000,
         TOXTRICITY_AMPED_GIGANTAMAX: 180000,
-        LAPRAS_GIGANTAMAX: 90000,
+        LAPRAS_GIGANTAMAX: 135000,
         KINGLER_GIGANTAMAX: 115000,
         SNORLAX_GIGANTAMAX: 115000,
         MACHAMP_GIGANTAMAX: 115000,
