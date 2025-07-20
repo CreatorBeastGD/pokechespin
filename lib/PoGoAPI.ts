@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.22.0.2";
+        return "1.23.0.1";
     }
 
     static async getAllPokemon() {
@@ -97,6 +97,9 @@ export class PoGoAPI {
     }
 
     static getMoveNamePB(moveId: string, textList: any) {
+        if (moveId === "DYNAMAX_CANNON") {
+            return "Dynamax Cannon";
+        }
         return this.formatMoveText(textList.moves[moveId], textList);
     }
 
@@ -105,19 +108,23 @@ export class PoGoAPI {
     }
 
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
-    if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
-        pokemonId = "HO_OH";
+        if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
+            pokemonId = "HO_OH";
+        }
+        let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
+        if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
+            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
+            pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
+            pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ETERNATUS") {
+            pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
+            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+            pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+        }
+        return pokemon;
     }
-    let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
-    if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
-        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
-        pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
-    } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
-        pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
-        pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
-    }
-    return pokemon;
-}
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
         return (pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num);
@@ -138,7 +145,19 @@ export class PoGoAPI {
     static getMovePBByID(moveId: string, moveList: any[]) {
         const move = moveList.find((move: any) => move.moveId === moveId);
         if (!move) {
-          throw new Error(`Move with ID ${moveId} not found`);
+            if (moveId === "DYNAMAX_CANNON") {
+                return {
+                    moveId: "DYNAMAX_CANNON",
+                    power: 215,
+                    durationMs: 1500,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_DRAGON",
+                    damageWindowStartMs: 1498,
+                    damageWindowEndMs: 1500,
+                    animationId: "DYNAMAX_CANNON",
+                };
+            }
+            throw new Error(`Move with ID ${moveId} not found`);
         }
         if (moveId === "BEHEMOTH_BLADE") {
             move.power = 200;
@@ -516,7 +535,7 @@ export class PoGoAPI {
             CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 90000],
             BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 90000],
             GENGAR_GIGANTAMAX: [8006, 15, 15, 90000],
-            LAPRAS_GIGANTAMAX: [8006, 15, 15, 90000],
+            LAPRAS_GIGANTAMAX: [8006131, 15, 15, 135000],
             MACHAMP_GIGANTAMAX: [8006068, 15, 15, 115000],
             SNORLAX_GIGANTAMAX: [8006, 15, 15, 115000],
             KINGLER_GIGANTAMAX: [8006, 15, 15, 115000],
@@ -1121,7 +1140,7 @@ export class PoGoAPI {
             case 3:
                 return 1.188;
             case 4:
-                return 1.25;
+                return 1.2;
             default:
                 return 1;
         }
@@ -1458,6 +1477,10 @@ export class PoGoAPI {
             for (let j = 0 ; j < 3 ; j++) {
                 shieldHP[i][j] = 0;
                 shieldHPMAX[i][j] = attackerMaxMoves[i][j][1] * 60;
+                if (attackers[i][j].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+                    shieldHP[i][j] = attackerMaxMoves[i][j][1] * 20;
+                    shieldHPMAX[i][j] = attackerMaxMoves[i][j][1] * 80;
+                }
             }
         }
 
@@ -1470,6 +1493,7 @@ export class PoGoAPI {
             for (let j = 0 ; j < 3 ; j++) {
                 // Damage that can be done in one max attack
                 dmgScore[i][j] = this.getDamage(attackers[i][j], defender, this.getDynamaxAttack(attackers[i][j].pokemonId, attackersQuickMove[i][j].type, allMoves , attackerMaxMoves[i][j][0], attackersQuickMove[i][j]), types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0], raidMode);
+                
                 // Percentage of health remaining after one targeted and one large attack
                 tankScore[i][j] = ((
                     ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
@@ -1741,7 +1765,7 @@ export class PoGoAPI {
                             - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                          )  / 2
+                          ) / 2
                     }
                 }
 
@@ -1798,7 +1822,7 @@ export class PoGoAPI {
                         }
                         defenderDamage[target][activePokemon[target]] += finalDamageReduced;
                         attackerEnergy[target][activePokemon[target]] += Math.floor(finalDamage / 2);
-                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]]});
+                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]], "remainingShields": shieldHP[target][activePokemon[target]]});
                     }
                 } else {
                     for (let i = 0 ; i < attackers.length ; i++) {
@@ -1827,7 +1851,7 @@ export class PoGoAPI {
                             }
                             defenderDamage[i][activePokemon[i]] += finalDamageReduced;
                             attackerEnergy[i][activePokemon[i]] += Math.floor(finalDamage / 2);
-                            battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]]});
+                            battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]], "remainingShields": shieldHP[i][activePokemon[i]]});
                         }
                     }
                 }

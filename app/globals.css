@@ -93,6 +93,82 @@ body {
   }
 }
 
+.type-badge {
+  @apply inline-block rounded-full text-xs font-bold text-white;
+}
+
+.type-normal {
+  @apply bg-gray-300;
+}
+
+.type-fire {
+  @apply bg-red-500;
+}
+
+.type-water {
+  @apply bg-blue-500;
+}
+
+.type-grass {
+  @apply bg-green-500;
+}
+
+.type-electric {
+  @apply bg-yellow-500;
+}
+
+.type-ice {
+  @apply bg-cyan-400;
+}
+
+.type-fighting {
+  @apply bg-orange-800;
+}
+
+.type-poison {
+  @apply bg-purple-500;
+}
+
+.type-ground {
+  @apply bg-amber-800;
+}
+
+.type-flying {
+  @apply bg-blue-300;
+}
+
+.type-psychic {
+  @apply bg-pink-500;
+}
+
+.type-bug {
+  @apply bg-lime-500;
+}
+
+.type-rock {
+  @apply bg-yellow-600;
+}
+
+.type-ghost {
+  @apply bg-indigo-800;
+}
+
+.type-dragon {
+  @apply bg-indigo-500;
+}
+
+.type-dark {
+  @apply bg-gray-800;
+}
+
+.type-steel {
+  @apply bg-gray-400;
+}
+
+.type-fairy {
+  @apply bg-pink-300;
+}
+
 #bmc-wbtn {
   background-color: #40DCA5 !important;
   color: #ffffff !important;

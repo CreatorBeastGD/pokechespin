@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { PoGoAPI } from "../../../../lib/PoGoAPI";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,7 @@ import { Calculator } from "../../../../lib/calculations";
 import { Progress } from "@/components/ui/progress";
 import { parse } from "path";
 import Navbar from "@/components/navbar";
+import TypeBadge from "@/components/TypeBadge";
 
 
 
@@ -325,11 +326,11 @@ export default function rankingsPage() {
 
     const GetTargetAverageTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return ((defender.targetAvg) / 2).toFixed(2);
+            return ((defender.targetAvg)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina) / 2).toFixed(2);
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)) / 2).toFixed(2);
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina))).toFixed(2);
         }
     }
 
@@ -412,14 +413,62 @@ export default function rankingsPage() {
                                 <h3 className="text-xl font-bold text-black">No moves were selected.</h3>
                             </div>
                         ) :(
-                            <>
+                            <div className="flex flex-row space-x-4">
                                 <div>
-                                    <h3 className="text-xl font-bold text-black">Large Move: {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)}</h3>
+                                    <h3 className="text-xl font-bold text-black">Large Move:</h3>
+                                    <Card key={largeMove} className={`mb-4`}>
+                                        <CardHeader>
+                                            <CardTitle>{PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(largeMove) ? " *" : ""}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).type)} /></CardDescription>
+                                            <CardDescription>Power: {(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).power}</CardDescription>
+                                            <CardDescription>Duration: {PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves).durationMs / 1000}s</CardDescription>
+
+                                            <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).energyDelta) : 0}</CardDescription>
+                                            <div className="w-full flex flex-row justify-between mt-2 space-x-2">
+                                            {(-(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).energyDelta) <= 100 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            {(-(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).energyDelta) <= 50 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            {(-(PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).energyDelta) <= 33 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            </div>
+
+                                        </CardContent>
+                                    </Card>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-black">Targeted Move: {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)}</h3>
+                                    <h3 className="text-xl font-bold text-black">Targeted Move:</h3>
+                                    <Card key={targetedMove} className={`mb-4`}>
+                                        <CardHeader>
+                                            <CardTitle>{PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(targetedMove) ? " *" : ""}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).type)} /></CardDescription>
+                                            <CardDescription>Power: {(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).power}</CardDescription>
+                                            <CardDescription>Duration: {PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves).durationMs / 1000}s</CardDescription>
+
+                                            <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).energyDelta) : 0}</CardDescription>
+                                            <div className="w-full flex flex-row justify-between mt-2 space-x-2">
+                                            {(-(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).energyDelta) <= 100 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            {(-(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).energyDelta) <= 50 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            {(-(PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).energyDelta) <= 33 && (
+                                                <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).type)} show={false} />
+                                            )}
+                                            </div>
+
+                                        </CardContent>
+                                    </Card>
                                 </div>
-                            </>
+                            </div>
                         )}
                         <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Star Max Battle</h3>
                         <Separator className="mt-4"/>
@@ -463,7 +512,7 @@ export default function rankingsPage() {
                                     </div>
                                     {attackersToShow?.map((attacker: any, index: number) => (
                                         <Card key={index} className="w-full">
-                                            <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
+                                            <div className="flex flex-row items-center justify-between space-x-4 w-full p-4">
                                                 <Image
                                                     unoptimized
                                                     className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
@@ -474,11 +523,12 @@ export default function rankingsPage() {
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
                                                 
+                                                
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
-                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.getMoveNamePB(attacker.fastMove.moveId, allEnglishText)}</p>
+                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.getMoveNamePB(attacker.fastMove.moveId, allEnglishText)} </p>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -533,8 +583,9 @@ export default function rankingsPage() {
                                         </button>)}
                                     </div>
                                     {defendersToShow?.map((defender: any, index: number) => (
-                                        <Card key={index} className="w-full">
-                                            <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
+                                        
+                                        <Card className="w-full" key={index}>
+                                            <div  className="flex flex-row items-center justify-between space-x-4 w-full p-4">
                                                 <Image
                                                     unoptimized
                                                     className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200  bg-white"}
@@ -547,7 +598,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
                                                             <p className="text-sm italic text-black">w/ {PoGoAPI.getMoveNamePB(defender.fastMove.moveId, allEnglishText)} ({defender.fastMove.durationMs/1000}s)</p>
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -585,6 +636,7 @@ export default function rankingsPage() {
                                                 </div>
                                             </div>
                                         </Card>
+                                        
                                     ))}
                                     
                                 </div>

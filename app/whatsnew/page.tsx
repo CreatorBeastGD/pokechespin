@@ -6,6 +6,63 @@ import Navbar from "@/components/navbar";
 
 const novedades = [
     {
+        title: "Dev notice",
+        desc: "Hey all! It has been a while since the last update, and I am aware of that. \n"+
+            "There are some different projects I am working on right now for my carreer, such as a couple videogames, and they are taking a lot of my time. \n"+
+            "There are some things that I have planned to do to PokeChéspin, things like Zacian and Zamazenta adventure effects, new sections regarding Max Battles and some other things I have in mind. \n"+
+            "From now on, I'll be updating the Max Ranking with new Pokémon and doing some small tweaks for now. \n"+
+            "This has been a pretty rough month and it hasn't ended yet... Quite possibly 2 more months of work before I can get back to PokeChéspin seriously. \n"+
+            "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
+            "Thank you for your patience and support, enjoy PokéChespin! \n",
+        date: "2025-07-07",
+    },
+    {
+        title: "v1.23.0.1",
+        desc: "~ Changed stats on Tier 6 Max Battles. \n"+
+            ">>>>>> Gigantamax Lapras\n >>>>>> ~ HP: 90000 → 135000 \n >>>>>> ~ CPM: 0.765 → 0.34 (what is this)\n",
+        date: "2025-07-19",
+    },
+    {
+        title: "v1.23 (Some Styling!)",
+        desc: "+ Added styling to types. Now they are shown with a background color and rounded corners.\n"+
+              "+ Added bars to charged moves representing their energy cost.\n"+
+              "+ Attacks of the boss on Max Rankings now have a box like the one showing the move selector.\n"+
+              "+ Added a small dot indicator on Max Rankings indicating the type of the max move (attackers) or fast move (defenders).\n"+
+              "Do you like this new style? Let me know on Discord or Reddit!",
+        date: "2025-07-16",
+    },
+    {
+        title: "v1.22.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Wailmer, Wailord",
+        date: "2025-07-15",
+    },
+    {
+        title: "v1.22.1",
+        desc: "+ Changed behaviour of Zamazenta Crowned Shield on Max Battle Simulator.\n"+
+            ">>>>>> Zamazenta will start with one shield applied if it has Max Guard unlocked.\n"+
+            ">>>>>> Zamazenta will be able to have a max of (80 * level) barrier HP.\n"+
+            "+ Added extra information on how much shield HP has a Pokémon when they receive damage.",
+        date: "2025-07-12",
+    },
+    {
+        title: "v1.22.0.4 (Eternatus)",
+        desc: "~ Changed Eternatus moves:\n"+
+            ">>>>>> Charged moves: - Cross Poison, + Sludge Bomb, + Hyper Beam, + Dynamax Cannon\n"+
+            "+ Added Dynamax Cannon stats.\n"+
+            ">>>>>> * 215 power\n"+
+            ">>>>>> * Dragon Type\n"+
+            ">>>>>> * 100 energy cost\n"+
+            ">>>>>> * 1.5s duration\n",
+        date: "2025-07-09",
+    },
+    {
+        title: "v1.22.0.3",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Shuckle",
+        date: "2025-07-07",
+    },
+    {
         title: "v1.22.0.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
             ">>>>>> Hatenna, Hattrem and Hatterene",

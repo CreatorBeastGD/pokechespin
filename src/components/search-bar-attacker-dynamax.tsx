@@ -11,6 +11,7 @@ import { Slider } from "./ui/slider";
 import { Calculator } from "../../lib/calculations";
 import { useSearchParams, usePathname } from "next/navigation";
 import { clear } from "console";
+import TypeBadge from "./TypeBadge";
 
 
 interface SearchBarAttackerProps {
@@ -488,8 +489,8 @@ const importPokemon = async () => {
       {pokemonData ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
-          <p>Type(s): {PoGoAPI.formatTypeName(selectedPokemon.type) + (selectedPokemon.type2 ? " / " + PoGoAPI.formatTypeName(selectedPokemon.type2) : "")}</p>
-          
+          <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />}</p>
+
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
             {availableForms && (availableForms).map((form: any) => (
@@ -574,7 +575,7 @@ const importPokemon = async () => {
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ""}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
+                    <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
                     <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power ?? 0}</CardDescription>
                     <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta ?? 0}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
@@ -591,8 +592,8 @@ const importPokemon = async () => {
                 <CardHeader>
                   <CardTitle className="text-white">{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).moveId)}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-slate-300">Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).type)}</CardDescription>
+                  <CardContent>
+                  <CardDescription className="text-slate-300">Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).type)} /></CardDescription>
                   <CardDescription className="text-slate-300">Power: {(PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).power ?? 0}</CardDescription>
                   <CardDescription className="text-slate-300">Duration: {PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves).durationMs / 1000}s</CardDescription>
                 </CardContent>
@@ -614,10 +615,22 @@ const importPokemon = async () => {
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>Type: {PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)}</CardDescription>
+                    <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
                     <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
-                    <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta)}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
+                    
+                    <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) : 0}</CardDescription>
+                    <div className="w-full flex flex-row justify-between mt-2 space-x-2">
+                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 100 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
+                      )}
+                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 50 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
+                      )}
+                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 33 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
+                      )}
+                    </div>
                   </CardContent>
                 </Card>)
               ))}
