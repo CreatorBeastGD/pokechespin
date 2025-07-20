@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.23.0.1";
+        return "1.23.1";
     }
 
     static async getAllPokemon() {
@@ -103,8 +103,8 @@ export class PoGoAPI {
         return this.formatMoveText(textList.moves[moveId], textList);
     }
 
-    static getPokemonImageByID(pokemonId: string, pokemonList: any) {
-        return pokemonList[pokemonId].base;
+    static getPokemonImageByID(pokemonId: string, pokemonList: any, shiny: boolean = false) {
+        return (Math.random() < 1/4096) ? pokemonList[pokemonId].shiny : pokemonList[pokemonId].base;
     }
 
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
@@ -1194,7 +1194,7 @@ export class PoGoAPI {
         types: any,
         weather: string,
     ) {
-        const attackerStat = [40,15,15,15]
+        let attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
         const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
@@ -1241,7 +1241,7 @@ export class PoGoAPI {
         bossTargetAttack: any,
         weather: string,
     ) {
-        const attackerStat = [40,15,15,15]
+        let attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
