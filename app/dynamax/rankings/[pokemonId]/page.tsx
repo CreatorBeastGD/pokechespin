@@ -46,6 +46,8 @@ export default function rankingsPage() {
     const [showGeneralBestDefenders, setShowGeneralBestDefenders] = useState<boolean>(false);
 
     const [generalMode, setGeneralMode] = useState<boolean>(false);
+
+    const [zamaExtraShield, setZamaExtraShield] = useState<boolean>(false);
     
     const router = useRouter();
     const sp = useParams();
@@ -110,6 +112,11 @@ export default function rankingsPage() {
                 const prioritiseFastAtt = urlSP.get("prioritise_fast_attack") ? urlSP.get("prioritise_fast_attack") === "true" : false;
                 if (prioritiseFastAtt) {
                     setPrioritiseFast(prioritiseFastAtt);
+                }
+
+                const zamaExtraShieldAtt = urlSP.get("zamazenta_extra_shield") ? urlSP.get("zamazenta_extra_shield") === "true" : false;
+                if (zamaExtraShieldAtt) {
+                    setZamaExtraShield(zamaExtraShieldAtt);
                 }
 
                 const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_PERCENT";
@@ -215,8 +222,8 @@ export default function rankingsPage() {
     }
     
     
-    const getHPPercent = (tankScore: number, baseStamina: number) => {
-        return (tankScore / Calculator.getEffectiveStamina(baseStamina, 15, 40) * 100);
+    const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
+        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0)) * 100);
     }
 
     const getAverageTankScore = (hpdmg: number, hpper: number) => {
@@ -230,9 +237,9 @@ export default function rankingsPage() {
             if (rankingDisplay === "HP_DMG") {
                 return a.fastMove.durationMs * a.tankScore - b.fastMove.durationMs * b.tankScore;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (a.fastMove.durationMs * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - b.fastMove.durationMs * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (a.fastMove.durationMs * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - b.fastMove.durationMs * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return a.fastMove.durationMs * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - b.fastMove.durationMs * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return a.fastMove.durationMs * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - b.fastMove.durationMs * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             }
             if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
             if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
@@ -241,9 +248,9 @@ export default function rankingsPage() {
             if (rankingDisplay === "HP_DMG") {
                 return a.tankScore - b.tankScore;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             }
             return 0;
         }
@@ -253,7 +260,7 @@ export default function rankingsPage() {
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
 
-    const handleSwitch = (checked: boolean, handle: any) => {
+    const handleSwitch = (checked: boolean, handle: any, linkSection: string) => {
         handle(checked);
         defenderList?.sort((a: any, b: any) => {
             if (checked) {
@@ -265,7 +272,7 @@ export default function rankingsPage() {
             }
         });
         const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set("prioritise_fast_attack", checked.toString());
+        newSearchParams.set(linkSection, checked.toString());
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
@@ -278,9 +285,9 @@ export default function rankingsPage() {
             if (value === "HP_DMG") {
                 return a.tankScore - b.tankScore;
             } else if (value === "HP_PERCENT") {
-                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (value === "AVG") {
-                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             }
             return 0;
         });
@@ -295,9 +302,9 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return defender.large.toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.large, defender.pokemon.stats.baseStamina).toFixed(2);
+            return getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina)).toFixed(2);
+            return getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
         }
         return 0;
     }
@@ -306,9 +313,9 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return defender.targetBest.toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina).toFixed(2);
+            return getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina)).toFixed(2);
+            return getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
         }
         return 0;
     }
@@ -317,9 +324,9 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return defender.targetWorst.toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina).toFixed(2);
+            return getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina)).toFixed(2);
+            return getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
         }
         return 0;
     }
@@ -328,9 +335,9 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return ((defender.targetAvg)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina)).toFixed(2);
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina))).toFixed(2);
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))).toFixed(2);
         }
     }
 
@@ -338,9 +345,9 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return (defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
         return "0.00";
     }
@@ -478,19 +485,24 @@ export default function rankingsPage() {
                             <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
                             <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This number represents the Damage taken from one Large Attack.</p>
-                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario.</p>
+                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.3 reduction) and worst (x0.6 reduction) case scenario.</p>
                             <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
+                            
                         </CardDescription>
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
                         </button>
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast)} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
-                            <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
-                            <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-                                <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
-                                <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
-                                <option key={"AVG"} value={"AVG"}>Average</option>
-                            </select>
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
+                        <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                            <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
+                            <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
+                            <option key={"AVG"} value={"AVG"}>Average</option>
+                        </select>
+                        { zamaExtraShield && (<CardDescription>
+                            <p><span className="font-bold">IMPORTANT: </span>Zamazenta - Crowned Shield has a 60HP Shield included in its calculations (because of starting a Max Battle with an extra Shield), meaning it will have better scores than usual on HP% and average Tank Score</p>
+                        </CardDescription>)}
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
@@ -516,13 +528,12 @@ export default function rankingsPage() {
                                                 <Image
                                                     unoptimized
                                                     className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
-                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks )}
+                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks)}
                                                     alt={attacker?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                                                     width={80}
                                                     height={80}
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
-                                                
                                                 
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">

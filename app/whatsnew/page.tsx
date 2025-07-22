@@ -17,6 +17,12 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.23.1",
+        desc: "+ Added a new 'Include Zamazenta - Crowned Shield's Extra Shield' option in Max Rankings.\n"+
+            "+ ...If you are lucky, you might find a shiny!",
+        date: "2025-07-19",
+    },
+    {
         title: "v1.23.0.1",
         desc: "~ Changed stats on Tier 6 Max Battles. \n"+
             ">>>>>> Gigantamax Lapras\n >>>>>> ~ HP: 90000 → 135000 \n >>>>>> ~ CPM: 0.765 → 0.34 (what is this)\n",
