@@ -425,7 +425,7 @@ export default function rankingsPage() {
                             <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
                                 value={dmaxDifficulty}
                                 onChange={(e) => handleDmaxDifficulty(e.target.value)}
-                                >
+                            >
                                 <option value="raid-t1-dmax">Tier 1 Max Battles</option>
                                 <option value="raid-t2-dmax">Tier 2 Max Battles</option>
                                 <option value="raid-t3-dmax">Tier 3 Max Battles</option>
@@ -511,7 +511,7 @@ export default function rankingsPage() {
                     <Card className="md:w-2/3 w-full">
                             {showTierListAttackers.length > 0 ? (
                             <>
-                                <CardHeader className="text-xl font-bold">Attacker Tier List</CardHeader>
+                                <CardHeader className="text-xl font-bold">Attacker Rankings</CardHeader>
                                 <CardContent>
                                         <CardDescription className="space-y-3 mb-4">
                                             This list shows how well {PoGoAPI.getPokemonNamePB(showTierListAttackers[0].pokemon.pokemonId, allEnglishText)} performs against different bosses with different Max Moves. The tier is calculated based on the damage output and effectiveness of the move against the boss.
@@ -532,7 +532,7 @@ export default function rankingsPage() {
                             </>
                             ) : showTierListDefenders.length > 0 ? (
                             <>
-                                <CardHeader className="text-xl font-bold">Defender Tier List</CardHeader>
+                                <CardHeader className="text-xl font-bold">Defender Rankings</CardHeader>
                                 <CardContent>
                                         <CardDescription className="space-y-3 mb-4">
                                             This list shows how well {PoGoAPI.getPokemonNamePB(showTierListDefenders[0].pokemon.pokemonId, allEnglishText)} performs against different bosses as a Tank. This scores are the same as the "Tank Score" shown for each option on Max Rankings.
