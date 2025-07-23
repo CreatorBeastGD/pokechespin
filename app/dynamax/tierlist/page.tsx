@@ -37,7 +37,7 @@ export default function rankingsPage() {
     const [types, setTypes] = useState<any>(null);
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
     const [zamaExtraShield, setZamaExtraShield] = useState<boolean>(false);
-    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_DMG");
+    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -314,7 +314,7 @@ export default function rankingsPage() {
                 <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
                     <a href="/pokemon-go-damage-calculator">    
                         <h1 className="title">
-                        PokéChespin Max Tier List
+                        PokéChespin Max General Rankings
                         </h1>
                     </a>
                 <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
@@ -331,7 +331,7 @@ export default function rankingsPage() {
                         <CardHeader className="text-xl font-bold">Attacker Overall Ranking</CardHeader>
                         <Separator className=""/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
-                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
+                            <p>This calculations don't take into account Friendship Bonus, Helper Bonus, Weather Boost, Blade Boost or Mushrooms. The scores shown are the average of the damage done by any Max Move from the attacker to all bosses of a Tier. The higher the score, the better it is.</p>
                         </CardDescription>
                         <Separator className="mt-4 mb-2"/>
                         <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
@@ -419,10 +419,9 @@ export default function rankingsPage() {
                         <CardHeader className="text-xl font-bold">Tanks Overall Ranking</CardHeader>
                         <Separator className=""/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
-                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
+                            <p>This calculations don't take into account Friendship Bonus, Helper Bonus, Weather Boost, Blade Boost or Mushrooms. The scores shown are the average of all Tank Scores of one certain Pokémon against all bosses of a Tier. The lower the score, the better it is.</p>
                         </CardDescription>
                         <Separator className="mt-4 mb-2"/>
-                        <div className="flex flex-row space-x-4">
                             <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
                                 value={dmaxDifficulty}
                                 onChange={(e) => handleDmaxDifficulty(e.target.value)}
@@ -434,18 +433,17 @@ export default function rankingsPage() {
                                 <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                                 <option value="raid-t6-gmax">Gigantamax Battles</option>
                             </select>
-                            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
+                        
+                        
+                        <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
                                 value={rankingDisplay}
                                 onChange={(e) => handleRankingConfig(e.target.value)}
                             >
                                 <option value="HP_DMG">HP Damage on Average</option>
                                 <option value="HP_PERCENT">HP% on Average</option>
                             </select>
-                        </div>
-                        
-                        <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
-                        
                         <Separator className="mt-4"/>
                             <div className="flex flex-column items-center justify-center space-x-4 w-full">
                                 <div className="flex flex-col items-center justify-center space-y-4">
@@ -488,12 +486,12 @@ export default function rankingsPage() {
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
                                                         <p className="font-bold text-black">
-                                                            {((parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100).toFixed(2).split('.')[0]}
-                                                            <span className="text-xs align-top">.{((parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100).toFixed(2).split('.')[1]}</span>%
+                                                            {((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={(parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) === 1 ? "violet" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.75 ? "green" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.6 ? "yellow" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.5 ? "orange" : "red"} value={(parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100}/>
+                                                        <Progress color={(parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) === 1 ? "violet" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.75 ? "green" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.6 ? "yellow" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.5 ? "orange" : "red"} value={(parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100}/>
                                                     </div>
                                                     
                                                 <div className="flex flex-row items-center justify-between mx-4">
@@ -537,7 +535,7 @@ export default function rankingsPage() {
                                 <CardHeader className="text-xl font-bold">Defender Tier List</CardHeader>
                                 <CardContent>
                                         <CardDescription className="space-y-3 mb-4">
-                                            This list shows how well {PoGoAPI.getPokemonNamePB(showTierListDefenders[0].pokemon.pokemonId, allEnglishText)} performs against different bosses with different Max Moves. The tier is calculated based on the tank score and effectiveness of the move against the boss.
+                                            This list shows how well {PoGoAPI.getPokemonNamePB(showTierListDefenders[0].pokemon.pokemonId, allEnglishText)} performs against different bosses as a Tank. This scores are the same as the "Tank Score" shown for each option on Max Rankings.
                                         </CardDescription>
                                         {showTierListDefenders.map((entry: any, index: number) => (
                                             <div key={index} className="mb-4">
@@ -581,7 +579,7 @@ export default function rankingsPage() {
                 <div className="flex flex-row items-center justify-center space-x-4">
                 <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
                     <h1 className="title">
-                    PokéChespin Max Rankings
+                    PokéChespin Max General Rankings
                     </h1>
                 <img src="/favicon.ico" alt="Favicon" className="inline-block ml-2 favicon" />
                 </div>

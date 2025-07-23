@@ -11,30 +11,29 @@ const Navbar = () => {
         <NavigationMenuList className="bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg flex flex-row justify-between items-center mb-4">
             <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                 <NavigationMenuLink asChild>
-                    <Link href="/pokemon-go-damage-calculator" className="text-sm">Main Menu</Link>
+                    <Link href="/pokemon-go-damage-calculator" className="text-xs">Main Menu</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                 <NavigationMenuLink asChild>
-                    <Link href={`/`} className="text-sm">Raids</Link>
+                    <Link href={`/`} className="text-xs">Raids</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                 <NavigationMenuLink asChild>
-                    <Link href={`/dynamax`} className="text-sm">Max Battles</Link>
+                    <Link href={`/dynamax`} className="text-xs">Max Battles</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                 <NavigationMenuLink asChild>
-                    <Link href="/whatsnew" className="text-sm">Whats New</Link>
+                    <Link href="/dynamax/tierlist" className="text-xs">Max General Rankings</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                 <NavigationMenuLink asChild>
-                    <Link href="/dynamax/tierlist" className="text-sm">Max Tierlists</Link>
+                    <Link href="/whatsnew" className="text-xs">Whats New</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
-
         </NavigationMenuList>
     </NavigationMenu>
   );

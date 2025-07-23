@@ -47,7 +47,7 @@ export class Calculator {
       "RILLABOOM_GIGANTAMAX": "raid-t6-gmax",
       "CINDERACE_GIGANTAMAX": "raid-t6-gmax",
       "INTELEON_GIGANTAMAX": "raid-t6-gmax",
-      "BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
+      //"BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
@@ -144,6 +144,7 @@ export class Calculator {
       "RILLABOOM_GIGANTAMAX",
       "CINDERACE_GIGANTAMAX",
       "INTELEON_GIGANTAMAX",
+      //"BUTTERFREE_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
     ];

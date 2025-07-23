@@ -17,6 +17,13 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.24",
+        desc: "+ Added a new 'Max General Rankings' section to PokéChespin\n"+
+            ">>>>>> Used to check what Pokémon are the best average attackers and defenders in Max Battles!\n"+
+            "It's still in development, so it has some aspects that can be improved yet!",
+        date: "2025-07-23",
+    },
+    {
         title: "v1.23.1",
         desc: "+ Added a new 'Include Zamazenta - Crowned Shield's Extra Shield' option in Max Rankings.\n"+
             "+ ...If you are lucky, you might find a shiny!",
