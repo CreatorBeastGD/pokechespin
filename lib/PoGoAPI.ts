@@ -1054,7 +1054,7 @@ export class PoGoAPI {
         } if (raidMode === "raid-t5-dmax") {
           return 2;
         } if (raidMode === "raid-t6-gmax") {
-            if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX") {
+            if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
                 return 1.333;
             } else {
                 return 1;
@@ -1162,13 +1162,73 @@ export class PoGoAPI {
         return bestMove;
     }
 
+    static getDefenderTierList(
+        pokemonList: any,
+        allMoves: any,
+        types: any,
+        dmaxDifficulty: string = "raid-t6-gmax",
+    ) {
+        const availableDmaxPoke = Calculator.DynamaxPokemon;
+        const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
+        let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]; fastMove: any}[] = [];
+        availableDmaxPoke.forEach((defender: string) => {
+            const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
+            const fastAttack = this.getFastestQuickMove(pokemonData, pokemonData, types, dmaxDifficulty, allMoves);
+            let average = 0;
+            let counter = 0;
+            let versusBossList: { boss: any; pokemon: any; tier: number}[] = [];
+            bossList.forEach((boss: any) => {  
+                const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
+                const raidMode = Calculator.FixedBosses[boss];
+                let percentAfterLarge = 0;
+                let percentAfterTargetBestCase = 0;
+                let percentAfterTargetWorstCase = 0;
+
+                const defenderStat = this.convertStats([40,15,15,15], raidMode, bossData.pokemonId);
+                const attackerStat = [40,15,15,15];
+                const weather = "EXTREME";
+
+                const bossMoves = bossData.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
+                bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+                for (let i = 0; i < bossMoves.length; i++) {
+                    const move = bossMoves[i];
+                    //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
+                    percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterLarge*i)) / (i+1);
+                    //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
+                    percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
+                    //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                    //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
+                    percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
+                }
+                const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2));
+                counter++;
+                versusBossList.push({
+                    boss: bossData,
+                    pokemon: pokemonData,
+                    tier: tankScore,
+                });
+                average = (tankScore + (average * (counter - 1))) / counter;
+            })
+            tierList.push({
+                pokemon: pokemonData,
+                tier: average,
+                versus: versusBossList,
+                fastMove: fastAttack,
+            });
+        })
+        return tierList.sort((a, b) => a.tier - b.tier);
+    }
+
     static getAttackerTierList(
         pokemonList: any,
         allMoves: any,
         types: any,
+        dmaxDifficulty: string = "raid-t6-gmax",
     ) {
         const availableDmaxPoke = Calculator.DynamaxPokemon;
-        const bossList = Calculator.GetBossesFromBossList();
+        const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
         availableDmaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
@@ -1198,6 +1258,56 @@ export class PoGoAPI {
         });
         return tierList.sort((a, b) => b.tier - a.tier);
     }
+    
+    static getDefenderTierForPokemon(
+        pokemonId : string,
+        pokemonList: any,
+        allMoves: any,
+        types: any,
+        texts?: any,
+        dmaxDifficulty: string = "raid-t6-gmax",
+    ) {
+        const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
+        let counter = 0;
+        let versusBossList: { boss: any; pokemon: any; tier: number; fastMove: any}[] = [];
+        const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
+        const fastAttack = this.getFastestQuickMove(pokemonData, pokemonData, types, dmaxDifficulty, allMoves);
+        bossList.forEach((boss: any) => {
+            let percentAfterLarge = 0;
+            let percentAfterTargetBestCase = 0;
+            let percentAfterTargetWorstCase = 0;
+            const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
+            const raidMode = Calculator.FixedBosses[boss];
+            const bossMoves = bossData.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
+
+            const defenderStat = this.convertStats([40,15,15,15], raidMode, bossData.pokemonId);
+            const attackerStat = [40,15,15,15];
+            const weather = "EXTREME";
+            
+            bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+            for (let i = 0; i < bossMoves.length; i++) {
+                const move = bossMoves[i];
+                //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
+                percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterLarge*i)) / (i+1);
+                //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
+                //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
+            }
+            const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2));
+            versusBossList.push({
+                boss: PoGoAPI.getPokemonNamePB(boss, texts),
+                pokemon: pokemonData,
+                tier: tankScore,
+                fastMove: fastAttack,
+            });
+
+        });
+        return versusBossList;
+    }
 
     static getTierForPokemon(
         pokemonId: string,
@@ -1205,8 +1315,9 @@ export class PoGoAPI {
         allMoves: any,
         types: any,
         texts?: any,
+        dmaxDifficulty: string = "tier-6-gmax",
     ) {
-        const bossList = Calculator.GetBossesFromBossList();
+        const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let average = 0;
         let counter = 0;
         let versusBossList: { boss: any; pokemon: any; tier: number; maxmove: any}[] = [];
@@ -1223,7 +1334,7 @@ export class PoGoAPI {
                 boss: PoGoAPI.getPokemonNamePB(boss, texts),
                 pokemon: pokemonData,
                 tier: damageDone,
-                maxmove: PoGoAPI.getMoveNamePB(maxMove.moveId, texts),
+                maxmove: maxMove,
             });
             average = (damageDone + (average * (counter - 1))) / counter;
         });

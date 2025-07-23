@@ -3,59 +3,61 @@ import { Data } from "./special-data";
 export class Calculator {
 
     static FixedBosses: { [pokemon: string]: string } = {
-      //"SKWOVET": "tier-1-dmax",
-      //"WOOLOO": "tier-1-dmax",
-      //"BULBASAUR": "tier-1-dmax",
-      //"CHARMANDER": "tier-1-dmax",
-      //"SQUIRTLE": "tier-1-dmax",
-      "BELDUM": "tier-3-dmax",
-      //"GROOKEY": "tier-1-dmax",
-      //"SCORBUNNY": "tier-1-dmax",
-      //"SOBBLE": "tier-1-dmax",
-      "FALINKS": "tier-3-dmax",
-      //"GASTLY": "tier-1-dmax",
-      //"DRILBUR": "tier-1-dmax",
-      "TOXTRICITY": "tier-4-dmax",
-      //"MACHOP": "tier-2-dmax",
-      //"KRABBY": "tier-1-dmax",
-      "CRYOGONAL": "tier-3-dmax",
-      //"PIDOVE": "tier-1-dmax",
-      //"DARUMAKA": "tier-2-dmax",
-      "RAIKOU": "tier-5-dmax",
-      "ENTEI": "tier-5-dmax",
-      "SUICUNE": "tier-5-dmax",
-      "CHANSEY": "tier-3-dmax",
-      "PASSIMIAN": "tier-3-dmax",
-      //"CATERPIE": "tier-1-dmax",
-      "SABLEYE": "tier-3-dmax",
-      //"ROOKIDEE": "tier-1-dmax",
-      "ARTICUNO": "tier-5-dmax",
-      "ZAPDOS": "tier-5-dmax",
-      "MOLTRES": "tier-5-dmax",
-      "EXCADRILL": "tier-3-dmax",
-      "LATIAS": "tier-5-dmax",
-      "LATIOS": "tier-5-dmax",
-      "VENUSAUR_GIGANTAMAX": "tier-6-gmax",
-      "CHARIZARD_GIGANTAMAX": "tier-6-gmax",
-      "BLASTOISE_GIGANTAMAX": "tier-6-gmax",
-      "GENGAR_GIGANTAMAX": "tier-6-gmax",
-      "TOXTRICITY_GIGANTAMAX": "tier-6-gmax",
-      "LAPRAS_GIGANTAMAX": "tier-6-gmax",
-      "KINGLER_GIGANTAMAX": "tier-6-gmax",
-      "SNORLAX_GIGANTAMAX": "tier-6-gmax",
-      "MACHAMP_GIGANTAMAX": "tier-6-gmax",
-      "RILLABOOM_GIGANTAMAX": "tier-6-gmax",
-      "CINDERACE_GIGANTAMAX": "tier-6-gmax",
-      "INTELEON_GIGANTAMAX": "tier-6-gmax",
+      "SKWOVET": "raid-t1-dmax",
+      "WOOLOO": "raid-t1-dmax",
+      "BULBASAUR": "raid-t1-dmax",
+      "CHARMANDER": "raid-t1-dmax",
+      "SQUIRTLE": "raid-t1-dmax",
+      "BELDUM": "raid-t3-dmax",
+      "GROOKEY": "raid-t1-dmax",
+      "SCORBUNNY": "raid-t1-dmax",
+      "SOBBLE": "raid-t1-dmax",
+      "FALINKS": "raid-t3-dmax",
+      "GASTLY": "raid-t1-dmax",
+      "DRILBUR": "raid-t1-dmax",
+      "TOXTRICITY": "raid-t4-dmax",
+      "MACHOP": "raid-t2-dmax",
+      "KRABBY": "raid-t1-dmax",
+      "CRYOGONAL": "raid-t3-dmax",
+      "PIDOVE": "raid-t1-dmax",
+      "DARUMAKA": "raid-t2-dmax",
+      "RAIKOU": "raid-t5-dmax",
+      "ENTEI": "raid-t5-dmax",
+      "SUICUNE": "raid-t5-dmax",
+      "CHANSEY": "raid-t3-dmax",
+      "PASSIMIAN": "raid-t3-dmax",
+      "CATERPIE": "raid-t1-dmax",
+      "SABLEYE": "raid-t3-dmax",
+      "ROOKIDEE": "raid-t1-dmax",
+      "ARTICUNO": "raid-t5-dmax",
+      "ZAPDOS": "raid-t5-dmax",
+      "MOLTRES": "raid-t5-dmax",
+      "EXCADRILL": "raid-t3-dmax",
+      "LATIAS": "raid-t5-dmax",
+      "LATIOS": "raid-t5-dmax",
+      "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
+      "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
+      "BLASTOISE_GIGANTAMAX": "raid-t6-gmax",
+      "GENGAR_GIGANTAMAX": "raid-t6-gmax",
+      "TOXTRICITY_GIGANTAMAX": "raid-t6-gmax",
+      "LAPRAS_GIGANTAMAX": "raid-t6-gmax",
+      "KINGLER_GIGANTAMAX": "raid-t6-gmax",
+      "SNORLAX_GIGANTAMAX": "raid-t6-gmax",
+      "MACHAMP_GIGANTAMAX": "raid-t6-gmax",
+      "RILLABOOM_GIGANTAMAX": "raid-t6-gmax",
+      "CINDERACE_GIGANTAMAX": "raid-t6-gmax",
+      "INTELEON_GIGANTAMAX": "raid-t6-gmax",
+      "BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
     }
 
-    static GetBossesFromBossList(): string[] {
+    static GetBossesFromBossList(dmaxDifficulty: string): string[] {
       let list: string[] = [];
       Object.entries(this.FixedBosses).forEach(([key, value]) => {
-        console.log(`Adding boss: ${key} with value: ${value}`);
-        list.push(key);
-      }
-      );
+        if (value === dmaxDifficulty) {
+          console.log(`Adding boss: ${key} with value: ${value}`);
+          list.push(key);
+        }
+      });
       return list;
     }
 

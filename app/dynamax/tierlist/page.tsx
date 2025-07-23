@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { parse } from "path";
 import Navbar from "@/components/navbar";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, XAxis } from "recharts";
+import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
 
 
 
@@ -36,7 +36,8 @@ export default function rankingsPage() {
     const [dmaxPokemon, setDmaxPokemon] = useState<any>(null);
     const [types, setTypes] = useState<any>(null);
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
-    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
+    const [zamaExtraShield, setZamaExtraShield] = useState<boolean>(false);
+    const [rankingDisplay, setRankingDisplay] = useState<string>("HP_DMG");
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -48,7 +49,10 @@ export default function rankingsPage() {
 
     const [generalMode, setGeneralMode] = useState<boolean>(false);
 
-    const [showTierList, setShowTierList] = useState<any[]>([]);
+    const [dmaxDifficulty, setDmaxDifficulty] = useState<string>("raid-t6-gmax");
+
+    const [showTierListAttackers, setShowTierListAttackers] = useState<any[]>([]);
+    const [showTierListDefenders, setShowTierListDefenders] = useState<any[]>([]);
     
     const router = useRouter();
     const sp = useParams();
@@ -92,11 +96,31 @@ export default function rankingsPage() {
         const urlSP = new URLSearchParams(window.location.search);
         let load = false;
         if (allDataLoaded) {
-            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types);
+            urlSP.get("dmax_difficulty") ? handleDmaxDifficulty(urlSP.get("dmax_difficulty")!) : handleDmaxDifficulty("raid-t6-gmax");
+            urlSP.get("ranking_display") ? handleRankingConfig(urlSP.get("ranking_display")!) : handleRankingConfig("HP_DMG");
+            urlSP.get("prioritise_fast_attack") ? setPrioritiseFast(urlSP.get("prioritise_fast_attack") === "true") : setPrioritiseFast(false);
+            urlSP.get("zamazenta_extra_shield") ? setZamaExtraShield(urlSP.get("zamazenta_extra_shield") === "true") : setZamaExtraShield(false);
+
+            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty);
+            let tierListDefenders = PoGoAPI.getDefenderTierList(pokemonList, allMoves, types, dmaxDifficulty);
             setBestAttackers(tierListAttackers);
+            setBestDefenders(tierListDefenders);
+
             setEverythingLoaded(true);
         }
     }, [allDataLoaded]);
+
+    useEffect(() => {
+        setShowTierListAttackers([]);
+        setShowTierListDefenders([]);
+        if (sp && allDataLoaded && !paramsLoaded) {
+            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty);
+            let tierListDefenders = PoGoAPI.getDefenderTierList(pokemonList, allMoves, types, dmaxDifficulty);
+            setBestAttackers(tierListAttackers);
+            setBestDefenders(tierListDefenders);
+            setEverythingLoaded(true);
+        }
+    }, [dmaxDifficulty]);
 
     useEffect(() => {
         if (pokemonInfo && allEnglishText) {
@@ -136,51 +160,41 @@ export default function rankingsPage() {
     const toggleShowAllDefenders = () => {
         setShowBestDefenders(!showBestDefenders);
     }
-
-    const toggleGeneralDefenders = () => {
-        setShowGeneralBestDefenders(!showGeneralBestDefenders);
-        const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set("general", showGeneralBestDefenders ? "false" : "true");
-        const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
     
-    
-    const getHPPercent = (tankScore: number, baseStamina: number) => {
-        return (tankScore / Calculator.getEffectiveStamina(baseStamina, 15, 40) * 100);
+    const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
+        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0)) * 100);
     }
 
     const getAverageTankScore = (hpdmg: number, hpper: number) => {
         return (hpdmg + hpper) / 2;
     }   
 
-    const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
+    const defenderList = bestDefenders;
 
     defenderList?.sort((a: any, b: any) => {
         if (prioritiseFast) {
             if (rankingDisplay === "HP_DMG") {
-                return a.fastMove.durationMs * a.tankScore - b.fastMove.durationMs * b.tankScore;
+                return a.fastMove.durationMs * a.tier - b.fastMove.durationMs * b.tier;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (a.fastMove.durationMs * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - b.fastMove.durationMs * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (a.fastMove.durationMs * getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - b.fastMove.durationMs * getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return a.fastMove.durationMs * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - b.fastMove.durationMs * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return a.fastMove.durationMs * getAverageTankScore(a.tier, getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemonId)) - b.fastMove.durationMs * getAverageTankScore(b.tier, getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemonId));
             }
-            if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
-            if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
+            if (a.fastMove.durationMs * a.tier > b.fastMove.durationMs * b.tier) return 1;
+            if (a.fastMove.durationMs * a.tier < b.fastMove.durationMs * b.tier) return -1;
             return 0;
         } else {
             if (rankingDisplay === "HP_DMG") {
-                return a.tankScore - b.tankScore;
+                return a.tier - b.tier;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             }
             return 0;
         }
     });
 
-    const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
 
     const chartConfig = {
         tier: {
@@ -189,12 +203,12 @@ export default function rankingsPage() {
         },
         maxmove: {
             label: "Max Move",
-            color: "#f97316",
+            color: "#ffffffff",
         },
     } satisfies ChartConfig
 
 
-    const handleSwitch = (checked: boolean, handle: any) => {
+    const handleSwitch = (checked: boolean, handle: any, param: string) => {
         handle(checked);
         defenderList?.sort((a: any, b: any) => {
             if (checked) {
@@ -206,22 +220,31 @@ export default function rankingsPage() {
             }
         });
         const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set("prioritise_fast_attack", checked.toString());
+        newSearchParams.set(param, checked.toString());
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
+    function handleDmaxDifficulty(value: string): void {
+        setDmaxDifficulty(value);
+
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("dmax_difficulty", value);
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
 
     function handleRankingConfig(value: string): void {
+
         setRankingDisplay(value);
         
         defenderList?.sort((a: any, b: any) => {
             if (value === "HP_DMG") {
                 return a.tankScore - b.tankScore;
             } else if (value === "HP_PERCENT") {
-                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemonId) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemonId));
             } else if (value === "AVG") {
-                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina));
+                return getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemonId)) - getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemonId));
             }
             return 0;
         });
@@ -234,18 +257,53 @@ export default function rankingsPage() {
     
     const GetTankScore = (defender: any): string => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.tier * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.tier, getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
         return "0.00";
     }
 
-    function selectRanking(pokemnonId: any): void {
-        setShowTierList(PoGoAPI.getTierForPokemon(pokemnonId, pokemonList, allMoves, types, allEnglishText));
+    function selectRanking(pokemonId: any): void {
+        setShowTierListDefenders([]);
+        setShowTierListAttackers(PoGoAPI.getTierForPokemon(pokemonId, pokemonList, allMoves, types, allEnglishText, dmaxDifficulty));
     }
+
+    function selectDefenderRanking(pokemonId: any): void {
+        setShowTierListAttackers([]);
+        setShowTierListDefenders(PoGoAPI.getDefenderTierForPokemon(pokemonId, pokemonList, allMoves, types, allEnglishText, dmaxDifficulty));
+    }
+
+    const getHighestElement = () => {
+        if (showTierListAttackers.length > 0) {
+            return showTierListAttackers.reduce((prev, current) => {
+                return (prev.tier > current.tier) ? prev : current;
+            });
+        } if (showTierListDefenders.length > 0) {
+            return showTierListDefenders.reduce((prev, current) => {
+                return (prev.tier > current.tier) ? prev : current;
+            });
+        }
+        return null;
+    }
+
+    function getLowestElement() {
+        if (showTierListAttackers.length > 0) {
+            return showTierListAttackers.reduce((prev, current) => {
+                return (prev.tier < current.tier) ? prev : current;
+            });
+        } if (showTierListDefenders.length > 0) {
+            return showTierListDefenders.reduce((prev, current) => {
+                return (prev.tier < current.tier) ? prev : current;
+            });
+        }
+        return null;
+    }
+
+    const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
+    const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
 
     return (
@@ -269,21 +327,28 @@ export default function rankingsPage() {
                     <Card className="md:w-1/3 w-full">
                         <CardContent>
                         
-                        <h3 className="text-xl font-bold text-black mt-4 mb-4">Max Attackers Tier List</h3>
+                        
+                        <CardHeader className="text-xl font-bold">Attacker Overall Ranking</CardHeader>
                         <Separator className=""/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
                             <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
-                            {!generalMode && (<p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>)}
-                            <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
-                            <p>"Percent to Best" represents how close one attacker is to the best one.</p>
-                            <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This number represents the Damage taken from one Large Attack.</p>
-                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.4 reduction) and worst (x0.7 reduction) case scenario.</p>
-                            <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
                         </CardDescription>
-                        <div className="flex flex-row items-center justify-center ">
+                        <Separator className="mt-4 mb-2"/>
+                        <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                            value={dmaxDifficulty}
+                            onChange={(e) => handleDmaxDifficulty(e.target.value)}
+                            >
+                            <option value="raid-t1-dmax">Tier 1 Max Battles</option>
+                            <option value="raid-t2-dmax">Tier 2 Max Battles</option>
+                            <option value="raid-t3-dmax">Tier 3 Max Battles</option>
+                            <option value="raid-t4-dmax">Tier 4 Max Battles</option>
+                            <option value="raid-t5-dmax">Tier 5 Max Battles</option>
+                            <option value="raid-t6-gmax">Gigantamax Battles</option>
+                        </select>
+                        
+                        <Separator className="mt-4"/>
+                            <div className="flex flex-column items-center justify-center space-x-4 w-full">
                                 <div className="flex flex-col items-center justify-center space-y-4">
-                                    
-                                    
                                     <div className="flex flex-row items-center justify-between space-x-4 w-full">
                                         <button onClick={toggleShowAllAttackers} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
                                             {showBestAttackers ? "Show Top 5 only" : "Show All"}
@@ -341,36 +406,163 @@ export default function rankingsPage() {
                                             </div>
                                         </Card>
                                     ))}
+                                    </div>
+                                    
+                                </div>
+                            
+                            </CardContent>
+                        </Card>
+                    <Card className="md:w-1/3 w-full">
+                        <CardContent>
+                        
+                        
+                        <CardHeader className="text-xl font-bold">Tanks Overall Ranking</CardHeader>
+                        <Separator className=""/>
+                        <CardDescription className="space-y-3 mb-4 mt-4">
+                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
+                        </CardDescription>
+                        <Separator className="mt-4 mb-2"/>
+                        <div className="flex flex-row space-x-4">
+                            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                                value={dmaxDifficulty}
+                                onChange={(e) => handleDmaxDifficulty(e.target.value)}
+                                >
+                                <option value="raid-t1-dmax">Tier 1 Max Battles</option>
+                                <option value="raid-t2-dmax">Tier 2 Max Battles</option>
+                                <option value="raid-t3-dmax">Tier 3 Max Battles</option>
+                                <option value="raid-t4-dmax">Tier 4 Max Battles</option>
+                                <option value="raid-t5-dmax">Tier 5 Max Battles</option>
+                                <option value="raid-t6-gmax">Gigantamax Battles</option>
+                            </select>
+                            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
+                                value={rankingDisplay}
+                                onChange={(e) => handleRankingConfig(e.target.value)}
+                            >
+                                <option value="HP_DMG">HP Damage on Average</option>
+                                <option value="HP_PERCENT">HP% on Average</option>
+                            </select>
+                        </div>
+                        
+                        <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        
+                        <Separator className="mt-4"/>
+                            <div className="flex flex-column items-center justify-center space-x-4 w-full">
+                                <div className="flex flex-col items-center justify-center space-y-4">
+                                    <div className="flex flex-row items-center justify-between space-x-4 w-full">
+                                        <button onClick={toggleShowAllDefenders} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {showBestDefenders ? "Show Top 5 only" : "Show All"}
+                                        </button>
+                                    </div>
+                                    {defendersToShow?.map((defender: any, index: number) => (
+                                        <Card key={index} className="w-full">
+                                            <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
+                                                <Image
+                                                    unoptimized
+                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
+                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(defender?.pokemon.pokemonId, imageLinks )}
+                                                    alt={defender?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
+                                                    width={80}
+                                                    height={80}
+                                                    style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
+                                                />
+                                                
+                                                <div className="space-y-1 w-full">
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        <div>
+                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                        </div>
+                                                        
+                                                        <p className="text-sm italic textgray">#{index+1}</p>
+                                                    </div>
+                                                    <Separator className="mt-1 mb-1"/>
+                                                    
+                                                    
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+
+                                                        <h3 className="text-sm font-bold text-black">Global Score</h3>
+                                                        <p>{GetTankScore(defender)}</p>
+                                                    </div>
+                                                    <Separator/>
+                                                    <div className="flex flex-row items-center justify-between space-x-4">
+                                                        
+                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
+                                                        <p className="font-bold text-black">
+                                                            {((parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100).toFixed(2).split('.')[1]}</span>%
+                                                        </p>
+                                                    </div>
+                                                    <div className="w-full">
+                                                        <Progress color={(parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) === 1 ? "violet" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.75 ? "green" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.6 ? "yellow" : (parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) > 0.5 ? "orange" : "red"} value={(parseInt(GetTankScore(defendersToShow[0])) / parseInt(GetTankScore(defender))) * 100}/>
+                                                    </div>
+                                                    
+                                                <div className="flex flex-row items-center justify-between mx-4">
+                                                    <button onClick={() => selectDefenderRanking(defender?.pokemon.pokemonId)} className="w-full px-4 py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                                        Check Ranking
+                                                    </button>
+                                                </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </Card>
+                                    ))}
                                 </div>
                             </div>
-                        
                         </CardContent>
                     </Card>
                     <Card className="md:w-2/3 w-full">
-                        <CardHeader className="text-xl font-bold">Attacker Tier List</CardHeader>
-                        <CardContent>
-                            <CardDescription className="space-y-3 mb-4">
-                                <p>
-                                    These are the best attackers for every T3-6 Max Battle Boss.
-                                </p>
-                                <ChartContainer config={chartConfig}>
-                                    <BarChart data={showTierList}>
-                                        <XAxis
-                                            dataKey="boss"
-                                            tick={{ fontSize: 12 }}
-                                            interval={0}
-                                            angle={-45}
-                                            textAnchor="end"
-                                        />
-                                        <ChartTooltip content={<ChartTooltipContent indicator="line"/>} />
-                                        <Bar dataKey="tier" fill="#2563eb" name="Damage"/>
-                                        <Bar dataKey="maxmove" name="Move"/>
-                                    </BarChart>
-                                </ChartContainer>
-                            </CardDescription>
+                            {showTierListAttackers.length > 0 ? (
+                            <>
+                                <CardHeader className="text-xl font-bold">Attacker Tier List</CardHeader>
+                                <CardContent>
+                                        <CardDescription className="space-y-3 mb-4">
+                                            This list shows how well {PoGoAPI.getPokemonNamePB(showTierListAttackers[0].pokemon.pokemonId, allEnglishText)} performs against different bosses with different Max Moves. The tier is calculated based on the damage output and effectiveness of the move against the boss.
+                                        </CardDescription>
+                                        {showTierListAttackers.map((entry: any, index: number) => (
+                                            <div key={index} className="mb-4">
+                                                <div className="flex flex-column items-center justify-between space-x-4">
+                                                    <div>
+                                                        <p className="text-xs">{"Against " + entry.boss}</p>
+                                                        <p className="font-bold">{(entry.pokemon.pokemonId.endsWith("GIGANTAMAX") ? "GMax " : "Max ") + PoGoAPI.getMoveNamePB(entry.maxmove.moveId, allEnglishText)}</p>
+                                                    </div>
+                                                    <p className="text-2xl font-bold">{entry.tier}</p>
+                                                </div>
+                                                <Progress value={entry.tier / getHighestElement().tier * 100} className={`mb-2 bg-gray-900`} color={`type-${PoGoAPI.formatTypeName(entry.maxmove.type).toLowerCase()}`} />
+                                            </div>
+                                        ))}
+                                </CardContent>
+                            </>
+                            ) : showTierListDefenders.length > 0 ? (
+                            <>
+                                <CardHeader className="text-xl font-bold">Defender Tier List</CardHeader>
+                                <CardContent>
+                                        <CardDescription className="space-y-3 mb-4">
+                                            This list shows how well {PoGoAPI.getPokemonNamePB(showTierListDefenders[0].pokemon.pokemonId, allEnglishText)} performs against different bosses with different Max Moves. The tier is calculated based on the tank score and effectiveness of the move against the boss.
+                                        </CardDescription>
+                                        {showTierListDefenders.map((entry: any, index: number) => (
+                                            <div key={index} className="mb-4">
+                                                <div className="flex flex-column items-center justify-between space-x-4">
+                                                    <div>
+                                                        <p className="text-xs">{"Against " + entry.boss}</p>
+                                                        
+                                                    </div>
+                                                    <p className="text-2xl font-bold">{GetTankScore(entry)}</p>
+                                                </div>
+                                                <Progress value={getLowestElement().tier / entry.tier * 100} className={`mb-2 bg-gray-900`} />
+                                            </div>
+                                        ))}
+                                </CardContent>
+                            </>) : (
+                            <>
                             
-                            
-                        </CardContent>
+                                <CardHeader className="text-xl font-bold">Select a Pokémon</CardHeader>
+                                <CardContent>
+                                        <CardDescription className="space-y-3 mb-4">
+                                            Select a Pokémon to see how it performs against different bosses!
+                                        </CardDescription>
+                                </CardContent>
+                            </>
+                            )}
                     </Card>
                    
                     
