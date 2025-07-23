@@ -29,7 +29,12 @@ const Navbar = () => {
                     <Link href="/whatsnew" className="text-sm">Whats New</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
-            
+            <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+                <NavigationMenuLink asChild>
+                    <Link href="/dynamax/tierlist" className="text-sm">Max Tierlists</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+
         </NavigationMenuList>
     </NavigationMenu>
   );
