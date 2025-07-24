@@ -516,6 +516,7 @@ export class PoGoAPI {
             "raid-t2-dmax": [8002, 15, 15, 5000],
             "raid-t3-dmax": [8003, 15, 15, 10000],
             "raid-t4-dmax": [8004, 15, 15, 20000],
+            "raid-t6-gmax-standard": [8006, 15, 15, 115000],
             "raid-t1-shadow": [6001, 15, 15, 600],
             "raid-t3-shadow": [6003, 15, 15, 3600],
             "raid-t5-shadow": [6005, 15, 15, 15000],
@@ -554,6 +555,11 @@ export class PoGoAPI {
             }
             // Default for t5-dmax
             return [8005, 15, 15, defenderId ? 20000 : 22500];
+        }
+
+        if (raidMode === "raid-t6-gmax-standard") {
+            // Default for t6-gmax-standard
+            return [8006, 15, 15, 115000];
         }
 
         // GMAX Tier 6
@@ -1179,7 +1185,7 @@ export class PoGoAPI {
             let versusBossList: { boss: any; pokemon: any; tier: number}[] = [];
             bossList.forEach((boss: any) => {  
                 const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
-                const raidMode = Calculator.FixedBosses[boss];
+                const raidMode = dmaxDifficulty;
                 let percentAfterLarge = 0;
                 let percentAfterTargetBestCase = 0;
                 let percentAfterTargetWorstCase = 0;
@@ -1227,6 +1233,7 @@ export class PoGoAPI {
         types: any,
         dmaxDifficulty: string = "raid-t6-gmax",
     ) {
+        console.log("Calculating attacker tier list for " + dmaxDifficulty);
         const availableDmaxPoke = Calculator.DynamaxPokemon;
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
@@ -1237,7 +1244,7 @@ export class PoGoAPI {
             let versusBossList: { boss: any; pokemon: any; tier: number}[] = [];
             bossList.forEach((boss: any) => {
                 const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
-                const raidMode = Calculator.FixedBosses[boss];
+                const raidMode = dmaxDifficulty;
                 const quickMove: any = this.getBestQuickMove(pokemonData, bossData, types, raidMode, allMoves);
                 const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
                 const damageDone = this.getDamage(pokemonData, bossData, maxMove, types, [40,15,15,15], this.convertStats([40,15,15,15], raidMode, bossData.pokemonId), ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
@@ -1254,7 +1261,6 @@ export class PoGoAPI {
                 tier: average,
                 versus: versusBossList,
             });
-            console.log("Pokemon: " + pokemonData.pokemonId + " Tier: " + average);
         });
         return tierList.sort((a, b) => b.tier - a.tier);
     }
@@ -1268,7 +1274,6 @@ export class PoGoAPI {
         dmaxDifficulty: string = "raid-t6-gmax",
     ) {
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
-        let counter = 0;
         let versusBossList: { boss: any; pokemon: any; tier: number; fastMove: any}[] = [];
         const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
         const fastAttack = this.getFastestQuickMove(pokemonData, pokemonData, types, dmaxDifficulty, allMoves);
@@ -1277,7 +1282,7 @@ export class PoGoAPI {
             let percentAfterTargetBestCase = 0;
             let percentAfterTargetWorstCase = 0;
             const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
-            const raidMode = Calculator.FixedBosses[boss];
+            const raidMode = dmaxDifficulty;
             const bossMoves = bossData.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
 
             const defenderStat = this.convertStats([40,15,15,15], raidMode, bossData.pokemonId);
@@ -1324,8 +1329,8 @@ export class PoGoAPI {
         const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
         bossList.forEach((boss: any) => {
             const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
-            console.log(pokemonId);
-            const raidMode = Calculator.FixedBosses[boss];
+            //console.log(pokemonId);
+            const raidMode = dmaxDifficulty;
             const quickMove: any = this.getBestQuickMove(pokemonData, bossData, types, raidMode, allMoves);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             const damageDone = this.getDamage(pokemonData, bossData, maxMove, types, [40,15,15,15], this.convertStats([40,15,15,15], raidMode, bossData.pokemonId), ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
@@ -1340,24 +1345,6 @@ export class PoGoAPI {
         });
         return versusBossList;
     }
-
-    /*
-{
-        const attackerStat = [40,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
-        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any;}[] = [];
-        availableDmaxPoke.forEach((attacker: string) => {
-            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
-            const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
-            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
-            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
-            //console.log(weather)
-            const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, defenderStat, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1, 1);
-            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
-        });
-        return attackersStat.sort((a, b) => b.damage - a.damage);
-    }
-    */
 
     static getFastestQuickMove(pokemon: any, boss: any, types: any, raidMode?: string, allMoves?: any) {
         let bestMove = null;
@@ -1730,7 +1717,7 @@ export class PoGoAPI {
                         else {
                             attackerDamageStart[i] = time - 1;
                             attackerMove[i] = attackersQuickMove[i][activePokemon[i]];
-                            console.log("Attacker " + i + " casts quick move: " + attackerMove[i].moveId + " with energy delta: " + attackerMove[i].energyDelta + " at time " + time);
+                            //console.log("Attacker " + i + " casts quick move: " + attackerMove[i].moveId + " with energy delta: " + attackerMove[i].energyDelta + " at time " + time);
                             attackerEnergy[i][activePokemon[i]] += attackersQuickMove[i][activePokemon[i]].energyDelta;
                             if (attackerEnergy[i][activePokemon[i]] > 100) {
                                 attackerEnergy[i][activePokemon[i]] = 100;
@@ -1745,7 +1732,7 @@ export class PoGoAPI {
                     const projectedDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, ((shrooms[i] === true ? 2 : 1) * this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus))));
                     tdo[i] += projectedDamage;
                     attackerDamage[i][activePokemon[i]] += projectedDamage;
-                    console.log("Attacker " + i + " deals " + projectedDamage + " damage with move: " + attackerMove[i].moveId + " at time " + time);
+                    //console.log("Attacker " + i + " deals " + projectedDamage + " damage with move: " + attackerMove[i].moveId + " at time " + time);
                     maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth);
                     if (maxEnergy > 100) {
                         maxEnergy = 100;

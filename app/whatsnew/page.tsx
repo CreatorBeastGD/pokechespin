@@ -17,6 +17,17 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.24.1",
+        desc: "+ Added a new Max Battle Mode: 'Raid T6 GMax Standard'. \n"+
+            ">>>>>> All Max Battles under this Max Battle Mode will have the same stats, which are as follows:\n"+
+            ">>>>>> - HP: 115000\n"+
+            ">>>>>> - CPM: 0.765\n"+
+            "+ Changed some styling on Max Rankings. Now if a Tank has its Tank Score duplicated because of configurations, it will be shown in red.\n"+
+            "+ In addition to that, Large Tankiness and Target tankiness will also be duplicated if the Tank Score is duplicated.\n"+
+            "I'll be tweaking some things up in the next few days, so stay tuned for that!",
+        date: "2025-07-24",
+    },
+    {
         title: "v1.24",
         desc: "+ Added a new 'Max General Rankings' section to PokéChespin\n"+
             ">>>>>> Used to check what Pokémon are the best average attackers and defenders in Max Battles!\n"+

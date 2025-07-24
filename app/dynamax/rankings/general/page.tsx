@@ -2,14 +2,14 @@
 
 import CookieBanner from "@/components/cookie-banner";
 import { useParams, useRouter } from "next/navigation";
-import { PoGoAPI } from "../../../lib/PoGoAPI";
+import { PoGoAPI } from "../../../../lib/PoGoAPI";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
-import { Calculator } from "../../../lib/calculations";
+import { Calculator } from "../../../../lib/calculations";
 import { Progress } from "@/components/ui/progress";
 import { parse } from "path";
 import Navbar from "@/components/navbar";
@@ -344,6 +344,7 @@ export default function rankingsPage() {
                             <option value="raid-t4-dmax">Tier 4 Max Battles</option>
                             <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                             <option value="raid-t6-gmax">Gigantamax Battles</option>
+                            <option value="raid-t6-gmax-standard">Standard Gigantamax Battles</option>
                         </select>
                         
                         <Separator className="mt-4"/>
@@ -432,6 +433,7 @@ export default function rankingsPage() {
                                 <option value="raid-t4-dmax">Tier 4 Max Battles</option>
                                 <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                                 <option value="raid-t6-gmax">Gigantamax Battles</option>
+                                <option value="raid-t6-gmax-standard">Standard Gigantamax Battles</option>
                             </select>
                         
                         

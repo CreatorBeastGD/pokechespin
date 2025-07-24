@@ -235,7 +235,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
     // 1. Actualizar Pokémon primero
     const pokemon = urlParams.get(`attacker${member}${slot}`);
-    console.log(`Loading Pokémon for member ${member}, slot ${slot}:`, pokemon);
+    //console.log(`Loading Pokémon for member ${member}, slot ${slot}:`, pokemon);
 
     if (pokemon) {
         const newAttackingPokemon = [...attackingPokemon];
@@ -468,6 +468,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       return "Tier 5 Max Battle";
     } else if (raidMode === "raid-t6-gmax") {
       return "Gigantamax Battle";
+    } else if (raidMode === "raid-t6-gmax-standard") {
+      return "Gigantamax Battle (Standard)";
     }
   }
 
@@ -656,6 +658,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (Varying) </option>
+                <option key={"raid-t6-gmax-standard"} value={"raid-t6-gmax-standard"}>Standard Gigantamax Battle (115000HP) </option>
 
               </select>
 
@@ -667,10 +670,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
                 value={previewShroom.toString()}
                 onChange={(e) => setPreviewShroom(e.target.value === "true")}
-              >
-                <option value="false">No shrooms</option>
-                <option value="true">Shroom (x2)</option>
-              </select>
+                >
+                  <option value="false">No shrooms</option>
+                  <option value="true">Shroom (x2)</option>
+                </select>
 
               <div className="flex flex-col w-[25%]">
                 <label>Friendship level ({previewFriendship})</label>

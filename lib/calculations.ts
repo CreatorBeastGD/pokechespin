@@ -52,9 +52,10 @@ export class Calculator {
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
       let list: string[] = [];
+      let criteriaToSearch = dmaxDifficulty === "raid-t6-gmax-standard" ? "raid-t6-gmax" : dmaxDifficulty;
       Object.entries(this.FixedBosses).forEach(([key, value]) => {
-        if (value === dmaxDifficulty) {
-          console.log(`Adding boss: ${key} with value: ${value}`);
+        if (value === criteriaToSearch) {
+          //console.log(`Adding boss: ${key} with value: ${value}`);
           list.push(key);
         }
       });
@@ -297,6 +298,7 @@ export class Calculator {
         "raid-t4-dmax": 20000,
         "raid-t5-dmax": 22500,
         "raid-t6-gmax": 115000,
+        "raid-t6-gmax-standard": 115000,
         "raid-t1-shadow": 600,
         "raid-t3-shadow": 3600,
         "raid-t5-shadow": 15000,

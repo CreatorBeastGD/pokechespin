@@ -184,17 +184,19 @@ const BreakpointsPage = () => {
 
       const prettierRaidMode = (raidMode: string) => {
         if (raidMode === "raid-t1-dmax") {
-          return "Tier 1 Dynamax Raid";
+          return "Tier 1 Max Battle";
         } else if (raidMode === "raid-t2-dmax") {
-          return "Tier 2 Dynamax Raid";
+          return "Tier 2 Max Battle";
         } else if (raidMode === "raid-t3-dmax") {
-          return "Tier 3 Dynamax Raid";
+          return "Tier 3 Max Battle";
         } else if (raidMode === "raid-t4-dmax") {
-          return "Tier 4 Dynamax Raid";
+          return "Tier 4 Max Battle";
         } else if (raidMode === "raid-t5-dmax") {
-          return "Tier 5 Dynamax Raid";
+          return "Tier 5 Max Battle";
         } else if (raidMode === "raid-t6-gmax") {
-          return "Gigantamax Raid";
+          return "Gigantamax Battle";
+        } else if (raidMode === "raid-t6-gmax-standard") {
+          return "Standard Gigantamax Battle";
         } else {
           return "Gym Battle";
         }

@@ -135,7 +135,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       return "Tier 4 Dynamax";
     } else if (raidMode === "raid-t5-dmax") {
       return "Tier 5 Dynamax";
-    } else if (raidMode === "raid-t6-gmax") {
+    } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
         return "Gigantamax";
     } else {
       return "Normal";

@@ -300,44 +300,44 @@ export default function rankingsPage() {
 
     const GetLargeTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return defender.large.toFixed(2);
+            return (defender.large* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
+            return (getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
+            return (getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetBestTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return defender.targetBest.toFixed(2);
+            return (defender.targetBest * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
+            return (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
+            return (getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetWorstTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return defender.targetWorst.toFixed(2);
+            return (defender.targetWorst * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId).toFixed(2);
+            return (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
+            return (getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetAverageTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return ((defender.targetAvg)).toFixed(2);
+            return ((defender.targetAvg * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1))).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)).toFixed(2);
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))).toFixed(2);
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
         }
     }
 
@@ -617,16 +617,16 @@ export default function rankingsPage() {
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
-                                                        <p>{GetLargeTankiness(defender)}</p>
+                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetLargeTankiness(defender)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
-                                                        <p>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className="text-xs">(avg. {GetTargetAverageTankiness(defender)})</span></p>
+                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className={"text-xs"}>(avg. {GetTargetAverageTankiness(defender)})</span></p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className=" font-bold text-black">Tank Score</h3>
-                                                        <p className="font-bold">
+                                                        <p className={"font-bold " + (defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>
                                                         {
                                                             (() => {
                                                             const value = parseFloat(GetTankScore(defender));
