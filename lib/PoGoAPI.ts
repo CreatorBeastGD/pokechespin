@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.1";
+        return "1.24.1.1";
     }
 
     static async getAllPokemon() {
@@ -603,6 +603,8 @@ export class PoGoAPI {
             ARTICUNO: [8005144, 15, 15, 17500],
             MOLTRES: [8005144, 15, 15, 17500],
             ZAPDOS: [8005144, 15, 15, 13000],
+            LATIOS: [8005244, 15, 15, 22500],   
+            LATIAS: [8005244, 15, 15, 22500],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

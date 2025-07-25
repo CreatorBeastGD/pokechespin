@@ -17,6 +17,15 @@ const novedades = [
         date: "2025-07-07",
     },
     {
+        title: "v1.24.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+              ">>>>>> Latios, Latias"+
+            "\n+ Changed stats on Tier 5 Max Battles. \n"+
+            ">>>>>> Latios\n >>>>>> ~ CPM: 0.8 -> 0.75 \n"+
+            ">>>>>> Latias\n >>>>>> ~ CPM: 0.8 -> 0.75 \n",
+        date: "2025-07-25",
+    },
+    {
         title: "v1.24.1",
         desc: "+ Added a new Max Battle Mode: 'Raid T6 GMax Standard'. \n"+
             ">>>>>> All Max Battles under this Max Battle Mode will have the same stats, which are as follows:\n"+

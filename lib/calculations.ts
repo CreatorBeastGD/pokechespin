@@ -125,8 +125,8 @@ export class Calculator {
       "ROOKIDEE",
       "CORVISQUIRE",
       "CORVIKNIGHT",
-      //"LATIAS",
-      //"LATIOS",
+      "LATIAS",
+      "LATIOS",
       "HATENNA",
       "HATTREM",
       "HATTERENE",
@@ -381,7 +381,6 @@ export class Calculator {
       }
 
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
-    // Mapas para lookup rápido
     const t5dmaxHP: Record<string, number> = {
         ZAPDOS: 13000,
         MOLTRES: 17500,
@@ -389,6 +388,8 @@ export class Calculator {
         RAIKOU: 20000,
         ENTEI: 26500,
         SUICUNE: 22000,
+        LATIOS: 22500,
+        LATIAS: 22500,
     };
 
     const t6gmaxHP: Record<string, number> = {
