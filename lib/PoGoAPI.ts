@@ -157,6 +157,79 @@ export class PoGoAPI {
                     animationId: "DYNAMAX_CANNON",
                 };
             }
+            else if (moveId === "MAX_BEHEMOTH_BLADE") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BLADE",
+                    power: 250,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BLADE",
+                };
+            }
+            else if (moveId === "MAX_BEHEMOTH_BLADE2") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BLADE2",
+                    power: 300,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BLADE",
+                };
+            }
+            else if (moveId === "MAX_BEHEMOTH_BLADE3") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BLADE3",
+                    power: 350,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BLADE",
+                };
+            }
+            else if (moveId === "MAX_BEHEMOTH_BASH") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BASH",
+                    power: 250,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BASH",
+                };
+            }
+            else if (moveId === "MAX_BEHEMOTH_BASH2") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BASH2",
+                    power: 300,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BASH",
+                };
+            }
+            else if (moveId === "MAX_BEHEMOTH_BASH3") {
+                return {
+                    moveId: "MAX_BEHEMOTH_BASH3",
+                    power: 350,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BASH",
+                };
+            }
+            
             throw new Error(`Move with ID ${moveId} not found`);
         }
         if (moveId === "BEHEMOTH_BLADE") {
@@ -307,15 +380,33 @@ export class PoGoAPI {
         } else if (pokemonId == "ZACIAN_CROWNED_SWORD_FORM") {
             // Special case for Zacian's Max Behemoth Blade
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
-            let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BLADE" );
+            let move = allMoves.find((m: any) => m.moveId === "BEHEMOTH_BLADE" );
             move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
-            return move;
+            return {
+                    moveId: "MAX_BEHEMOTH_BLADE" + max,
+                    power: maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BLADE",
+                };
         } else if (pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM") {
             // Special case for Zamazenta's Max Behemoth Bash
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
-            let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BASH" );
+            let move = allMoves.find((m: any) => m.moveId === "BEHEMOTH_BASH" );
             move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
-            return move;
+            return {
+                    moveId: "MAX_BEHEMOTH_BASH" + max,
+                    power: maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350,
+                    durationMs: 4000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2498,
+                    damageWindowEndMs: 2500,
+                    animationId: "MAX_BEHEMOTH_BASH",
+                };
         } else {
             if (moveSelected?.moveId.startsWith("HIDDEN_POWER_")) {
                 return allMoves.find((m: any) => m.moveId === "MAX_STRIKE" + (maxMoveLevel === 1 ? "" : maxMoveLevel.toString()));
