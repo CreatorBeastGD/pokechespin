@@ -389,7 +389,7 @@ export class Calculator {
         ENTEI: 26500,
         SUICUNE: 22000,
         LATIOS: 22500,
-        LATIAS: 22500,
+        LATIAS: 28000,
     };
 
     const t6gmaxHP: Record<string, number> = {

@@ -604,7 +604,7 @@ export class PoGoAPI {
             MOLTRES: [8005144, 15, 15, 17500],
             ZAPDOS: [8005144, 15, 15, 13000],
             LATIOS: [8005244, 15, 15, 22500],   
-            LATIAS: [8005244, 15, 15, 22500],
+            LATIAS: [8005144, 15, 15, 28000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {
