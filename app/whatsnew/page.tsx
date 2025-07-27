@@ -21,8 +21,8 @@ const novedades = [
         desc: "+ Added new Pokémon to Max Rankings\n"+
               ">>>>>> Latios, Latias"+
             "\n+ Changed stats on Tier 5 Max Battles. \n"+
-            ">>>>>> Latios\n >>>>>> ~ CPM: 0.8 -> 0.75 \n"+
-            ">>>>>> Latias\n >>>>>> ~ CPM: 0.8 -> 0.7 \n>>>>>> ~ HP: 22500 -> 28000 \n",
+            ">>>>>> Latios\n >>>>>> ~ CPM: 0.8 -> 0.75 \n>>>>>> ~ HP: 22500 -> 23000 \n"+
+            ">>>>>> Latias\n >>>>>> ~ CPM: 0.8 -> 0.7 \n>>>>>> ~ HP: 22500 -> 25000 \n",
         date: "2025-07-25",
     },
     {

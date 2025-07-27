@@ -388,8 +388,8 @@ export class Calculator {
         RAIKOU: 20000,
         ENTEI: 26500,
         SUICUNE: 22000,
-        LATIOS: 22500,
-        LATIAS: 28000,
+        LATIOS: 23000,
+        LATIAS: 25000,
     };
 
     const t6gmaxHP: Record<string, number> = {

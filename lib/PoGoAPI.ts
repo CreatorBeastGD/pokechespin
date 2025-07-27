@@ -2082,6 +2082,12 @@ export class PoGoAPI {
                 win = false;
             }
 
+            if (time >= 1200000) {
+                simGoing = false;
+                battleLog.push({"turn": time, "lost": true});
+                win = false;
+            }
+
             time++;
 
             if ((raidMode.endsWith("gmax") && time === 150000) || (raidMode.endsWith("dmax") && time === 270000)) {
