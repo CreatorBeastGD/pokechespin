@@ -506,13 +506,13 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
-      <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+      <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
         <a href="/pokemon-go-damage-calculator">
         <h1 className="title">
           PokéChespin for Max Battles
         </h1>
         </a>
-      <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+      <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       <Navbar/>
@@ -586,7 +586,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
           </CardContent>
             ) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
-          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+          <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}
@@ -623,7 +623,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               paramsLoaded={paramsLoaded}
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
-                <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+                <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
                 <p className="text-primary text-lg">Loading...</p>
               </div>
             )}

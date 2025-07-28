@@ -8,7 +8,7 @@ import Image from "next/image";
 export default function Page() {
     return (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-            <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+            <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
             <h1 className="title">Pokémon GO Damage Calculator | PokéChespin <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
             <p className="text-white text-lg px-4">Calculate the damage output of your Pokémon in Pokémon GO! Simulate battles and raids, and find out the best moveset for your Pokémon.</p>
             <a href={"/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">

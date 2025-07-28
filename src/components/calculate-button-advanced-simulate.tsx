@@ -232,7 +232,7 @@ export default function CalculateButtonSimulateAdvanced({
       </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+          <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}

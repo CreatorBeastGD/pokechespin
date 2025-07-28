@@ -435,11 +435,11 @@ export default function WhatsNewPage() {
 	return (
 		<div className="flex flex-col flex-row items-center justify-center space-y-4">
 			<div className="flex flex-row items-center justify-center space-x-4">
-				<Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+				<Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
 				<a href="/pokemon-go-damage-calculator">
                     <h1 className="mb-10 title">PokéChespin News <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
                 </a>
-				<Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+				<Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
 			</div>
             <p className="linktext">
 				Made by{" "}
