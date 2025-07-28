@@ -440,7 +440,7 @@ export default function SearchBarAttacker({
       </div>
       {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}

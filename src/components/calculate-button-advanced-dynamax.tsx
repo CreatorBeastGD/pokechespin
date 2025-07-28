@@ -10,6 +10,7 @@ import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calculator } from "../../lib/calculations";
 import { Switch } from "./ui/switch";
+import Image from "next/image";
 
 export default function CalculateButtonSimulateAdvancedDynamax({
   attacker,
@@ -274,7 +275,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     <p className="mt-2"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseEnergy)} checked={prioritiseEnergy}/> Prioritise Energy generation </p>    
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}

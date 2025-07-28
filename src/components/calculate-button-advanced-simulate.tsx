@@ -9,6 +9,7 @@ import { Switch } from "./ui/switch";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function CalculateButtonSimulateAdvanced({
   attacker,
@@ -231,7 +232,7 @@ export default function CalculateButtonSimulateAdvanced({
       </div>
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}

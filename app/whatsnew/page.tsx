@@ -3,6 +3,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import React from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import Navbar from "@/components/navbar";
+import Image from "next/image";
 
 const novedades = [
     {
@@ -434,19 +435,11 @@ export default function WhatsNewPage() {
 	return (
 		<div className="flex flex-col flex-row items-center justify-center space-y-4">
 			<div className="flex flex-row items-center justify-center space-x-4">
-				<img
-					src="/favicon.ico"
-					alt="Favicon"
-					className="inline-block mr-2 favicon"
-				/>
+				<Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
 				<a href="/pokemon-go-damage-calculator">
                     <h1 className="mb-10 title">PokéChespin News <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
                 </a>
-				<img
-					src="/favicon.ico"
-					alt="Favicon"
-					className="inline-block mr-2 favicon"
-				/>
+				<Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
 			</div>
             <p className="linktext">
 				Made by{" "}

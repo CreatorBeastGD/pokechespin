@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -258,13 +259,13 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
-      <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+        <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
         <a href="/pokemon-go-damage-calculator">
         <h1 className="mb-10 title">
         PokéChespin for Raids
         </h1>
         </a>
-      <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+      <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       <Navbar/>
@@ -302,7 +303,7 @@ export default function Home() {
             />
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
-          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
           <p className="text-primary text-lg">Loading...</p>
         </div>
       )}
@@ -340,7 +341,7 @@ export default function Home() {
               paramsLoaded={paramsLoaded}
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
-                <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+                <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
                 <p className="text-primary text-lg">Loading...</p>
               </div>
             )}

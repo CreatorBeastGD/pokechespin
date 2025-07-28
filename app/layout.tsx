@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
+import Image from "next/image";
 import { Suspense } from "react";
 import BuyMeACoffeeIcon from "@/components/buy-me-a-coffee";
 import CookieBanner from "@/components/cookie-banner";
@@ -38,7 +39,7 @@ export default function RootLayout({
         <Suspense fallback={
           
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-          <img src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" />
+          <Image unoptimized src="/favicon.ico" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
             <p className="text-white text-lg">Loading Pokémon GO Damage Calculator...</p>
         </div>
         }>
