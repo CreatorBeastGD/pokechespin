@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import Image from "next/image";
 
 const novedades = [
+    
     {
         title: "Dev notice",
         desc: "Hey all! It has been a while since the last update, and I am aware of that. \n"+
@@ -16,6 +17,27 @@ const novedades = [
             "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
             "Thank you for your patience and support, enjoy PokéChespin! \n",
         date: "2025-07-07",
+    },
+    {
+        title: "v1.24.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Gigantamax Butterfree, Kabuto, Kabutops.\n"+
+            "+ Changed stats on Tier 6 Max Battles. \n"+
+            ">>>>> An Attack Multiplier of 0.9 has been added to most Gigantamax Bosses. \n"+
+            ">>>>> An Attack Multiplier of 0.75 has been added to Gigantamax Lapras.\n"+
+            ">>>>> An Attack Multiplier of 1.2 has been added to Gigantamax Toxtricity. (and all its GMax variants.)\n"+
+            ">>>>> The CPM of most Gigantamax Pokémon has been changed to 0.85.\n"+
+            ">>>>> The CPM of Gigantamax Machamp has been changed to 0.8.\n"+
+            ">>>>> The CPM of Gigantamax Butterfree has been changed to 0.85.\n"+
+            ">>>>> The CPM of Gigantamax Inteleon has been changed to 0.9.\n"+
+            ">>>>> The CPM of Gigantamax Cinderace has been changed to 0.8.\n"+
+            ">>>>> The CPM of Gigantamax Rillaboom has been changed to 1.0.\n"+
+            ">>>>> The CPM of Gigantamax Lapras has been changed to 0.45.\n"+
+            ">>>>> The HP of most Gigantamax Pokémon has been changed to 100000HP.\n"+
+            ">>>>> The HP of Gigantamax Venusaur, Charizard, Blastoise and Gengar has been changed to 80000HP.\n"+
+            ">>>>> The HP of Gigantamax Butterfree has been set to 90000HP.\n"+
+            ">>>>> The HP of Gigantamax Toxtricity has been set to 160000HP.\n",
+        date: "2025-08-03",
     },
     {
         title: "v1.24.1.1",

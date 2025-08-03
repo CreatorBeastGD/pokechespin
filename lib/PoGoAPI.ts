@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.1.1";
+        return "1.24.2";
     }
 
     static async getAllPokemon() {
@@ -608,20 +608,21 @@ export class PoGoAPI {
         };
 
         const t6gmaxStats: Record<string, number[]> = {
-            VENUSAUR_GIGANTAMAX: [8006003, 15, 15, 90000],
-            CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 90000],
-            BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 90000],
-            GENGAR_GIGANTAMAX: [8006, 15, 15, 90000],
-            LAPRAS_GIGANTAMAX: [8006131, 15, 15, 135000],
-            MACHAMP_GIGANTAMAX: [8006068, 15, 15, 115000],
-            SNORLAX_GIGANTAMAX: [8006, 15, 15, 115000],
-            KINGLER_GIGANTAMAX: [8006, 15, 15, 115000],
-            TOXTRICITY_AMPED_GIGANTAMAX: [8006, 15, 15, 180000],
-            TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006, 15, 15, 180000],
-            TOXTRICITY_GIGANTAMAX: [8006, 15, 15, 180000],
-            RILLABOOM_GIGANTAMAX: [8005245, 15, 15, 120000],
-            INTELEON_GIGANTAMAX: [8006818, 15, 15, 100000],
-            CINDERACE_GIGANTAMAX: [8006068, 15, 15, 80000],
+            VENUSAUR_GIGANTAMAX: [8006003, 15, 15, 80000],
+            CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 80000],
+            BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 80000],
+            GENGAR_GIGANTAMAX: [8006003, 15, 15, 80000],
+            LAPRAS_GIGANTAMAX: [8005045, 15, 15, 100000],
+            MACHAMP_GIGANTAMAX: [8005, 15, 15, 100000],
+            SNORLAX_GIGANTAMAX: [8006003, 15, 15, 100000],
+            KINGLER_GIGANTAMAX: [8006003, 15, 15, 100000],
+            TOXTRICITY_AMPED_GIGANTAMAX: [8006003, 15, 15, 160000],
+            TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006003, 15, 15, 160000],
+            TOXTRICITY_GIGANTAMAX: [8006003, 15, 15, 160000],
+            RILLABOOM_GIGANTAMAX: [100, 15, 15, 120000],
+            INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
+            CINDERACE_GIGANTAMAX: [8005243, 15, 15, 80000],
+            BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
         };
 
         // DMAX Tier 5
@@ -1131,18 +1132,19 @@ export class PoGoAPI {
     }
 
     static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean, defender?: any) {
-        if (desperate) {
-            return 4;
-        } if (raidMode === "raid-t5-dmax") {
-          return 2;
+        let damageMultiplier = 1;
+        if (raidMode === "raid-t5-dmax") {
+          damageMultiplier = 2;
         } if (raidMode === "raid-t6-gmax") {
             if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
-                return 1.333;
+                damageMultiplier = 1.2;
+            } else if (defender.pokemonId === "LAPRAS_GIGANTAMAX") {
+                damageMultiplier = 0.75;
             } else {
-                return 1;
+                damageMultiplier = 0.9;
             }
         }
-        return 1;
+        return damageMultiplier * (desperate ? 4 : 1);
     }
 
     static getDefenseMultiplier(raidMode: any) {
