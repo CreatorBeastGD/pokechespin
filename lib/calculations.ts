@@ -18,6 +18,7 @@ export class Calculator {
       "CATERPIE": "raid-t1-dmax",
       "ROOKIDEE": "raid-t1-dmax",
       "KABUTO": "raid-t1-dmax",
+      "OMANYTE": "raid-t1-dmax",
       "HATENNA": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
@@ -144,8 +145,8 @@ export class Calculator {
       "WAILORD",
       "KABUTO",
       "KABUTOPS",
-      //"OMANYTE",
-      //"OMASTAR",
+      "OMANYTE",
+      "OMASTAR",
       //"TRUBBISH",
       //"GARBODOR",
       "VENUSAUR_GIGANTAMAX",
