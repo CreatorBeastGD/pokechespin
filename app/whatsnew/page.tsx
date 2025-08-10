@@ -6,7 +6,7 @@ import Navbar from "@/components/navbar";
 import Image from "next/image";
 
 const novedades = [
-
+    
     {
         title: "Dev notice",
         desc: "Hey all! It has been a while since the last update, and I am aware of that. \n"+
@@ -17,7 +17,13 @@ const novedades = [
             "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
             "Thank you for your patience and support, enjoy PokéChespin! \n",
         date: "2025-07-07",
-    },    
+    },   
+    {
+        title: "v1.24.2.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Trubbish, Garbodor.\n",
+        date: "2025-08-10",
+    }, 
     {
         title: "v1.24.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+

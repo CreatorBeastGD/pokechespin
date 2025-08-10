@@ -20,6 +20,7 @@ export class Calculator {
       "KABUTO": "raid-t1-dmax",
       "OMANYTE": "raid-t1-dmax",
       "HATENNA": "raid-t1-dmax",
+      "TRUBBISH": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -147,8 +148,8 @@ export class Calculator {
       "KABUTOPS",
       "OMANYTE",
       "OMASTAR",
-      //"TRUBBISH",
-      //"GARBODOR",
+      "TRUBBISH",
+      "GARBODOR",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
