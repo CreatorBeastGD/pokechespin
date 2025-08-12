@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.2.2";
+        return "1.24.3";
     }
 
     static async getAllPokemon() {
@@ -17,7 +17,7 @@ export class PoGoAPI {
         return await response.json();
     }
     
-    static async getTypes () {
+    static async getTypes() {
         const response = await fetch(API + "types.json");
         return await response.json();
     }

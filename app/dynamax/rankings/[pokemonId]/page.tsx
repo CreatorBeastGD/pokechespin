@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { parse } from "path";
 import Navbar from "@/components/navbar";
 import TypeBadge from "@/components/TypeBadge";
+import { Slider } from "@/components/ui/slider";
 
 
 
@@ -48,7 +49,9 @@ export default function rankingsPage() {
     const [generalMode, setGeneralMode] = useState<boolean>(false);
 
     const [zamaExtraShield, setZamaExtraShield] = useState<boolean>(false);
-    
+
+    const [playersInTeam, setPlayersInTeam] = useState<number>(1);
+
     const router = useRouter();
     const sp = useParams();
 
@@ -136,6 +139,8 @@ export default function rankingsPage() {
 
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
 
+                const playersAmount = urlSP.get("players_in_team") ? parseInt(urlSP.get("players_in_team") ?? "1") : 1;
+                setPlayersInTeam(playersAmount);
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
@@ -220,6 +225,10 @@ export default function rankingsPage() {
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
+
+     const TankScorePenalization = (defender: any): number => {
+        return ((playersInTeam * 2) / (((playersInTeam * 2) - 2) + (1000 / defender.fastMove.durationMs)));
+    }
     
     
     const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
@@ -235,14 +244,14 @@ export default function rankingsPage() {
     defenderList?.sort((a: any, b: any) => {
         if (prioritiseFast) {
             if (rankingDisplay === "HP_DMG") {
-                return a.fastMove.durationMs * a.tankScore - b.fastMove.durationMs * b.tankScore;
+                return TankScorePenalization(a) * a.tankScore - TankScorePenalization(b) * b.tankScore;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (a.fastMove.durationMs * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - b.fastMove.durationMs * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
+                return (TankScorePenalization(a) * getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - TankScorePenalization(b) * getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return a.fastMove.durationMs * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - b.fastMove.durationMs * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
+                return TankScorePenalization(a) * getAverageTankScore(a.tankScore, getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId)) - TankScorePenalization(b) * getAverageTankScore(b.tankScore, getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             }
-            if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
-            if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
+            if (TankScorePenalization(a) * a.tankScore > TankScorePenalization(b) * b.tankScore) return 1;
+            if (TankScorePenalization(a) * a.tankScore < TankScorePenalization(b) * b.tankScore) return -1;
             return 0;
         } else {
             if (rankingDisplay === "HP_DMG") {
@@ -264,8 +273,8 @@ export default function rankingsPage() {
         handle(checked);
         defenderList?.sort((a: any, b: any) => {
             if (checked) {
-                if (a.fastMove.durationMs * a.tankScore > b.fastMove.durationMs * b.tankScore) return 1;
-                if (a.fastMove.durationMs * a.tankScore < b.fastMove.durationMs * b.tankScore) return -1;
+                if (TankScorePenalization(a) * a.tankScore > TankScorePenalization(b) * b.tankScore) return 1;
+                if (TankScorePenalization(a) * a.tankScore < TankScorePenalization(b) * b.tankScore) return -1;
                 return 0;
             } else {
                 return a.tankScore - b.tankScore;
@@ -277,6 +286,22 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
+    const handleSlider = (value: number, handle: any, linkSection: string) => {
+        handle(value);
+        defenderList?.sort((a: any, b: any) => {
+            if (prioritiseFast) {
+                if (TankScorePenalization(a) * a.tankScore > TankScorePenalization(b) * b.tankScore) return 1;
+                if (TankScorePenalization(a) * a.tankScore < TankScorePenalization(b) * b.tankScore) return -1;
+                return 0;
+            } else {
+                return a.tankScore - b.tankScore;
+            }
+        });
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set(linkSection, value.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
 
     function handleRankingConfig(value: string): void {
         setRankingDisplay(value);
@@ -300,57 +325,59 @@ export default function rankingsPage() {
 
     const GetLargeTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.large* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.large* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))* (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetBestTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.targetBest * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.targetBest * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetWorstTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.targetWorst * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.targetWorst * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
         return 0;
     }
 
     const GetTargetAverageTankiness = (defender: any) => {
         if (rankingDisplay === "HP_DMG") {
-            return ((defender.targetAvg * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1))).toFixed(2);
+            return ((defender.targetAvg * (prioritiseFast ? TankScorePenalization(defender) : 1))).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
     }
 
     const GetTankScore = (defender: any): string => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.tankScore * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.tankScore * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
         return "0.00";
     }
+
+   
 
     const GetColorForDefender = (defender: any) => {
         if (rankingDisplay === "HP_PERCENT") {
@@ -487,6 +514,7 @@ export default function rankingsPage() {
                             <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This number represents the Damage taken from one Large Attack.</p>
                             <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.3 reduction) and worst (x0.6 reduction) case scenario.</p>
                             <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
+                            <p>"Players in the Team" assumes every other player is using a 0.5s fast attack for max meter charging. The higher the players in a team, the less having a slow tank affects the group's performance. This setting is applied if "Prioritise Fast Attacks for Tanks" is checked.</p>
                             
                         </CardDescription>
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
@@ -494,6 +522,9 @@ export default function rankingsPage() {
                         </button>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        
+                        <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
+                        <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
                         <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                             <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
@@ -503,6 +534,7 @@ export default function rankingsPage() {
                         { zamaExtraShield && (<CardDescription>
                             <p><span className="font-bold">IMPORTANT: </span>Zamazenta - Crowned Shield has a 60HP Shield included in its calculations (because of starting a Max Battle with an extra Shield), meaning it will have better scores than usual on HP% and average Tank Score</p>
                         </CardDescription>)}
+                        
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">

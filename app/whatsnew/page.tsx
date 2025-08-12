@@ -17,7 +17,18 @@ const novedades = [
             "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
             "Thank you for your patience and support, enjoy PokéChespin! \n",
         date: "2025-07-07",
-    },   
+    },
+    {
+        title: "v1.24.3",
+        desc: "+ Added a new setting on Max Rankings\n"+
+                ">>>>>> Players in Team\n"+
+                ">>>>>> Now, if 'Prioritise Fastest Attacks for Tanks' option is checked, you may adjust how many players are considered in the calculation! This assumes every other team member is attacking with a 0.5s fast move.\n"+
+                ">>>>>> The original tank score of affected pokémon are multiplied by the following formula: \n"+
+                ">>>>>> New Tank Score = Original Tank Score * ((PIT * 2) / ((PIT-1) * 2 + (1 / fastMoveMS)))\n"+
+                "Thanks u/Clovis_the13th for the suggestion!",
+        date: "2025-08-12",
+
+    },
     {
         title: "v1.24.2.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+

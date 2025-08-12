@@ -15,6 +15,7 @@ import { parse } from "path";
 import Navbar from "@/components/navbar";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import { Slider } from "@/components/ui/slider";
 
 
 
@@ -53,7 +54,9 @@ export default function rankingsPage() {
 
     const [showTierListAttackers, setShowTierListAttackers] = useState<any[]>([]);
     const [showTierListDefenders, setShowTierListDefenders] = useState<any[]>([]);
-    
+
+    const [playersInTeam, setPlayersInTeam] = useState<number>(1);
+
     const router = useRouter();
     const sp = useParams();
 
@@ -100,6 +103,7 @@ export default function rankingsPage() {
             urlSP.get("ranking_display") ? handleRankingConfig(urlSP.get("ranking_display")!) : handleRankingConfig("HP_DMG");
             urlSP.get("prioritise_fast_attack") ? setPrioritiseFast(urlSP.get("prioritise_fast_attack") === "true") : setPrioritiseFast(false);
             urlSP.get("zamazenta_extra_shield") ? setZamaExtraShield(urlSP.get("zamazenta_extra_shield") === "true") : setZamaExtraShield(false);
+            urlSP.get("players_in_team") ? setPlayersInTeam(parseInt(urlSP.get("players_in_team")!)) : setPlayersInTeam(1);
 
             let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty);
             let tierListDefenders = PoGoAPI.getDefenderTierList(pokemonList, allMoves, types, dmaxDifficulty);
@@ -157,6 +161,10 @@ export default function rankingsPage() {
         setShowBestAttackers(!showBestAttackers);
     }
 
+    const TankScorePenalization = (defender: any): number => {
+        return ((playersInTeam * 2) / (((playersInTeam * 2) - 2) + (1000 / defender.fastMove.durationMs)));
+    }
+
     const toggleShowAllDefenders = () => {
         setShowBestDefenders(!showBestDefenders);
     }
@@ -174,14 +182,14 @@ export default function rankingsPage() {
     defenderList?.sort((a: any, b: any) => {
         if (prioritiseFast) {
             if (rankingDisplay === "HP_DMG") {
-                return a.fastMove.durationMs * a.tier - b.fastMove.durationMs * b.tier;
+                return TankScorePenalization(a) * a.tier - TankScorePenalization(b) * b.tier;
             } else if (rankingDisplay === "HP_PERCENT") {
-                return (a.fastMove.durationMs * getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - b.fastMove.durationMs * getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
+                return (TankScorePenalization(a) * getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - TankScorePenalization(b) * getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));
             } else if (rankingDisplay === "AVG") {
-                return a.fastMove.durationMs * getAverageTankScore(a.tier, getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemonId)) - b.fastMove.durationMs * getAverageTankScore(b.tier, getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemonId));
+                return TankScorePenalization(a) * getAverageTankScore(a.tier, getHPPercent(a.tier, a.pokemon.stats.baseStamina, a.pokemonId)) - TankScorePenalization(b) * getAverageTankScore(b.tier, getHPPercent(b.tier, b.pokemon.stats.baseStamina, b.pokemonId));
             }
-            if (a.fastMove.durationMs * a.tier > b.fastMove.durationMs * b.tier) return 1;
-            if (a.fastMove.durationMs * a.tier < b.fastMove.durationMs * b.tier) return -1;
+            if (TankScorePenalization(a) * a.tier > TankScorePenalization(b) * b.tier) return 1;
+            if (TankScorePenalization(a) * a.tier < TankScorePenalization(b) * b.tier) return -1;
             return 0;
         } else {
             if (rankingDisplay === "HP_DMG") {
@@ -234,6 +242,23 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
+    const handleSlider = (value: number, handle: any, linkSection: string) => {
+        handle(value);
+        defenderList?.sort((a: any, b: any) => {
+            if (prioritiseFast) {
+                if (TankScorePenalization(a) * a.tankScore > TankScorePenalization(b) * b.tankScore) return 1;
+                if (TankScorePenalization(a) * a.tankScore < TankScorePenalization(b) * b.tankScore) return -1;
+                return 0;
+            } else {
+                return a.tankScore - b.tankScore;
+            }
+        });
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set(linkSection, value.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
     function handleRankingConfig(value: string): void {
 
         setRankingDisplay(value);
@@ -257,11 +282,11 @@ export default function rankingsPage() {
     
     const GetTankScore = (defender: any): string => {
         if (rankingDisplay === "HP_DMG") {
-            return (defender.tier * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (defender.tier * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
-            return (getAverageTankScore(defender.tier, getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemonId)) * (prioritiseFast ? defender.fastMove.durationMs / 500 : 1)).toFixed(2);
+            return (getAverageTankScore(defender.tier, getHPPercent(defender.tier, defender.pokemon.stats.baseStamina, defender.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
         return "0.00";
     }
@@ -439,6 +464,10 @@ export default function rankingsPage() {
                         
                         <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        
+                        <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
+                        <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
+                        
                         <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
                                 value={rankingDisplay}
                                 onChange={(e) => handleRankingConfig(e.target.value)}
@@ -481,13 +510,13 @@ export default function rankingsPage() {
                                                     <div className="flex flex-row items-center justify-between space-x-4">
 
                                                         <h3 className="text-sm font-bold text-black">Global Score</h3>
-                                                        <p>{GetTankScore(defender)}</p>
+                                                        <p className={(prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black"}>{GetTankScore(defender)}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p className="font-bold text-black">
+                                                        <p className={"font-bold " + ((prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black")}>
                                                             {((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[0]}
                                                             <span className="text-xs align-top">.{((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
