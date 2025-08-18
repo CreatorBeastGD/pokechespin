@@ -395,7 +395,7 @@ export class Calculator {
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
     const t5dmaxHP: Record<string, number> = {
         ZAPDOS: 13000,
-        MOLTRES: 17500,
+        MOLTRES: 20000,
         ARTICUNO: 17500,
         RAIKOU: 20000,
         ENTEI: 26500,
