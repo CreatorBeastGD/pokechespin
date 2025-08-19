@@ -165,6 +165,7 @@ export class Calculator {
       "BUTTERFREE_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
+      "ETERNATUS"
     ];
 
     private static CPM_VALUES: { [level: number]: number } = {

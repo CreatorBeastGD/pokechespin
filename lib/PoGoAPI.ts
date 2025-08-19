@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.3";
+        return "1.24.3.1";
     }
 
     static async getAllPokemon() {
@@ -382,13 +382,19 @@ export class PoGoAPI {
             // Special case for Zacian's Max Behemoth Blade
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
             let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BLADE" );
-            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 385;
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
             return move
         } else if (pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM") {
             // Special case for Zamazenta's Max Behemoth Bash
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
             let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BASH" );
-            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 385;
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
+            return move;
+        } else if (pokemonId == "ETERNATUS") {
+            // Special case for Eternatus's Max Dynamax Cannon
+            const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
+            let move = allMoves.find((m: any) => m.moveId === "MAX_DYNAMAX_CANNON" );
+            move.power = maxMoveLevel === 1 ? 350 : maxMoveLevel === 2 ? 400 : 450;
             return move;
         } else {
             if (moveSelected?.moveId.startsWith("HIDDEN_POWER_")) {

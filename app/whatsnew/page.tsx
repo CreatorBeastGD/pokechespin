@@ -18,6 +18,13 @@ const novedades = [
         date: "2025-08-19",
     },
     {
+        title: "v1.24.3.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+              ">>>>>> Eternatus.\n"+
+              "+ Added 'Max Dynamax Cannon' fast move for Eternatus",
+        date: "2025-08-19",
+    },
+    {
         title: "v1.24.3",
         desc: "+ Added a new setting on Max Rankings\n"+
                 ">>>>>> Players in the Team\n"+
