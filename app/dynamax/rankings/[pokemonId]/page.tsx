@@ -226,7 +226,7 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
-     const TankScorePenalization = (defender: any): number => {
+    const TankScorePenalization = (defender: any): number => {
         return ((playersInTeam * 2) / (((playersInTeam * 2) - 2) + (1000 / defender.fastMove.durationMs)));
     }
     
@@ -421,7 +421,7 @@ export default function rankingsPage() {
                 <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
                 </div>
                 <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-                
+                <p className="italic text-red-600">Read the news, please...</p>
                 <Navbar/>
                 <h1 className="text-2xl font-bold">Best Attackers and Defenders for {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}</h1>
                 <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">

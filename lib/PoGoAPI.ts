@@ -382,13 +382,13 @@ export class PoGoAPI {
             // Special case for Zacian's Max Behemoth Blade
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
             let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BLADE" );
-            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 385;
             return move
         } else if (pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM") {
             // Special case for Zamazenta's Max Behemoth Bash
             const max = maxMoveLevel === 1 ? "" : maxMoveLevel;
             let move = allMoves.find((m: any) => m.moveId === "MAX_BEHEMOTH_BASH" );
-            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 350;
+            move.power = maxMoveLevel === 1 ? 250 : maxMoveLevel === 2 ? 300 : 385;
             return move;
         } else {
             if (moveSelected?.moveId.startsWith("HIDDEN_POWER_")) {

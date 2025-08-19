@@ -9,19 +9,18 @@ const novedades = [
     
     {
         title: "Dev notice",
-        desc: "Hey all! It has been a while since the last update, and I am aware of that. \n"+
-            "There are some different projects I am working on right now for my carreer, such as a couple videogames, and they are taking a lot of my time. \n"+
-            "There are some things that I have planned to do to PokeChéspin, things like Zacian and Zamazenta adventure effects, new sections regarding Max Battles and some other things I have in mind. \n"+
-            "From now on, I'll be updating the Max Ranking with new Pokémon and doing some small tweaks for now. \n"+
-            "This has been a pretty rough month and it hasn't ended yet... Quite possibly 2 more months of work before I can get back to PokeChéspin seriously. \n"+
-            "I hope you understand, and I am really sorry for the delay on everything. I'm still active on Reddit and Discord, so if you want to talk to me, you can find me there. \n"+
-            "Thank you for your patience and support, enjoy PokéChespin! \n",
-        date: "2025-07-07",
+        desc: "Hey all! I hope you are having a nice Dark Skies (and future Max Finale) event!\n"+ 
+        "Sadly there's some bad news out here... And it's that I would never expect the amount of average users being so high!\n"+
+        "This doesn't mean something really bad, but Vercel is starting to hit with some limitations, now reaching the 70% of available Edge Requests on the Free Plan...\n"+
+        "I'll try something out, but it's possible that PokéChespin may be under maintenance after Max Finale event (or before that, who knows...)\n"+
+        "Thanks a lot for using PokéChespin! It's great to know this is helping y'all :)\n"+
+        "And again, sorry for the low update frequency. I'm still working on my Bachelor's Final Project, although it's closer to the end...\n",
+        date: "2025-08-19",
     },
     {
         title: "v1.24.3",
         desc: "+ Added a new setting on Max Rankings\n"+
-                ">>>>>> Players in Team\n"+
+                ">>>>>> Players in the Team\n"+
                 ">>>>>> Now, if 'Prioritise Fastest Attacks for Tanks' option is checked, you may adjust how many players are considered in the calculation! This assumes every other team member is attacking with a 0.5s fast move.\n"+
                 ">>>>>> The original tank score of affected pokémon are multiplied by the following formula: \n"+
                 ">>>>>> New Tank Score = Original Tank Score * ((PIT * 2) / ((PIT-1) * 2 + (1 / fastMoveMS)))\n"+
