@@ -97,7 +97,7 @@ export class PoGoAPI {
     }
 
     static getMoveNamePB(moveId: string, textList: any) {
-        if (moveId === "DYNAMAX_CANNON") {
+        if (moveId === "MAX_DYNAMAX_CANNON") {
             return "Dynamax Cannon";
         }
         return this.formatMoveText(textList.moves[moveId], textList);
