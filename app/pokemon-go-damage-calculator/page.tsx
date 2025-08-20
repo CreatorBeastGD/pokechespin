@@ -27,7 +27,7 @@ export default function Page() {
                 </button>
             </a>
             <div>
-                <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a>, Gerkenator, Someone and Jeff L Perritt for you donations! ♥️</p>
+                <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a>, Gerkenator, Someone, Jeff L Perritt and Matthew Bauman for you donations! ♥️</p>
             </div>
             <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Avatar className="mb-4">

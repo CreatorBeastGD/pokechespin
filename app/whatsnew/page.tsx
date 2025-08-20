@@ -9,13 +9,11 @@ const novedades = [
     
     {
         title: "Dev notice",
-        desc: "Hey all! I hope you are having a nice Dark Skies (and future Max Finale) event!\n"+ 
-        "Sadly there's some bad news out here... And it's that I would never expect the amount of average users being so high!\n"+
-        "This doesn't mean something really bad, but Vercel is starting to hit with some limitations, now reaching the 70% of available Edge Requests on the Free Plan...\n"+
-        "I'll try something out, but it's possible that PokéChespin may be under maintenance after Max Finale event (or before that, who knows...)\n"+
-        "Thanks a lot for using PokéChespin! It's great to know this is helping y'all :)\n"+
-        "And again, sorry for the low update frequency. I'm still working on my Bachelor's Final Project, although it's closer to the end...\n",
-        date: "2025-08-19",
+        desc: "Hi! Hope you're doing good!\n"+
+        "Today someone donated via Buy Me a Coffee! I've decided to use this donation to adquire Vercel's Pro Plan for the next month.\n"+
+        "This way, higher limits can be achieved, in contrast with the high usage PokéChespin is experiencing.\n"+
+        "Thanks for your support! Enjoy PokéChespin and Max Finale!",
+        date: "2025-08-20",
     },
     {
         title: "v1.24.3.1",

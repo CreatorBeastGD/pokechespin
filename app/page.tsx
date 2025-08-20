@@ -268,7 +268,7 @@ export default function Home() {
       <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-      <p className="italic text-red-600">Read the news, please...</p>
+      <p className="italic text-red-600">Read the news!</p>
       <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
