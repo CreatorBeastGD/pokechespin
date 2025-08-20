@@ -122,6 +122,10 @@ export class PoGoAPI {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
             pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ETERNATUS_ETERNAMAX_FORM") {
+            pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
+            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+            pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         }
         return pokemon;
     }
