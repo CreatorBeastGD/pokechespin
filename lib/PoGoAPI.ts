@@ -107,6 +107,15 @@ export class PoGoAPI {
         return (Math.random() < 1/4096) ? pokemonList[pokemonId].shiny : pokemonList[pokemonId].base;
     }
 
+    static filterUniqueById(list: any[]) {
+        const seen = new Set();
+        return list.filter(item => {
+            if (seen.has(item.pokemonId)) return false;
+            seen.add(item.pokemonId);
+            return true;
+        });
+    }
+
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
         if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
             pokemonId = "HO_OH";
@@ -127,7 +136,8 @@ export class PoGoAPI {
             pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         }
-        return pokemon;
+
+        return this.filterUniqueById(pokemon);
     }
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
@@ -142,7 +152,7 @@ export class PoGoAPI {
         const list = (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
         const origPokemon = this.getPokemonPBByID(name, pokemonList)[0];
         const listFiltered = list ? (list).filter((pokemon: any) => (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId) || (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId + "_MEGA")) : [];
-        return listFiltered;
+        return this.filterUniqueById(listFiltered);
     }
 
 
@@ -633,6 +643,7 @@ export class PoGoAPI {
             INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
             CINDERACE_GIGANTAMAX: [8005243, 15, 15, 80000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
+            ETERNATUS_ETERNAMAX_FORM: [8005144, 15, 15, 100000],
         };
 
         // DMAX Tier 5
@@ -1145,11 +1156,18 @@ export class PoGoAPI {
         let damageMultiplier = 1;
         if (raidMode === "raid-t5-dmax") {
           damageMultiplier = 2;
-        } if (raidMode === "raid-t6-gmax") {
-            if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
-                damageMultiplier = 1.2;
-            } else if (defender.pokemonId === "LAPRAS_GIGANTAMAX") {
-                damageMultiplier = 0.75;
+        } else if (raidMode === "raid-t6-gmax") {
+            if (defender) {
+                if (defender.pokemonId === "ETERNATUS_ETERNAMAX_FORM") {
+                damageMultiplier = 1;
+                } 
+                else if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
+                    damageMultiplier = 1.2;
+                } else if (defender.pokemonId === "LAPRAS_GIGANTAMAX") {
+                    damageMultiplier = 0.75;
+                }else {
+                    damageMultiplier = 0.9;
+                }
             } else {
                 damageMultiplier = 0.9;
             }
