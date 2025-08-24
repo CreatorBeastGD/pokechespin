@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.3.1";
+        return "1.24.4";
     }
 
     static async getAllPokemon() {
@@ -133,7 +133,7 @@ export class PoGoAPI {
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ETERNATUS_ETERNAMAX_FORM") {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
-            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         }
 
@@ -643,7 +643,7 @@ export class PoGoAPI {
             INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
             CINDERACE_GIGANTAMAX: [8005243, 15, 15, 80000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
-            ETERNATUS_ETERNAMAX_FORM: [8005144, 15, 15, 100000],
+            ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
         };
 
         // DMAX Tier 5
@@ -1158,10 +1158,7 @@ export class PoGoAPI {
           damageMultiplier = 2;
         } else if (raidMode === "raid-t6-gmax") {
             if (defender) {
-                if (defender.pokemonId === "ETERNATUS_ETERNAMAX_FORM") {
-                damageMultiplier = 1;
-                } 
-                else if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
+                if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
                     damageMultiplier = 1.2;
                 } else if (defender.pokemonId === "LAPRAS_GIGANTAMAX") {
                     damageMultiplier = 0.75;

@@ -16,6 +16,13 @@ const novedades = [
         date: "2025-08-20",
     },
     {
+        title: "v1.24.4",
+        desc: "~ Changed the HP of Eternamax Eternatus (Eternamax Form) from 100000 to 60000."+
+              "\n~ Changed the CPM of Eternamax Eternatus from 0.7 to 0.75"+
+              "\n~ Changed the Attack Multiplier of Eternamax Eternatus from 1 to 0.9",
+        date: "2025-08-25"
+    },
+    {
         title: "v1.24.3.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
               ">>>>>> Eternatus.\n"+

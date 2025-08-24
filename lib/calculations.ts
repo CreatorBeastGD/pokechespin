@@ -420,7 +420,7 @@ export class Calculator {
         RILLABOOM_GIGANTAMAX: 120000,
         INTELEON_GIGANTAMAX: 100000,
         CINDERACE_GIGANTAMAX: 80000,
-        ETERNATUS_ETERNAMAX_FORM: 100000
+        ETERNATUS_ETERNAMAX_FORM: 60000
     };
 
     if (raidMode === "raid-t5-dmax") {
