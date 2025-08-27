@@ -16,6 +16,13 @@ const novedades = [
         date: "2025-08-20",
     },
     {
+        title: "v1.24.4.1",
+        desc: "~ Changed the HP of Gigantamax Lapras from 100000 to 80000."+
+              "\n~ Changed the CPM of Gigantamax Lapras from 0.34 to 0.85"+
+              "\n~ Changed the Attack Multiplier of Gigantamax Lapras from 0.75 to 0.9",
+        date: "2025-08-21"
+    },
+    {
         title: "v1.24.4",
         desc: "~ Changed the HP of Eternamax Eternatus (Eternamax Form) from 100000 to 60000."+
               "\n~ Changed the CPM of Eternamax Eternatus from 0.7 to 0.75"+

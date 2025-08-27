@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.24.4";
+        return "1.24.4.1";
     }
 
     static async getAllPokemon() {
@@ -632,7 +632,7 @@ export class PoGoAPI {
             CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 80000],
             BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 80000],
             GENGAR_GIGANTAMAX: [8006003, 15, 15, 80000],
-            LAPRAS_GIGANTAMAX: [8005045, 15, 15, 100000],
+            LAPRAS_GIGANTAMAX: [8006003, 15, 15, 80000],
             MACHAMP_GIGANTAMAX: [8005, 15, 15, 100000],
             SNORLAX_GIGANTAMAX: [8006132, 15, 15, 100000],
             KINGLER_GIGANTAMAX: [8006003, 15, 15, 100000],
@@ -1160,8 +1160,6 @@ export class PoGoAPI {
             if (defender) {
                 if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
                     damageMultiplier = 1.2;
-                } else if (defender.pokemonId === "LAPRAS_GIGANTAMAX") {
-                    damageMultiplier = 0.75;
                 }else {
                     damageMultiplier = 0.9;
                 }
