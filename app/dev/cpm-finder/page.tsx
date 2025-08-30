@@ -24,7 +24,7 @@ export default function CpmFinder() {
     const [baseAtk, setBaseAtk] = useState<number | null>(null);
     const [stabBonus, setStabBonus] = useState<boolean>(true);
 
-    const [analyzingContenders, setAnalyzingContenders] = useState<boolean>(false);
+    const [analyzingContenders, setAnalyzingContenders] = useState<boolean>(true);
 
         useEffect(() => {
             const fetchAllPokemonPB = async () => {
@@ -64,28 +64,30 @@ export default function CpmFinder() {
             if (allDataLoaded) {
                 // All data is loaded, you can use it here
                 console.log("Calculating contenders...")
-                if (movePower && moveType && expectedCpm && baseAtk) {
-
-                    setAnalyzingContenders(false);
-                    const newContenders = PoGoAPI.CpmFinder(
-                        movePower, // Move's power
-                        moveType, // Move's type
-                        weather, // Weather
-                        expectedCpm, // Attacker's expected CPM
-                        baseAtk, // Attacker's Base ATK. Not including IVs (Default 15)
-                        stabBonus, // STAB bonus
-                        types, // Type list, untouched
-                        pokemonList // Pokémon list, untouched
-                    )
-                    console.log(newContenders);
-                    if (newContenders && typeof newContenders === "object") {
-                        setContenders([newContenders.minimumCPMcontender, newContenders.maximumCPMcontender]);
-                    } else {
-                        setContenders([]);
+                setAnalyzingContenders(true);
+                setContenders([]);
+                setTimeout(() => {
+                    if (movePower && moveType && expectedCpm && baseAtk) {
+                        const newContenders = PoGoAPI.CpmFinder(
+                            movePower, // Move's power
+                            moveType, // Move's type
+                            weather, // Weather
+                            expectedCpm, // Attacker's expected CPM
+                            baseAtk, // Attacker's Base ATK. Not including IVs (Default 15)
+                            stabBonus, // STAB bonus
+                            types, // Type list, untouched
+                            pokemonList // Pokémon list, untouched
+                        )
+                        console.log(newContenders);
+                        if (newContenders && typeof newContenders === "object") {
+                            setContenders([newContenders.minimumCPMcontender, newContenders.maximumCPMcontender]);
+                        } else {
+                            setContenders([]);
+                        }
+                        console.log(contenders);
                     }
-                    setAnalyzingContenders(true);
-                    console.log(contenders);
-                }
+                }, 10);
+                setAnalyzingContenders(false);
             }
         };
 
@@ -120,14 +122,14 @@ export default function CpmFinder() {
                         <button onClick={CalculateLimits}>Calculate Limits</button>
                     </div>
 
-                    {analyzingContenders ? (
+                    {contenders.length > 0 ? (
                         <div>
                             <h2 className="p-4">Contenders</h2>
                             <p className="p-4">Minimun Contender: {contenders[0]?.pokemon.pokemonId}, level {contenders[0]?.level} with {contenders[0]?.defenseIV}IV defense ({contenders[0]?.cpm}CPM, expected damage of {contenders[0]?.expectedDamage})</p>
                             <p className="p-4">Maximum Contender: {contenders[1]?.pokemon.pokemonId}, level {contenders[1]?.level} with {contenders[1]?.defenseIV}IV defense ({contenders[1]?.cpm}CPM, expected damage of {contenders[1]?.expectedDamage})</p>
                         </div>
                     ) : (
-                        <p>No contenders found.</p>
+                        <>{analyzingContenders ? <p className="p-4">Select "Calculate Limits" to get the best contenders. (Make sure to fill all fields first!)</p> : <p className="p-4">Analyzing contenders...</p>}</>
                     )}
                 </div>
             )}
