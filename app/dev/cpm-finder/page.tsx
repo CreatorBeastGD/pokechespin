@@ -22,7 +22,7 @@ export default function CpmFinder() {
     const [weather, setWeather] = useState<string>("EXTREME");
     const [expectedCpm, setExpectedCpm] = useState<number | null>(null);
     const [baseAtk, setBaseAtk] = useState<number | null>(null);
-    const [stabBonus, setStabBonus] = useState<boolean>(true);
+    const [stabBonus, setStabBonus] = useState<boolean>(false);
 
     const [analyzingContenders, setAnalyzingContenders] = useState<boolean>(true);
 
