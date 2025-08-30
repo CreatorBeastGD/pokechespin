@@ -370,6 +370,18 @@ export class Calculator {
         return Data.weatherBoost[weather].boost.includes(moveType) ? 1.2 : 1;
       }
 
+      static getEffectiveAttackRawCPM(attack: number, iv: number, level: number) {
+        return Math.max(1, Math.ceil((attack + iv) * (level) * 100000) / 100000);
+      }
+
+      static getEffectiveDefenseRawCPM(defense: number, iv: number, level: number) {
+          return Math.max(1, Math.ceil((defense + iv) * (level) * 100000) / 100000);
+      }
+      
+      static getEffectiveStaminaRawCPM(stamina: number, iv: number, level: number) {
+          return Math.max(1, (stamina + iv) * (level));
+      }
+
       static getEffectiveAttack(attack: number, iv: number, level: number) {
         return Math.max(1, Math.ceil((attack + iv) * this.getCPM(level)* 100000) / 100000);
       }
@@ -395,51 +407,51 @@ export class Calculator {
       }
 
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
-    const t5dmaxHP: Record<string, number> = {
-        ZAPDOS: 13000,
-        MOLTRES: 20000,
-        ARTICUNO: 17500,
-        RAIKOU: 20000,
-        ENTEI: 26500,
-        SUICUNE: 22000,
-        LATIOS: 23000,
-        LATIAS: 25000,
-    };
+        const t5dmaxHP: Record<string, number> = {
+            ZAPDOS: 13000,
+            MOLTRES: 20000,
+            ARTICUNO: 17500,
+            RAIKOU: 20000,
+            ENTEI: 26500,
+            SUICUNE: 22000,
+            LATIOS: 23000,
+            LATIAS: 25000,
+        };
 
-    const t6gmaxHP: Record<string, number> = {
-        VENUSAUR_GIGANTAMAX: 80000,
-        CHARIZARD_GIGANTAMAX: 80000,
-        BLASTOISE_GIGANTAMAX: 80000,
-        GENGAR_GIGANTAMAX: 80000,
-        TOXTRICITY_GIGANTAMAX: 160000,
-        TOXTRICITY_LOW_KEY_GIGANTAMAX: 160000,
-        TOXTRICITY_AMPED_GIGANTAMAX: 160000,
-        LAPRAS_GIGANTAMAX: 80000,
-        KINGLER_GIGANTAMAX: 100000,
-        SNORLAX_GIGANTAMAX: 100000,
-        MACHAMP_GIGANTAMAX: 100000,
-        RILLABOOM_GIGANTAMAX: 120000,
-        INTELEON_GIGANTAMAX: 100000,
-        CINDERACE_GIGANTAMAX: 80000,
-        ETERNATUS_ETERNAMAX_FORM: 60000
-    };
+        const t6gmaxHP: Record<string, number> = {
+            VENUSAUR_GIGANTAMAX: 80000,
+            CHARIZARD_GIGANTAMAX: 80000,
+            BLASTOISE_GIGANTAMAX: 80000,
+            GENGAR_GIGANTAMAX: 80000,
+            TOXTRICITY_GIGANTAMAX: 160000,
+            TOXTRICITY_LOW_KEY_GIGANTAMAX: 160000,
+            TOXTRICITY_AMPED_GIGANTAMAX: 160000,
+            LAPRAS_GIGANTAMAX: 80000,
+            KINGLER_GIGANTAMAX: 100000,
+            SNORLAX_GIGANTAMAX: 100000,
+            MACHAMP_GIGANTAMAX: 100000,
+            RILLABOOM_GIGANTAMAX: 120000,
+            INTELEON_GIGANTAMAX: 100000,
+            CINDERACE_GIGANTAMAX: 80000,
+            ETERNATUS_ETERNAMAX_FORM: 60000
+        };
 
-    if (raidMode === "raid-t5-dmax") {
-        if (pokemonId in t5dmaxHP) {
-            return t5dmaxHP[pokemonId];
+        if (raidMode === "raid-t5-dmax") {
+            if (pokemonId in t5dmaxHP) {
+                return t5dmaxHP[pokemonId];
+            } else {
+                return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
+            }
+        } else if (raidMode === "raid-t6-gmax") {
+            if (pokemonId in t6gmaxHP) {
+                return t6gmaxHP[pokemonId];
+            } else {
+                return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
+            }
         } else {
-            return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
+            return this.RAID_BOSS_HP[raidMode];
         }
-    } else if (raidMode === "raid-t6-gmax") {
-        if (pokemonId in t6gmaxHP) {
-            return t6gmaxHP[pokemonId];
-        } else {
-            return this.RAID_BOSS_HP[raidMode] * (hasWeakness ? 1.6 : 1);
-        }
-    } else {
-        return this.RAID_BOSS_HP[raidMode];
-    }
-}
+      }
 
       /**
        * 
@@ -454,5 +466,21 @@ export class Calculator {
       
       static getRawPCs(attack: number, defense: number, stamina: number) {
         return Math.max(10, Math.floor((Math.sqrt(this.getEffectiveStamina(stamina, 0, 100)) * this.getEffectiveAttack(attack, 15, 100) * Math.sqrt(this.getEffectiveDefense(defense, 15, 100))) / 10));
+      }
+
+      static BladeBoost(raidMode: string) {
+        if (raidMode.endsWith("dmax") || raidMode.endsWith("gmax") || raidMode.endsWith("gmax-standard")) {
+          return 1.05;
+        } else {
+          return 1.1
+        }
+      }
+
+      static BashBoost(raidMode: string) {
+        if (raidMode.endsWith("dmax") || raidMode.endsWith("gmax") || raidMode.endsWith("gmax-standard")) {
+          return 1.05;
+        } else {
+          return 1.1
+        }
       }
 }

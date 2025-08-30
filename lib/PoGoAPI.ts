@@ -498,6 +498,92 @@ export class PoGoAPI {
         return effectiveness;
     }
 
+    static CpmFinder(
+        attackPower: number,
+        attackType: string,
+        weather: string,
+        baseCPM: number,
+        attackStat: number,
+        stabBonus: boolean,
+        typeList: any,
+        pokemonList: any
+    ) {
+        let minimumCPMcontender = { pokemon: null, cpm: baseCPM-0.05, level: 0, defenseIV: 0, expectedDamage: 0 };
+        let maximumCPMcontender = { pokemon: null, cpm: baseCPM+0.05, level: 0, defenseIV: 0, expectedDamage: 0 };
+
+        const dynamaxPokemon = Calculator.DynamaxPokemon;
+        console.log(pokemonList)
+
+        for (let ID = 0; ID < dynamaxPokemon.length; ID++) {
+            console.log(dynamaxPokemon[ID]);
+            const pokemonData = PoGoAPI.getPokemonPBByID(dynamaxPokemon[ID], pokemonList)[0];
+            console.log(pokemonData);
+            for (let level = 20 ; level <= 50 ; level++) {
+                for (let defenseIV = 10 ; defenseIV <= 15 ; defenseIV++) {
+                    const expectedDamage = Calculator.calculateDamage(
+                        attackPower,
+                        Calculator.getEffectiveAttackRawCPM(
+                            attackStat,
+                            15,
+                            baseCPM
+                        ),
+                        Calculator.getEffectiveDefenseRawCPM(
+                            pokemonData.stats.baseDefense,
+                            defenseIV,
+                            Calculator.getCPM(level)
+                        ),
+                        stabBonus ? 1.2 : 1,
+                        this.getEfectiveness(pokemonData, { type: attackType }, typeList),
+                        attackType,
+                        1, // No additional bonus
+                        [weather, false, false, 0],
+                        [weather, false, false, 0]
+                    )
+                    let minFound = false;
+                    let maxFound = false;
+                    const PokemonHP = Calculator.getEffectiveStaminaRawCPM(pokemonData.stats.baseStamina, 15, Calculator.getCPM(level));
+                    if (expectedDamage < PokemonHP) {
+                        for (let val = (minimumCPMcontender.cpm); val <= (maximumCPMcontender.cpm) && !maxFound ; val = val + 0.0000001) {
+                            const damage = Calculator.calculateDamage(
+                                attackPower,
+                                Calculator.getEffectiveAttackRawCPM(
+                                    attackStat,
+                                    15,
+                                    val,
+                                ),
+                                Calculator.getEffectiveDefenseRawCPM(
+                                    pokemonData.stats.baseDefense,
+                                    defenseIV,
+                                    Calculator.getCPM(level),
+                                ),
+                                stabBonus ? 1.2 : 1,
+                                this.getEfectiveness(pokemonData, { type: attackType }, typeList),
+                                attackType,
+                                1, // No additional bonus
+                                [weather, false, false, 0],
+                                [weather, false, false, 0]
+                            );
+                            if (damage == expectedDamage && !minFound) {
+                                minFound = true;
+                                if (val > minimumCPMcontender.cpm) {
+                                    minimumCPMcontender = { pokemon: pokemonData, cpm: val, level, defenseIV, expectedDamage };
+                                }
+                            }
+                            if (minFound && damage > expectedDamage) {
+                                maxFound = true;
+                                if ( (val) < maximumCPMcontender.cpm) {
+                                    maximumCPMcontender = { pokemon: pokemonData, cpm: (val), level, defenseIV, expectedDamage };
+                                }
+                            }
+                        }
+                    } else {
+                    }
+                }
+            } 
+        }
+        return { minimumCPMcontender, maximumCPMcontender };
+    }
+
     static async getDamageAttackDynamax(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, maxMoveLevel?: any, additionalBonus?: any) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
@@ -537,6 +623,40 @@ export class PoGoAPI {
             (additionalBonus ? additionalBonus : 1),
             bonusAttacker,
             bonusDefender,
+        );
+    }
+
+    static getDamageRawCPM(
+        attacker: any, 
+        defender: any, 
+        move: any, 
+        types: any, 
+        attackerStats: any, 
+        defenderStats: any, 
+        bonusAttacker?: any, 
+        bonusDefender?: any, 
+        raidMode?: any,
+        shroomBonus?: any,
+        damageMultiplier?: any,
+        attackBonus?: any
+    ) {
+        const raid = raidMode ? raidMode : "normal";
+        if (raid !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
+            bonusDefender = [bonusDefender[0], false, false, 0];
+        }
+        //console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
+        const effectiveness = this.getEfectiveness(defender, move, types);
+        return Calculator.calculateDamage(
+            move.power, 
+            Calculator.getEffectiveAttackRawCPM(attacker.stats.baseAttack, attackerStats[1] , attackerStats[0]), 
+            Calculator.getEffectiveDefenseRawCPM(defender.stats.baseDefense, defenderStats[2], defenderStats[0]),
+            attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
+            effectiveness,
+            move.type,
+            ((shroomBonus || shroomBonus !== 0) ? shroomBonus : damageMultiplier ? damageMultiplier : 1),
+            bonusAttacker,
+            bonusDefender
         );
     }
     
