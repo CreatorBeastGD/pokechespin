@@ -56,7 +56,7 @@ export default function CalculateButtonDynamax({
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Calculate
       </Button>
-      {damage !== 0 && health !== 0 && attacker && defender && move && (
+      {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
           <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
