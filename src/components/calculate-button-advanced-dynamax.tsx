@@ -247,7 +247,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       <div className="w-full">
       {Array.from({ length: attacker.length }, (_, i) => (
         <Card className="mt-4 py-4 px-4 mb-2" key={i}>
-          <div className="flex flex-row items-center space-x-3" key={i}>
+          <div className="flex flex-col space-y-3" key={i}>
             <label >Member {i + 1}</label>
             <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
               value={strategy[i]}
@@ -264,7 +264,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               <option value="false">No shrooms</option>
               <option value="true">Shroom (x2)</option>
             </select>
-            <div className="flex flex-col w-[25%]">
+            <div className="2-full">
               <label>Friendship: ({friendship[i]})</label>
               <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
             </div>
@@ -310,9 +310,6 @@ export default function CalculateButtonSimulateAdvancedDynamax({
             All members will swap to their best Pokémon following their role when starting a new Dynamax phase, and will change to their best tank when finishing it.
           </p>
 
-          <p className="text-sm text-slate-700 italic">
-            The defender Pokémon will become enraged when 300s of simulation are reached, dealing x4 damage. Will also become desperate when 360s of simulation are reached, instant-killing everything upon attack.
-          </p>
         {graphic && (
           <Card className="mt-4">
             <CardHeader>

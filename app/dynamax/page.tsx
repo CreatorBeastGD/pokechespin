@@ -664,35 +664,36 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
               </select>
 
-              <p className="italic text-slate-700 text-sm mt-2">
-              Preview Bonuses (only used on calculations)
-            </p>
+              <Card className="w-full mt-4 mb-4 p-4">
+                <CardTitle className="italic text-slate-700 text-sm mt-2">
+                  Preview Bonuses (only used on calculations)
+                </CardTitle>
 
-              <div className="flex flex-row items-center space-x-4 mt-2 mb-4 w-full">
-                <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
-                value={previewShroom.toString()}
-                onChange={(e) => setPreviewShroom(e.target.value === "true")}
-                >
-                  <option value="false">No shrooms</option>
-                  <option value="true">Shroom (x2)</option>
-                </select>
+                <div className="flex flex-col mt-2 mb-4 w-full space-y-2">
+                  <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                  value={previewShroom.toString()}
+                  onChange={(e) => setPreviewShroom(e.target.value === "true")}
+                  >
+                    <option value="false">No shrooms</option>
+                    <option value="true">Shroom (x2)</option>
+                  </select>
 
-              <div className="flex flex-col w-[25%]">
-                <label>Friendship level ({previewFriendship})</label>
-                <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
-              </div>
+                  <div className="w-full">
+                    <label>Friendship level ({previewFriendship})</label>
+                    <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+                  </div>
 
-              <div className="flex flex-col w-[25%]">
-                <label>Helper bonus ({previewHelper + (previewHelper == 15 ? "+" : "")})</label>
-                <Slider onValueChange={(value) => setPreviewHelper(value[0])} value={[previewHelper]} max={15} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
-                <div className="flex flex-row items-center space-x-2">
-                  
-                  <button onClick={() => setPreviewHelper(previewHelper - 1)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-                  <button onClick={() => setPreviewHelper(previewHelper + 1)} className="bg-yellow-600 text-white px-4 rounded">+</button>
+                  <div className="w-full">
+                    <label>Helper bonus ({previewHelper + (previewHelper == 15 ? "+" : "")})</label>
+                    <Slider onValueChange={(value) => setPreviewHelper(value[0])} value={[previewHelper]} max={15} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+                    <div className="flex flex-row items-center space-x-2">
+
+                      <button onClick={() => setPreviewHelper(previewHelper - 1 < 0 ? 0 : previewHelper - 1)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
+                      <button onClick={() => setPreviewHelper(previewHelper + 1 > 15 ? 15 : previewHelper + 1)} className="bg-yellow-600 text-white px-4 rounded">+</button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              </div>
+              </Card>
 
               
 
