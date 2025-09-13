@@ -501,7 +501,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
   }
 
   
-  //console.log(maxMoves);
+  //<p className="italic text-red-600">Read the news!</p>
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -515,7 +515,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
-      <p className="italic text-red-600">Read the news!</p>
+      
       <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">
@@ -683,8 +683,13 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               </div>
 
               <div className="flex flex-col w-[25%]">
-                <label>Helper bonus ({previewHelper})</label>
-                <Slider onValueChange={(value) => setPreviewHelper(value[0])} value={[previewHelper]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+                <label>Helper bonus ({previewHelper + (previewHelper == 15 ? "+" : "")})</label>
+                <Slider onValueChange={(value) => setPreviewHelper(value[0])} value={[previewHelper]} max={15} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+                <div className="flex flex-row items-center space-x-2">
+                  
+                  <button onClick={() => setPreviewHelper(previewHelper - 1)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
+                  <button onClick={() => setPreviewHelper(previewHelper + 1)} className="bg-yellow-600 text-white px-4 rounded">+</button>
+                </div>
               </div>
 
               </div>
@@ -735,7 +740,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                shroomBonus={previewShroom ? 2 : 1}
               />
             </CardContent>
             <CardContent>
@@ -750,7 +756,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                shroomBonus={previewShroom ? 2 : 1}
               />
             </CardContent>
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
@@ -767,7 +774,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewShroom ? 2 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                shroomBonus={previewShroom ? 2 : 1}
               />
             </CardContent>
             )}

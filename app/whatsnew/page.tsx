@@ -6,14 +6,19 @@ import Navbar from "@/components/navbar";
 import Image from "next/image";
 
 const novedades = [
-    
     {
-        title: "Dev notice",
-        desc: "Hi! Hope you're doing good!\n"+
-        "Today someone donated via Buy Me a Coffee! I've decided to use this donation to adquire Vercel's Pro Plan for the next month.\n"+
-        "This way, higher limits can be achieved, in contrast with the high usage PokéChespin is experiencing.\n"+
-        "Thanks for your support! Enjoy PokéChespin and Max Finale!",
-        date: "2025-08-20",
+        title: "v1.25",
+        desc: "+ Changed how 'Shroom Bonus' works on Max Battles.\n"+
+                ">>>>>> In the past, the shroom bonus was applied like a damage multiplier, such as weather boost or STAB.\n"+
+                ">>>>>> Now, the shroom bonus is applied AFTER all damage calculation, resulting in a correct application of x2 damage.\n"+
+                "+ Changed how 'Helpers Bonus' works on Max Battles.\n"+
+                ">>>>>> In the past, the helper bonus oscilated between 0 and 4, representing the amount of gloves a power spot had.\n"+
+                ">>>>>> Now, the helper bonus oscilates between 0 and 15, representing the amount of pokémon placed on a power spot.\n"+
+                ">>>>>> It has been demonstrated that the actual amount of Pokémon placed on a power spot matters on the calculation.\n"+
+                "~ Changed some visuals.\n"+
+                "Thanks Moc and everyone involved in the research for your hard work to discover the real values of Helper Bonuses!\n",
+        date: "2025-09-XX"
+
     },
     {
         title: "v1.24.4.1",

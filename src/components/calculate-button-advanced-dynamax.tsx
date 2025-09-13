@@ -205,6 +205,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   } , [raidMode]);
 
   function handleHelperBonus(value: number[]): void {
+    if (value[0] < 0) value[0] = 0;
+    if (value[0] > 15) value[0] = 15;
     sethelperBonus(value[0]);
 
     const sp = new URLSearchParams(searchParams.toString());
@@ -244,33 +246,39 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       </Button>
       <div className="w-full">
       {Array.from({ length: attacker.length }, (_, i) => (
-        <div className="flex flex-row items-center space-y-2 space-x-3" key={i}>
-          <label >Member {i + 1} Strategy:</label>
-          <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
-            value={strategy[i]}
-            onChange={(e) => handleStrategyChange(i, e.target.value)}
-          >
-            <option value="dmg">DPS</option>
-            <option value="tank">Tank</option>
-            <option value="heal">Healer</option>
-          </select>
-          <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
-            value={shroom[i]}
-            onChange={(e) => handleShroomChange(i, e.target.value)}
-          >
-            <option value="false">No shrooms</option>
-            <option value="true">Shroom (x2)</option>
-          </select>
-          <div className="flex flex-col w-[25%]">
-            <label>Friendship: ({friendship[i]})</label>
-            <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+        <Card className="mt-4 py-4 px-4 mb-2" key={i}>
+          <div className="flex flex-row items-center space-x-3" key={i}>
+            <label >Member {i + 1}</label>
+            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+              value={strategy[i]}
+              onChange={(e) => handleStrategyChange(i, e.target.value)}
+            >
+              <option value="dmg">DPS</option>
+              <option value="tank">Tank</option>
+              <option value="heal">Healer</option>
+            </select>
+            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+              value={shroom[i]}
+              onChange={(e) => handleShroomChange(i, e.target.value)}
+            >
+              <option value="false">No shrooms</option>
+              <option value="true">Shroom (x2)</option>
+            </select>
+            <div className="flex flex-col w-[25%]">
+              <label>Friendship: ({friendship[i]})</label>
+              <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+            </div>
           </div>
-        </div>
+      </Card>
       ))}
     </div>
     
-    <p>Helper Bonus ({helperBonus})</p>
-    <Slider onValueChange={(value) => handleHelperBonus(value)} defaultValue={[helperBonus]} max={4} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+    <p>Helper Bonus ({helperBonus + (helperBonus == 15 ? "+" : "")})</p>
+    <div className="flex flex-row items-center space-x-2">
+      <Slider onValueChange={(value) => handleHelperBonus(value)} value={[helperBonus]} max={15} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+      <button onClick={() => handleHelperBonus([helperBonus - 1])} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
+      <button onClick={() => handleHelperBonus([helperBonus + 1])} className="bg-yellow-600 text-white px-4 rounded">+</button>
+    </div>
 
     <p className="mt-2"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseEnergy)} checked={prioritiseEnergy}/> Prioritise Energy generation </p>    
       {loading && (
