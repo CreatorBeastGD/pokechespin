@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.25.0.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Abra, Kadabra, Alakazam.\n",
+        date: "2025-09-25"
+    },
+    {
         title: "v1.25",
         desc: "+ Changed how 'Shroom Bonus' works on Max Battles.\n"+
                 ">>>>>> In the past, the shroom bonus was applied like a damage multiplier, such as weather boost or STAB.\n"+
