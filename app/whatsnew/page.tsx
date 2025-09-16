@@ -10,7 +10,7 @@ const novedades = [
         title: "v1.25.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Abra, Kadabra, Alakazam.\n",
-        date: "2025-09-25"
+        date: "2025-09-14"
     },
     {
         title: "v1.25",
@@ -23,7 +23,7 @@ const novedades = [
                 ">>>>>> It has been demonstrated that the actual amount of Pokémon placed on a power spot matters on the calculation.\n"+
                 "~ Changed some visuals.\n"+
                 "Thanks Moc and everyone involved in the research for your hard work to discover the real values of Helper Bonuses!\n",
-        date: "2025-09-XX"
+        date: "2025-09-13"
 
     },
     {
