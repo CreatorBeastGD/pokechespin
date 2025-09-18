@@ -16,7 +16,8 @@ export default function CalculateButtonSimulate({
   raidMode,
   bonusAttacker,
   bonusDefender,
-  allEnglishText
+  allEnglishText,
+  bladeBoost = false,
 }: {
   attacker: any;
   defender: any;
@@ -28,6 +29,7 @@ export default function CalculateButtonSimulate({
   bonusAttacker: any;
   bonusDefender: any;
   allEnglishText: any;
+  bladeBoost?: boolean;
 }) {
   const [time, setTime] = useState<number | null>(0);
   const [qau, setQau] = useState<number | null>(0);
@@ -48,7 +50,7 @@ export default function CalculateButtonSimulate({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bladeBoost]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -76,7 +78,7 @@ export default function CalculateButtonSimulate({
     if (!attacker || !defender || !quickMove || !chargedMove) return;
     
     const defenderBonusesMod = [bonusAttacker[0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
-    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod);
+    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, bladeBoost);
     setShownGraphic(false);
     setTime(time);
     setQau(quickAttackUses);
@@ -114,7 +116,7 @@ export default function CalculateButtonSimulate({
       {time !== 0 && attacker && defender && quickMove && chargedMove && (
         <div className="mt-4 space-y-4">
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {(time ?? 0) / 1000} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{bladeBoost && " using Behemoth Blade Adventure Effect"}.
           </p>
           <p>
             <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.

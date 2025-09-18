@@ -63,6 +63,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [strategy, setStrategy] = useState<string[]>(searchParams.get("strategy")?.split(",") ?? ["dmg", "dmg", "dmg", "dmg"]);
   const [shroom, setShroom] = useState<string[]>(searchParams.get("shroom")?.split(",") ?? ["false", "false", "false", "false"]);
+  const [advEffect, setAdvEffect] = useState<string[]>(searchParams.get("adv_effect")?.split(",") ?? ["none", "none", "none", "none"]);
   const [friendship, setFriendship] = useState<number[]>(searchParams.get("friendship")?.split(",").map((x) => parseInt(x)) ?? [0,0,0,0]);
   const [win, setWin] = useState<boolean | null>(null);
   const [phases, setPhases] = useState<number>(0);
@@ -78,6 +79,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       const teams_number = searchParams.get("teams_number");
       const strategy = searchParams.get("strategy");
       const shroom = searchParams.get("shroom");
+      const advEffect = searchParams.get("adv_effect");
       const fs = searchParams.get("friendship");
 
       if (dodge) {
@@ -100,6 +102,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       }
       if (shroom) {
         setShroom(shroom.split(","));
+      }
+      if (advEffect) {
+        setAdvEffect(advEffect.split(","));
       }
       if (fs) {
         setFriendship(fs.split(",").map((x) => parseInt(x)));
@@ -158,7 +163,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, maxMoves, strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect);
     setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);
@@ -186,6 +191,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     sp.set("strategy", strategy.join(","));
     sp.set("shroom", shroom.join(","));
     sp.set("friendship", friendship.join(","));
+    sp.set("adv_effect", advEffect.join(","));
     sp.set("prioritise_energy", prioritiseEnergy.toString());
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
@@ -194,7 +200,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(attacker.map(() => [0,0,0]));
-  }, [strategy, shroom, friendship, prioritiseEnergy]);
+  }, [strategy, shroom, friendship, prioritiseEnergy, advEffect]);
 
   useEffect(() => {
     setTime(0);
@@ -239,6 +245,12 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setFriendship(newFriendship);
   }
 
+  const handleAdvEffectChange = (index: number, value: string) => {
+    const newAdvEffect = [...advEffect];
+    newAdvEffect[index] = value;
+    setAdvEffect(newAdvEffect);
+  }
+
   return (
     <>
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -263,6 +275,15 @@ export default function CalculateButtonSimulateAdvancedDynamax({
             >
               <option value="false">No shrooms</option>
               <option value="true">Shroom (x2)</option>
+            </select>
+            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+              value={advEffect[i]}
+              onChange={(e) => handleAdvEffectChange(i, e.target.value)}
+            >
+              <option value="none">No advanced effect</option>
+              <option value="blade">Behemoth Blade (x1.05 ATK)</option>
+              <option value="bash">Behemoth Bash (x1.05 DEF)</option>
+              <option value="cannon">Dynamax Cannon (+1 max level)</option>
             </select>
             <div className="2-full">
               <label>Friendship: ({friendship[i]})</label>

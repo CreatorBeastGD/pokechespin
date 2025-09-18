@@ -59,6 +59,7 @@ export default function Home() {
   const [previewShroom, setPreviewShroom] = useState<boolean>(false);
   const [previewFriendship, setPreviewFriendship] = useState<number>(0);
   const [previewHelper, setPreviewHelper] = useState<number>(0);
+  const [previewAdvEffect, setPreviewAdvEffect] = useState<string>("none");
 
   const [cleared, setCleared] = useState<boolean>(true);
 
@@ -677,6 +678,15 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                     <option value="false">No shrooms</option>
                     <option value="true">Shroom (x2)</option>
                   </select>
+                  <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                  value={previewAdvEffect.toString()}
+                  onChange={(e) => setPreviewAdvEffect(e.target.value)}
+                  >
+                    <option value="none">No Adventure Effect</option>
+                    <option value="blade">Behemoth Blade (x1.05 ATK)</option>
+                    <option value="bash">Behemoth Bash (x1.05 DEF)</option>
+                    <option value="cannon">Dynamax Cannon (+1 max level)</option>
+                  </select>
 
                   <div className="w-full">
                     <label>Friendship level ({previewFriendship})</label>
@@ -741,8 +751,9 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
+                bladeBoost={previewAdvEffect === "blade"}
               />
             </CardContent>
             <CardContent>
@@ -757,8 +768,9 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
+                bladeBoost={previewAdvEffect === "blade"}
               />
             </CardContent>
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
@@ -775,8 +787,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
+                dynamaxCannonBonus={previewAdvEffect === "cannon"}
+                bladeBoost={previewAdvEffect === "blade"}
               />
             </CardContent>
             )}
@@ -792,7 +806,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={bonusDefender}
                 bonusDefender={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 raidMode={raidMode} 
-                isLarge={true}/>
+                isLarge={true}
+                bashBoost={previewAdvEffect === "bash"}/>
             </CardContent>
             <CardContent>
               <CardDescription> Damage received from Targeted Attack</CardDescription>
@@ -806,7 +821,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={bonusDefender}
                 bonusDefender={bonusAttacker[selectedMember-1][selectedPokemonSlot-1]}
                 raidMode={raidMode} 
-                isLarge={false}/>
+                isLarge={false}
+                bashBoost={previewAdvEffect === "bash"}/>
             </CardContent>
             {allPokemonSelected() ? (
               <CardContent>

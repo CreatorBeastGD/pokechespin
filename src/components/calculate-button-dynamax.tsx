@@ -17,7 +17,9 @@ export default function CalculateButtonDynamax({
   allEnglishText,
   maxLevel,
   additionalBonus = 1,
-  shroomBonus = 1
+  shroomBonus = 1,
+  dynamaxCannonBonus = false,
+  bladeBoost = false,
 }: {
   attacker: any;
   defender: any;
@@ -31,6 +33,8 @@ export default function CalculateButtonDynamax({
   maxLevel: number;
   additionalBonus?: any;
   shroomBonus?: number;
+  dynamaxCannonBonus?: boolean;
+  bladeBoost?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -45,7 +49,7 @@ export default function CalculateButtonDynamax({
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
     const types = await PoGoAPI.getTypes();
-    const damage = await PoGoAPI.getDamageAttackDynamax(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, maxLevel, additionalBonus, shroomBonus);
+    const damage = await PoGoAPI.getDamageAttackDynamax(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, maxLevel, additionalBonus, shroomBonus, dynamaxCannonBonus);
     const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
@@ -61,7 +65,7 @@ export default function CalculateButtonDynamax({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{bonusDefender[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""}{dynamaxCannonBonus ? " using Dynamax Cannon Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           </p>
           <p>
           

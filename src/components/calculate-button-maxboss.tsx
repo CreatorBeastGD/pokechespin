@@ -15,7 +15,8 @@ export default function CalculateButtonMaxBoss({
   bonusDefender,
   raidMode,
   allEnglishText,
-  isLarge
+  isLarge,
+  bashBoost = false,
 }: {
   attacker: any;
   defender: any;
@@ -27,6 +28,7 @@ export default function CalculateButtonMaxBoss({
   raidMode: string;
   allEnglishText: any;
   isLarge: boolean;
+  bashBoost?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -35,7 +37,7 @@ export default function CalculateButtonMaxBoss({
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
@@ -57,7 +59,7 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)
+      PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke) * (bashBoost ? (1/1.05) : 1)
     ) * (isLarge ? 1 : 2);
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
     const remainingStamina = effStamina - damage;
@@ -74,7 +76,7 @@ export default function CalculateButtonMaxBoss({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to {Math.floor((damage ?? 0)*0.5)} damage if dodged. </span>} 
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bashBoost ? " using Behemoth Bash Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to {Math.floor((damage ?? 0)*0.5)} damage if dodged. </span>}
           </p>
           <p>
           

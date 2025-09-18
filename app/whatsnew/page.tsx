@@ -7,6 +7,14 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26 (Adventure Effects!)",
+        desc: "+ Added Adventure Effects to PokéChespin!\n"+
+              ">>>>>> Behemoth Blade and Behemoth Bash will be available in PokéChespin for Raids with a bonus of x1.1 in Attack or Defense depending on what adventure effect you have.\n"+
+              ">>>>>> Behemoth Blade, Behemoth Bash and Dynamax Cannon will be available in PokéChespin for Max Battles aswell, with a x1.05 bonus in Attack or Defense on these first two bonuses\n"+
+              ">>>>>> Dynamax Cannon gives a +1 level to all max moves in Max Battles. This bonus is applied on preview values and simulations, but are not displayed on the Pokémon's info as of now.\n",
+        date: "2025-09-18"
+    },
+    {
         title: "v1.25.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Abra, Kadabra, Alakazam.\n",

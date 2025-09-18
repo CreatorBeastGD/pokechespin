@@ -584,16 +584,17 @@ export class PoGoAPI {
         return { minimumCPMcontender, maximumCPMcontender };
     }
 
-    static async getDamageAttackDynamax(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, maxMoveLevel?: any, additionalBonus?: any, shroomBonus?: any) {
+    static async getDamageAttackDynamax(attackingPokemon: any, defendingPokemon: any, move: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, maxMoveLevel?: any, additionalBonus?: any, shroomBonus?: any, dynamaxCannon: any = false) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid, defendingPokemon.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
         const types = await this.getTypes();
-        const effectiveness = this.getEfectiveness(defendingPokemon, move, types);
+        const effectiveness = this.getEfectiveness(defendingPokemon, move, types);;
+        const cannonBonus = attackingPokemon.pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackingPokemon.pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 0 : dynamaxCannon ? ((maxMoveLevel + 1) === 4 ? 100 : 50) : 0;
         return Calculator.calculateDamage(
-            move.power,
+            move.power + cannonBonus,
             Calculator.getEffectiveAttack(attackingPokemon.stats.baseAttack, attackerStats[1], attackerStats[0]), 
             Calculator.getEffectiveDefense(defendingPokemon.stats.baseDefense, defenderStats[2], defenderStats[0]),
             attackingPokemon.type == move.type || attackingPokemon?.type2 == move.type ? 1.2 : 1, 
@@ -846,7 +847,7 @@ export class PoGoAPI {
      * @param chargedMove 
      * @returns 
      */
-    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any) {
+    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, bladeBoost: boolean = false) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
@@ -863,7 +864,7 @@ export class PoGoAPI {
             maxHealth = this.getRaidHealth(raidMode);
         }
         while (damage <= maxHealth) {
-            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
             time += quickMove.durationMs;
             energy += quickMove.energyDelta;
             if (energy > 100) {
@@ -878,14 +879,14 @@ export class PoGoAPI {
             
             // WARNING: chargedMove.energy is negative
             if (energy >= -chargedMove.energyDelta) {
-                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
-                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
+                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
                 if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
                     if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
                         energy = energy + chargedMove.energyDelta <= 0 ? 0 : energy + chargedMove.energyDelta;
                         time += chargedMove.durationMs;
                         chargedAttackUses++;
-                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender);
+                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
                         turn++;
                         graphic.push({"turn": turn, "type": "charged"});
                     }
@@ -960,7 +961,8 @@ export class PoGoAPI {
         relobbyTime?: any,
         enraged: boolean = raidMode.endsWith("shadow"),
         peopleCount?: any,
-        partyPower?: any
+        partyPower?: any,
+        boost: string = "none"
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
@@ -1023,7 +1025,7 @@ export class PoGoAPI {
                 attackerFaint = false;
                 // Defender has casted a charged move, attacker may try to evade it
                 if (avoids === true && defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
-                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker));
+                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, boost === "bash" ? (1/1.1) : 1));
                 
                     if (defenderMove.energyDelta < 0 && 
                         time < defenderDamageStart + defenderMove.damageWindowStartMs && 
@@ -1099,8 +1101,8 @@ export class PoGoAPI {
                 for (let i = 0; i < peopleCount && simGoing; i++) {
                     
                     const projectedDamage = (isEnraged ? 
-                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier) : 
-                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier)
+                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier * (boost === "blade" ? 1.1 : 1)) : 
+                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1))
                     )
                     tdo += projectedDamage / peopleCount;
                     
@@ -1181,8 +1183,8 @@ export class PoGoAPI {
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
                 const projectedDamageDefender = (isEnraged ?
-                    this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", true) :
-                    this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal")
+                    this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", true, (boost === "bash" ? (1/1.1) : 1)) :
+                    this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, (boost === "bash" ? (1/1.1) : 1))
                 )
                 const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
                 //console.log("Final damage: " + finalDamage);
@@ -1748,6 +1750,7 @@ export class PoGoAPI {
         helperBonus: number = 0,
         friendship: any[] = [0,0,0,0],
         prioritiseEnergy: boolean,
+        advEffects: string[] = ["none","none","none","none"],
     ) {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
         
@@ -1757,6 +1760,17 @@ export class PoGoAPI {
         let attackerEnergy = attackers.map(() => [0, 0, 0]);
         let defenderEnergy = 300;
         let activePokemon = attackers.map(() => 0);
+
+        for (let i = 0; i < attackerMaxMoves.length; i++) {
+            if (advEffects[i] === "cannon") {
+                for (let j = 1; j < 3; j++) {
+                    if (attackers[i][j].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i][j].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM") {
+                        attackerMaxMoves[i][j][1]++;
+                        attackerMaxMoves[i][j][2]++;
+                    }
+                }
+            }
+        }
         /*
 
         const attackerMaxHP = [[
@@ -1848,7 +1862,7 @@ export class PoGoAPI {
                   )  / 2) * (1 + shieldHPMAX[i][j] / 60);
                   
                 // Highest HP
-                let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : (attackerMaxMoves[i][activePokemon[i]][2] === 3 ? 0.16 : 0));
+                let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : (attackerMaxMoves[i][activePokemon[i]][2] === 3 ? 0.16 : (attackerMaxMoves[i][activePokemon[i]][2] === 4 ? 0.2 : 0)));
                 let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
                 healScore[i][j] = healAmount
             }
@@ -1912,7 +1926,7 @@ export class PoGoAPI {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
-                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, enraged, desperate, defender));
+                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, enraged, desperate, defender) * (advEffects[i] === "bash" ? (1/1.05) : 1));
                     if (projectedDamageDefender < attackerHealth[i][activePokemon[i]] ) {
                         // Attacker i evades the move
                         attackerEvades[i] = true;
@@ -1945,9 +1959,9 @@ export class PoGoAPI {
                 if (!firstDmgReduction[i] && time > 0) {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
-                        const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus)));
+                        const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
                         const maxEnergyQuickAttack = Calculator.getMaxEnergyGain(projectedDamageQuick, defenderHealth);
-                        const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1,  this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus)));
+                        const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1,  this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
                         const maxEnergyCinematicAttack = Calculator.getMaxEnergyGain(projectedDamageCinematic, defenderHealth);
                         if ((attackerEnergy[i][activePokemon[i]] >= -attackersCinematicMove[i][activePokemon[i]].energyDelta) 
                             && (!prioritiseEnergy ||
@@ -1976,7 +1990,7 @@ export class PoGoAPI {
                 firstDmgReduction[i] = false;
                 // Attacker i deals damage
                 if (attackerMove[i] !== null && attackerDamageStart[i] > -1 && time === attackerDamageStart[i] + attackerMove[i].damageWindowStartMs && activePokemon[i] < 3) {
-                    const projectedDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus)));
+                    const projectedDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
                     tdo[i] += projectedDamage;
                     attackerDamage[i][activePokemon[i]] += projectedDamage;
                     //console.log("Attacker " + i + " deals " + projectedDamage + " damage with move: " + attackerMove[i].moveId + " at time " + time);
@@ -2036,7 +2050,13 @@ export class PoGoAPI {
                     for (let i = 0 ; i < attackers.length ; i++) {
                         if (activePokemon[i] < 3) {
                             const dmaxAttack = this.getDynamaxAttack(attackers[i][activePokemon[i]].pokemonId, attackersQuickMove[i][activePokemon[i]].type, allMoves, attackerMaxMoves[i][activePokemon[i]][0], attackersQuickMove[i][activePokemon[i]]);
-                            const maxMoveDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getHelperBonusDamage(helperBonus) * this.getDefenseMultiplier(raidMode)));
+                            if (advEffects[i] === "cannon" && (attackers[i][activePokemon[i]].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i][activePokemon[i]].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                                dmaxAttack.power = dmaxAttack.power + (attackerMaxMoves[i][activePokemon[i]][0] === 3 ? 100 : 50);
+                            }
+                            const maxMoveDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getHelperBonusDamage(helperBonus) * this.getDefenseMultiplier(raidMode) * (advEffects[i] === "blade" ? 1.05 : 1)));
+                            if (advEffects[i] === "cannon" && (attackers[i][activePokemon[i]].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i][activePokemon[i]].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                                dmaxAttack.power = dmaxAttack.power - (attackerMaxMoves[i][activePokemon[i]][0] === 3 ? 100 : 50);
+                            }
                             if (strategy[i] === "dmg") {
                                 // Attacker will cast its max move
                                 const projectedDamage = maxMoveDamage;
@@ -2056,7 +2076,7 @@ export class PoGoAPI {
                                 }
                             } else if (strategy[i] === "heal") {
                                 if (attackerMaxMoves[i][activePokemon[i]][2] > 0 && !this.allActiveMembersFullyHealed(defenderDamage, activePokemon)) {
-                                    let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : 0.16);
+                                    let healthFactor = (attackerMaxMoves[i][activePokemon[i]][2] === 1) ? 0.08 : (attackerMaxMoves[i][activePokemon[i]][2] === 2 ? 0.12 : (attackerMaxMoves[i][activePokemon[i]][2] === 3 ? 0.16 : 0.2));
                                     let healAmount = Math.floor(healthFactor * Calculator.getEffectiveStamina(attackers[i][activePokemon[i]].stats.baseStamina, attackersStats[i][activePokemon[i]][3], attackersStats[i][activePokemon[i]][0]));
                                     for (let j = 0 ; j < attackers.length ; j++) {
                                         defenderDamage[j][activePokemon[j]] -= healAmount;
@@ -2107,9 +2127,9 @@ export class PoGoAPI {
                     for (let j = 0 ; j < 3 ; j++) {
                         tankScore[i][j] = (
                             ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (this.getDamageMultiplier(raidMode, false, false, defender) * (advEffects[i] === "bash" ? (1/ 1.05) : 1))))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, false, false, defender)))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (this.getDamageMultiplier(raidMode, false, false, defender) * (advEffects[i] === "bash" ? (1/ 1.05) : 1))))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                           ) / 2
                     }
                 }
@@ -2155,7 +2175,7 @@ export class PoGoAPI {
                             [weather, false, false, 0], 
                             "normal", 
                             0, 
-                            (attackerEvades[target] ? 1 : 2) * this.getDamageMultiplier(raidMode, enraged, desperate, defender));
+                            (attackerEvades[target] ? 1 : 2) * this.getDamageMultiplier(raidMode, enraged, desperate, defender) * (advEffects[target] === "bash" ? (1/ 1.05) : 1));
                         const finalDamage = Math.floor(projectedDamageDefender);
                         let finalDamageReduced = finalDamage;
                         if (finalDamage > shieldHP[target][activePokemon[target]]) {
@@ -2183,7 +2203,7 @@ export class PoGoAPI {
                                 [weather, false, false, 0], 
                                 "normal", 
                                 0, 
-                                this.getDamageMultiplier(raidMode, enraged, desperate, defender)
+                                this.getDamageMultiplier(raidMode, enraged, desperate, defender) * (advEffects[i] === "bash" ? (1/ 1.05) : 1)
                             );
                             const finalDamage = Math.floor(projectedDamageDefender);
                             let finalDamageReduced = finalDamage;
@@ -2275,6 +2295,7 @@ export class PoGoAPI {
         }
         //console.log("Simulation was done! " + time);
         //console.log(attackerDamage);
+        
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }
 

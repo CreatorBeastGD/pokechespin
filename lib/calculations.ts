@@ -489,4 +489,18 @@ export class Calculator {
           return 1.1
         }
       }
+
+      static getAdventureEffectBonus(raidMode: string, effect: string) {
+        if (effect === "none") {
+          return 1;
+        } else if (effect === "blade") {
+          return this.BladeBoost(raidMode);
+        } else if (effect === "bash") {
+          return this.BashBoost(raidMode);
+        } else if (effect === "cannon") {
+          return 1; // Handled elsewhere
+        } else {
+          return 1;
+        }
+      }
 }

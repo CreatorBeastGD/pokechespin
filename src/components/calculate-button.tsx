@@ -16,7 +16,8 @@ export default function CalculateButton({
   raidMode,
   allEnglishText,
   additionalBonus = 1,
-  shroomBonus = 1
+  shroomBonus = 1,
+  bladeBoost = false,
 }: {
   attacker: any;
   defender: any;
@@ -29,6 +30,7 @@ export default function CalculateButton({
   allEnglishText: any;
   additionalBonus?: any;
   shroomBonus?: number;
+  bladeBoost?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -37,7 +39,7 @@ export default function CalculateButton({
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
@@ -58,7 +60,7 @@ export default function CalculateButton({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%) {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, gaining {Calculator.getMaxEnergyGain((damage??0), Calculator.getRaidBossHP(raidMode))} energy</span>}
+          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, gaining {Calculator.getMaxEnergyGain((damage??0), Calculator.getRaidBossHP(raidMode))} energy</span>}
           </p>
           <p>
           

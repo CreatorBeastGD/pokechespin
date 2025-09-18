@@ -23,7 +23,8 @@ export default function CalculateButtonSimulateAdvanced({
   raidMode,
   bonusAttacker,
   bonusDefender,
-  allEnglishText
+  allEnglishText,
+  boost = "none"
 }: {
   attacker: any;
   defender: any;
@@ -37,6 +38,7 @@ export default function CalculateButtonSimulateAdvanced({
   bonusAttacker: any;
   bonusDefender: any;
   allEnglishText: any;
+  boost: string;
 }) {
   
   const searchParams = useSearchParams();
@@ -100,7 +102,7 @@ export default function CalculateButtonSimulateAdvanced({
     setCau(0);
     setGraphic(null);
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, quickMoveDefender, chargedMoveDefender]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, quickMoveDefender, chargedMoveDefender, boost]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -138,7 +140,7 @@ export default function CalculateButtonSimulateAdvanced({
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower);
+      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -239,7 +241,7 @@ export default function CalculateButtonSimulateAdvanced({
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}.
+            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}{boost === "blade" && " with Behemoth Blade Adventure Effect"}{boost === "bash" && " with Behemoth Bash Adventure Effect"}.
           </p>
           <p>
             <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.

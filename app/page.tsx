@@ -38,6 +38,7 @@ export default function Home() {
   const [allEnglishText, setAllEnglishText] = useState<any>(null);
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
+  const [advEffect, setAdvEffect] = useState<string>("none");
 
   const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
 
@@ -93,6 +94,7 @@ export default function Home() {
         const defenderChargedAttack = searchParams.get("defender_cinematic_attack");
         const weather = searchParams.get("weather");
         const raidMode = searchParams.get("raid_mode");
+        const advEffect = searchParams.get("adv_effect");
 
         if (attacker) {
           const attackerPokemon = PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0];
@@ -138,6 +140,9 @@ export default function Home() {
         }
         if (raidMode) {
           setRaidMode(raidMode);
+        }
+        if (advEffect) {
+          setAdvEffect(advEffect);
         }
         setParamsLoaded(true);
       }
@@ -206,6 +211,14 @@ export default function Home() {
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("raid_mode", event.target.value);
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
+
+  const handleAdvEffectChange = (value: string) => {
+    setAdvEffect(value);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("adv_effect", value);
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
@@ -383,6 +396,13 @@ export default function Home() {
                 <option key={"raid-t5-shadow"} value={"raid-t5-shadow"}>Tier-5 Shadow Raid (15000HP) </option>
               </select>
 
+            <p className="italic text-slate-700 text-sm">Adventure Effect: </p>
+            <select onChange={(e) => handleAdvEffectChange(e.target.value)} value={advEffect} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+              <option value={"none"}>No Adventure Effect</option>
+              <option value={"blade"}>Behemoth Blade (x1.1 ATK)</option>
+              <option value={"bash"}>Behemoth Bash (x1.1 DEF)</option>
+            </select>
+
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
@@ -408,6 +428,8 @@ export default function Home() {
                 bonusAttacker={bonusAttacker}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
+                additionalBonus={advEffect === "blade" ? 1.1 : 1}
+                bladeBoost={advEffect === "blade"}
                 />
             </CardContent>
             <CardContent>
@@ -422,6 +444,8 @@ export default function Home() {
                 bonusAttacker={bonusAttacker}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
+                additionalBonus={advEffect === "blade" ? 1.1 : 1}
+                bladeBoost={advEffect === "blade"}
               />
             </CardContent>
             <CardContent>
@@ -437,6 +461,7 @@ export default function Home() {
                 raidMode={raidMode}
                 bonusAttacker={bonusAttacker}
                 bonusDefender={bonusDefender}
+                bladeBoost={advEffect === "blade"}
                 />
             </CardContent>
             <CardContent>
@@ -454,6 +479,7 @@ export default function Home() {
                 raidMode={raidMode}
                 bonusAttacker={bonusAttacker}
                 bonusDefender={bonusDefender}
+                boost={advEffect}
                 />
             </CardContent>
         </Card>
