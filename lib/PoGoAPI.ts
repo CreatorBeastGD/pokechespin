@@ -8,7 +8,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.25.0.1";
+        return "1.26";
     }
 
     static async getAllPokemon() {
