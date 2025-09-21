@@ -21,6 +21,11 @@ export default function Page() {
                   Go to PokéChespin for Max Battles
                 </button>
             </a>
+            <a href={"/dynamax/rankings/general"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                <button className="w-full ">
+                  Check PokéChespin Max General Rankings
+                </button>
+            </a>
             <a href={"/whatsnew"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
                   See what's new!
