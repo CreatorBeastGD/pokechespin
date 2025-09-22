@@ -1,4 +1,5 @@
 
+import { float } from "html2canvas/dist/types/css/property-descriptors/float";
 import nextConfig from "../next.config";
 import { Calculator } from "./calculations";
 
@@ -498,6 +499,74 @@ export class PoGoAPI {
         return effectiveness;
     }
 
+    static CpmFinderV2(
+        attackPower: number,
+        attackType: string,
+        weather: string,
+        baseCPM: number,
+        attackStat: number,
+        stabBonus: boolean,
+        typeList: any,
+        pokemonList: any,
+        minCPMRange: number = 0.00005,
+        maxCPMRange: number = 0.00005,
+        jumpCPM: number = 0.00000001,
+    ) {
+        let minimumCPMcontender = { pokemon: null, cpm: baseCPM-minCPMRange, level: 0, defenseIV: 0, expectedDamage: 0, realDamage: 0 };
+        let maximumCPMcontender = { pokemon: null, cpm: baseCPM+maxCPMRange, level: 0, defenseIV: 0, expectedDamage: 0, realDamage: 0 };
+
+        let minContenderList = [];
+        let maxContenderList = [];
+
+        const dynamaxPokemon = Calculator.DynamaxPokemon;
+
+        const jump = jumpCPM;
+
+        for (let ID = 0; ID < dynamaxPokemon.length; ID++) {
+            console.log(dynamaxPokemon[ID]);
+            const pokemonData = PoGoAPI.getPokemonPBByID(dynamaxPokemon[ID], pokemonList)[0];
+            //console.log(pokemonData);
+            for (let level = 20 ; level <= 50 ; level++) {
+                for (let defenseIV = 10 ; defenseIV <= 15 ; defenseIV++) {
+                    const expectedDamage = Calculator.CalculateDamageFloatValue(attackPower,Calculator.getEffectiveAttackRawCPM(attackStat,15,baseCPM),Calculator.getEffectiveDefenseRawCPM(pokemonData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),stabBonus ? 1.2 : 1,this.getEfectiveness(pokemonData, { type: attackType }, typeList),attackType,1,[weather, false, false, 0],[weather, false, false, 0])
+                    const PokemonHP = Calculator.getEffectiveStaminaRawCPM(pokemonData.stats.baseStamina, 15, Calculator.getCPM(level));
+                    if (expectedDamage.dmg < PokemonHP) {
+                        let minFound = false;
+                        let maxFound = false;
+                        for (let val = (baseCPM - minCPMRange); val <= (baseCPM) && !minFound ; val = val + jump) {
+                            const damage = Calculator.CalculateDamageFloatValue(attackPower,Calculator.getEffectiveAttackRawCPM(attackStat,15,val),Calculator.getEffectiveDefenseRawCPM(pokemonData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),stabBonus ? 1.2 : 1,this.getEfectiveness(pokemonData, { type: attackType }, typeList),attackType,1,[weather, false, false, 0],[weather, false, false, 0])
+                            if (damage.dmg === expectedDamage.dmg) {
+                                minFound = true;
+                                if (val !== (baseCPM - minCPMRange)) {
+                                    if (val > minimumCPMcontender.cpm) {
+                                        minimumCPMcontender = { pokemon: pokemonData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: damage.raw };
+                                    }
+                                    minContenderList.push({ pokemon: pokemonData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: damage.raw });
+                                }
+                            }
+                        }
+                        for (let val = (baseCPM + maxCPMRange); val >= (baseCPM) && !maxFound ; val = val - jump) {
+                            const damage = Calculator.CalculateDamageFloatValue(attackPower,Calculator.getEffectiveAttackRawCPM(attackStat,15,val),Calculator.getEffectiveDefenseRawCPM(pokemonData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),stabBonus ? 1.2 : 1,this.getEfectiveness(pokemonData, { type: attackType }, typeList),attackType,1,[weather, false, false, 0],[weather, false, false, 0]);
+                            
+                            if (damage.dmg === expectedDamage.dmg) {
+                                maxFound = true;
+                                if (val !== (baseCPM + maxCPMRange)) {
+                                    if (val < maximumCPMcontender.cpm) {
+                                        maximumCPMcontender = { pokemon: pokemonData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw };
+                                    }
+                                    maxContenderList.push({ pokemon: pokemonData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        minContenderList = minContenderList.sort((a, b) => b.cpm - a.cpm);
+        maxContenderList = maxContenderList.sort((a, b) => a.cpm - b.cpm);
+        return { minimumCPMcontender, maximumCPMcontender, minContenderList, maxContenderList };
+    }
+
     static CpmFinder(
         attackPower: number,
         attackType: string,
@@ -512,7 +581,6 @@ export class PoGoAPI {
         let maximumCPMcontender = { pokemon: null, cpm: baseCPM+0.05, level: 0, defenseIV: 0, expectedDamage: 0 };
 
         const dynamaxPokemon = Calculator.DynamaxPokemon;
-        console.log(pokemonList)
 
         for (let ID = 0; ID < dynamaxPokemon.length; ID++) {
             console.log(dynamaxPokemon[ID]);
@@ -2273,7 +2341,7 @@ export class PoGoAPI {
                 win = false;
             }
 
-            if (time >= 1200000) {
+            if (time >= 360000) {
                 simGoing = false;
                 battleLog.push({"turn": time, "lost": true});
                 win = false;
@@ -2281,10 +2349,10 @@ export class PoGoAPI {
 
             time++;
 
-            if ((raidMode.endsWith("gmax") && time === 150000) || (raidMode.endsWith("dmax") && time === 270000)) {
+            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 150000) || (raidMode.endsWith("dmax") && time === 270000)) {
                 enraged = true;
                 battleLog.push({"turn": time, "enraged": true});
-            } if ((raidMode.endsWith("gmax") && time === 180000) || (raidMode.endsWith("dmax") && time === 300000)) {
+            } if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 180000) || (raidMode.endsWith("dmax") && time === 300000)) {
                 desperate = true;
                 battleLog.push({"turn": time, "desperate": true});
             } if (!simGoing) {
