@@ -59,8 +59,8 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke) * (bashBoost ? (1/1.05) : 1)
-    ) * (isLarge ? 1 : 2);
+      PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke) * (bashBoost ? (1/1.05) : 1) * (isLarge ? 1 : 2)
+    ) ;
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
     const remainingStamina = effStamina - damage;
     setDamage(damage);
