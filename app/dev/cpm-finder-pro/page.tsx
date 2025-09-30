@@ -137,18 +137,61 @@ export default function CpmFinder() {
                                 <p className="p-4">Minimun Contender: {contenders[0]?.pokemon.pokemonId}, level {contenders[0]?.level} with {contenders[0]?.defenseIV}IV defense ({contenders[0]?.cpm}CPM, expected damage of {contenders[0]?.expectedDamage})</p>
                                 <p className="p-4">Maximum Contender: {contenders[1]?.pokemon.pokemonId}, level {contenders[1]?.level} with {contenders[1]?.defenseIV}IV defense ({contenders[1]?.cpm}CPM, expected damage of {contenders[1]?.expectedDamage})</p>
                             </div>
-                            <div className="flex flex-row justify-center space-x-8">
+                            <div className="flex flex-row justify-between space-x-4 p-4 m-4">
                                 <div>
                                 <h2 className="p-4">All Minimum Contenders (sorted by CPM)</h2>
-                                {contenders[2].length > 0 ? contenders[2].map((contender: any, index: number) => (
-                                    <p key={index} className="p-2">{contender.pokemon.pokemonId}, level {contender.level} with {contender.defenseIV}IV defense ({contender.cpm}CPM, expected damage of {contender.expectedDamage}, real damage of {contender.realDamage})</p>
-                                )) : <p className="p-2">No contenders found.</p>}
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Pokemon</th>
+                                            <th>Level</th>
+                                            <th>DefIV</th>
+                                            <th>CPM</th>
+                                            <th>Expected Damage</th>
+                                            <th>Real Damage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {contenders[2].length > 0 ? contenders[2].map((contender: any, index: number) => (
+                                            <tr key={index}>
+                                                <td className="px-4 p-2">{contender.pokemon.pokemonId}</td>
+                                                <td className="px-4 p-2">{contender.level}</td>
+                                                <td className="px-4 p-2">{contender.defenseIV}IV</td>
+                                                <td className="px-4 p-2">{contender.cpm} CPM</td>
+                                                <td className="px-4 p-2">{(Number)(contender.expectedDamage)}</td>
+                                                <td className="px-4 p-2">{contender.realDamage}</td>
+                                            </tr>
+                                        )) : <tr><td colSpan={5} className="p-2">No contenders found.</td></tr>}
+                                    </tbody>
+                                </table>
+                                
                                 </div>
                                 <div>
                                     <h2 className="p-4">All Maximum Contenders (sorted by CPM)</h2>
-                                    {contenders[3].length > 0 ? contenders[3].map((contender: any, index: number) => (
-                                        <p key={index} className="p-2">{contender.pokemon.pokemonId}, level {contender.level} with {contender.defenseIV}IV defense ({contender.cpm}CPM, expected damage of {contender.expectedDamage}, real damage of {contender.realDamage})</p>
-                                    )) : <p className="p-2">No contenders found.</p>}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Pokemon</th>
+                                                <th>Level</th>
+                                                <th>DefIV</th>
+                                                <th>CPM</th>
+                                                <th>Expected Damage</th>
+                                                <th>Real Damage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {contenders[3].length > 0 ? contenders[3].map((contender: any, index: number) => (
+                                                <tr key={index}>
+                                                    <td className="px-4 p-2">{contender.pokemon.pokemonId}</td>
+                                                    <td className="px-4 p-2">{contender.level}</td>
+                                                    <td className="px-4 p-2">{contender.defenseIV}IV</td>
+                                                    <td className="px-4 p-2">{contender.cpm} CPM</td>
+                                                    <td className="px-4 p-2">{(Number)(contender.expectedDamage)}</td>
+                                                    <td className="px-4 p-2">{contender.realDamage}</td>
+                                                </tr>
+                                            )) : <tr><td colSpan={5} className="p-2">No contenders found.</td></tr>}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
