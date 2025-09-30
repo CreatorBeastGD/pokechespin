@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.0.1",
+        desc: "+ Added Duraludon to Max Rankings\n"+
+                ">>>>>> Duraludon.\n",
+        date: "2025-09-30"
+    },
+    {
         title: "v1.26 (Adventure Effects!)",
         desc: "+ Added Adventure Effects to PokéChespin!\n"+
               ">>>>>> Behemoth Blade and Behemoth Bash will be available in PokéChespin for Raids with a bonus of x1.1 in Attack or Defense depending on what adventure effect you have.\n"+

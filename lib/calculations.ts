@@ -37,6 +37,7 @@ export class Calculator {
       "EXCADRILL": "raid-t3-dmax",
 
       "TOXTRICITY": "raid-t4-dmax",
+      "DURALUDON": "raid-t4-dmax",
 
       "RAIKOU": "raid-t5-dmax",
       "ENTEI": "raid-t5-dmax",
@@ -154,6 +155,7 @@ export class Calculator {
       "ABRA",
       "KADABRA",
       "ALAKAZAM",
+      "DURALUDON",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
