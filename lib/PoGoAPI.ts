@@ -499,6 +499,92 @@ export class PoGoAPI {
         return effectiveness;
     }
 
+    static CpmFinderByPokemonData(
+        pokemonData: any,
+        baseCPM: number,
+        typeList: any,
+        pokemonList: any,
+        moveList: any,
+        minCPMRange: number = 0.00005,
+        maxCPMRange: number = 0.00005,
+        jumpCPM: number = 0.00000001,
+    ) {
+        let minimumCPMcontender = { pokemon: null, cpm: baseCPM-minCPMRange, level: 0, defenseIV: 0, expectedDamage: 0, realDamage: 0, moveId: "", weatherBoost: 1, spread: 1 };
+        let maximumCPMcontender = { pokemon: null, cpm: baseCPM+maxCPMRange, level: 0, defenseIV: 0, expectedDamage: 0, realDamage: 0, moveId: "", weatherBoost: 1, spread: 1 };
+
+        let minContenderList: any[] = [];
+        let maxContenderList: any[] = [];
+
+        const dynamaxPokemon = Calculator.DynamaxPokemon;
+
+
+        const jump = jumpCPM;
+
+        const moves = (pokemonData.cinematicMoves)
+            .map((move: any) => this.getMovePBByID(move, moveList))
+            .filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+
+
+        for (let SPREAD = 1; SPREAD <= 2; SPREAD++) {
+            for (let WB = 1; WB <= 1.2; WB += 0.2) {
+                for (let ID = 0; ID < dynamaxPokemon.length; ID++) {
+                    console.log(dynamaxPokemon[ID]);
+                    const defenderData = PoGoAPI.getPokemonPBByID(dynamaxPokemon[ID], pokemonList)[0];
+                    moves.forEach((move: any) => {
+                        let moveData = move;
+                        for (let level = 20 ; level <= 50 ; level++) {
+                            for (let defenseIV = 10 ; defenseIV <= 15 ; defenseIV++) {
+                                const expectedDamage = Calculator.CalculateDamageFloatValue(
+                                    moveData.power,
+                                    Calculator.getEffectiveAttackRawCPM(pokemonData.stats.baseAttack,15,baseCPM),
+                                    Calculator.getEffectiveDefenseRawCPM(defenderData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),
+                                    moveData.type == pokemonData.type || moveData.type == pokemonData.type2 ? 1.2 : 1,
+                                    this.getEfectiveness(defenderData, { type: moveData.type }, typeList),
+                                    moveData.type,
+                                    WB * SPREAD,
+                                    ["EXTREME", false, false, 0],
+                                    ["EXTREME", false, false, 0]
+                                )
+                                const PokemonHP = Calculator.getEffectiveStaminaRawCPM(defenderData.stats.baseStamina, 15, Calculator.getCPM(level));
+                                if (expectedDamage.dmg < PokemonHP) {
+                                    let minFound = false;
+                                    let maxFound = false;
+                                    for (let val = (baseCPM - minCPMRange); val <= (baseCPM) && !minFound ; val = val + jump) {
+                                        const damage = Calculator.CalculateDamageFloatValue(moveData.power,Calculator.getEffectiveAttackRawCPM(pokemonData.stats.baseAttack,15,val),Calculator.getEffectiveDefenseRawCPM(defenderData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),moveData.type == pokemonData.type || moveData.type == pokemonData.type2 ? 1.2 : 1,this.getEfectiveness(defenderData, { type: moveData.type }, typeList),moveData.type,WB * SPREAD,["EXTREME", false, false, 0],["EXTREME", false, false, 0])
+                                        if (damage.dmg === expectedDamage.dmg) {
+                                            minFound = true;
+                                            if (val !== (baseCPM - minCPMRange)) {
+                                                if (val > minimumCPMcontender.cpm) {
+                                                    minimumCPMcontender = { pokemon: defenderData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: damage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD };
+                                                }
+                                                minContenderList.push({ pokemon: defenderData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: damage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD });
+                                            }
+                                        }
+                                    }
+                                    for (let val = (baseCPM + maxCPMRange); val >= (baseCPM) && !maxFound ; val = val - jump) {
+                                        const damage = Calculator.CalculateDamageFloatValue(moveData.power,Calculator.getEffectiveAttackRawCPM(pokemonData.stats.baseAttack,15,val),Calculator.getEffectiveDefenseRawCPM(defenderData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),moveData.type == pokemonData.type || moveData.type == pokemonData.type2 ? 1.2 : 1,this.getEfectiveness(defenderData, { type: moveData.type }, typeList),moveData.type,WB * SPREAD,["EXTREME", false, false, 0],["EXTREME", false, false, 0]);
+                                        if (damage.dmg === expectedDamage.dmg) {
+                                            maxFound = true;
+                                            if (val !== (baseCPM + maxCPMRange)) {
+                                                if (val < maximumCPMcontender.cpm) {
+                                                    maximumCPMcontender = { pokemon: defenderData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD };
+                                                }
+                                                maxContenderList.push({ pokemon: defenderData, cpm: Number(val.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        minContenderList = minContenderList.sort((a, b) => b.cpm - a.cpm);
+        maxContenderList = maxContenderList.sort((a, b) => a.cpm - b.cpm);
+        return { minimumCPMcontender, maximumCPMcontender, minContenderList, maxContenderList };
+    }
+ 
     static CpmFinderV2(
         attackPower: number,
         attackType: string,
@@ -528,7 +614,17 @@ export class PoGoAPI {
             //console.log(pokemonData);
             for (let level = 20 ; level <= 50 ; level++) {
                 for (let defenseIV = 10 ; defenseIV <= 15 ; defenseIV++) {
-                    const expectedDamage = Calculator.CalculateDamageFloatValue(attackPower,Calculator.getEffectiveAttackRawCPM(attackStat,15,baseCPM),Calculator.getEffectiveDefenseRawCPM(pokemonData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),stabBonus ? 1.2 : 1,this.getEfectiveness(pokemonData, { type: attackType }, typeList),attackType,1,[weather, false, false, 0],[weather, false, false, 0])
+                    const expectedDamage = Calculator.CalculateDamageFloatValue(
+                        attackPower,
+                        Calculator.getEffectiveAttackRawCPM(attackStat,15,baseCPM),
+                        Calculator.getEffectiveDefenseRawCPM(pokemonData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),
+                        stabBonus ? 1.2 : 1,
+                        this.getEfectiveness(pokemonData, { type: attackType }, typeList),
+                        attackType,
+                        1,
+                        [weather, false, false, 0],
+                        [weather, false, false, 0]
+                    )
                     const PokemonHP = Calculator.getEffectiveStaminaRawCPM(pokemonData.stats.baseStamina, 15, Calculator.getCPM(level));
                     if (expectedDamage.dmg < PokemonHP) {
                         let minFound = false;
