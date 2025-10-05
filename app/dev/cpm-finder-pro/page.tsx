@@ -19,7 +19,7 @@ export default function CpmFinder() {
 
     // Variables
     const [movePower, setMovePower] = useState<number>(100);
-    const [moveType, setMoveType] = useState<string>("null");
+    const [moveType, setMoveType] = useState<string>("POKEMON_TYPE_NORMAL");
     const [weather, setWeather] = useState<string>("EXTREME");
     const [expectedCpm, setExpectedCpm] = useState<number>(0.5);
     const [baseAtk, setBaseAtk] = useState<number>(150);
