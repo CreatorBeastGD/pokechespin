@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.26.0.1";
+        return "1.26.0.2";
     }
 
     static async getAllPokemon() {
@@ -130,7 +130,7 @@ export class PoGoAPI {
             pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
         } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ETERNATUS") {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
-            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ETERNATUS_ETERNAMAX_FORM") {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
@@ -929,7 +929,7 @@ export class PoGoAPI {
             TOXTRICITY_GIGANTAMAX: [8006003, 15, 15, 160000],
             RILLABOOM_GIGANTAMAX: [100, 15, 15, 120000],
             INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
-            CINDERACE_GIGANTAMAX: [8005243, 15, 15, 80000],
+            CINDERACE_GIGANTAMAX: [8005243, 15, 15, 90000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
         };

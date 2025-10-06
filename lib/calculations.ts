@@ -460,7 +460,7 @@ export class Calculator {
             MACHAMP_GIGANTAMAX: 100000,
             RILLABOOM_GIGANTAMAX: 120000,
             INTELEON_GIGANTAMAX: 100000,
-            CINDERACE_GIGANTAMAX: 80000,
+            CINDERACE_GIGANTAMAX: 90000,
             ETERNATUS_ETERNAMAX_FORM: 60000
         };
 

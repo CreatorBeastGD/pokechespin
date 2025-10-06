@@ -7,8 +7,15 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.0.2",
+        desc: "+ Changed stats of Tier 6 Max Battles \n"+
+                ">>>>>> Gigantamax Cinderace\n >>>>>> ~ HP: 80000 -> 90000 \n"+
+                " ~ Fixed an issue where Eternatus could learn Hyper Beam.",
+        date: "2025-10-06"
+    },
+    {
         title: "v1.26.0.1",
-        desc: "+ Added Duraludon to Max Rankings\n"+
+        desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Duraludon.\n",
         date: "2025-09-30"
     },
