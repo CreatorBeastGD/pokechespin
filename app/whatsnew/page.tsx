@@ -7,10 +7,18 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.1",
+        desc: "+ Added a new switch 'Show All Gigantamax Pokemon in Attacker Rankings' on Max Rankings page. \n"+
+                ">>>>>> This switch will allow you to show all Gigantamax Pokémon, including those that are not currently available in Max Battles, on the attackers overall ranking.\n"+
+                ">>>>>> This will allow you to check how good are these Pokémon as attackers in Max Battles, even if they are not available yet.\n"+
+                ">>>>>> Note that this will not affect the defenders overall ranking, but I may include them in the future. What do you think of that?\n",
+        date: "2025-10-09"
+    },
+    {
         title: "v1.26.0.2",
         desc: "+ Changed stats of Tier 6 Max Battles \n"+
                 ">>>>>> Gigantamax Cinderace\n >>>>>> ~ HP: 80000 -> 90000 \n"+
-                " ~ Fixed an issue where Eternatus could learn Hyper Beam.",
+                "~ Fixed an issue where Eternatus could learn Hyper Beam.",
         date: "2025-10-06"
     },
     {

@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.26.0.2";
+        return "1.26.1";
     }
 
     static async getAllPokemon() {
@@ -1645,12 +1645,19 @@ export class PoGoAPI {
         allMoves: any,
         types: any,
         dmaxDifficulty: string = "raid-t6-gmax",
+        showAllGmax: boolean = false,
     ) {
         console.log("Calculating attacker tier list for " + dmaxDifficulty);
-        const availableDmaxPoke = Calculator.DynamaxPokemon;
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (showAllGmax) {
+            allMaxPoke = [...allMaxPoke, ...Calculator.UpcomingGMaxPokemon];
+        }
+        console.log(allMaxPoke);
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
-        availableDmaxPoke.forEach((attacker: string) => {
+        allMaxPoke.forEach((attacker: string) => {
+            console.log("Calculating for " + attacker);
+            console.log(pokemonList);
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             let average = 0;
             let counter = 0;
@@ -1881,12 +1888,18 @@ export class PoGoAPI {
         raidMode: string,
         allMoves: any,
         types: any,
-        weather: string
+        weather: string,
+        showAllGmax: boolean = false,
     ) {
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any;}[] = [];
-        availableDmaxPoke.forEach((attacker: string) => {
+        let allMaxPoke = availableDmaxPoke;
+        if (showAllGmax) {
+            allMaxPoke = [...availableDmaxPoke, ...Calculator.UpcomingGMaxPokemon];
+        }
+        console.log(allMaxPoke)
+        allMaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);

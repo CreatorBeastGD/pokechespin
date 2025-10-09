@@ -52,6 +52,8 @@ export default function rankingsPage() {
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
+    const [showAllGmax, setShowAllGmax] = useState<boolean>(false);
+
     const router = useRouter();
     const sp = useParams();
 
@@ -137,6 +139,11 @@ export default function rankingsPage() {
                     setShowGeneralBestDefenders(general);
                 }
 
+                const showAllGmax = urlSP.get("show_all_gmax") ? urlSP.get("show_all_gmax") === "true" : false;
+                if (showAllGmax) {
+                    setShowAllGmax(showAllGmax);
+                }
+
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
 
                 const playersAmount = urlSP.get("players_in_team") ? parseInt(urlSP.get("players_in_team") ?? "1") : 1;
@@ -156,7 +163,7 @@ export default function rankingsPage() {
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax);
                     setBestAttackers(bestAttackers);
                     const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
                     setGeneralBestDefenders(bestGeneralDefenders);
@@ -170,8 +177,6 @@ export default function rankingsPage() {
                     const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
                     router.push(newUrl);
                 }
-
-                
             }
             if (load) {
                 setEverythingLoaded(true);
@@ -202,6 +207,9 @@ export default function rankingsPage() {
         urlSP.set("general", showGeneralBestDefenders.toString());
         urlSP.set("prioritise_fast_attack", prioritiseFast.toString());
         urlSP.set("ranking_display", rankingDisplay);
+        urlSP.set("show_all_gmax", showAllGmax.toString());
+        urlSP.set("zamazenta_extra_shield", zamaExtraShield.toString());
+        urlSP.set("players_in_team", playersInTeam.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -264,6 +272,21 @@ export default function rankingsPage() {
             return 0;
         }
     });
+
+    const handleGmaxSwitch = (checked: boolean) => {
+        setShowAllGmax(checked);
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("show_all_gmax", checked.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
+    useEffect(() => {
+        if (pokemonInfo && allDataLoaded) {
+            
+        const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax);
+        setBestAttackers(bestAttackers);
+        }}, [showAllGmax]);
 
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
@@ -522,7 +545,7 @@ export default function rankingsPage() {
                         </button>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
-                        
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleGmaxSwitch(checked)} checked={showAllGmax} /> Show All Gigantamax Forms in Best Attackers</p>
                         <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
