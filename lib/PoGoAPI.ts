@@ -945,7 +945,7 @@ export class PoGoAPI {
 
         if (raidMode === "raid-t6-gmax-standard") {
             // Default for t6-gmax-standard
-            return [8006, 15, 15, 115000];
+            return [8006003, 15, 15, 100000];
         }
 
         // GMAX Tier 6
@@ -954,7 +954,7 @@ export class PoGoAPI {
                 return t6gmaxStats[defenderId];
             }
             // Default for t6-gmax
-            return [8006, 15, 15, 115000];
+            return [8006003, 15, 15, 100000];
         }
 
         // Otros modos con valores fijos
