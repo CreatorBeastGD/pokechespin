@@ -22,6 +22,7 @@ export class Calculator {
       "HATENNA": "raid-t1-dmax",
       "TRUBBISH": "raid-t1-dmax",
       "ABRA": "raid-t1-dmax",
+      "BOUNSWEET": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -179,6 +180,9 @@ export class Calculator {
       "KADABRA",
       "ALAKAZAM",
       "DURALUDON",
+      "BOUNSWEET",
+      "STEENEE",
+      "TSAREENA",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",

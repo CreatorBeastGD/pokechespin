@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Bounsweet, Steenee and Tsareena.\n",
+        date: "2025-10-13"
+    },
+    {
         title: "v1.26.1",
         desc: "+ Added a new switch 'Show All Gigantamax Pokemon in Attacker Rankings' on Max Rankings page. \n"+
                 ">>>>>> This switch will allow you to show all Gigantamax Pokémon, including those that are not currently available in Max Battles, on the attackers overall ranking.\n"+
