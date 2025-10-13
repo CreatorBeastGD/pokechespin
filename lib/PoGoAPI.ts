@@ -522,7 +522,7 @@ export class PoGoAPI {
 
         const moves = (pokemonData.cinematicMoves)
             .map((move: any) => this.getMovePBByID(move, moveList))
-            .filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+            .filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
 
 
         for (let SPREAD = 1; SPREAD <= 2; SPREAD++) {
@@ -1608,7 +1608,7 @@ export class PoGoAPI {
                 const weather = "EXTREME";
 
                 const bossMoves = bossData.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
-                bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+                bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
                 for (let i = 0; i < bossMoves.length; i++) {
                     const move = bossMoves[i];
                     //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
@@ -1709,7 +1709,7 @@ export class PoGoAPI {
             const attackerStat = [40,15,15,15];
             const weather = "EXTREME";
             
-            bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+            bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
             for (let i = 0; i < bossMoves.length; i++) {
                 const move = bossMoves[i];
                 //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
@@ -1802,7 +1802,7 @@ export class PoGoAPI {
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
         let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
         const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
-        bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION");
+        bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
         availableDmaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
             let percentAfterLarge = 0;

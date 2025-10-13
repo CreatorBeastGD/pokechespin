@@ -9,7 +9,8 @@ const novedades = [
     {
         title: "v1.26.1.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
-                ">>>>>> Bounsweet, Steenee and Tsareena.\n",
+                ">>>>>> Bounsweet, Steenee and Tsareena.\n"+
+               "- Aeroblast++ and Sacred Fire++ are no longer taken into account for Max Rankings for tanks in general.\n",
         date: "2025-10-13"
     },
     {
