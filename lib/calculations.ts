@@ -63,6 +63,7 @@ export class Calculator {
       "CINDERACE_GIGANTAMAX": "raid-t6-gmax",
       "INTELEON_GIGANTAMAX": "raid-t6-gmax",
       "BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
+      "GARBODOR_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
@@ -81,7 +82,6 @@ export class Calculator {
       "PIKACHU_GIGANTAMAX",
       "EEVEE_GIGANTAMAX",
       "MEOWTH_GIGANTAMAX",
-      "GARBODOR_GIGANTAMAX",
       "MELMETAL_GIGANTAMAX",
       "CORVIKNIGHT_GIGANTAMAX",
       "ORBEETLE_GIGANTAMAX",
@@ -199,6 +199,7 @@ export class Calculator {
       "CINDERACE_GIGANTAMAX",
       "INTELEON_GIGANTAMAX",
       "BUTTERFREE_GIGANTAMAX",
+      "GARBODOR_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
       "ETERNATUS"
@@ -491,6 +492,8 @@ export class Calculator {
             RILLABOOM_GIGANTAMAX: 120000,
             INTELEON_GIGANTAMAX: 100000,
             CINDERACE_GIGANTAMAX: 90000,
+            BUTTERFREE_GIGANTAMAX: 100000,
+            GARBODOR_GIGANTAMAX: 160000,
             ETERNATUS_ETERNAMAX_FORM: 60000
         };
 
