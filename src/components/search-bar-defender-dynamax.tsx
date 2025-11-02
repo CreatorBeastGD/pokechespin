@@ -10,6 +10,7 @@ import { Progress } from "./ui/progress";
 import { Calculator } from "../../lib/calculations";
 import { useSearchParams, usePathname } from "next/navigation";
 import TypeBadge from "./TypeBadge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 
 interface SearchBarAttackerProps {
@@ -238,8 +239,11 @@ export default function SearchBarDefenderDynamax({
   const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
+  const damageMultiplier = PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
+  const defMultiplier = PoGoAPI.getDefenseMultiplier(raidMode);
+
   return (
-    <>
+    <TooltipProvider>
       <Input
         placeholder="Search for a Pokémon"
         type="text"
@@ -279,16 +283,36 @@ export default function SearchBarDefenderDynamax({
               <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
             ))}
           </select>
-
+          
           <p>Stats (CP {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId))}) </p>
           
-          <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {(effAttack)})</span></p>
+          <div className="flex flex-row items-center space-x-2">  
+            <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {(effAttack*damageMultiplier).toFixed(3)})</span></p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="" >?</button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + Calculator.getCPM(raidModeLevelMultiplier) + " x " + damageMultiplier + " = " + (effAttack * damageMultiplier).toFixed(3)}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
-          
-          <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {(effDefense)})</span></p> 
+          <div className="flex flex-row items-center space-x-2">
+            <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {(effDefense)})</span></p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="" >?</button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + Calculator.getCPM(raidModeLevelMultiplier) + " = " + (effDefense)}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
-          
-          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
+
+          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina) + " (" + Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId) + ")"})</span></p>
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
           
             <Image
@@ -367,6 +391,6 @@ export default function SearchBarDefenderDynamax({
       ) : (
         <p>No Pokémon selected</p>
       )}
-    </>
+    </TooltipProvider>
   );
 }

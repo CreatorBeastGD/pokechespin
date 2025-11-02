@@ -12,7 +12,8 @@ const novedades = [
                 " >>>>> Gigantamax Garbodor\n"+
                 " >>>>>> ~ HP: 160000 -> 100000\n"+
                 " >>>>>> ~ atkMult: 1.4 -> 0.9\n"+
-                " >>>>>> ~ CPM: 0.9 -> 1.4\n",
+                " >>>>>> ~ CPM: 0.9 -> 1.4\n"+
+            "+ Added a tooltip to the 'Effective Attack' and 'Effective Defense' values on Defender stats of Max Battles, explaining how these values are calculated.",
         date: "2025-11-02"
     },
     {
