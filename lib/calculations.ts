@@ -324,6 +324,7 @@ export class Calculator {
         8006818: 0.81,
         8006131: 0.34, // What
         8006132: 0.65,
+        8006569: 1.4,
         5001: 0.5974,
         5003: 0.73,
         5005: 0.7899,
@@ -493,7 +494,7 @@ export class Calculator {
             INTELEON_GIGANTAMAX: 100000,
             CINDERACE_GIGANTAMAX: 90000,
             BUTTERFREE_GIGANTAMAX: 100000,
-            GARBODOR_GIGANTAMAX: 160000,
+            GARBODOR_GIGANTAMAX: 100000,
             ETERNATUS_ETERNAMAX_FORM: 60000
         };
 

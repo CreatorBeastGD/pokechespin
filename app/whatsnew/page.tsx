@@ -7,6 +7,15 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.1.4",
+        desc: "+ Changed stats of Tier 6 Max Battles \n"+
+                " >>>>> Gigantamax Garbodor\n"+
+                " >>>>>> ~ HP: 160000 -> 100000\n"+
+                " >>>>>> ~ atkMult: 1.4 -> 0.9\n"+
+                " >>>>>> ~ CPM: 0.9 -> 1.4\n",
+        date: "2025-11-02"
+    },
+    {
         title: "v1.26.1.3",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>> Gigantamax Garbodor.\n"+
@@ -15,7 +24,7 @@ const novedades = [
                 " >>>>>> ~ HP: 160000, CPM: 0.9, AtkMult: x1.4 \n"+
                 " >>>>> Gigantamax Butterfree\n"+
                 " >>>>>> ~ HP: 160000 -> 100000 (That was an error.) \n",
-        date: "2025-11-10"
+        date: "2025-11-01"
     },
     {
         title: "v1.26.1.2",

@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.26.1.3";
+        return "1.26.1.4";
     }
 
     static async getAllPokemon() {
@@ -931,7 +931,7 @@ export class PoGoAPI {
             INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
             CINDERACE_GIGANTAMAX: [8005243, 15, 15, 90000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
-            GARBODOR_GIGANTAMAX: [8005245, 15, 15, 160000],
+            GARBODOR_GIGANTAMAX: [8006569, 15, 15, 100000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
         };
 
@@ -1450,8 +1450,6 @@ export class PoGoAPI {
             if (defender) {
                 if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
                     damageMultiplier = 1.2;
-                } else if (defender.pokemonId === "GARBODOR_GIGANTAMAX") {
-                    damageMultiplier = 1.4;
                 } else {
                     damageMultiplier = 0.9;
                 }
