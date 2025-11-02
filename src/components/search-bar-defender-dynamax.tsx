@@ -11,6 +11,7 @@ import { Calculator } from "../../lib/calculations";
 import { useSearchParams, usePathname } from "next/navigation";
 import TypeBadge from "./TypeBadge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 
 interface SearchBarAttackerProps {
@@ -288,27 +289,27 @@ export default function SearchBarDefenderDynamax({
           
           <div className="flex flex-row items-center space-x-2">  
             <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {(effAttack*damageMultiplier).toFixed(3)})</span></p>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <button className="" >?</button>
-              </TooltipTrigger>
-              <TooltipContent>
+              </PopoverTrigger>
+              <PopoverContent>
                 <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + Calculator.getCPM(raidModeLevelMultiplier) + " x " + damageMultiplier + " = " + (effAttack * damageMultiplier).toFixed(3)}</p>
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           <div className="flex flex-row items-center space-x-2">
             <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {(effDefense)})</span></p>
-            <Tooltip>
-              <TooltipTrigger asChild>
+            <Popover>
+              <PopoverTrigger asChild>
                 <button className="" >?</button>
-              </TooltipTrigger>
-              <TooltipContent>
+              </PopoverTrigger>
+              <PopoverContent>
                 <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + Calculator.getCPM(raidModeLevelMultiplier) + " = " + (effDefense)}</p>
-              </TooltipContent>
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           </div>
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
 
