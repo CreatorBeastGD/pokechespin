@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.1.5",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>> Inkay, Malamar.\n",
+        date: "2025-11-03",
+    },
+    {
         title: "v1.26.1.4",
         desc:   "+ Changed stats of Tier 6 Max Battles \n"+
                 " >>>>> Gigantamax Garbodor\n"+

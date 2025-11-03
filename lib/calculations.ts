@@ -24,6 +24,7 @@ export class Calculator {
       "ABRA": "raid-t1-dmax",
       "BOUNSWEET": "raid-t1-dmax",
       "WOOBAT": "raid-t1-dmax",
+      "INKAY": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -186,6 +187,8 @@ export class Calculator {
       "TSAREENA",
       "WOOBAT",
       "SWOOBAT",
+      "INKAY",
+      "MALAMAR",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
