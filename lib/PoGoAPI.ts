@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.26.1.5";
+        return "1.26.1.6";
     }
 
     static async getAllPokemon() {
@@ -932,6 +932,7 @@ export class PoGoAPI {
             CINDERACE_GIGANTAMAX: [8005243, 15, 15, 90000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
             GARBODOR_GIGANTAMAX: [8006569, 15, 15, 100000],
+            GRIMMSNARL_GIGANTAMAX: [8006861, 15, 15, 100000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
         };
 

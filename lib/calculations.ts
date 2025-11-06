@@ -25,6 +25,7 @@ export class Calculator {
       "BOUNSWEET": "raid-t1-dmax",
       "WOOBAT": "raid-t1-dmax",
       "INKAY": "raid-t1-dmax",
+      "RALTS": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -65,6 +66,7 @@ export class Calculator {
       "INTELEON_GIGANTAMAX": "raid-t6-gmax",
       "BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
       "GARBODOR_GIGANTAMAX": "raid-t6-gmax",
+      "GRIMMSNARL_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
@@ -93,7 +95,6 @@ export class Calculator {
       "SANDACONDA_GIGANTAMAX",
       "CENTISKORCH_GIGANTAMAX",
       "HATTERENE_GIGANTAMAX",
-      "GRIMMSNARL_GIGANTAMAX",
       "ALCREMIE_GIGANTAMAX",
       "COPPERAJAH_GIGANTAMAX",
       "DURALUDON_GIGANTAMAX",
@@ -189,6 +190,10 @@ export class Calculator {
       "SWOOBAT",
       "INKAY",
       "MALAMAR",
+      "RALTS",
+      "KIRLIA",
+      "GARDEVOIR",
+      "GALLADE",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
@@ -203,6 +208,7 @@ export class Calculator {
       "INTELEON_GIGANTAMAX",
       "BUTTERFREE_GIGANTAMAX",
       "GARBODOR_GIGANTAMAX",
+      "GRIMMSNARL_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
       "ETERNATUS"
@@ -328,6 +334,7 @@ export class Calculator {
         8006131: 0.34, // What
         8006132: 0.65,
         8006569: 1.4,
+        8006861: 1.2,
         5001: 0.5974,
         5003: 0.73,
         5005: 0.7899,
@@ -498,6 +505,7 @@ export class Calculator {
             CINDERACE_GIGANTAMAX: 90000,
             BUTTERFREE_GIGANTAMAX: 100000,
             GARBODOR_GIGANTAMAX: 100000,
+            GRIMMSNARL_GIGANTAMAX: 70000,
             ETERNATUS_ETERNAMAX_FORM: 60000
         };
 

@@ -7,6 +7,16 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.26.1.6",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>> Gigantamax Grimmsnarl, Ralts, Kirlia, Gardevoir, Gallade.\n"+
+                "+ Changed stats of Tier 6 Max Battles \n"+
+                " >>>>> Gigantamax Grimmsnarl\n"+
+                " >>>>>> ~ HP: 100000 -> 70000\n"+
+                " >>>>>> ~ CPM: 0.85 -> 1.2\n",
+        date: "2025-11-06",
+    },
+    {
         title: "v1.26.1.5",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>> Inkay, Malamar.\n",
