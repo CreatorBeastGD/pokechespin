@@ -579,6 +579,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                         maxMoves: maxMoves[memberIndex][slotIndex]
                       }
                       }
+                      allTypes={types}
                     />
                   )
                 ))}
@@ -623,6 +624,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 }
               }
               paramsLoaded={paramsLoaded}
+              allTypes={types}
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />

@@ -12,6 +12,7 @@ import { useSearchParams, usePathname } from "next/navigation";
 import TypeBadge from "./TypeBadge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import WeaknessResistanceTable from "./WeaknessResistanceTable";
 
 
 interface SearchBarAttackerProps {
@@ -30,6 +31,7 @@ interface SearchBarAttackerProps {
   paramsLoaded?: boolean;
   member?: any;
   number?: any;
+  allTypes?: any;
 }
 
 export default function SearchBarDefenderDynamax({ 
@@ -47,7 +49,8 @@ export default function SearchBarDefenderDynamax({
     initialValues,
     paramsLoaded,
     member,
-    number
+    number,
+    allTypes
   }: SearchBarAttackerProps, ) {
   
   const [pokemon, setPokemon] = useState<string>("");
@@ -65,6 +68,8 @@ export default function SearchBarDefenderDynamax({
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
   
+  const [showWeaknesses, setShowWeaknesses] = useState<boolean>(false);
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const initialLoad = useRef(false);
@@ -243,6 +248,8 @@ export default function SearchBarDefenderDynamax({
   const damageMultiplier = PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
   const defMultiplier = PoGoAPI.getDefenseMultiplier(raidMode);
 
+  const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
+
   return (
     <TooltipProvider>
       <Input
@@ -276,8 +283,11 @@ export default function SearchBarDefenderDynamax({
       {pokemonData ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
-          <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />}</p>
+          <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />} <button onClick={() => setShowWeaknesses(!showWeaknesses)}>?</button></p>
           
+          {weaknesses && showWeaknesses && (
+            <WeaknessResistanceTable weaknesses={weaknesses} />
+          )}
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
             {availableForms && (availableForms).map((form: any) => (

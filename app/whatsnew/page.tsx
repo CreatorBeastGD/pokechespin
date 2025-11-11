@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.27 (Some small but useful features!)",
+        desc: "+ Added a popover to 'Effective Attack' and 'Effective Defense' values on all search boxes, explaining how these values are calculated.\n"+
+                " + Added a new '?' button nxt to the types on all search boxes, showing a table with weaknesses and resistances of the selected Pokémon.\n",
+        date: "2025-11-11",
+    },
+    {
         title: "v1.26.1.6",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>> Gigantamax Grimmsnarl, Ralts, Kirlia, Gardevoir, Gallade.\n"+
@@ -92,7 +98,7 @@ const novedades = [
         date: "2025-09-14"
     },
     {
-        title: "v1.25",
+        title: "v1.25 (Shroom and Helpers Bonuses Revamp)",
         desc: "+ Changed how 'Shroom Bonus' works on Max Battles.\n"+
                 ">>>>>> In the past, the shroom bonus was applied like a damage multiplier, such as weather boost or STAB.\n"+
                 ">>>>>> Now, the shroom bonus is applied AFTER all damage calculation, resulting in a correct application of x2 damage.\n"+
@@ -191,7 +197,7 @@ const novedades = [
         date: "2025-07-24",
     },
     {
-        title: "v1.24",
+        title: "v1.24 (General Rankings!)",
         desc: "+ Added a new 'Max General Rankings' section to PokéChespin\n"+
             ">>>>>> Used to check what Pokémon are the best average attackers and defenders in Max Battles!\n"+
             "It's still in development, so it has some aspects that can be improved yet!",
@@ -270,7 +276,7 @@ const novedades = [
         date: "2025-06-14",        
     },
     {
-        title: "v1.22",
+        title: "v1.22 (Preview Bonuses!)",
         desc: "+ Added 'Preview Bonuses' to Max Battle Calculations. \n"+
         "~ Minor text adjustements.\n"+
         "- Fixed a bug on Max Battle Simulator where an attacker could receive double the energy on its first Fast Move.",
@@ -289,7 +295,7 @@ const novedades = [
         date: "2025-06-07",
     },
     {
-        title:"v1.21",
+        title:"v1.21 (Max Battle Simulator Updates!)",
         desc: "+ Added new functionality to the Max Battle Simulator! \n"+
             ">>> Now, there will be Max Orbs spawning! \n"+
             ">>>>>> One Max Orb will spawn each 15s on a random member and will be claimed by that member, adding +10 energy to the Max Meter\n"+
@@ -325,7 +331,7 @@ const novedades = [
         date: "2025-06-02",
     },
     {
-        title: "v1.20",
+        title: "v1.20 (Import and Export for Raids and Max Battles!)",
         desc: "+ Added 'Import' and 'Export' buttons to Raids and Max Battles pages. \n>>> Exporting will copy the ID, level, IVs, attacks, bonuses and max move levels in a JSON file, which can be imported.\n>>> At the moment, these buttons are only available for attackers. \n>>> Using this functionality on PC is recommended. \n>>> This is something really new for me, so if you detect any issues with it, please let me know!",
         date: "2025-05-31",
     },
@@ -345,21 +351,17 @@ const novedades = [
         date: "2025-05-26",
     },
     {
-		title: "v1.18",
+		title: "v1.18 (This page!)",
 		desc: "+ Added this page.\n hey folks! make sure you read the notice below this one. :)",
 		date: "2025-05-18",
-	},
-	{
-		title: "Max Battles Notice",
-		desc: "Hi! I am aware of the new Max Battle mechanics regarding targeted attacks dealing double the damage as well as the dodging reduction. I prefer waiting for a bit longer to check if this change is definitive or not.",
-		date: "2025-05-18",
-	},{
+	}
+    ,{
 		title: "v1.17.6",
 		desc: "+ Added Zacian and Zamazenta' Max moves for Max Battles.\nThese moves are selectable when selecting 'Giganamax Zacian Crowned Sword' or 'Giganamax Zamazenta Crowned Shield' as the attacker, and will have the same stats as a Steel Type GMax move.",
 		date: "2025-05-15",
 	},{
 		title: "v1.17.5.1",
-		desc: "+ Fixed HP r+emaining on Max Battle Simulator. \n+ Tweaked damage reduction on targeted moves.",
+		desc: "+ Fixed HP remaining on Max Battle Simulator. \n+ Tweaked damage reduction on targeted moves.",
 		date: "2025-05-10",
 	},{
         title: "v1.17.5",
@@ -394,7 +396,7 @@ const novedades = [
         desc: "+ Changed how 'Best Tanks' are calculated, now displays damage taken from attacks rather than percent of HP left. This will indicate which mons are more valuable to power their shields up.",
         date: "2025-03-24",
     },{
-        title: "v1.17",
+        title: "v1.17 (General Best Defenders!)",
         desc: "+ Added a 'Show General Best Defenders' button to show an average tankiness score between all possible moves of a Max Boss. \n+ Changed the constraint of 'Rankings' button on dynamax page. Now it's not required to have a moveset selected for the defender. If not all moves were selected, now the best tanks in general will be shown. \n+ Minor text changes.",
         date: "2025-04-19",
     },{
@@ -418,7 +420,7 @@ const novedades = [
         desc: "+ Fixed the fact that ranking bosses dealt x4 damage, now they deal what they should do. \n+ Added some special effecto to 'View Ranking' button to make it check out more.",
         date: "2025-03-13",
     },{
-        title: "v1.16",
+        title: "v1.16 (Rankings Page!)",
         desc: "+ Added a 'Rankings' page to Max Battles! In this new page, you can check the best attackers and defenders for any boss you want! \n+ + Fixed an issue with breakpoints on max battles.",
         date: "2025-03-13",
     },{

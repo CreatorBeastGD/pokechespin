@@ -12,6 +12,9 @@ import { Calculator } from "../../lib/calculations";
 import { Switch } from "./ui/switch";
 import { useSearchParams, usePathname } from "next/navigation";
 import TypeBadge from "./TypeBadge";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Type } from "lucide-react";
+import WeaknessResistanceTable from "./WeaknessResistanceTable";
 
 
 interface SearchBarAttackerProps {
@@ -29,6 +32,7 @@ interface SearchBarAttackerProps {
   slot?: number;
   initialValues?: any;
   paramsLoaded?: boolean;
+  allTypes?: any;
 }
 
 export default function SearchBarAttacker({ 
@@ -45,7 +49,8 @@ export default function SearchBarAttacker({
     allEnglishText,
     slot,
     initialValues,
-    paramsLoaded
+    paramsLoaded,
+    allTypes
   }: SearchBarAttackerProps, ) {
 
     const raidModeLevelMultiplier = PoGoAPI.convertStats([40, 15, 15, 15], raidMode)[0];
@@ -63,6 +68,8 @@ export default function SearchBarAttacker({
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
   const [isImporting, setIsImporting] = useState<boolean>(false);
+
+  const [showWeaknesses, setShowWeaknesses] = useState<boolean>(false);
 
   const [importMaxMove, setImportMaxMove] = useState<number[]>([1, 0, 0]);
   
@@ -411,6 +418,8 @@ export default function SearchBarAttacker({
   const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
+  const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
+
   return (
     <>
       <Input
@@ -448,9 +457,13 @@ export default function SearchBarAttacker({
       {(pokemonData && !isImporting) ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
-          <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />}</p>
+          <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />} <button onClick={() => setShowWeaknesses(!showWeaknesses)}>?</button></p>
+          
 
-
+          {weaknesses && showWeaknesses && (
+            <WeaknessResistanceTable weaknesses={weaknesses} />
+          )}
+          
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
             {availableForms && (availableForms).map((form: any) => (
               <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
@@ -458,13 +471,47 @@ export default function SearchBarAttacker({
           </select>
 
           <p>Stats (CP {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
-          <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {effAttack })</span></p>
+          <div className="flex flex-row items-center space-x-2">
+            <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {effAttack })</span></p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="" >?</button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + (slot == 1 ? stats[1] : (slot == 2 && raidMode === "normal") ? stats[1] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effAttack)}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
-          <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {effDefense})</span></p> 
+          <div className="flex flex-row items-center space-x-2">
+            <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {effDefense})</span></p> 
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="" >?</button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effDefense)}</p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
           
-          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina)})</span></p> 
+          <div className="flex flex-row items-center space-x-2">
+            <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina) + "" + (raidMode !== "normal" && slot == 2 ? " (" + Calculator.getRaidBossHP(raidmode) + ")" : "")})</span></p> 
+            {(slot === 1 || raidMode === "normal") &&
+            (
+              <Popover>
+              <PopoverTrigger asChild>
+                <button className="" >?</button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <p>Effective Stamina: {"Floor( ( " + selectedPokemon?.stats?.baseStamina + " + " + (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + ") = " + (Math.floor(effStamina))}</p>
+              </PopoverContent>
+            </Popover>
+            )}
+          </div>
+          
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
           
             <Image

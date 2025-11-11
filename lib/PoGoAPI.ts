@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.26.1.6";
+        return "1.27";
     }
 
     static async getAllPokemon() {
@@ -451,6 +451,18 @@ export class PoGoAPI {
         return combinedWeaknesses;
     }
 
+    static getAllWeaknesses(type1: string, type2: string, allTypes: any[]) {
+        let t1Weaknesses = this.getTypeWeaknesses(this.formatTypeName(type1), allTypes);
+        let t2Weaknesses = type2 ? this.getTypeWeaknesses(this.formatTypeName(type2), allTypes) : {};
+        for (const type in allTypes) {
+            const typeName = allTypes[type].type;
+            const weakness1 = t1Weaknesses[typeName] || 1;
+            const weakness2 = t2Weaknesses[typeName] || 1;
+            t1Weaknesses[typeName] = weakness1 * weakness2;
+        }
+        return t1Weaknesses;
+    }
+
     static hasDoubleWeaknesses(type1: string, type2: string, allTypes: any[]) {
         let t1 = this.formatTypeName(type1);
         let t2 = type2 ? this.formatTypeName(type2) : null;
@@ -466,6 +478,8 @@ export class PoGoAPI {
     }
 
     static getTypeWeaknesses(type: string, allTypes: any[]) {
+        console.log("Calculating weaknesses for type:", type);
+        console.log(allTypes);
         const objType = allTypes.find((t: any) => t.type === type);
         let weaknesses: { [key: string]: number } = {};
     

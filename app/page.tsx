@@ -40,7 +40,11 @@ export default function Home() {
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
   const [advEffect, setAdvEffect] = useState<string>("none");
 
+   const [types, setTypes] = useState<any>(null);
+
   const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
+
+  
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -70,6 +74,10 @@ export default function Home() {
       setAllEnglishText(text);
       //console.log(text);
       //console.log("Fetched all English text from PokeBattler API");
+
+      const allTypesData = await PoGoAPI.getTypes();
+      setTypes(allTypesData);
+      //console.log("Fetched all types from PokeBattler API");
 
       
       setAllDataLoaded(true);
@@ -314,6 +322,7 @@ export default function Home() {
                 }
               }
               paramsLoaded={paramsLoaded}
+              allTypes={types}
             />
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
@@ -353,6 +362,8 @@ export default function Home() {
                 }
               }
               paramsLoaded={paramsLoaded}
+              allTypes={types}
+              
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
