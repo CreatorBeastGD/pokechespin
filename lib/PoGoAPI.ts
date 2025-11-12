@@ -478,8 +478,6 @@ export class PoGoAPI {
     }
 
     static getTypeWeaknesses(type: string, allTypes: any[]) {
-        console.log("Calculating weaknesses for type:", type);
-        console.log(allTypes);
         const objType = allTypes.find((t: any) => t.type === type);
         let weaknesses: { [key: string]: number } = {};
     
