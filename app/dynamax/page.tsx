@@ -486,7 +486,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
   function checkBreakpoints(event: React.MouseEvent<HTMLButtonElement>): void {
     if (defenderStats && attackingPokemon && defendingPokemon && selectedQuickMoveAttacker && selectedChargedMoveAttacker) {
-      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}`;
+      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}&slot=${selectedPokemonSlot}&member=${selectedMember}&helper=${previewHelper}&advEffect=${previewAdvEffect}&friendship=${previewFriendship}&shroom=${previewShroom}`;
       router.push(newUrl);
     } else {
       alert("Please select all required fields before checking breakpoints! (Attacker Pokémon, Defender Pokémon, Attacker's Fast Attack, Attacker's Charged Attack)");

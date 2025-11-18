@@ -40,6 +40,12 @@ const BreakpointsPage = () => {
     const [maxMax, setMaxMax] = useState<any>(null);
     const [defenderStatsLoad, setDefenderStatsLoad] = useState<any>(null);
     const [attackerMaxMove, setAttackerMaxMove] = useState<any>(null);
+
+    const [helpers, setHelpers] = useState<number>(0);
+    const [adventureEffect, setAdventureEffect] = useState<string>("none");
+    const [friendshipLevel, setFriendshipLevel] = useState<number>(0);
+    const [usesShroom, setUsesShroom] = useState<boolean>(false);
+
       useEffect(() => {
         const fetchAllPokemonPB = async () => {
           const pokemonlist = await PoGoAPI.getAllPokemonPB();
@@ -78,6 +84,12 @@ const BreakpointsPage = () => {
             const weather = urlParams.get('weather') || 'EXTREME';
             const defenderStats = urlParams.get('defender_stats') || '50,15,15,15';
 
+            // helper=10&advEffect=none&friendship=0&shroom=false
+
+            const helperBonus = parseInt(urlParams.get('helper') || '0');
+            const advEffect = urlParams.get('advEffect') || "none";
+            const friendship = parseInt(urlParams.get('friendship') || '0');
+            const shroom = urlParams.get('shroom') || "false";
 
             if (attacker) {setAttackingPokemon(PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0])} ;
             if (defender) {setDefendingPokemon(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0])};
@@ -93,6 +105,11 @@ const BreakpointsPage = () => {
             setRaidMode(raidmode);
             setWeather(weather);
             setDefenderStatsLoad(defenderStats.split(',').map((stat: string) => parseInt(stat)));
+
+            setHelpers(helperBonus);
+            setAdventureEffect(advEffect);
+            setFriendshipLevel(friendship);
+            setUsesShroom(shroom === "true" ? true : false);
             
             if (!attacker || !defender || !attackerFastAttack || !attackerCinematicAttack) {
                 setError("Missing parameters");
@@ -104,6 +121,10 @@ const BreakpointsPage = () => {
             const urlSP = new URLSearchParams(window.location.search);
             urlSP.delete('member');
             urlSP.delete('slot');
+            urlSP.delete('helper');
+            urlSP.delete('advEffect');
+            urlSP.delete('friendship');
+            urlSP.delete('shroom');
             window.history.replaceState({}, '', `${window.location.pathname}?${urlSP}`);
             
             
@@ -113,9 +134,9 @@ const BreakpointsPage = () => {
       useEffect(() => {
         if (paramsLoaded) {
             
-            const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker);
-            const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker);
-            const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker);
+            const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker, 1);
+            const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker, 2);
+            const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker, 3);
             setAllBreakpoints(breakpoints);
             setCalculatedBreakpoints(true);
             setAllBreakpointsCinematic(breakpointsCinematic);
@@ -137,12 +158,16 @@ const BreakpointsPage = () => {
         }
       }, [paramsLoaded]);
 
-      const calculateBreakpoints = (move: any) => {
+      const calculateBreakpoints = (move: any, moveType: number) => {
         const rows = 32*2 - 1; // Example value for rows
         const cols = 16; // Example value for cols
         const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
-        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", parseInt(bonusAttacker[3])];
+        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", friendshipLevel];
         const defenderBonus = [weather, bonusDefender[1] === "true", bonusDefender[2] === "true", parseInt(bonusDefender[3])];
+        const altMove = move;
+        if (moveType === 3 && adventureEffect === "cannon" && (attackingPokemon.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && attackingPokemon.pokemonId !== "ZACIAN_CROWNED_SWORD_FORM")) {
+            altMove.power = altMove.power + (attackerMaxMove[0] === 3 ? 100 : 50)
+        }
         //console.log(attackerBonus);
         // Breakpoints will be calculated from level 20 to level 50
         for (let i = 20; i <= 51; i+=0.5) {
@@ -150,7 +175,19 @@ const BreakpointsPage = () => {
             for (let j = 0; j <= 15; j++) {
                 const attackerStats = [i, j, 15, 15];
                 const defenderStats = defenderStatsLoad;
-                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode);
+                const damage = PoGoAPI.getDamage(
+                  attackingPokemon, 
+                  defendingPokemon, 
+                  altMove, 
+                  types, 
+                  attackerStats, 
+                  defenderStats, 
+                  attackerBonus, 
+                  defenderBonus, 
+                  raidMode,
+                  usesShroom ? 2 : 1,
+                  PoGoAPI.getHelperBonusDamage(helpers) * (adventureEffect === "blade" ? 1.05 : 1.0),
+                );
                 //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
                 table[2*(i-20)][j] = damage;
 

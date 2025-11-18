@@ -7,6 +7,11 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.27.1",
+        desc: "+ Preview bonuses are now compatible with Max Battle Breakpoints.\n",
+        date: "2025-11-18",
+    },
+    {
         title: "v1.27 (Some small but useful features!)",
         desc: "+ Added a popover to 'Effective Attack' and 'Effective Defense' values on all search boxes, explaining how these values are calculated.\n"+
                 " + Added a new '?' button nxt to the types on all search boxes, showing a table with weaknesses and resistances of the selected Pokémon.\n",
