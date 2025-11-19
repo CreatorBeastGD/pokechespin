@@ -240,7 +240,8 @@ const BreakpointsPage = () => {
       }
       const copyURL = () => {
         const url = window.location.href;
-        navigator.clipboard.writeText(url);
+        navigator.clipboard.writeText(url + "&helper=" + helpers + "&advEffect=" + adventureEffect + "&friendship=" + friendshipLevel + "&shroom=" + (usesShroom ? "true" : "false"));
+
         alert("URL copied to clipboard!");
       }
 
@@ -270,6 +271,9 @@ const BreakpointsPage = () => {
                         <CardTitle>Breakpoints</CardTitle>
                         <CardDescription>
                             Breakpoints for {PoGoAPI.getPokemonNamePB(attackingPokemon.pokemonId, allEnglishText)} with {PoGoAPI.getMoveNamePB(selectedQuickMoveAttacker.moveId, allEnglishText)}, {PoGoAPI.getMoveNamePB(selectedChargedMoveAttacker.moveId, allEnglishText)} and {PoGoAPI.formatMoveName(selectedMaxMoveAttacker.moveId)} Lv.{attackerMaxMove[0]} against {prettierRaidMode(raidMode)} Boss {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} {raidMode === "normal" ? ("(Level " + defenderStatsLoad[0] + " " + defenderStatsLoad[1] + "-" + defenderStatsLoad[2] + "-" + defenderStatsLoad[3] + ")") : ""}.
+                        </CardDescription>
+                        <CardDescription>
+                            {helpers} helper{helpers !== 1 ? "s" : ""} active. Adventure Effect: {adventureEffect}. Friendship Level Bonus: {friendshipLevel}. Using Max Shroom: {usesShroom ? "Yes" : "No"}. {weather !== "EXTREME" ? ("Weather: " + weather + ".") : "No weather boost."}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
