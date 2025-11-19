@@ -136,6 +136,11 @@ export class PoGoAPI {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
             pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+        /*
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ZERAORA") {
+            pokemon[0].stats.baseAttack = 310;
+            pokemon[0].stats.baseDefense = 156;
+        */
         }
 
         return this.filterUniqueById(pokemon);
@@ -511,6 +516,11 @@ export class PoGoAPI {
         return effectiveness;
     }
 
+    static isGoodValue(x: any, limit: number): boolean {
+        let e = Math.abs(x.raw / Math.round(x.raw) - 1);
+        return e < limit;
+    }
+
     static CpmFinderByPokemonData(
         pokemonData: any,
         baseCPM: number,
@@ -558,7 +568,8 @@ export class PoGoAPI {
                                     ["EXTREME", false, false, 0]
                                 )
                                 const PokemonHP = Calculator.getEffectiveStaminaRawCPM(defenderData.stats.baseStamina, 15, Calculator.getCPM(level));
-                                if (expectedDamage.dmg < PokemonHP) {
+
+                                if (expectedDamage.dmg < PokemonHP && this.isGoodValue(expectedDamage, /* ((baseCPM + maxCPMRange)/baseCPM) - 1) */ minCPMRange)) {
                                     let minFound = false;
                                     let maxFound = false;
                                     for (let val = (baseCPM - minCPMRange); val <= (baseCPM) && !minFound ; val = val + jump) {
