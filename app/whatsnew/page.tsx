@@ -7,6 +7,12 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.27.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>> Eevee, Jolteon, Flareon, Vaporeon, Espeon, Umbreon, Glaceon, Leafeon, Sylveon.\n",
+        date: "2025-11-20",
+    },
+    {
         title: "v1.27.1",
         desc: "+ Preview bonuses are now compatible with Max Battle Breakpoints.\n",
         date: "2025-11-18",
