@@ -9,7 +9,8 @@ const novedades = [
     {
         title: "v1.27.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
-                ">>>>> Eevee, Jolteon, Flareon, Vaporeon, Espeon, Umbreon, Glaceon, Leafeon, Sylveon.\n",
+              ">>>>> Eevee, Jolteon, Flareon, Vaporeon, Espeon, Umbreon, Glaceon, Leafeon, Sylveon.\n"+
+              "+ Made some color adjustements to the type backgrounds. Now they look like the ones on Pokémon GO!\n",
         date: "2025-11-20",
     },
     {

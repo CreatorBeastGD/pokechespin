@@ -14,6 +14,7 @@
   }
 }
 
+
 body {
   color: var(--foreground);
   background: var(--background);
@@ -98,75 +99,75 @@ body {
 }
 
 .type-normal {
-  @apply bg-gray-300;
+  @apply bg-normal;
 }
 
 .type-fire {
-  @apply bg-red-500;
+  @apply bg-fire;
 }
 
 .type-water {
-  @apply bg-blue-500;
+  @apply bg-water;
 }
 
 .type-grass {
-  @apply bg-green-500;
+  @apply bg-grass;
 }
 
 .type-electric {
-  @apply bg-yellow-500;
+  @apply bg-electric;
 }
 
 .type-ice {
-  @apply bg-cyan-400;
+  @apply bg-ice;
 }
 
 .type-fighting {
-  @apply bg-orange-800;
+  @apply bg-fighting;
 }
 
 .type-poison {
-  @apply bg-purple-500;
+  @apply bg-poison;
 }
 
 .type-ground {
-  @apply bg-amber-800;
+  @apply bg-ground;
 }
 
 .type-flying {
-  @apply bg-blue-300;
+  @apply bg-flying;
 }
 
 .type-psychic {
-  @apply bg-pink-500;
+  @apply bg-psychic;
 }
 
 .type-bug {
-  @apply bg-lime-500;
+  @apply bg-bug;
 }
 
 .type-rock {
-  @apply bg-yellow-600;
+  @apply bg-rock;
 }
 
 .type-ghost {
-  @apply bg-indigo-800;
+  @apply bg-ghost;
 }
 
 .type-dragon {
-  @apply bg-indigo-500;
+  @apply bg-dragon;
 }
 
 .type-dark {
-  @apply bg-gray-800;
+  @apply bg-dark;
 }
 
 .type-steel {
-  @apply bg-gray-400;
+  @apply bg-steel;
 }
 
 .type-fairy {
-  @apply bg-pink-300;
+  @apply bg-fairy;
 }
 
 #bmc-wbtn {
