@@ -280,7 +280,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               value={advEffect[i]}
               onChange={(e) => handleAdvEffectChange(i, e.target.value)}
             >
-              <option value="none">No advanced effect</option>
+              <option value="none">No Adventure effect</option>
               <option value="blade">Behemoth Blade (x1.05 ATK)</option>
               <option value="bash">Behemoth Bash (x1.05 DEF)</option>
               <option value="cannon">Dynamax Cannon (+1 max level)</option>
