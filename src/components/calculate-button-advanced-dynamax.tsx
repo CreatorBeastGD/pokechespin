@@ -326,7 +326,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {(raidMode === "raid-custom-dmax" ? parseInt(customBossHP || "1") : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))) - sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId,PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))} HP left.</p>
+            <p> The defender Pokémon has {(raidMode === "raid-custom-dmax" ? parseInt(customBossHP || "1") : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))) - sumAllDamage()}/{(raidMode === "raid-custom-dmax" ? parseInt(customBossHP || "1") : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))))} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">
