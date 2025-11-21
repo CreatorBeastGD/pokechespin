@@ -71,7 +71,7 @@ export default function CpmFinder() {
         const CalculateLimitsPokemon = () => {
             if (allDataLoaded) {
                 // All data is loaded, you can use it here
-                console.log("Calculating contenders...")
+                //console.log("Calculating contenders...")
                 setAnalyzingContenders(true);
                 setContendersPokemon([]);
                 const pokemonData = PoGoAPI.getPokemonPBByID(pokemonId.toUpperCase(), pokemonList)[0];
@@ -93,7 +93,7 @@ export default function CpmFinder() {
                             } else {
                                 setContendersPokemon([]);
                             }
-                            console.log(contendersPokemon);
+                            //console.log(contendersPokemon);
                         }
                     }, 10);
                 }
@@ -104,7 +104,7 @@ export default function CpmFinder() {
         const CalculateLimits = () => {
             if (allDataLoaded) {
                 // All data is loaded, you can use it here
-                console.log("Calculating contenders...")
+                //console.log("Calculating contenders...")
                 setAnalyzingContenders(true);
                 setContenders([]);
                 setTimeout(() => {
@@ -122,13 +122,13 @@ export default function CpmFinder() {
                             limit, // Limit of CPM range to check (default 0.00005)
                             jump // Jump value for each iteration (default 0.00000001)
                         )
-                        console.log(newContenders);
+                        //console.log(newContenders);
                         if (newContenders && typeof newContenders === "object") {
                             setContenders([newContenders.minimumCPMcontender, newContenders.maximumCPMcontender, newContenders.minContenderList, newContenders.maxContenderList]);
                         } else {
                             setContenders([]);
                         }
-                        console.log(contenders);
+                        //console.log(contenders);
                     }
                 }, 10);
                 setAnalyzingContenders(false);

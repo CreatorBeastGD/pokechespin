@@ -70,6 +70,12 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [prioritiseEnergy, setPrioritiseEnergy] = useState<boolean>(searchParams.get("prioritise_energy") === "true");
   const [types, setTypes] = useState<any[]>([]);
   
+  const customBossHP = searchParams.get('custom_hp');
+  const customBossCPM = searchParams.get('custom_cpm');
+  const customBossAtkMult = searchParams.get('custom_atk_mult');
+
+  //console.log(customBossHP, customBossCPM, customBossAtkMult);
+
   useEffect(() => {
     const loadParams = () => {
       const dodge = searchParams.get("can_dodge");
@@ -143,6 +149,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       return "Tier 5 Dynamax";
     } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
         return "Gigantamax";
+    } else if (raidMode === "raid-custom-dmax") {
+      return "Custom Max Battle";
     } else {
       return "Normal";
     }
@@ -163,7 +171,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = 
+    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? parseInt(customBossHP) : 10000, customBossCPM ? parseFloat(customBossCPM) : 1, customBossAtkMult ? parseFloat(customBossAtkMult) : 1);
     setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);

@@ -37,6 +37,7 @@ export default function CalculateButtonSimulate({
   const [graphic, setGraphic] = useState<any | null>(null);
   const [shownGraphic, setShownGraphic] = useState<any>(false);
 
+  
   const showGraphic = () => {
     setShownGraphic(true);
   }

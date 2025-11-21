@@ -54,6 +54,10 @@ export default function rankingsPage() {
 
     const [showAllGmax, setShowAllGmax] = useState<boolean>(false);
 
+    const [customBossAtkMult, setCustomBossAtkMult] = useState<number>(1);
+    const [customBossCPM, setCustomBossCPM] = useState<number>(1);
+    const [customBossHP, setCustomBossHP] = useState<string>("10000");
+
     const router = useRouter();
     const sp = useParams();
 
@@ -146,16 +150,23 @@ export default function rankingsPage() {
 
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
 
+                    const customAtkMult = urlSP.get("custom_atk_mult") ? parseFloat(urlSP.get("custom_atk_mult") ?? "1") : 1;
+                    const customCPM = urlSP.get("custom_cpm") ? parseFloat(urlSP.get("custom_cpm") ?? "1") : 1;
+                    const customHP = urlSP.get("custom_hp") ?? "10000";
+                    setCustomBossAtkMult(customAtkMult);
+                    setCustomBossCPM(customCPM);
+                    setCustomBossHP(customHP);
+
                 const playersAmount = urlSP.get("players_in_team") ? parseInt(urlSP.get("players_in_team") ?? "1") : 1;
                 setPlayersInTeam(playersAmount);
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax, customCPM);
                     setBestAttackers(bestAttackers);
-                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost);
+                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, customCPM, customAtkMult);
                     setBestDefenders(bestDefenders);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, customAtkMult, customCPM);
                     setGeneralBestDefenders(bestGeneralDefenders);
                     urlSP.delete("member");
                     urlSP.delete("slot");
@@ -163,9 +174,9 @@ export default function rankingsPage() {
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax, customCPM);
                     setBestAttackers(bestAttackers);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost);
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, customAtkMult, customCPM);
                     setGeneralBestDefenders(bestGeneralDefenders);
                     setGeneralMode(true);
                     setShowGeneralBestDefenders(true);
@@ -186,12 +197,12 @@ export default function rankingsPage() {
 
     useEffect(() => {
         if (pokemonInfo && allEnglishText) {
-            document.title = `${PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} (${getStars(raidMode)} Star Max Battle) | PokéChespin Max Rankings`;
+            document.title = `${PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} (${getStars(raidMode)} Max Battle) | PokéChespin Max Rankings`;
         }
     }, [pokemonInfo, allEnglishText]);
 
     const getStars = (raidMode: string) => {
-        return raidMode === "normal" ? 5 : parseInt(raidMode.split("-")[1][1]);
+        return raidMode === "normal" ? 5 : raidMode === "raid-custom-dmax" ? "Custom" : (parseInt(raidMode.split("-")[1][1]) + " Stars");
     }
 
     const copyLinkToClipboard = () => {
@@ -210,6 +221,9 @@ export default function rankingsPage() {
         urlSP.set("show_all_gmax", showAllGmax.toString());
         urlSP.set("zamazenta_extra_shield", zamaExtraShield.toString());
         urlSP.set("players_in_team", playersInTeam.toString());
+        urlSP.set("custom_atk_mult", customBossAtkMult.toString());
+        urlSP.set("custom_cpm", customBossCPM.toString());
+        urlSP.set("custom_hp", customBossHP.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -283,9 +297,11 @@ export default function rankingsPage() {
 
     useEffect(() => {
         if (pokemonInfo && allDataLoaded) {
+
+
             
-        const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax);
-        setBestAttackers(bestAttackers);
+            const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax, customBossCPM);
+            setBestAttackers(bestAttackers);
         }}, [showAllGmax]);
 
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
@@ -527,7 +543,14 @@ export default function rankingsPage() {
                                 </div>
                             </div>
                         )}
-                        <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Star Max Battle</h3>
+                        {raidMode === "raid-custom-dmax" && (
+                            <div className="mt-4 mb-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                                <h3 className="text-lg font-bold mb-2">Custom Boss Settings</h3>
+                                <p>Attack Multiplier: {customBossAtkMult}</p>
+                                <p>CP Multiplier: {customBossCPM}</p>
+                            </div>
+                        )}
+                        <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Max Battle</h3>
                         <Separator className="mt-4"/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
                             <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>

@@ -40,6 +40,10 @@ export default function CalculateButtonDynamax({
   const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number | null>(0);
 
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const customHP = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_hp") || 10000) : 10000;
+  const customCPM = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_cpm") || 1) : null;
+  const customAtkMult = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : null;
   
   useEffect(() => {
     setDamage(0);
@@ -49,8 +53,17 @@ export default function CalculateButtonDynamax({
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
     const types = await PoGoAPI.getTypes();
-    const damage = await PoGoAPI.getDamageAttackDynamax(attacker, defender, move, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, maxLevel, additionalBonus, shroomBonus, dynamaxCannonBonus);
-    const effStamina = raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]) : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types));
+
+    let defenderStatsModified = [...defenderStats];
+
+    if (raidMode === "raid-custom-dmax") {
+      defenderStatsModified[0] = customCPM;
+    }
+
+    const damage = await PoGoAPI.getDamageAttackDynamax(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, maxLevel, additionalBonus, shroomBonus, dynamaxCannonBonus);
+    const effStamina = 
+      raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0])
+      : (raidMode === "raid-custom-dmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setHealth(remainingStamina);

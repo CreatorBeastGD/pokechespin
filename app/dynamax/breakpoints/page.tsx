@@ -45,6 +45,9 @@ const BreakpointsPage = () => {
     const [adventureEffect, setAdventureEffect] = useState<string>("none");
     const [friendshipLevel, setFriendshipLevel] = useState<number>(0);
     const [usesShroom, setUsesShroom] = useState<boolean>(false);
+    
+    const [customCPM, setCustomCPM] = useState<number>(1);
+    
 
       useEffect(() => {
         const fetchAllPokemonPB = async () => {
@@ -83,6 +86,11 @@ const BreakpointsPage = () => {
             const raidmode = urlParams.get('raid_mode') || 'normal';
             const weather = urlParams.get('weather') || 'EXTREME';
             const defenderStats = urlParams.get('defender_stats') || '50,15,15,15';
+
+            const cpmCustom = urlParams.get('custom_cpm');
+            if (cpmCustom) {
+                setCustomCPM(parseFloat(cpmCustom));
+            }
 
             // helper=10&advEffect=none&friendship=0&shroom=false
 
@@ -134,9 +142,9 @@ const BreakpointsPage = () => {
       useEffect(() => {
         if (paramsLoaded) {
             
-            const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker, 1);
-            const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker, 2);
-            const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker, 3);
+            const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker, 1, customCPM);
+            const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker, 2, customCPM);
+            const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker, 3, customCPM);
             setAllBreakpoints(breakpoints);
             setCalculatedBreakpoints(true);
             setAllBreakpointsCinematic(breakpointsCinematic);
@@ -158,13 +166,18 @@ const BreakpointsPage = () => {
         }
       }, [paramsLoaded]);
 
-      const calculateBreakpoints = (move: any, moveType: number) => {
+      const calculateBreakpoints = (move: any, moveType: number, customCPM: number) => {
         const rows = 32*2 - 1; // Example value for rows
         const cols = 16; // Example value for cols
         const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
         const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", friendshipLevel];
         const defenderBonus = [weather, bonusDefender[1] === "true", bonusDefender[2] === "true", parseInt(bonusDefender[3])];
         const altMove = move;
+        let defenderStatsModified = [...defenderStatsLoad];
+        if (raidMode === "raid-custom-dmax") {
+            defenderStatsModified[0] = customCPM;
+        }
+
         if (moveType === 3 && adventureEffect === "cannon" && (attackingPokemon.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && attackingPokemon.pokemonId !== "ZACIAN_CROWNED_SWORD_FORM")) {
             altMove.power = altMove.power + (attackerMaxMove[0] === 3 ? 100 : 50)
         }
@@ -174,7 +187,7 @@ const BreakpointsPage = () => {
             // Attacker attack stat will go from 0 to 15
             for (let j = 0; j <= 15; j++) {
                 const attackerStats = [i, j, 15, 15];
-                const defenderStats = defenderStatsLoad;
+                const defenderStats = defenderStatsModified;
                 const damage = PoGoAPI.getDamage(
                   attackingPokemon, 
                   defendingPokemon, 
@@ -234,6 +247,8 @@ const BreakpointsPage = () => {
           return "Gigantamax Battle";
         } else if (raidMode === "raid-t6-gmax-standard") {
           return "Standard Gigantamax Battle";
+        } else if (raidMode === "raid-custom-dmax") {
+          return "Custom Max Battle";
         } else {
           return "Gym Battle";
         }
