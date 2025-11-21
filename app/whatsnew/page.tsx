@@ -11,7 +11,7 @@ const novedades = [
         desc: "+ Added 'Custom Dynamax Battles' mode to PokéChespin for Max Battles!\n"+
                 ">>>>>> Now you can set custom HP, CPM and Attack Multiplier for the Dynamax Bosses if you select this new kind of Max Battle!\n",
         date: "2025-11-21",
-    }
+    },
     {
         title: "v1.27.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
