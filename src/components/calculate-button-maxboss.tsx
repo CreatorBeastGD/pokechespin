@@ -30,22 +30,26 @@ export default function CalculateButtonMaxBoss({
   isLarge: boolean;
   bashBoost?: boolean;
 }) {
+  
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number | null>(0);
   const [damageBestCase, setDamageBestCase] = useState<number | null>(0);
   const [damageWorstCase, setDamageWorstCase] = useState<number | null>(0);
+  const [customCPM, setCustomCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
+  const [customAtkMult, setCustomAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
 
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost, customCPM, customAtkMult]);
 
-  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-
-  const customHP = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_hp") || 10000) : 10000;
-  const customCPM = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_cpm") || 1) : 1;
-  const customAtkMult = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : 1;
+  useEffect(() => {
+    setCustomCPM((Number)(searchParams.get("custom_cpm") || 1));
+    setCustomAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
+  }, [searchParams]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
