@@ -409,10 +409,6 @@ export class Calculator {
         const modifiers = (additionalBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
         // Incognita is AttackCPM (AttackFinal = attack * CPM)
         let base = ((expectedDamage.dmg) * defenseFinal) / (0.5 * power * attackFinal * modifiers);
-        while ((Math.floor(base * 0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers)+1) > expectedDamage.dmg) {
-          base -= 1e-9;
-          console.log("Decreasing base to "+base);
-        }
         return base;
     }
 

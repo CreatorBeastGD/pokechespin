@@ -249,7 +249,7 @@ export default function CpmFinder() {
                         <p>Pokémon ID: <input type="text" className="text-red-600 font-black" placeholder="CHARIZARD" onChange={(e) => setPokemonId(e.target.value)} value={pokemonId} /></p>
 
                         <p>Expected CPM: <input type="number" className="text-red-600 font-black" placeholder="Expected CPM" onChange={(e) => setExpectedCpm(Number(e.target.value))} value={expectedCpm} /></p>
-                        <p>Additive: <input type="number" className="text-red-600 font-black" placeholder="Jump" onChange={(e) => setJump(Number(e.target.value))} value={jump} /></p>
+                        
                         <p>Limit: <input type="number" className="text-red-600 font-black" placeholder="Limit" onChange={(e) => setLimit(Number(e.target.value))} value={limit} /></p>
 
                         <button onClick={CalculateLimitsPokemon}>Calculate Limits</button>

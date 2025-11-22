@@ -572,23 +572,25 @@ export class PoGoAPI {
 
                                     // maximum contender
                                     if (expectedDamage.raw - Math.floor(expectedDamage.raw) > 0.5) {
-                                            const ResCPM = Calculator.CalculateCPMFromDamage(
-                                            moveData.power,
-                                            Calculator.getEffectiveAttackRawCPM(pokemonData.stats.baseAttack,15,1),
-                                            Calculator.getEffectiveDefenseRawCPM(defenderData.stats.baseDefense,defenseIV,Calculator.getCPM(level))
-                                            ,moveData.type == pokemonData.type || moveData.type == pokemonData.type2 ? 1.2 : 1,
-                                            this.getEfectiveness(defenderData, { type: moveData.type }, typeList),
-                                            moveData.type,
-                                            WB * SPREAD,
-                                            ["EXTREME", false, false, 0],
-                                            ["EXTREME", false, false, 0], 
-                                            { dmg: expectedDamage.dmg }
-                                        )
-                                        if (ResCPM > baseCPM && ResCPM <= (baseCPM + maxCPMRange)) {
-                                            if (ResCPM < maximumCPMcontender.cpm) {
-                                                maximumCPMcontender = { pokemon: defenderData, cpm: Number(ResCPM.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD };
-                                            }
-                                            maxContenderList.push({ pokemon: defenderData, cpm: Number(ResCPM.toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD });
+                                        for (let val = (baseCPM); val < (baseCPM + maxCPMRange); val += 1e-9) {
+                                            const damageMax = Calculator.CalculateDamageFloatValue(
+                                                moveData.power,
+                                                Calculator.getEffectiveAttackRawCPM(pokemonData.stats.baseAttack,15,val),
+                                                Calculator.getEffectiveDefenseRawCPM(defenderData.stats.baseDefense,defenseIV,Calculator.getCPM(level)),
+                                                moveData.type == pokemonData.type || moveData.type == pokemonData.type2 ? 1.2 : 1,
+                                                this.getEfectiveness(defenderData, { type: moveData.type }, typeList),
+                                                moveData.type,
+                                                WB * SPREAD,
+                                                ["EXTREME", false, false, 0],
+                                                ["EXTREME", false, false, 0]
+                                            )
+                                            if (damageMax.dmg > expectedDamage.dmg) {
+                                                if (val < maximumCPMcontender.cpm) {
+                                                    maximumCPMcontender = { pokemon: defenderData, cpm: Number((val - 1e-9).toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD };
+                                                }
+                                                maxContenderList.push({ pokemon: defenderData, cpm: Number((val - 1e-9).toFixed(9)), level, defenseIV, expectedDamage: expectedDamage.dmg, realDamage: expectedDamage.raw, moveId: moveData.moveId, weatherBoost: WB, spread: SPREAD });
+                                                break;
+                                            } 
                                         }
                                     } 
                                     else {
