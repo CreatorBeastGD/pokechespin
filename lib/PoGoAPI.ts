@@ -141,7 +141,7 @@ export class PoGoAPI {
             pokemon[0].stats.baseAttack = 310;
             pokemon[0].stats.baseDefense = 156;
         */
-        } else if (pokemon.length > 0 && (pokemon[0].pokemonId == "METAGROSS" || pokemon[0].pokemonId == "METAGROSS_MEGA" || pokemon[0].pokemonId == "METAGROSS_SHADOW")) {
+        } else if (pokemon.length > 0 && (pokemon[0].pokemonId == "METAGROSS" || pokemon[0].pokemonId == "METAGROSS_MEGA" || pokemon[0].pokemonId == "METAGROSS_SHADOW_FORM")) {
             
             pokemon[0].quickMoves = ["BULLET_PUNCH_FAST", "ZEN_HEADBUTT_FAST", "FURY_CUTTER_FAST", "SHADOW_CLAW_FAST"];
             pokemon[0].eliteQuickMove = ["SHADOW_CLAW_FAST"];
