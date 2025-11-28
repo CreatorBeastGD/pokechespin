@@ -7,6 +7,13 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "Notice",
+        desc: "Hey all! I'm testing to put ads to PokéChespin using Google AdSense. \n"+
+                "Ads should appear on main page, raids and dynamax pages, excluding breakpoints and ranking subpages. (and there won't be that much ads right now.) \n"+
+                "Sorry for this, but this may come in handy in the future :(",
+        date: "2024-11-28",
+    },
+    {
         title: "v1.28 (Custom Dynamax Battles!)",
         desc: "+ Added 'Custom Dynamax Battles' mode to PokéChespin for Max Battles!\n"+
                 ">>>>>> Now you can set custom HP, CPM and Attack Multiplier for the Dynamax Bosses if you select this new kind of Max Battle!\n",
