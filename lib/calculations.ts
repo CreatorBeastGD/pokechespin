@@ -204,6 +204,7 @@ export class Calculator {
       "LEAFEON",
       "GLACEON",
       "SYLVEON",
+      "LUGIA",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
@@ -516,6 +517,7 @@ export class Calculator {
             SUICUNE: 22000,
             LATIOS: 23000,
             LATIAS: 25000,
+            LUGIA: 18000
         };
 
         const t6gmaxHP: Record<string, number> = {

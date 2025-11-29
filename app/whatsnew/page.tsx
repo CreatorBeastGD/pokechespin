@@ -14,6 +14,16 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.28.1",
+        desc:   "+ Added new Pokémon to Max Rankings\n"+
+                " >>>>> Lugia.\n"+
+                "+ Changed stats of Tier 5 Max Battles \n"+
+                " >>>>> Lugia\n"+
+                " >>>>>> ~ HP: 18000\n"+
+                " >>>>>> ~ CPM: 0.75\n",
+        date: "2025-11-29",
+    },
+    {
         title: "v1.28 (Custom Dynamax Battles!)",
         desc: "+ Added 'Custom Dynamax Battles' mode to PokéChespin for Max Battles!\n"+
                 ">>>>>> Now you can set custom HP, CPM and Attack Multiplier for the Dynamax Bosses if you select this new kind of Max Battle!\n",
