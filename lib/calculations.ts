@@ -52,6 +52,7 @@ export class Calculator {
       "MOLTRES": "raid-t5-dmax",
       "LATIAS": "raid-t5-dmax",
       "LATIOS": "raid-t5-dmax",
+      "LUGIA": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
