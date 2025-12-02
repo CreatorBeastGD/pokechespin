@@ -300,7 +300,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               <option value="cannon">Dynamax Cannon (+1 max level)</option>
             </select>
             <div className="2-full">
-              <label>Friendship: ({friendship[i]})</label>
+              <label>Friendship: ({friendship[i]}) <label className="italic">(Doubled this season!)</label></label>
               <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
             </div>
           </div>

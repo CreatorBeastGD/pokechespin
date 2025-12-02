@@ -391,7 +391,11 @@ export class Calculator {
       }
 
       static getFriendshipBonus(friendship: number) {
-        return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        if (Date.now() < 1772528400000) { // March 1, 2026
+          return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : 1;
+        } else {
+          return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        }
       }
 
       static CalculateCPMFromDamage(
