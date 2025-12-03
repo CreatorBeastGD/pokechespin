@@ -69,7 +69,18 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [phases, setPhases] = useState<number>(0);
   const [prioritiseEnergy, setPrioritiseEnergy] = useState<boolean>(searchParams.get("prioritise_energy") === "true");
   const [types, setTypes] = useState<any[]>([]);
+
+  const [customBossCPM, setCustomBossCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
+  const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
+  const [customBossHP, setCustomBossHP] = useState<number>((Number)(searchParams.get("custom_hp") || 10000));
   
+  useEffect(() => {
+    setCustomBossCPM((Number)(searchParams.get("custom_cpm") || 1));
+    setCustomBossAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
+    setCustomBossHP((Number)(searchParams.get("custom_hp") || 10000));
+  }, [searchParams]);
+  //console.log(customBossHP, customBossCPM, customBossAtkMult);
+
   useEffect(() => {
     const loadParams = () => {
       const dodge = searchParams.get("can_dodge");
@@ -128,7 +139,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, strategy, shroom, friendship, prioritiseEnergy, advEffect]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
@@ -143,6 +154,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
       return "Tier 5 Dynamax";
     } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
         return "Gigantamax";
+    } else if (raidMode === "raid-custom-dmax") {
+      return "Custom Max Battle";
     } else {
       return "Normal";
     }
@@ -163,7 +176,8 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setLoading(true);
     // Both should have the same weather boost.
-    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect);
+    const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = 
+    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? (customBossHP) : 10000, customBossCPM ? (customBossCPM) : 1, customBossAtkMult ? (customBossAtkMult) : 1);
     setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);
@@ -280,13 +294,13 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               value={advEffect[i]}
               onChange={(e) => handleAdvEffectChange(i, e.target.value)}
             >
-              <option value="none">No advanced effect</option>
+              <option value="none">No Adventure effect</option>
               <option value="blade">Behemoth Blade (x1.05 ATK)</option>
               <option value="bash">Behemoth Bash (x1.05 DEF)</option>
               <option value="cannon">Dynamax Cannon (+1 max level)</option>
             </select>
             <div className="2-full">
-              <label>Friendship: ({friendship[i]})</label>
+              <label>Friendship: ({friendship[i]}) <label className="italic">(Doubled this season!)</label></label>
               <Slider onValueChange={(value) => handleFriendshipChange(i, value[0])} defaultValue={[friendship[i]]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
             </div>
           </div>
@@ -317,7 +331,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))-sumAllDamage()}/{Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId,PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))} HP left.</p>
+            <p> The defender Pokémon has {(raidMode === "raid-custom-dmax" ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))) - sumAllDamage()}/{(raidMode === "raid-custom-dmax" ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))))} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">

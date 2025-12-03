@@ -30,16 +30,26 @@ export default function CalculateButtonMaxBoss({
   isLarge: boolean;
   bashBoost?: boolean;
 }) {
+  
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number | null>(0);
   const [damageBestCase, setDamageBestCase] = useState<number | null>(0);
   const [damageWorstCase, setDamageWorstCase] = useState<number | null>(0);
+  const [customCPM, setCustomCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
+  const [customAtkMult, setCustomAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
 
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost]);
+  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost, customCPM, customAtkMult]);
+
+  useEffect(() => {
+    setCustomCPM((Number)(searchParams.get("custom_cpm") || 1));
+    setCustomAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
+  }, [searchParams]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
@@ -50,6 +60,11 @@ export default function CalculateButtonMaxBoss({
     const defendingStats = defenderStats;
     const bonusAttacking = bonusAttacker;
     const bonusDefending = bonusDefender;
+
+    if (raidMode === "raid-custom-dmax") {
+      attackingStats[0] = customCPM;
+    }
+
     const damage = PoGoAPI.getDamage(
       attackingPoke, 
       defendingPoke, 
@@ -61,7 +76,8 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke) * (bashBoost ? (1/1.05) : 1) * (isLarge ? 1 : 2)
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (isLarge ? 1 : 2),
+      raidMode === "raid-custom-dmax" ? true : false
     );
     setDamageBestCase(PoGoAPI.getDamage(
       attackingPoke, 
@@ -74,7 +90,9 @@ export default function CalculateButtonMaxBoss({
       bonusDefending,
       "normal",
       0,
-      PoGoAPI.getDamageMultiplier(raidMode, true, false, attackingPoke) * (bashBoost ? (1/1.05) : 1) * (2 * 0.3)));
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.3),
+      raidMode === "raid-custom-dmax" ? true : false
+    ));
     setDamageWorstCase(PoGoAPI.getDamage(
       attackingPoke, 
       defendingPoke,
@@ -86,7 +104,9 @@ export default function CalculateButtonMaxBoss({
       bonusDefending,
       "normal",
       0,
-      PoGoAPI.getDamageMultiplier(raidMode, true, false, attackingPoke) * (bashBoost ? (1/1.05) : 1) * (2 * 0.6))); 
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.6),
+      raidMode === "raid-custom-dmax" ? true : false
+    )); 
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
     const remainingStamina = effStamina - damage;
     setDamage(damage);

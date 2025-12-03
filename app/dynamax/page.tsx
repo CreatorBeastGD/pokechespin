@@ -67,11 +67,19 @@ export default function Home() {
   const [selectedMember, setSelectedMember] = useState<number>(searchParams.get("member") ? parseInt(searchParams.get("member") as string) : 1);
   const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(searchParams.get("slot") ? parseInt(searchParams.get("slot") as string) : 1);
 
+  const [customHP, setCustomHP] = useState<number>(searchParams.get("custom_hp") ? parseInt(searchParams.get("custom_hp") as string) : 100000);
+  const [customCPM, setCustomCPM] = useState<number>(searchParams.get("custom_cpm") ? parseFloat(searchParams.get("custom_cpm") as string) : 0.85);
+  const [customAtkMult, setCustomAtkMult] = useState<number>(searchParams.get("custom_atk_mult") ? parseFloat(searchParams.get("custom_atk_mult") as string) : 0.9);
+
   const [loaded, setLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.set("num_members", numMembers.toString());
+    searchParams.set("custom_hp", customHP.toString());
+    searchParams.set("custom_cpm", customCPM.toString());
+    searchParams.set("custom_atk_mult", customAtkMult.toString());
+
     setTimeout(() => {
       for (let j = numMembers + 1; j < 4 ; j++) {
         for (let i = 1; i <= 3; i++) {
@@ -166,6 +174,9 @@ export default function Home() {
       const newMaxMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
   
       const newUrlParams = new URLSearchParams(window.location.search);
+
+
+
       newUrlParams.delete('member');
       newUrlParams.delete('slot');
       window.history.replaceState({}, '', `${window.location.pathname}?${newUrlParams}`);
@@ -207,7 +218,11 @@ export default function Home() {
       const chargedMoveDefender = searchParams.get("defender_cinematic_attack");
       const defenderStats = searchParams.get("defender_stats");
       const raidMode = searchParams.get("raid_mode");
-  
+
+      const customHP = searchParams.get("custom_hp");
+      const customCPM = searchParams.get("custom_cpm");
+      const customAtkMult = searchParams.get("custom_atk_mult");
+      
       if (defender !== null) {
         handleDefenderSelect(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0]);
       }
@@ -222,6 +237,15 @@ export default function Home() {
       }
       if (raidMode !== null) {
         setRaidMode(raidMode);
+      }
+      if (customHP !== null) {
+        setCustomHP(parseInt(customHP));
+      }
+      if (customCPM !== null) {
+        setCustomCPM(parseFloat(customCPM));
+      }
+      if (customAtkMult !== null) {
+        setCustomAtkMult(parseFloat(customAtkMult));
       }
 
   
@@ -364,6 +388,37 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       setSelectedChargedMoveDefender(null);
     }
   };
+
+  const setCustomMaxBattleValues = (HP: number, CPM: number, atkMult: number) => {
+    if (HP < 1) {
+      HP = 1;
+    }
+    if (CPM < 0.1) {
+      CPM = 0.1;
+    }
+    if (atkMult < 0.1) {
+      atkMult = 0.1;
+    }
+    if (HP > 9999999) {
+      HP = 9999999;
+    }
+    if (CPM > 10) {
+      CPM = 10;
+    }
+    if (atkMult > 10) {
+      atkMult = 10;
+    }
+    setCustomHP(HP);
+    setCustomCPM(CPM);
+    setCustomAtkMult(atkMult);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("custom_hp", HP.toString());
+    newSearchParams.set("custom_cpm", CPM.toString());
+    newSearchParams.set("custom_atk_mult", atkMult.toString());
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+  }
   
 
   const handleWeatherSelect = (weatherBoost: any) => {
@@ -472,6 +527,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       return "Gigantamax Battle";
     } else if (raidMode === "raid-t6-gmax-standard") {
       return "Gigantamax Battle (Standard)";
+    } else if (raidMode === "raid-custom-dmax") {
+      return "Custom Max Battle";
     }
   }
 
@@ -577,8 +634,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                         chargedMove: selectedChargedMoveAttacker[memberIndex][slotIndex],
                         attackerStats: attackerStats[memberIndex][slotIndex],
                         maxMoves: maxMoves[memberIndex][slotIndex]
-                      }
-                      }
+                      }}
                       allTypes={types}
                     />
                   )
@@ -664,8 +720,33 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (Varying) </option>
                 <option key={"raid-t6-gmax-standard"} value={"raid-t6-gmax-standard"}>Standard Gigantamax Battle (115000HP) </option>
-
+                <option key={"raid-custom-dmax"} value={"raid-custom-dmax"}>Custom Dynamax Battle</option>
               </select>
+
+              {
+              (raidMode === "raid-custom-dmax") && (
+                <Card className="w-full mt-4 mb-4 p-4">
+                  <CardTitle className="italic text-slate-700 text-sm mt-2">
+                    Custom Max Battle Parameters
+                  </CardTitle>
+                  <div className="flex flex-col mt-2 mb-4 w-full space-y-2">
+                    <label>Custom Boss HP: </label>
+                  <input type="number" min={1000} max={10000000} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customHP}
+                  onChange={(e) => setCustomMaxBattleValues(Number(e.target.value), customCPM, customAtkMult)}
+                  />
+                  
+                  <label>Custom CPM: </label>
+                  <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customCPM} 
+                  onChange={(e) => setCustomMaxBattleValues(customHP, Number(e.target.value), customAtkMult)}/>
+
+                  <label>Custom Attack Multiplier</label>
+                  <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customAtkMult} 
+                  onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, Number(e.target.value))}/>
+
+                  </div>
+                </Card>
+              )
+              }
 
               <Card className="w-full mt-4 mb-4 p-4">
                 <CardTitle className="italic text-slate-700 text-sm mt-2">
@@ -691,7 +772,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   </select>
 
                   <div className="w-full">
-                    <label>Friendship level ({previewFriendship})</label>
+                    <label>Friendship level ({previewFriendship}) <label className="italic">(Doubled this season!)</label></label>
                     <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
                   </div>
 
@@ -707,10 +788,6 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 </div>
               </Card>
 
-              
-
-            
-            
               {((raidMode === "raid-t5-dmax" || raidMode === "raid-t6-gmax") && defendingPokemon) && (
                 <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId, PoGoAPI.hasDoubleWeaknesses(defendingPokemon.type, defendingPokemon.type2, types))}HP</p>
                 )}

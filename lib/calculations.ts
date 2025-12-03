@@ -31,6 +31,7 @@ export class Calculator {
       "DARUMAKA": "raid-t2-dmax",
       "WAILMER": "raid-t2-dmax",
       "SHUCKLE": "raid-t2-dmax",
+      "EEVEE": "raid-t2-dmax",
 
       "BELDUM": "raid-t3-dmax",
       "FALINKS": "raid-t3-dmax",
@@ -51,6 +52,7 @@ export class Calculator {
       "MOLTRES": "raid-t5-dmax",
       "LATIAS": "raid-t5-dmax",
       "LATIOS": "raid-t5-dmax",
+      "LUGIA": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
@@ -194,6 +196,16 @@ export class Calculator {
       "KIRLIA",
       "GARDEVOIR",
       "GALLADE",
+      "EEVEE",
+      "VAPOREON",
+      "JOLTEON",
+      "FLAREON",
+      "ESPEON",
+      "UMBREON",
+      "LEAFEON",
+      "GLACEON",
+      "SYLVEON",
+      "LUGIA",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
@@ -379,8 +391,32 @@ export class Calculator {
       }
 
       static getFriendshipBonus(friendship: number) {
-        return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        if (Date.now() < 1772528400000) { // March 1, 2026
+          return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : 1;
+        } else {
+          return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : 1;
+        }
       }
+
+      static CalculateCPMFromDamage(
+        power: number,
+        attack: number,
+        defense: number,
+        STAB: number,
+        effectiveness: number,
+        type: string,
+        additionalBonus: number,
+        bonusAttacker: any,
+        bonusDefender: any,
+        expectedDamage: any
+    ) {
+        const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
+        const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
+        const modifiers = (additionalBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
+        // Incognita is AttackCPM (AttackFinal = attack * CPM)
+        let base = ((expectedDamage.dmg) * defenseFinal) / (0.5 * power * attackFinal * modifiers);
+        return base;
+    }
 
       static CalculateDamageFloatValue(
         power: number,
@@ -424,7 +460,7 @@ export class Calculator {
             +"  Friendship Bonus: "+(this.getFriendshipBonus(bonusAttacker[3]))
             +"  Weather Bonus: "+(this.getWeatherBoostBonus(type, bonusAttacker[0]))
             );
-            */
+          */  
           const attackFinal = bonusAttacker[1]  ? (attack * 6/5) : attack;
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (additionalBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
@@ -486,6 +522,7 @@ export class Calculator {
             SUICUNE: 22000,
             LATIOS: 23000,
             LATIAS: 25000,
+            LUGIA: 18000
         };
 
         const t6gmaxHP: Record<string, number> = {

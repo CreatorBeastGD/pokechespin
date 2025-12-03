@@ -7,6 +7,36 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "Notice",
+        desc: "Hey all! I'm testing to put ads to PokéChespin using Google AdSense. \n"+
+                "Ads should appear on main page, raids and dynamax pages, excluding breakpoints and ranking subpages. (and there won't be that much ads right now.) \n"+
+                "Sorry for this, but this may come in handy in the future :(",
+        date: "2024-11-28",
+    },
+    {
+        title: "v1.28.1",
+        desc:   "+ Added new Pokémon to Max Rankings\n"+
+                " >>>>> Lugia.\n"+
+                "+ Changed stats of Tier 5 Max Battles \n"+
+                " >>>>> Lugia\n"+
+                " >>>>>> ~ HP: 18000\n"+
+                " >>>>>> ~ CPM: 0.75\n",
+        date: "2025-11-29",
+    },
+    {
+        title: "v1.28 (Custom Dynamax Battles!)",
+        desc: "+ Added 'Custom Dynamax Battles' mode to PokéChespin for Max Battles!\n"+
+                ">>>>>> Now you can set custom HP, CPM and Attack Multiplier for the Dynamax Bosses if you select this new kind of Max Battle!\n",
+        date: "2025-11-21",
+    },
+    {
+        title: "v1.27.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+              ">>>>> Eevee, Jolteon, Flareon, Vaporeon, Espeon, Umbreon, Glaceon, Leafeon, Sylveon.\n"+
+              "+ Made some color adjustements to the type backgrounds. Now they look like the ones on Pokémon GO!\n",
+        date: "2025-11-20",
+    },
+    {
         title: "v1.27.1",
         desc: "+ Preview bonuses are now compatible with Max Battle Breakpoints.\n",
         date: "2025-11-18",

@@ -63,7 +63,7 @@ export default function CpmFinder() {
         const CalculateLimits = () => {
             if (allDataLoaded) {
                 // All data is loaded, you can use it here
-                console.log("Calculating contenders...")
+                //console.log("Calculating contenders...")
                 setAnalyzingContenders(true);
                 setContenders([]);
                 setTimeout(() => {
@@ -78,13 +78,13 @@ export default function CpmFinder() {
                             types, // Type list, untouched
                             pokemonList // Pokémon list, untouched
                         )
-                        console.log(newContenders);
+                        //console.log(newContenders);
                         if (newContenders && typeof newContenders === "object") {
                             setContenders([newContenders.minimumCPMcontender, newContenders.maximumCPMcontender]);
                         } else {
                             setContenders([]);
                         }
-                        console.log(contenders);
+                        //console.log(contenders);
                     }
                 }, 10);
                 setAnalyzingContenders(false);
