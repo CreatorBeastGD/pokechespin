@@ -8,10 +8,20 @@ import Image from "next/image";
 const novedades = [
     {
         title: "Notice",
-        desc: "Hey all! I'm testing to put ads to PokéChespin using Google AdSense. \n"+
+        desc: "Hey all! I'm testing to put ads to PokéChespin using Google AdSense. (Probably not 😅)\n"+
                 "Ads should appear on main page, raids and dynamax pages, excluding breakpoints and ranking subpages. (and there won't be that much ads right now.) \n"+
                 "Sorry for this, but this may come in handy in the future :(",
         date: "2024-11-28",
+    },
+    {
+        title: "v1.28.1.1",
+        desc: "+ Updated Max Battle simulation timers.\n"+
+                ">>>>>> Desperate Timer (Gigantamax): 150s -> 190s\n"+
+                ">>>>>> Enrage Timer (Gigantamax): 180s -> 220s\n"+
+                ">>>>>> Timeout Timer (Gigantamax): 360s -> 600s\n"+
+                ">>>>>> Timeout Timer (Dynamax): 360s -> 480s\n"+
+                ">>>>>> Timeout Timer (Raid T5 Dynamax): 360s -> 400s\n",
+        date: "2025-12-10",
     },
     {
         title: "v1.28.1",
@@ -151,7 +161,7 @@ const novedades = [
         desc: "~ Changed the HP of Gigantamax Lapras from 100000 to 80000."+
               "\n~ Changed the CPM of Gigantamax Lapras from 0.34 to 0.85"+
               "\n~ Changed the Attack Multiplier of Gigantamax Lapras from 0.75 to 0.9",
-        date: "2025-08-21"
+        date: "2025-08-26"
     },
     {
         title: "v1.24.4",

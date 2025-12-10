@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.28.1";
+        return "1.28.1.1";
     }
 
     static async getAllPokemon() {
@@ -2541,7 +2541,10 @@ export class PoGoAPI {
                 win = false;
             }
 
-            if (time >= 360000) {
+            // Time-out
+            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 600000) || 
+                (raidMode == "raid-t5-dmax" && time === 400000) ||
+                (raidMode.endsWith("dmax") && time === 480000)) {
                 simGoing = false;
                 battleLog.push({"turn": time, "lost": true});
                 win = false;
@@ -2549,17 +2552,23 @@ export class PoGoAPI {
 
             time++;
 
-            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 150000) || (raidMode.endsWith("dmax") && time === 270000)) {
+            // Defender is getting desperate
+            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 190000) || 
+                (raidMode.endsWith("dmax") && time === 270000)) {
                 enraged = true;
                 battleLog.push({"turn": time, "enraged": true});
-            } if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 180000) || (raidMode.endsWith("dmax") && time === 300000)) {
-                desperate = true;
-                battleLog.push({"turn": time, "desperate": true});
-            } if (!simGoing) {
-                break;
             }
 
+            // Defender' attacks are getting stronger
+            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 220000) || 
+                (raidMode.endsWith("dmax") && time === 300000)) {
+                desperate = true;
+                battleLog.push({"turn": time, "desperate": true});
+            } 
             
+            if (!simGoing) {
+                break;
+            }
         }
         //console.log("Simulation was done! " + time);
         //console.log(attackerDamage);
