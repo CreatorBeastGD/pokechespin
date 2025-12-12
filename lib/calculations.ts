@@ -40,6 +40,8 @@ export class Calculator {
       "PASSIMIAN": "raid-t3-dmax",
       "SABLEYE": "raid-t3-dmax",
       "EXCADRILL": "raid-t3-dmax",
+      "HITMONLEE": "raid-t3-dmax",
+      "HITMONCHAN": "raid-t3-dmax",
 
       "TOXTRICITY": "raid-t4-dmax",
       "DURALUDON": "raid-t4-dmax",
@@ -206,6 +208,8 @@ export class Calculator {
       "GLACEON",
       "SYLVEON",
       "LUGIA",
+      "HITMONLEE",
+      "HITMONCHAN",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",

@@ -14,6 +14,12 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.28.1.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Hitmonlee, Hitmonchan.\n",
+        date: "2025-12-12",
+    },
+    {
         title: "v1.28.1.1",
         desc: "+ Updated Max Battle simulation timers.\n"+
                 ">>>>>> Desperate Timer (Gigantamax): 150s -> 190s\n"+
