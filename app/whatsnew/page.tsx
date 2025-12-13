@@ -14,6 +14,13 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.28.2",
+        desc: "+ Made some updates to the Max Battle Simulator!"+
+                "\n>>>>>> Now, when a move from the boss comes, the attacker will swap to the best tank according to the move type.\n"+
+                "\n>>>>>> I'm thinking of some more updates coming to this too, stay tuned!\n",
+        date: "2025-12-13",
+    },
+    {
         title: "v1.28.1.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Hitmonlee, Hitmonchan.\n",

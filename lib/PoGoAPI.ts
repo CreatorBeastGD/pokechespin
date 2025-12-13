@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.28.1.2";
+        return "1.28.2";
     }
 
     static async getAllPokemon() {
@@ -436,6 +436,7 @@ export class PoGoAPI {
     }
 
     static getTypeComboWeaknesses(allTypes: any[], type1: any, type2?: any) {
+        console.log(allTypes, type1, type2);
         const type1Weaknesses = this.getTypeWeaknesses(type1, allTypes);
         let type2Weaknesses: { [key: string]: number } = {};
     
@@ -1527,6 +1528,10 @@ export class PoGoAPI {
     static getHigherElementIndex(arr: any[]) {
         return arr.reduce((acc, val, index) => val > arr[acc] ? index : acc, 0);
     }
+
+    static getLowerElementIndex(arr: any[]) {
+        return arr.reduce((acc, val, index) => val < arr[acc] ? index : acc, 0);
+    }
     
 
     static getHigherElementIndexNotDead(arr: any[], faints: any[]) {
@@ -1546,6 +1551,27 @@ export class PoGoAPI {
         }
     }
 
+    static getHigherElementIndexAgainstMoveNotDead(pokemonTeam: any[], moveType: any, faints: any[], types: any, attackerStats: any[]) {
+        let indexList = [];
+        let valueList = [];
+        for (let i = 0; i < pokemonTeam.length; i++) {
+            if (faints[i] === false) {
+                indexList.push(i);
+                const effectiveness = Math.pow(PoGoAPI.getTypeComboWeaknesses(types, PoGoAPI.formatTypeName(pokemonTeam[i].type), PoGoAPI.formatTypeName(pokemonTeam[i].type2))[PoGoAPI.formatTypeName(moveType)] ?? 1,-1);
+                
+                const tankValue = Math.pow(Calculator.getCPM(attackerStats[i][0]), 2) * (pokemonTeam[i].stats.baseDefense + attackerStats[i][2]) * (pokemonTeam[i].stats.baseStamina + attackerStats[i][3]) * effectiveness;
+                
+                valueList.push(tankValue);
+            }
+        }
+        //console.log(indexList)
+        if (indexList.length === 0) {
+            return 3;
+        } else {
+            return indexList[this.getHigherElementIndex(valueList)];
+        }
+    }
+
     static allActiveMembersFullyHealed(health: any[][], selected: any[]) {
         for (let i = 0; i < selected.length; i++) {
             if (health[i][selected[i]] > 0) {
@@ -1553,7 +1579,6 @@ export class PoGoAPI {
             }
         }
         return true
-
     }
 
     static chooseRandomTargetWithShieldsOrAny(shields: any[][], selected: any[]) {
@@ -2427,6 +2452,15 @@ export class PoGoAPI {
             // Defender deals damage
             if (simGoing && defenderDamageStart > -1 && time === defenderDamageStart + defenderMove.durationMs) {
                 
+                // Attacker swaps to the best tank before taking damage
+                if (!targeted) {
+                    for (let i = 0 ; i < attackers.length ; i++) {
+                        activePokemon[i] = this.getHigherElementIndexAgainstMoveNotDead(attackers[i], defenderMove.type, attackerFaints[i], types, attackersStats[i]);
+                    }
+                } else {
+                    activePokemon[target] = this.getHigherElementIndexAgainstMoveNotDead(attackers[target], defenderMove.type, attackerFaints[target], types, attackersStats[target]);
+                }
+
                 if (targeted) {
                     if (activePokemon[target] < 3) {
                         const projectedDamageDefender = this.getDamage(
