@@ -90,7 +90,7 @@ export default function CalculateButtonMaxBoss({
       bonusDefending,
       "normal",
       0,
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.3),
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.4),
       raidMode === "raid-custom-dmax" ? true : false
     ));
     setDamageWorstCase(PoGoAPI.getDamage(
@@ -104,7 +104,7 @@ export default function CalculateButtonMaxBoss({
       bonusDefending,
       "normal",
       0,
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.6),
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.7),
       raidMode === "raid-custom-dmax" ? true : false
     )); 
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
