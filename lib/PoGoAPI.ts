@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.28.2";
+        return "1.28.2.1";
     }
 
     static async getAllPokemon() {
@@ -974,7 +974,7 @@ export class PoGoAPI {
             GENGAR_GIGANTAMAX: [8006003, 15, 15, 80000],
             LAPRAS_GIGANTAMAX: [8006003, 15, 15, 80000],
             MACHAMP_GIGANTAMAX: [8005, 15, 15, 100000],
-            SNORLAX_GIGANTAMAX: [8006132, 15, 15, 100000],
+            SNORLAX_GIGANTAMAX: [8006132, 15, 15, 135000],
             KINGLER_GIGANTAMAX: [8006003, 15, 15, 100000],
             TOXTRICITY_AMPED_GIGANTAMAX: [8006003, 15, 15, 160000],
             TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006003, 15, 15, 160000],

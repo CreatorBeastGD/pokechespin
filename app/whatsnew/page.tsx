@@ -14,6 +14,13 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.28.2.1",
+        desc: "+ Changed stats of Tier 6 Max Battles \n"+
+                " >>>>> Gigantamax Snorlax\n"+
+                " >>>>>> ~ HP: 100000 -> 135000\n",
+        date: "2025-12-17",
+    },
+    {
         title: "v1.28.2",
         desc: "+ Made some updates to the Max Battle Simulator!"+
                 "\n>>>>>> Now, when a move from the boss comes, the attacker will swap to the best tank according to the move type.\n"+
