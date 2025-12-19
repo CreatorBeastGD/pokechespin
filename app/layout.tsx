@@ -56,7 +56,7 @@ export default function RootLayout({
             CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
           </p>
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
-            If you enjoy this page, consider supporting me by buying me a cooffee, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
+            If you enjoy this page, consider supporting me by buying me a coffee, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
           </p>
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a>
