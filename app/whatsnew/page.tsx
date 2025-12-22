@@ -14,6 +14,12 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.28.2.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Spheal, Sealeo, Walrein.\n",
+        date: "2025-12-22",
+    },
+    {
         title: "v1.28.2.1",
         desc: "+ Changed stats of Tier 6 Max Battles \n"+
                 " >>>>> Gigantamax Snorlax\n"+

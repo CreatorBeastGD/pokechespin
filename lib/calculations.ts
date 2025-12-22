@@ -26,6 +26,7 @@ export class Calculator {
       "WOOBAT": "raid-t1-dmax",
       "INKAY": "raid-t1-dmax",
       "RALTS": "raid-t1-dmax",
+      "SPHEAL": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -210,6 +211,9 @@ export class Calculator {
       "LUGIA",
       "HITMONLEE",
       "HITMONCHAN",
+      "SPHEAL",
+      "SEALEO",
+      "WALREIN",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
