@@ -12,14 +12,19 @@ async function getRankings(func: (data: any) => void) {
         const res = await fetch(`/api/ranking`, { cache: 'no-store' });
         if (!res.ok) {
             console.error("Failed to fetch rankings:", res.status, res.statusText);
+            func([]);
             return [];
         }
         const data = await res.json();
-        console.log(data.counts);
-        func(data.counts.slice(0, 10));
-        return data.rankings ?? [];
+        console.log("Rankings data:", data);
+        
+        // Handle both counts array and potential error responses
+        const counts = Array.isArray(data.counts) ? data.counts : [];
+        func(counts.slice(0, 10));
+        return counts;
     } catch (err) {
         console.error("Error calling /api/ranking:", err);
+        func([]);
         return [];
     }
 }
@@ -119,7 +124,7 @@ export default function Page() {
                     ) : (
                         <ul className="px-4 flex flex-row flex-wrap justify-center space-x-4 w-full">
                             {rankings.map((entry) => {
-                                const pokemonName = PoGoAPI.getPokemonNamePB(entry._id, allEnglishText);
+                                
                                 return (<li key={entry._id} className="flex items-center space-x-4 mb-4">
                                     <a href={`/dynamax/rankings/${entry._id}`} className="flex flex-col items-center space-x-2 hover:underline">
                                         <Image

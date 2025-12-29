@@ -6,11 +6,11 @@ declare global {
 }
 
 export const connectDB = async () => {
-    const uri = nextConfig.API_MONGODB_URI;
+    const uri = process.env.MONGODB_URI || nextConfig.API_MONGODB_URI;
     if (!uri) {
-        throw new Error("Missing MongoDB URI");
+        throw new Error("Missing MongoDB URI. Please set MONGODB_URI environment variable.");
     }
-    console.log("MongoDB URI:", uri);
+    console.log("MongoDB connection attempt...");
 
     if (mongoose.connection.readyState === 1) {
         return true;

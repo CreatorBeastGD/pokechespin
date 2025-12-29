@@ -14,8 +14,10 @@ export async function GET(
         // Calculate date from 2 weeks ago
         const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
-        // Delete rankings older than 2 weeks
-        await Ranking.deleteMany({ date: { $lt: twoWeeksAgo } });
+        // Delete rankings older than 2 weeks (non-blocking, fire and forget)
+        Ranking.deleteMany({ date: { $lt: twoWeeksAgo } }).catch(err => 
+            console.error("Error deleting old rankings:", err)
+        );
 
         // Aggregate counts per pokemon within last 2 weeks
         const counts = await Ranking.aggregate([
@@ -23,9 +25,14 @@ export async function GET(
             { $group: { _id: "$pokemon", count: { $sum: 1 } } },
             { $sort: { count: -1 } }
         ]);
+        
         return NextResponse.json({ counts }, { status: 200 });
     } catch (error) {
         console.error("Error fetching rankings:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        // Return detailed error in development, generic in production
+        const errorMessage = process.env.NODE_ENV === 'development' 
+            ? { error: "Internal Server Error", details: String(error) }
+            : { error: "Internal Server Error" };
+        return NextResponse.json(errorMessage, { status: 500 });
     }
 }
