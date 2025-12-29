@@ -1,0 +1,33 @@
+import mongoose from 'mongoose';
+
+declare global {
+    // eslint-disable-next-line no-var
+    var mongooseConn: Promise<typeof mongoose> | undefined;
+}
+
+const { NEXT_MONGODB_URI, MONGODB_URI } = process.env;
+
+export const connectDB = async () => {
+    const uri = NEXT_MONGODB_URI || MONGODB_URI;
+    if (!uri) {
+        throw new Error('Missing MongoDB URI (NEXT_MONGODB_URI or MONGODB_URI)');
+    }
+
+    // Reuse existing connection in serverless/edge environments
+    if (mongoose.connection.readyState === 1) {
+        return true;
+    }
+
+    if (!global.mongooseConn) {
+        console.log("Connecting to MongoDB... " + uri);
+        global.mongooseConn = mongoose.connect(uri);
+    }
+
+    try {
+        await global.mongooseConn;
+        return true;
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw error;
+    }
+};

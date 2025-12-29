@@ -61,6 +61,30 @@ export default function rankingsPage() {
     const router = useRouter();
     const sp = useParams();
 
+    async function postRankingEntry(pokemonId: string) {
+        try {
+            const res = await fetch(`/api/ranking/${pokemonId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    pokemon: pokemonId,
+                    // Add other ranking data as needed
+                })
+            });
+            if (!res.ok) {
+                console.error("Failed to post ranking entry:", res.status, res.statusText);
+                return;
+            }
+            const data = await res.json();
+            console.log("Ranking entry posted successfully:", data);
+        } catch (err) {
+            console.error("Error posting ranking entry:", err);
+        }
+    }
+    
+
     useEffect(() => {
         const fetchAllPokemonPB = async () => {
           const pokemonlist = await PoGoAPI.getAllPokemonPB();
@@ -91,8 +115,26 @@ export default function rankingsPage() {
           setTypes(types);
           
           setAllDataLoaded(true);
+
         };
         fetchAllPokemonPB();
+
+        // Avoid posting when the page is reloaded and only once per session
+        if (typeof window !== "undefined") {
+            const entries = performance.getEntriesByType("navigation");
+            const isReload = (
+                (entries && entries[0] && (entries[0] as any).type === "reload") ||
+                ((performance as any).navigation && (performance as any).navigation.type === 1)
+            );
+
+            const pokemonId = sp.pokemonId as string;
+            const sessionKey = `rankingPosted:${pokemonId}`;
+
+            if (!isReload && pokemonId && !sessionStorage.getItem(sessionKey)) {
+                postRankingEntry(pokemonId);
+                sessionStorage.setItem(sessionKey, "1");
+            }
+        }
     }, []);
     
     useEffect(() => {

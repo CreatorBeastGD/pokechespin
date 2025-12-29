@@ -436,7 +436,7 @@ export class PoGoAPI {
     }
 
     static getTypeComboWeaknesses(allTypes: any[], type1: any, type2?: any) {
-        console.log(allTypes, type1, type2);
+        //console.log(allTypes, type1, type2);
         const type1Weaknesses = this.getTypeWeaknesses(type1, allTypes);
         let type2Weaknesses: { [key: string]: number } = {};
     
