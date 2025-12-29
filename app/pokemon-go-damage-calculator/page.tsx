@@ -122,11 +122,11 @@ export default function Page() {
                     {rankings.length === 0 ? (
                         <p className="text-white text-lg px-4">No ranking data available.</p>
                     ) : (
-                        <ul className="px-4 flex flex-row flex-wrap justify-center space-x-4 w-full">
+                        <ul className="px-4 flex flex-row flex-wrap justify-center w-full">
                             {rankings.map((entry) => {
                                 
-                                return (<li key={entry._id} className="flex items-center space-x-4 mb-4">
-                                    <a href={`/dynamax/rankings/${entry._id}`} className="flex flex-col items-center space-x-2 hover:underline">
+                                return (<li key={entry._id} className="flex items-center px-2 ">
+                                    <a href={`/dynamax/rankings/${entry._id}`} className="flex flex-col items-center hover:underline">
                                         <Image
                                             unoptimized
                                             className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}

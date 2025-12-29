@@ -190,7 +190,7 @@ export default function rankingsPage() {
                     setShowAllGmax(showAllGmax);
                 }
 
-                const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : "raid-t1-dmax";
+                const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : Calculator.FixedBosses[pokemonId as string] ?? "raid-t1-dmax";
 
                     const customAtkMult = urlSP.get("custom_atk_mult") ? parseFloat(urlSP.get("custom_atk_mult") ?? "1") : 1;
                     const customCPM = urlSP.get("custom_cpm") ? parseFloat(urlSP.get("custom_cpm") ?? "1") : 1;
