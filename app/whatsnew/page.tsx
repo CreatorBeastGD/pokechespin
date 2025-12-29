@@ -14,6 +14,15 @@ const novedades = [
         date: "2024-11-28",
     },
     {
+        title: "v1.29 (Most viewed Rankings!)",
+        desc: "+ Added a new 'Most Viewed Rankings' section to PokéChespin!\n"+
+                ">>>>>> Now you can check which Pokémon are the most viewed ones in the Max Rankings!\n"+
+                ">>>>>> This feature helps you speed up your decision-making process when choosing what ranking to see, making it easier to find the most popular rankings.\n"+
+                ">>>>>> Rankings are updated in real-time, so you can always see the most up-to-date information.\n"+
+                ">>>>>> Check it out on the main page!",
+        date: "2025-12-26",
+    },
+    {
         title: "v1.28.2.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Spheal, Sealeo, Walrein.\n",
