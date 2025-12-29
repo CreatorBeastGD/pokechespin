@@ -20,7 +20,7 @@ const novedades = [
                 ">>>>>> This feature helps you speed up your decision-making process when choosing what ranking to see, making it easier to find the most popular rankings.\n"+
                 ">>>>>> Rankings are updated in real-time, so you can always see the most up-to-date information.\n"+
                 ">>>>>> Check it out on the main page!",
-        date: "2025-12-26",
+        date: "2025-12-29",
     },
     {
         title: "v1.28.2.2",
