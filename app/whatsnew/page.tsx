@@ -7,11 +7,14 @@ import Image from "next/image";
 
 const novedades = [
     {
-        title: "Notice",
-        desc: "Hey all! I'm testing to put ads to PokéChespin using Google AdSense. (Probably not 😅)\n"+
-                "Ads should appear on main page, raids and dynamax pages, excluding breakpoints and ranking subpages. (and there won't be that much ads right now.) \n"+
-                "Sorry for this, but this may come in handy in the future :(",
-        date: "2024-11-28",
+        title: "🎂 One Year of PokéChespin 🎂",
+        desc: "PokéChespin is one year old today! 🎉\n"+
+                "One year ago, I had the idea of starting a dumb project since I've learnt a bit of web development on my career, and I was curious of how damage calculations worked, so I started this.\n"+
+                "Nowhere in my dreams I though this project would grow that much, thank you all for your support, I really hope you like this and find it useful!\n"+
+                "I wish to keep improving it and adding more features in the future to keep helping y'all!\n"+
+                "Thank you so much, and happy one year anniversary to PokéChespin (and new year 2026)! 🎉🎂",
+
+        date: "🎂 2025-12-31",
     },
     {
         title: "v1.29 (Most viewed Rankings!)",
@@ -690,7 +693,7 @@ export default function WhatsNewPage() {
 				<div className="w-full">
 					<div className="space-y-4">
 						{novedades.map((item, idx) => (
-							<Card key={idx}>
+							<Card key={idx} className={idx === 0 ? "type-fairy" : ""}>
 								<CardHeader>
 									<div className="flex justify-between items-center">
 										<h2 className="text-xl font-semibold">{item.title}</h2>
