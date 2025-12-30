@@ -117,8 +117,8 @@ export default function Page() {
             </a>
 
             {allDataLoaded ? (
-                <div className="py-2">
-                    <p className="text-white text-lg px-4">Most visited Max Rankings (last 2 weeks, starting from december 29th.)</p>
+                <div className="py-2 items-center justify-center w-full flex flex-col">
+                    <p className="text-white text-lg px-4 ">Most visited Max Rankings (last 2 weeks, starting from december 29th.)</p>
                     {rankings.length === 0 ? (
                         <p className="text-white text-lg px-4">Loading. This may take a while...</p>
                     ) : (
