@@ -120,7 +120,7 @@ export default function Page() {
                 <div className="py-2">
                     <p className="text-white text-lg px-4">Most visited Max Rankings (last 2 weeks, starting from december 29th.)</p>
                     {rankings.length === 0 ? (
-                        <p className="text-white text-lg px-4">No ranking data available.</p>
+                        <p className="text-white text-lg px-4">Loading. This may take a while...</p>
                     ) : (
                         <ul className="px-4 flex flex-row flex-wrap justify-center w-full">
                             {rankings.map((entry) => {
