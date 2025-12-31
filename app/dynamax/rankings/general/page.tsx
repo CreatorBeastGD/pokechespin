@@ -573,7 +573,7 @@ export default function rankingsPage() {
                                             <div key={index} className="mb-4">
                                                 <div className="flex flex-column items-center justify-between space-x-4">
                                                     <div>
-                                                        <p className="text-xs">{"Against " + entry.boss}</p>
+                                                        <a href={"/dynamax/rankings/" + entry.bossData.pokemonId + "?ranking_display="+rankingDisplay+"&players_in_team="+playersInTeam+"&zamazenta_extra_shield="+zamaExtraShield+"&prioritise_fast_attack="+prioritiseFast}><p className="text-xs">{"Against " + entry.boss}</p></a>
                                                         <p className="font-bold">{(entry.pokemon.pokemonId.endsWith("GIGANTAMAX") ? "GMax " : "Max ") + PoGoAPI.getMoveNamePB(entry.maxmove.moveId, allEnglishText)}</p>
                                                     </div>
                                                     <p className="text-2xl font-bold">{entry.tier}</p>
@@ -594,8 +594,7 @@ export default function rankingsPage() {
                                             <div key={index} className="mb-4">
                                                 <div className="flex flex-column items-center justify-between space-x-4">
                                                     <div>
-                                                        <p className="text-xs">{"Against " + entry.boss}</p>
-                                                        
+                                                        <a href={"/dynamax/rankings/" + entry.bossData.pokemonId + "?ranking_display="+rankingDisplay+"&players_in_team="+playersInTeam+"&zamazenta_extra_shield="+zamaExtraShield+"&prioritise_fast_attack="+prioritiseFast}><p className="text-xs">{"Against " + entry.boss}</p></a>
                                                     </div>
                                                     <p className="text-2xl font-bold">{GetTankScore(entry)}</p>
                                                 </div>

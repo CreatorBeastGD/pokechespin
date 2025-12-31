@@ -509,7 +509,7 @@ export default function rankingsPage() {
                 <h1 className="text-2xl font-bold">Best Attackers and Defenders for {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}</h1>
                 <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
                     <button className="w-full">
-                        Go Back
+                        Go to Max Battles Calculator
                     </button>
                 </a>
                 <div className="flex responsive-test space-y-4 md:space-y-4 big-box">

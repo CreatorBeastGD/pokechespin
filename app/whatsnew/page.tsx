@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.29.0.1",
+        desc: "+ Some minor text changes.\n"+
+                "+ Added a link to bosses' names on General Max Rankings page, so you can go directly to the boss rankings by clicking on its name.\n",
+        date: "2025-12-31",
+    },
+    {
         title: "v1.29 (Most viewed Rankings!)",
         desc: "+ Added a new 'Most Viewed Rankings' section to PokéChespin!\n"+
                 ">>>>>> Now you can check which Pokémon are the most viewed ones in the Max Rankings!\n"+

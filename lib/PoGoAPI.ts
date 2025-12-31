@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.29";
+        return "1.29.0.1";
     }
 
     static async getAllPokemon() {
@@ -1772,7 +1772,7 @@ export class PoGoAPI {
         dmaxDifficulty: string = "raid-t6-gmax",
     ) {
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
-        let versusBossList: { boss: any; pokemon: any; tier: number; fastMove: any}[] = [];
+        let versusBossList: { boss: any; pokemon: any; tier: number; fastMove: any; bossData: any;}[] = [];
         const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
         const fastAttack = this.getFastestQuickMove(pokemonData, pokemonData, types, dmaxDifficulty, allMoves);
         bossList.forEach((boss: any) => {
@@ -1806,6 +1806,7 @@ export class PoGoAPI {
                 pokemon: pokemonData,
                 tier: tankScore,
                 fastMove: fastAttack,
+                bossData: bossData,
             });
 
         });
@@ -1823,7 +1824,7 @@ export class PoGoAPI {
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let average = 0;
         let counter = 0;
-        let versusBossList: { boss: any; pokemon: any; tier: number; maxmove: any}[] = [];
+        let versusBossList: { boss: any; pokemon: any; tier: number; maxmove: any; bossData: any;}[] = [];
         const pokemonData = this.getPokemonPBByID(pokemonId, pokemonList)[0];
         bossList.forEach((boss: any) => {
             const bossData = this.getPokemonPBByID(boss, pokemonList)[0];
@@ -1838,6 +1839,7 @@ export class PoGoAPI {
                 pokemon: pokemonData,
                 tier: damageDone,
                 maxmove: maxMove,
+                bossData: bossData,
             });
             average = (damageDone + (average * (counter - 1))) / counter;
         });

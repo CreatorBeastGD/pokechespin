@@ -118,9 +118,12 @@ export default function Page() {
 
             {allDataLoaded ? (
                 <div className="py-2 items-center justify-center w-full flex flex-col">
-                    <p className="text-white text-lg px-4 ">Most visited Max Rankings (last 2 weeks, starting from december 29th.)</p>
+                    <p className="text-white text-lg px-4 ">Most visited Max Rankings <span className="italic text-xs">(Last 2 weeks, starting from december 29th.)</span></p>
                     {rankings.length === 0 ? (
-                        <p className="text-white text-lg px-4">Loading. This may take a while...</p>
+                        <>
+                            <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+                            <p className="text-white text-lg px-4">Loading. This may take a while... or... there may be none.</p>
+                        </>
                     ) : (
                         <ul className="px-4 flex flex-row flex-wrap justify-center w-full">
                             {rankings.map((entry) => {
