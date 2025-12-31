@@ -116,25 +116,27 @@ export default function rankingsPage() {
           
           setAllDataLoaded(true);
 
+          // Avoid posting when the page is reloaded and only once per session
+            if (typeof window !== "undefined") {
+                const entries = performance.getEntriesByType("navigation");
+                const isReload = (
+                    (entries && entries[0] && (entries[0] as any).type === "reload") ||
+                    ((performance as any).navigation && (performance as any).navigation.type === 1)
+                );
+
+                const pokemonId = sp.pokemonId as string;
+                const sessionKey = `rankingPosted:${pokemonId}`;
+
+                const pokemon = PoGoAPI.getPokemonPBByID(pokemonId, pokemonlist)[0];
+
+                if (!isReload && pokemonId && !sessionStorage.getItem(sessionKey) && pokemon) {
+                    postRankingEntry(pokemonId);
+                    sessionStorage.setItem(sessionKey, "1");
+                }
+            }
+
         };
         fetchAllPokemonPB();
-
-        // Avoid posting when the page is reloaded and only once per session
-        if (typeof window !== "undefined") {
-            const entries = performance.getEntriesByType("navigation");
-            const isReload = (
-                (entries && entries[0] && (entries[0] as any).type === "reload") ||
-                ((performance as any).navigation && (performance as any).navigation.type === 1)
-            );
-
-            const pokemonId = sp.pokemonId as string;
-            const sessionKey = `rankingPosted:${pokemonId}`;
-
-            if (!isReload && pokemonId && !sessionStorage.getItem(sessionKey)) {
-                postRankingEntry(pokemonId);
-                sessionStorage.setItem(sessionKey, "1");
-            }
-        }
     }, []);
     
     useEffect(() => {
