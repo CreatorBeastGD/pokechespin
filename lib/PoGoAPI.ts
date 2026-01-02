@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.29.0.1";
+        return "1.29.1";
     }
 
     static async getAllPokemon() {
@@ -100,6 +100,8 @@ export class PoGoAPI {
     static getMoveNamePB(moveId: string, textList: any) {
         if (moveId === "MAX_DYNAMAX_CANNON") {
             return "Dynamax Cannon";
+        } if (moveId === "MIND_BLOWN") {
+            return "Mind Blown";
         }
         return this.formatMoveText(textList.moves[moveId], textList);
     }
@@ -136,6 +138,10 @@ export class PoGoAPI {
             pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
             pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "BLACEPHALON") {
+            pokemon[0].quickMoves = ["FIRE_SPIN_FAST", "ASTONISH_FAST"];
+            pokemon[0].cinematicMoves = ["SHADOW_BALL", "FLAMETHROWER", "OVERHEAT", "MIND_BLOWN"];
+            pokemon[0].eliteCinematicMove = ["MIND_BLOWN"];
         /*
         } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ZERAORA") {
             pokemon[0].stats.baseAttack = 310;
@@ -179,6 +185,18 @@ export class PoGoAPI {
                     damageWindowStartMs: 1498,
                     damageWindowEndMs: 1500,
                     animationId: "DYNAMAX_CANNON",
+                };
+            }
+            if (moveId === "MIND_BLOWN") {
+                return {
+                    moveId: "MIND_BLOWN",
+                    power: 130,
+                    durationMs: 4000,
+                    energyDelta: -33,
+                    type: "POKEMON_TYPE_FIRE",
+                    damageWindowStartMs: 3998,
+                    damageWindowEndMs: 4000,
+                    animationId: "MIND_BLOWN",
                 };
             }
             /*

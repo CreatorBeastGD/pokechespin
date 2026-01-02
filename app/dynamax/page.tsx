@@ -773,7 +773,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
                   <div className="w-full">
                     <label>Friendship level ({previewFriendship}) <label className="italic">(Doubled this season!)</label></label>
-                    <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={4} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+                    <Slider onValueChange={(value) => setPreviewFriendship(value[0])} value={[previewFriendship]} max={5} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
                   </div>
 
                   <div className="w-full">

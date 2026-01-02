@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.29.1",
+        desc: "+ Added 'Mind Blown' elite charged move to Blacephalon.\n"+
+              "+ Added 5tl level of friendship bonus to calculations. (Since it's doubled this season, it will be x1.24 regardless of the value shown on the datamine for now.)\n",
+        date: "2026-01-02",
+    },
+    {
         title: "v1.29.0.1",
         desc: "+ Some minor text changes.\n"+
                 "+ Added a link to bosses' names on General Max Rankings page, so you can go directly to the boss rankings by clicking on its name.\n",

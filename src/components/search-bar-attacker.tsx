@@ -344,7 +344,7 @@ export default function SearchBarAttacker({
                               return;
                           }
 
-                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 4) {
+                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 5) {
                               setError("Invalid friendship level in the imported file.");
                               setIsImporting(false);
                               return;
@@ -563,7 +563,7 @@ export default function SearchBarAttacker({
               <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
             </p>
             <p>Friendship level ({selectedBonuses[3]}) <label className="italic">(Doubled this season!)</label> </p>
-            <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[selectedBonuses[3]]} max={4} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
+            <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[selectedBonuses[3]]} max={5} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
           </div>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Bonuses won't be affected.</p>)}
           <div className="flex flex-row space-x-4">
             <div>

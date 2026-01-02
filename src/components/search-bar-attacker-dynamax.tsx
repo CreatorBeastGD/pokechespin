@@ -393,7 +393,7 @@ const importPokemon = async () => {
                               return;
                           }
 
-                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 4) {
+                         else if (data.bonuses[3] < 0 || data.bonuses[3] > 5) {
                               setError("Invalid friendship level in the imported file.");
                               setIsImporting(false);
                               return;
