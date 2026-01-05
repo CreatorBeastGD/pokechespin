@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.29.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Drampa.\n",
+        date: "2026-01-05",
+    },
+    {
         title: "v1.29.1",
         desc: "+ Added 'Mind Blown' elite charged move to Blacephalon.\n"+
               "+ Added 5tl level of friendship bonus to calculations. (Since it's doubled this season, it will be x1.24 regardless of the value shown on the datamine for now.)\n",

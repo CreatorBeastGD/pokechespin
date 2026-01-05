@@ -43,10 +43,10 @@ export class Calculator {
       "EXCADRILL": "raid-t3-dmax",
       "HITMONLEE": "raid-t3-dmax",
       "HITMONCHAN": "raid-t3-dmax",
+      "DRAMPA": "raid-t3-dmax",
 
       "TOXTRICITY": "raid-t4-dmax",
       "DURALUDON": "raid-t4-dmax",
-      "DRAMPA": "raid-t4-dmax",
 
       "RAIKOU": "raid-t5-dmax",
       "ENTEI": "raid-t5-dmax",
@@ -216,6 +216,7 @@ export class Calculator {
       "SPHEAL",
       "SEALEO",
       "WALREIN",
+      "DRAMPA",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
