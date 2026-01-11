@@ -28,7 +28,7 @@
     "mongoose": "^9.0.2",
     "next": "^15.5.9",
     "nextjs": "^0.0.3",
-    "pnpm": "^10.11.1",
+    "pnpm": "^10.27.0",
     "pogocalc": "file:",
     "react": "^19.0.1",
     "react-dom": "^19.2.1",
