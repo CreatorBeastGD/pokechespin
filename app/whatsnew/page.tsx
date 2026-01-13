@@ -17,6 +17,28 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.29.2",
+        desc: "+ Updated behaviour on custom dynamax battles\n"+
+                ">>>>>> Now, if the defender Pokémon is a Gigantamax (or Eternamax Eternatus), it will have the same timers as GMax battles.\n"+
+                "+ Changed some stats of Tier 6 Max Battles \n"+
+                " >>>>> Cinderace Gigantamax\n"+
+                " >>>>>> ~ HP: 90000 -> 80000\n"+
+                " >>>>> Snorlax Gigantamax\n"+
+                " >>>>>> ~ HP: 100000 -> 135000\n"+
+                " >>>>> Venusaur Gigantamax\n"+
+                " >>>>>> ~ HP: 80000 -> 90000\n"+
+                " >>>>> Charizard Gigantamax\n"+
+                " >>>>>> ~ HP: 80000 -> 70000\n"+
+                " >>>>> Blastoise Gigantamax\n"+
+                " >>>>>> ~ HP: 80000 -> 75000\n"+
+                " >>>>> Gengar Gigantamax\n"+
+                " >>>>>> ~ HP: 80000 -> 70000\n"+
+                " >>>>> Toxtricity Gigantamax\n"+
+                " >>>>>> ~ HP: 160000 -> 100000\n"+
+                " >>>>>> ~ CPM: 0.85 -> 0.9\n",
+        date: "2026-01-13",
+    },
+    {
         title: "v1.29.1.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Drampa.\n",

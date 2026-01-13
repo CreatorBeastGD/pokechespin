@@ -9,7 +9,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.29.1.1";
+        return "1.29.2";
     }
 
     static async getAllPokemon() {
@@ -458,7 +458,7 @@ export class PoGoAPI {
         const type1Weaknesses = this.getTypeWeaknesses(type1, allTypes);
         let type2Weaknesses: { [key: string]: number } = {};
     
-        if (type2) {
+        if (type2 || type2 !== "???") {
             type2Weaknesses = this.getTypeWeaknesses(type2, allTypes);
         }
     
@@ -510,7 +510,7 @@ export class PoGoAPI {
         let weaknesses: { [key: string]: number } = {};
     
         if (!objType) {
-            console.error(`Type ${type} not found in allTypes`);
+            // console.error(`Type ${type} not found in allTypes`);
             return weaknesses;
         }
     
@@ -986,23 +986,23 @@ export class PoGoAPI {
         };
 
         const t6gmaxStats: Record<string, number[]> = {
-            VENUSAUR_GIGANTAMAX: [8006003, 15, 15, 80000],
-            CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 80000],
-            BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 80000],
-            GENGAR_GIGANTAMAX: [8006003, 15, 15, 80000],
+            VENUSAUR_GIGANTAMAX: [8006003, 15, 15, 90000],
+            CHARIZARD_GIGANTAMAX: [8006003, 15, 15, 70000],
+            BLASTOISE_GIGANTAMAX: [8006003, 15, 15, 75000],
+            GENGAR_GIGANTAMAX: [8006003, 15, 15, 70000],
             LAPRAS_GIGANTAMAX: [8006003, 15, 15, 80000],
             MACHAMP_GIGANTAMAX: [8005, 15, 15, 100000],
-            SNORLAX_GIGANTAMAX: [8006132, 15, 15, 100000],
+            SNORLAX_GIGANTAMAX: [8006132, 15, 15, 135000],
             KINGLER_GIGANTAMAX: [8006003, 15, 15, 100000],
-            TOXTRICITY_AMPED_GIGANTAMAX: [8006003, 15, 15, 160000],
-            TOXTRICITY_LOW_KEY_GIGANTAMAX: [8006003, 15, 15, 160000],
-            TOXTRICITY_GIGANTAMAX: [8006003, 15, 15, 160000],
+            TOXTRICITY_AMPED_GIGANTAMAX: [8005245, 15, 15, 100000],
+            TOXTRICITY_LOW_KEY_GIGANTAMAX: [8005245, 15, 15, 100000],
+            TOXTRICITY_GIGANTAMAX: [8005245, 15, 15, 100000],
             RILLABOOM_GIGANTAMAX: [100, 15, 15, 120000],
             INTELEON_GIGANTAMAX: [8005245, 15, 15, 100000],
-            CINDERACE_GIGANTAMAX: [8005243, 15, 15, 90000],
+            CINDERACE_GIGANTAMAX: [8005243, 15, 15, 80000],
             BUTTERFREE_GIGANTAMAX: [8006003, 15, 15, 100000],
             GARBODOR_GIGANTAMAX: [8006569, 15, 15, 100000],
-            GRIMMSNARL_GIGANTAMAX: [8006861, 15, 15, 100000],
+            GRIMMSNARL_GIGANTAMAX: [8006861, 15, 15, 70000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
         };
 
@@ -1058,19 +1058,19 @@ export class PoGoAPI {
 
     static getDynamaxRaidDelays (raidMode: any) {
         if (raidMode === "raid-t1-dmax") {
-            return [11000, 11000]
+            return [9500, 10000]
         } else if (raidMode === "raid-t2-dmax") {
-            return [11000, 11000]
+            return [9500, 10000]
         } else if (raidMode === "raid-t3-dmax") {
-            return [9000, 9000]
+            return [9500, 10000]
         } else if (raidMode === "raid-t4-dmax") {
-            return [9000, 9000]
+            return [9500, 10000]
         } else if (raidMode === "raid-t5-dmax") {
-            return [9000, 9000]
+            return [9500, 10000]
         } else if (raidMode === "raid-t6-gmax") {
-            return [3000, 5000]
+            return [2500, 5000]
         } else {
-            return [9000, 9000]
+            return [9500, 10000]
         }
     }
 
@@ -1515,6 +1515,13 @@ export class PoGoAPI {
 
     static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean, defender?: any) {
         let damageMultiplier = 1;
+        if (raidMode === "raid-custom-dmax") {
+            if (desperate) {
+                return 6;
+            } else {
+                return 1;
+            }
+        }
         if (raidMode === "raid-t5-dmax") {
           damageMultiplier = 2;
         } else if (raidMode === "raid-t6-gmax") {
@@ -1528,7 +1535,7 @@ export class PoGoAPI {
                 damageMultiplier = 0.9;
             }
         }
-        return damageMultiplier * (desperate ? 4 : 1);
+        return damageMultiplier * (desperate ? 6 : 1);
     }
 
     static getDefenseMultiplier(raidMode: any) {
@@ -1575,7 +1582,7 @@ export class PoGoAPI {
         for (let i = 0; i < pokemonTeam.length; i++) {
             if (faints[i] === false) {
                 indexList.push(i);
-                const effectiveness = Math.pow(PoGoAPI.getTypeComboWeaknesses(types, PoGoAPI.formatTypeName(pokemonTeam[i].type), PoGoAPI.formatTypeName(pokemonTeam[i].type2))[PoGoAPI.formatTypeName(moveType)] ?? 1,-1);
+                const effectiveness = Math.pow(PoGoAPI.getTypeComboWeaknesses(types, PoGoAPI.formatTypeName(pokemonTeam[i].type), pokemonTeam[i].type2 ? PoGoAPI.formatTypeName(pokemonTeam[i].type2) : "???")[PoGoAPI.formatTypeName(moveType)] ?? 1,-1);
                 
                 const tankValue = Math.pow(Calculator.getCPM(attackerStats[i][0]), 2) * (pokemonTeam[i].stats.baseDefense + attackerStats[i][2]) * (pokemonTeam[i].stats.baseStamina + attackerStats[i][3]) * effectiveness;
                 
@@ -2187,7 +2194,7 @@ export class PoGoAPI {
         targeted = Math.random() > (defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) ? true : false;
         defenderMove = !targeted ? defenderLargeAttack : defenderTargetAttack;
 
-        const dynamaxDelays = this.getDynamaxRaidDelays(raidMode);
+        const dynamaxDelays = raidMode === "raid-custom-dmax" && (defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) ? [2500, 5000] : this.getDynamaxRaidDelays(raidMode);
         defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
 
         //console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
@@ -2235,7 +2242,7 @@ export class PoGoAPI {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
-                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender)) * (advEffects[i] === "bash" ? (1/1.05) : 1), isCustomDmax);
+                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" ? customBossAtkMult * (advEffects[i] === "bash" ? (1/1.05) : 1) : this.getDamageMultiplier(raidMode,false, false, defender)) * (advEffects[i] === "bash" ? (1/1.05) : 1), isCustomDmax);
                     //console.log("Attacker " + i + " projected damage from defender's targeted move: " + projectedDamageDefender + " vs current HP: " + attackerHealth[i][activePokemon[i]]);
                     if (projectedDamageDefender < attackerHealth[i][activePokemon[i]] ) {
                         // Attacker i evades the move
@@ -2476,9 +2483,13 @@ export class PoGoAPI {
                 if (!targeted) {
                     for (let i = 0 ; i < attackers.length ; i++) {
                         activePokemon[i] = this.getHigherElementIndexAgainstMoveNotDead(attackers[i], defenderMove.type, attackerFaints[i], types, attackersStats[i]);
+                        attackerMove[i] = null;
+                        attackerDamageStart[i] = -1;
                     }
                 } else {
                     activePokemon[target] = this.getHigherElementIndexAgainstMoveNotDead(attackers[target], defenderMove.type, attackerFaints[target], types, attackersStats[target]);
+                    attackerMove[target] = null;
+                    attackerDamageStart[target] = -1;
                 }
 
                 if (targeted) {
@@ -2494,7 +2505,7 @@ export class PoGoAPI {
                             [weather, false, false, 0], 
                             "normal", 
                             0, 
-                            (attackerEvades[target] ? 1 : 2) * (raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode, enraged, desperate, defender)) * (advEffects[target] === "bash" ? (1/ 1.05) : 1),
+                            (attackerEvades[target] ? 1 : 2) * (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ 1.05) : 1 )* customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender)) * (advEffects[target] === "bash" ? (1/ 1.05) : 1),
                             isCustomDmax
                         );
                         const finalDamage = Math.floor(projectedDamageDefender);
@@ -2524,7 +2535,7 @@ export class PoGoAPI {
                                 [weather, false, false, 0], 
                                 "normal", 
                                 0, 
-                                (raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode, enraged, desperate, defender)) * (advEffects[i] === "bash" ? (1/ 1.05) : 1),
+                                (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ 1.05) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender)) * (advEffects[i] === "bash" ? (1/ 1.05) : 1),
                                 isCustomDmax
                             );
                             const finalDamage = Math.floor(projectedDamageDefender);
@@ -2595,30 +2606,55 @@ export class PoGoAPI {
                 win = false;
             }
 
-            // Time-out
-            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 600000) || 
-                (raidMode == "raid-t5-dmax" && time === 400000) ||
-                (raidMode.endsWith("dmax") && time === 480000)) {
-                simGoing = false;
-                battleLog.push({"turn": time, "lost": true});
-                win = false;
-            }
-
+            
             time++;
+            
+            // Custom DMAX
+            if (raidMode === "raid-custom-dmax") {
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && time === 600000) || 
+                    (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && time === 480000)) {
+                    simGoing = false;
+                    battleLog.push({"turn": time, "lost": true});
+                    win = false;
+                }
 
-            // Defender is getting desperate
-            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 190000) || 
-                (raidMode.endsWith("dmax") && time === 270000)) {
-                enraged = true;
-                battleLog.push({"turn": time, "enraged": true});
+                // Defender is getting desperate
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && time === 190000) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && time === 270000)) {
+                    enraged = true;
+                    battleLog.push({"turn": time, "enraged": true});
+                }
+
+                // Defender' attacks are getting stronger
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && time === 220000) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && time === 300000)) {
+                    desperate = true;
+                    battleLog.push({"turn": time, "desperate": true});
+                }
+            } else {
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 600000) || 
+                    (raidMode == "raid-t5-dmax" && time === 400000) ||
+                    (raidMode.endsWith("dmax") && time === 480000)) {
+                    simGoing = false;
+                    battleLog.push({"turn": time, "lost": true});
+                    win = false;
+                }
+
+                // Defender is getting desperate
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 190000) || 
+                    (raidMode.endsWith("dmax") && time === 270000)) {
+                    enraged = true;
+                    battleLog.push({"turn": time, "enraged": true});
+                }
+
+                // Defender' attacks are getting stronger
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 220000) || 
+                    (raidMode.endsWith("dmax") && time === 300000)) {
+                    desperate = true;
+                    battleLog.push({"turn": time, "desperate": true});
+                } 
             }
-
-            // Defender' attacks are getting stronger
-            if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && time === 220000) || 
-                (raidMode.endsWith("dmax") && time === 300000)) {
-                desperate = true;
-                battleLog.push({"turn": time, "desperate": true});
-            } 
+            
             
             if (!simGoing) {
                 break;
