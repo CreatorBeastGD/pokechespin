@@ -139,7 +139,7 @@ export class PoGoAPI {
             pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
             pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
         } else if (pokemon.length > 0 && pokemon[0].pokemonId == "BLACEPHALON") {
-            pokemon[0].quickMoves = ["FIRE_SPIN_FAST", "ASTONISH_FAST"];
+            pokemon[0].quickMoves = ["INCINERATE_FAST", "ASTONISH_FAST"];
             pokemon[0].cinematicMoves = ["SHADOW_BALL", "FLAMETHROWER", "OVERHEAT", "MIND_BLOWN"];
             pokemon[0].eliteCinematicMove = ["MIND_BLOWN"];
         /*
