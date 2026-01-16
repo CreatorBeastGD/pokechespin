@@ -3114,7 +3114,7 @@ export class PoGoAPI {
 
         if (gamestatus.spawnedOrb.timeLeft > 0) {
             gamestatus.spawnedOrb.timeLeft -= 0.5;
-            if (gamestatus.spawnedOrb.timeLeft == 0 && gamestatus.spawnedOrb.location != "none") {
+            if ((gamestatus.spawnedOrb.timeLeft == 0 && gamestatus.spawnedOrb.location != "none") || gamestatus.maxPhaseCounter == 4) {
                 gamestatus.spawnedOrb = {
                     location: "none",
                     timeLeft: 0
