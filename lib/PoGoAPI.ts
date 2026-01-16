@@ -3034,7 +3034,7 @@ export class PoGoAPI {
                     ));
                     gamestatus.enemyPokemonDamage += projectedDamage;
                     gamestatus.maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth);
-                    if (gamestatus.maxEnergy > 100) {
+                    if (gamestatus.maxEnergy >= 100) {
                         gamestatus.maxEnergy = 100;
                         gamestatus.maxPhaseCounter = 4;
                     }
