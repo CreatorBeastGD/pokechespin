@@ -332,7 +332,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             <div className="flex flex-row justify-between">
               <label>{gameStatus?.allyCurrentMessage?.message}</label>
             </div>
-            {(gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage > 0) && !(gameStatus!.activeAllyIndex === 3)  &&
+            {(gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage > 0) && !(gameStatus!.activeAllyIndex === 3) && !(gameStatus!.timeout) &&
               <>
               {gameStatus?.maxPhaseCounter === 0 && gameStatus?.allyCooldown === 0 &&
               <>

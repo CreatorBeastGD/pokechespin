@@ -1559,6 +1559,10 @@ export class PoGoAPI {
             } else {
                 damageMultiplier = 0.9 * (enraged ? 6 : 1);
             }
+        } else if (raidMode === "raid-t4-dmax" || raidMode === "raid-t3-dmax") {
+            damageMultiplier = 1 * (enraged ? 9 : 1);
+        } else {
+            damageMultiplier = 1 * (enraged ? 3 : 1);
         }
         return damageMultiplier;
     }
