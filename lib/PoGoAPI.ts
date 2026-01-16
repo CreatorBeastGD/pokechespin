@@ -2924,7 +2924,7 @@ export class PoGoAPI {
                         }
 
                         gamestatus.allyCurrentMessage = {
-                            message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + "!",
+                            message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + " for " + projectedDamage + " damage!",
                             damage: projectedDamage,
                             duration: 0,
                             color: "#fa8585"
