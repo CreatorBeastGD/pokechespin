@@ -328,7 +328,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             </div>
             {gameStatus && <Progress color="bg-green-500" value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
             
-            <Progress color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()} value={((gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100)) * 100} className="w-full"/>
+            <Progress color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type ?? "normal").toLowerCase()} value={((gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100)) * 100} className="w-full"/>
             <div className="flex flex-row justify-between">
               <label>{gameStatus?.allyCurrentMessage?.message}</label>
             </div>
