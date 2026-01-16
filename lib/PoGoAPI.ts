@@ -1548,21 +1548,21 @@ export class PoGoAPI {
             }
         }
         if (raidMode === "raid-t5-dmax") {
-          damageMultiplier = 2 * (enraged ? 3 : 1);
+          damageMultiplier = 2 * (desperate ? 3 : 1);
         } else if (raidMode === "raid-t6-gmax") {
             if (defender) {
                 if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
-                    damageMultiplier = 1.2 * (enraged ? 6 : 1);
+                    damageMultiplier = 1.2 * (desperate ? 6 : 1);
                 } else {
-                    damageMultiplier = 0.9 * (enraged ? 6 : 1);
+                    damageMultiplier = 0.9 * (desperate ? 6 : 1);
                 }
             } else {
-                damageMultiplier = 0.9 * (enraged ? 6 : 1);
+                damageMultiplier = 0.9 * (desperate ? 6 : 1);
             }
         } else if (raidMode === "raid-t4-dmax" || raidMode === "raid-t3-dmax") {
-            damageMultiplier = 1 * (enraged ? 9 : 1);
+            damageMultiplier = 1 * (desperate ? 9 : 1);
         } else {
-            damageMultiplier = 1 * (enraged ? 3 : 1);
+            damageMultiplier = 1 * (desperate ? 3 : 1);
         }
         return damageMultiplier;
     }
