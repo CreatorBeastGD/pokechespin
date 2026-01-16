@@ -313,7 +313,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
               <label className="text-xs">Max Meter: {gameStatus?.maxEnergy}</label>
             </div>
             <Separator className=""/>
-            <label className={gameStatus?.globalCurrentMessage?.message.startsWith("An orb has") ? "text-red-600" : ""}>{gameStatus?.globalCurrentMessage?.message}</label>
+            <label className={gameStatus?.globalCurrentMessage?.message.startsWith("An orb has spawned") ? "text-red-600" : ""}>{gameStatus?.globalCurrentMessage?.message}</label>
 
             <label>Dynamax Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
             {gameStatus && <Progress color="bg-green-500" value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
