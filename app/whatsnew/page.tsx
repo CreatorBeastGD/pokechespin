@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30 (Play a Solo Max Battle!)",
+        desc: "+ Added 'Play Max Battle Simulation (One Member Only)' mode to PokéChespin for Max Battles!\n"+
+                ">>>>>> Now you can simulate a Max Battle with only one team member, controlling the actions of that member!\n"+
+                ">>>>>> You can choose between Fast Move, Charged Move, Dodging and Switching Pokémons!\n"+
+                ">>>>>> This mode is perfect to practice any future (or past) challenge with ANY pokémon you want!\n",
+        date: "2026-01-16",
+    },
+    {
         title: "v1.29.2",
         desc: "+ Updated behaviour on custom dynamax battles\n"+
                 ">>>>>> Now, if the defender Pokémon is a Gigantamax (or Eternamax Eternatus), it will have the same timers as GMax battles.\n"+

@@ -2,6 +2,7 @@
 import { float } from "html2canvas/dist/types/css/property-descriptors/float";
 import nextConfig from "../next.config";
 import { Calculator } from "./calculations";
+import { GameStatus } from "../src/components/GameStatus";
 
 const API = nextConfig.API_URL;
 const API_PB = nextConfig.API_PB_URL;
@@ -9,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.29.2";
+        return "1.30";
     }
 
     static async getAllPokemon() {
@@ -439,7 +440,7 @@ export class PoGoAPI {
             move.power = maxMoveLevel === 1 ? 350 : maxMoveLevel === 2 ? 400 : 450;
             return move;
         } else {
-            if (moveSelected?.moveId.startsWith("HIDDEN_POWER_")) {
+            if (moveSelected?.moveId?.startsWith("HIDDEN_POWER_")) {
                 return allMoves.find((m: any) => m.moveId === "MAX_STRIKE" + (maxMoveLevel === 1 ? "" : maxMoveLevel.toString()));
             }
             const move = allMoves.find((m: any) => {
@@ -912,7 +913,7 @@ export class PoGoAPI {
             defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
-        //console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
+        console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 
@@ -1056,7 +1057,7 @@ export class PoGoAPI {
         }
     }
 
-    static getDynamaxRaidDelays (raidMode: any) {
+    static getDynamaxRaidDelays (raidMode: any, defenderId?: any) {
         if (raidMode === "raid-t1-dmax") {
             return [9500, 10000]
         } else if (raidMode === "raid-t2-dmax") {
@@ -1067,10 +1068,30 @@ export class PoGoAPI {
             return [9500, 10000]
         } else if (raidMode === "raid-t5-dmax") {
             return [9500, 10000]
-        } else if (raidMode === "raid-t6-gmax") {
+        } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
             return [2500, 5000]
+        } else if (raidMode === "raid-custom-dmax") {
+            if (defenderId === "ETERNATUS_ETERNAMAX_FORM" || defenderId.endsWith("_GIGANTAMAX")) {
+                return [2500, 5000]
+            } else {
+                return [9500, 10000]
+            }
         } else {
             return [9500, 10000]
+        }
+    }
+
+    static getDynamaxDodgeWindow (raidMode: any, defenderId?: any) {
+        if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
+            return 4000;
+        } else if (raidMode === "raid-custom-dmax") {
+            if (defenderId === "ETERNATUS_ETERNAMAX_FORM" || defenderId.endsWith("_GIGANTAMAX")) {
+                return 4000;
+            } else {
+                return 2000;
+            }
+        } else {
+            return 2000;
         }
     }
 
@@ -1517,25 +1538,29 @@ export class PoGoAPI {
         let damageMultiplier = 1;
         if (raidMode === "raid-custom-dmax") {
             if (desperate) {
-                return 6;
+                if (defender.pokemonId === "ETERNATUS_ETERNAMAX_FORM" || defender.pokemonId.endsWith("_GIGANTAMAX")) {
+                    return 6;
+                } else {
+                    return 3;
+                }
             } else {
                 return 1;
             }
         }
         if (raidMode === "raid-t5-dmax") {
-          damageMultiplier = 2;
+          damageMultiplier = 2 * (enraged ? 3 : 1);
         } else if (raidMode === "raid-t6-gmax") {
             if (defender) {
                 if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
-                    damageMultiplier = 1.2;
+                    damageMultiplier = 1.2 * (enraged ? 6 : 1);
                 } else {
-                    damageMultiplier = 0.9;
+                    damageMultiplier = 0.9 * (enraged ? 6 : 1);
                 }
             } else {
-                damageMultiplier = 0.9;
+                damageMultiplier = 0.9 * (enraged ? 6 : 1);
             }
         }
-        return damageMultiplier * (desperate ? 6 : 1);
+        return damageMultiplier;
     }
 
     static getDefenseMultiplier(raidMode: any) {
@@ -1844,7 +1869,7 @@ export class PoGoAPI {
         allMoves: any,
         types: any,
         texts?: any,
-        dmaxDifficulty: string = "tier-6-gmax",
+        dmaxDifficulty: string = "raid-t6-gmax",
     ) {
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let average = 0;
@@ -2194,7 +2219,7 @@ export class PoGoAPI {
         targeted = Math.random() > (defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) ? true : false;
         defenderMove = !targeted ? defenderLargeAttack : defenderTargetAttack;
 
-        const dynamaxDelays = raidMode === "raid-custom-dmax" && (defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) ? [2500, 5000] : this.getDynamaxRaidDelays(raidMode);
+        const dynamaxDelays = raidMode === "raid-custom-dmax" && (defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) ? [2500, 5000] : this.getDynamaxRaidDelays(raidMode, defender.pokemonId);
         defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
 
         //console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
@@ -2664,6 +2689,731 @@ export class PoGoAPI {
         //console.log(attackerDamage);
         
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
+    }
+
+    static TurnBasedSimulatorAllyTurn(
+        attackers: any[], 
+        defender: any, 
+        attackersQuickMove: any[], 
+        attackersCinematicMove: any[],
+        defenderTargetAttack: any, 
+        defenderLargeAttack: any,
+        attackersStats: any[][], 
+        raidMode: any, 
+        attackerMaxMoves: any[][],
+        shroom: string = "false",
+        weather: string = "EXTREME",
+        helperBonus: number = 0,
+        advEffects: string = "none",
+        customBossHP: number = 1,
+        customBossCPM: number = 1,
+        customBossAtkMult: number = 1,
+        order: string,
+        gamestatus: GameStatus | null,
+        types: any,
+        allMoves: any
+    ) {
+        console.log(attackerMaxMoves)
+        // Setup gamestatus if first turn
+        if (!gamestatus || order === "init") {
+            gamestatus = new GameStatus();
+            gamestatus.globalCurrentMessage = {
+                message: "Battle started!",
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.allyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.enemyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+        }
+        
+        if (gamestatus.allyPokemonMaxHealth.length === 0) {
+            gamestatus.allyPokemonMaxHealth = [];
+            for (let i = 0 ; i < attackers.length ; i++) {
+                gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
+                if (attackers[i].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && attackerMaxMoves[i][1] > 0) {
+                    gamestatus.allyPokemonShields[i] += 20 * attackerMaxMoves[i][1];
+                    gamestatus.allyPokemonMaxShields[i] += 20 * attackerMaxMoves[i][1];
+                }
+                gamestatus.allyPokemonMaxShields[i] += 3 * 20 * (attackerMaxMoves[i][1] + (advEffects === "cannon" && (attackers[i].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 1 : 0)); 
+            }
+            gamestatus.enemyPokemonMaxHealth = raidMode === "raid-custom-dmax" ? customBossHP : Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId, this.hasDoubleWeaknesses(defender.type, defender.type2, types));
+        }
+        
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+        
+        const isCustomDmax = raidMode === "raid-custom-dmax";
+
+
+        let hasWeakness = this.hasDoubleWeaknesses(defender.type, defender.type2, types);
+        let defenderHealth = raidMode === "raid-custom-dmax" ? customBossHP : Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId, hasWeakness);
+
+        if (raidMode === "raid-custom-dmax") {
+            defenderStats[0] = customBossCPM;
+        }
+
+        // ally can cast a move
+        if (gamestatus.allyCooldown == 0) {
+            switch (order) {
+                case "init":
+                    return {...gamestatus} as GameStatus;
+                // Fast Move
+                case "fast":
+                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
+                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    console.log(gamestatus.allyCooldown);
+                    break;
+
+                // Charged Move
+                case "charged":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+
+                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    } else {
+                        gamestatus.allyCurrentMessage = {
+                            message: "No move cast",
+                            damage: 0,
+                            duration: 0,
+                            color: "#a2fa85"
+                        }
+                    }
+                    break;
+                
+                // Dodge to the right
+                case "dodgeright":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+                    gamestatus.allyDodgeDirection = "right";
+
+                    if (gamestatus.enemyActiveMove?.isTarget) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged to the right",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    break;
+                
+                // Dodge to the left
+                case "dodgeleft":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+                    gamestatus.allyDodgeDirection = "left";
+                    
+                    if (gamestatus.enemyActiveMove?.isTarget) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged to the left",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    break;
+                
+                // Switch to pokémon slot 0
+                case "switch0":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
+                        gamestatus.activeAllyIndex = 0;
+                    }
+
+                    
+                    if (gamestatus.maxPhaseCounter == 4) {
+                        gamestatus.maxPhaseCounter = 3;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    
+                    return {...gamestatus} as GameStatus;
+
+                // Switch to pokémon slot 1
+                case "switch1":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
+                        gamestatus.activeAllyIndex = 1;
+                    }
+                    
+                    if (gamestatus.maxPhaseCounter == 4) {
+                        gamestatus.maxPhaseCounter = 3;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    
+                    return {...gamestatus} as GameStatus;
+                
+                // Switch to pokémon slot 2
+                case "switch2":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
+                        gamestatus.activeAllyIndex = 2;
+                    }
+
+                    if (gamestatus.maxPhaseCounter == 4) {
+                        gamestatus.maxPhaseCounter = 3;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    } 
+                    
+                    return {...gamestatus} as GameStatus;
+                
+                // Cast Dynamax Move - Attack
+                case "maxattack":
+                    
+                    if (attackerMaxMoves[gamestatus.activeAllyIndex][0] > 0 && gamestatus.maxPhaseCounter >= 1) {
+                        gamestatus.allyActiveMove = {move: this.getDynamaxAttack(attackers[gamestatus.activeAllyIndex].pokemonId, attackersQuickMove[gamestatus.activeAllyIndex].type, allMoves, attackerMaxMoves[gamestatus.activeAllyIndex][0], attackersQuickMove[gamestatus.activeAllyIndex]), isCharged: false};
+                        gamestatus.allyCooldown = 0;
+                        
+                        // Cannon fix
+                        if (advEffects === "cannon" && (attackers[gamestatus.activeAllyIndex].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[gamestatus.activeAllyIndex].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                            gamestatus.allyActiveMove.move.power = gamestatus.allyActiveMove.move.power + (attackerMaxMoves[gamestatus.activeAllyIndex][0] === 3 ? 100 : 50);
+                        }
+
+                        const projectedDamage = Math.floor(this.getDamage(
+                            attackers[gamestatus.activeAllyIndex], 
+                            defender,
+                            gamestatus.allyActiveMove.move, 
+                            types, 
+                            attackersStats[gamestatus.activeAllyIndex],
+                            defenderStats,
+                            [weather, false, false, 0],
+                            [weather, false, false, 0] ,
+                            raidMode, (shroom === "true" ? 2 : 1),
+                            this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? 1.05 : 1)
+                        ));
+
+                        // Cannon fix
+                        if (advEffects === "cannon" && (attackers[gamestatus.activeAllyIndex].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[gamestatus.activeAllyIndex].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                            gamestatus.allyActiveMove.move.power = gamestatus.allyActiveMove.move.power - (attackerMaxMoves[gamestatus.activeAllyIndex][0] === 3 ? 100 : 50);
+                        }
+
+                        gamestatus.allyCurrentMessage = {
+                            message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + "!",
+                            damage: projectedDamage,
+                            duration: 0,
+                            color: "#fa8585"
+                        }
+
+                        gamestatus.enemyPokemonDamage += projectedDamage;
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.maxPhaseCounter -= 1;
+                        if (gamestatus.maxPhaseCounter==0) {
+                            gamestatus.maxEnergy = 0;
+                        }
+                    }
+
+                    return {...gamestatus} as GameStatus;
+                
+                // Cast Dynamax Move - Barrier
+                case "maxbarrier":
+                    if ((attackerMaxMoves[gamestatus.activeAllyIndex][1] > 0 || advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM")) && gamestatus.maxPhaseCounter >= 1) {
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.allyCooldown = 0;
+                        gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] += (20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 1 : 0)));
+                        if (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] > ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" ? 1 : 0)))) {
+                            gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" ? 1 : 0)));
+                        }
+                        gamestatus.maxPhaseCounter -= 1;
+                        if (gamestatus.maxPhaseCounter==0) {
+                            gamestatus.maxEnergy = 0;
+                        }
+
+                        gamestatus.allyCurrentMessage = {
+                            message: "Your Pokémon used Max Guard!",
+                            damage: 0,
+                            duration: 0,
+                            color: "#fa8585"
+                        }
+                    }
+                    
+                    return {...gamestatus} as GameStatus;
+
+                // Cast Dynamax Move - Spirit
+                case "maxspirit":
+                    if ((attackerMaxMoves[gamestatus.activeAllyIndex][2] > 0 || advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM")) && gamestatus.maxPhaseCounter >= 1) {
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.allyCooldown = 0;
+                        let healPercentage = 0.08 + (0.04 * (attackerMaxMoves[gamestatus.activeAllyIndex][2] - (advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 0 : 1)));
+                        let healAmount = Math.floor(healPercentage * gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]);
+                        gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] -= healAmount;
+                        if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] < 0) {
+                            gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] = 0;
+                        }
+                        gamestatus.maxPhaseCounter -= 1;
+                        if (gamestatus.maxPhaseCounter==0) {
+                            gamestatus.maxEnergy = 0;
+                        }
+
+                        gamestatus.allyCurrentMessage = {
+                            message: "Your Pokémon used Max Spirit!",
+                            damage: -healAmount,
+                            duration: 0,
+                            color: "#fa8585"
+                        }
+                    }
+                    
+                    return {...gamestatus} as GameStatus;
+            }
+        } 
+        if (gamestatus.allyCooldown > 0) {
+            gamestatus.allyCooldown -= 0.5;
+            if (gamestatus.allyCooldown <= 0) {
+                gamestatus.allyCooldown = 0;
+                if (gamestatus.allyDodgeDirection != "none") {
+                    if (gamestatus.spawnedOrb.location == gamestatus.allyDodgeDirection && gamestatus.spawnedOrb.timeLeft > 0) {
+                        // collected orb
+                        gamestatus.maxEnergy += 10;
+                        if (gamestatus.maxEnergy > 100) {
+                            gamestatus.maxEnergy = 100;
+                            gamestatus.maxPhaseCounter = 4;
+                        }
+
+                        gamestatus.globalCurrentMessage = {
+                            message: "An orb has been collected! (+10 Max Meter)",
+                            duration: 0,
+                            color: "#85d2fa"
+                        }
+
+                        gamestatus.spawnedOrb = {
+                            location: "none",
+                            timeLeft: 0
+                        }
+
+                    }
+                    gamestatus.allyDodgeDirection = "none";
+                }
+                if (gamestatus.allyActiveMove != null) {
+                    // ally deals damage
+                    const projectedDamage = Math.floor(this.getDamage(
+                        attackers[gamestatus.activeAllyIndex], 
+                        defender, 
+                        gamestatus.allyActiveMove.move, 
+                        types, 
+                        attackersStats[gamestatus.activeAllyIndex], 
+                        defenderStats, 
+                        [weather, false, false, 0], 
+                        [weather, false, false, 0] , 
+                        raidMode, (shroom === "true" ? 2 : 1), 
+                        this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? 1.05 : 1)
+                    ));
+                    gamestatus.enemyPokemonDamage += projectedDamage;
+                    gamestatus.maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth);
+                    if (gamestatus.maxEnergy > 100) {
+                        gamestatus.maxEnergy = 100;
+                        gamestatus.maxPhaseCounter = 4;
+                    }
+
+                    
+                    if (!gamestatus.allyActiveMove.isCharged) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    gamestatus.allyActiveMove = null;
+                } else {
+                    gamestatus.allyCurrentMessage = {
+                        message: "No move cast",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                }
+            }
+            else {
+                if (gamestatus.allyActiveMove != null) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Using " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId),
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Dodging " + (gamestatus.allyDodgeDirection === "left" ? "left" : "right"),
+                        damage: 0,
+                        color: "#575757"
+                    };
+                }
+            }
+        }
+
+        this.TurnBasedSimulatorEnemyTurn(
+            attackers, 
+            defender, 
+            attackersQuickMove, 
+            attackersCinematicMove, 
+            attackersStats, 
+            defenderLargeAttack, 
+            defenderTargetAttack, 
+            raidMode, 
+            attackerMaxMoves,
+            shroom, 
+            weather, 
+            helperBonus, 
+            advEffects, 
+            customBossHP, 
+            customBossCPM,
+            customBossAtkMult, 
+            gamestatus, 
+            types, 
+            allMoves
+        );
+        
+
+
+        gamestatus.timer += 0.5;
+
+        if (gamestatus.spawnedOrb.timeLeft > 0) {
+            gamestatus.spawnedOrb.timeLeft -= 0.5;
+            if (gamestatus.spawnedOrb.timeLeft == 0 && gamestatus.spawnedOrb.location != "none") {
+                gamestatus.spawnedOrb = {
+                    location: "none",
+                    timeLeft: 0
+                }
+
+                gamestatus.globalCurrentMessage = {
+                    message: "The orb has disappeared...",
+                    duration: 0,
+                    color: "#fa8585"
+                }
+            }
+        }
+
+        if (gamestatus.timer % 15 === 0 && gamestatus.timer > 0) {
+            // Spawn orb
+            const dodgeDirection = Math.random() > 0.5 ? "left" : "right";
+            gamestatus.spawnedOrb = {
+                location: dodgeDirection,
+                timeLeft: 10
+            }
+
+            gamestatus.globalCurrentMessage = {
+                message: "An orb has spawned on the " + dodgeDirection + " side!",
+                duration: 10,
+                color: "#85d2fa"
+            }
+        }
+
+        // Custom DMAX
+            if (raidMode === "raid-custom-dmax") {
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 600) || 
+                    (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && gamestatus.timer === 480)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "Timeout reached. The Raid Boss wins!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.timeout = true;
+                }
+
+                // Defender is getting desperate
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 190) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 270)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "The Raid Boss is getting desperate!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                }
+
+                // Defender' attacks are getting stronger
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 220) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 300)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "The Raid Boss' attacks are getting stronger!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.enrage = true;
+                }
+            } else {
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 600) || 
+                    (raidMode == "raid-t5-dmax" && gamestatus.timer === 400) ||
+                    (raidMode.endsWith("dmax") && gamestatus.timer === 480)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "Timeout reached. The Raid Boss wins!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.timeout = true;
+                }
+
+                // Defender is getting desperate
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 190) || 
+                    (raidMode.endsWith("dmax") && gamestatus.timer === 270)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "The Raid Boss is getting desperate!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                }
+
+                // Defender' attacks are getting stronger
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 220) || 
+                    (raidMode.endsWith("dmax") && gamestatus.timer === 300)) {
+                    gamestatus.globalCurrentMessage = {
+                        message: "The Raid Boss' attacks are getting stronger!",
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.enrage = true;
+                } 
+            }
+
+        if (gamestatus.enemyPokemonDamage >= defenderHealth) {
+            gamestatus.enemyCurrentMessage = {
+                message: "The Raid Boss has been defeated!",
+                duration: 0,
+                damage: 0,
+                color: "#a2fa85"
+            }
+        }
+
+
+        const next = {...gamestatus} as GameStatus;
+        
+        console.log(next);
+        return next;
+    }
+
+    static TurnBasedSimulatorEnemyTurn(
+        attackers: any[], 
+        defender: any, 
+        attackersQuickMove: any[], 
+        attackersCinematicMove: any[], 
+        attackersStats: any[][], 
+        defenderLargeAttack: any, 
+        defenderTargetAttack: any, 
+        raidMode: any, 
+        attackerMaxMoves: any[],
+        shroom: string = "none",
+        weather: string = "EXTREME",
+        helperBonus: number = 0,
+        advEffects: string = "none",
+        customBossHP: number = 1,
+        customBossCPM: number = 1,
+        customBossAtkMult: number = 1,
+        gamestatus: GameStatus,
+        types: any = null,
+        allMoves: any = null,
+    ) {        
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+        
+        const isCustomDmax = raidMode === "raid-custom-dmax";
+
+        let hasWeakness = this.hasDoubleWeaknesses(defender.type, defender.type2, types);
+        let defenderHealth = raidMode === "raid-custom-dmax" ? customBossHP : Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode, defender.pokemonId, hasWeakness);
+
+        if (raidMode === "raid-custom-dmax") {
+            defenderStats[0] = customBossCPM;
+        }
+        
+        const largeCooldown = this.getDynamaxRaidDelays(raidMode, defender.pokemonId)[0];
+        const targetCooldown = this.getDynamaxRaidDelays(raidMode, defender.pokemonId)[1];
+
+        if (gamestatus.maxPhaseCounter == 4) {
+            gamestatus.enemyCooldown = 0;
+            gamestatus.enemyActiveMove = null;
+            gamestatus.enemyPrepPhase = false;
+            gamestatus.damageReduction = 1;
+        }
+
+        // enemy can cast a move
+        if (gamestatus.enemyCooldown == 0) {
+            if (gamestatus.enemyActiveMove == null) {
+                // Choose move
+                gamestatus.enemyPrepPhase = true;
+                if (Math.random() > 0.5) {
+                    gamestatus.enemyActiveMove = {move: defenderTargetAttack, isTarget: true};
+                    gamestatus.enemyCooldown = Math.ceil(targetCooldown * 2 / 1000) / 2;
+                } else {
+                    gamestatus.enemyActiveMove = {move: defenderLargeAttack, isTarget: false};
+                    gamestatus.enemyCooldown = Math.ceil(largeCooldown * 2 / 1000) / 2;
+                }
+            } else {
+                // Enemy starts to cast move
+                gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+                if (gamestatus.enemyActiveMove.isTarget) {
+                    const dodgeWindowEnd = gamestatus.timer;
+                    const dodgeWindowStart = dodgeWindowEnd - this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) / 1000;
+                    if (gamestatus.allyDodgeTurn >= dodgeWindowStart && gamestatus.allyDodgeTurn <= dodgeWindowEnd) {
+                        let redux = gamestatus.allyDodgeTurn - dodgeWindowStart;
+                        gamestatus.damageReduction = ((this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) == 2000) ? 
+                        (0.6 - (redux) * 0.2) :
+                        (0.65 - (redux) * 0.1));
+
+                        if (this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) == 2000 && gamestatus.damageReduction < 0.3) {
+                            gamestatus.damageReduction = 0.3;
+                        } 
+
+                        if (this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) == 4000 && gamestatus.damageReduction < 0.3) {
+                            gamestatus.damageReduction = 0.3;
+                        }
+                    }
+                } else {
+                    gamestatus.damageReduction = 1;
+                }
+            }
+        } 
+        if (gamestatus.enemyCooldown > 0) {
+            gamestatus.enemyCooldown -= 0.5;
+            if (gamestatus.enemyCooldown <= 0) {
+                gamestatus.enemyCooldown = 0;
+                if (gamestatus.enemyPrepPhase === true) {
+                    gamestatus.enemyPrepPhase = false;
+                } else {
+                    // Enemy deals damage
+                    console.log(gamestatus.damageReduction + " " + (gamestatus.enemyActiveMove?.isTarget ? "2" : "1") + " " + this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender) + " " +  customBossAtkMult + " " + (advEffects === "bash" ? 1/1.05 : 1));
+                    let projectedDamage = Math.floor(this.getDamage(
+                        defender,
+                        attackers[gamestatus.activeAllyIndex], 
+                        gamestatus.enemyActiveMove?.move, 
+                        types,
+                        defenderStats,  
+                        attackersStats[gamestatus.activeAllyIndex], 
+                        [weather, false, false, 0], 
+                        [weather, false, false, 0] , 
+                        "normal", 
+                        1, 
+                        (gamestatus.damageReduction * (gamestatus.enemyActiveMove?.isTarget ? 2 : 1)) * this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender) * (raidMode == "raid-custom-dmax" ? customBossAtkMult : 1) * (advEffects === "bash" ? 1/1.05 : 1),
+                        isCustomDmax
+                    ));
+                    let proDamageReal = projectedDamage;
+                    if (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] >= projectedDamage) {
+                        gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] -= projectedDamage;
+                        proDamageReal = 0;
+                    } else {
+                        proDamageReal -= gamestatus.allyPokemonShields[gamestatus.activeAllyIndex];
+                        gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = 0;
+                    }
+                    gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
+                    gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.floor(proDamageReal / 2);
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                    }
+
+                    // mon fucking dies
+                    if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] > gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.allyCooldown = 0;
+                        gamestatus.activeAllyIndex = this.getHigherElementIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]), gamestatus.allyPokemonDamage.map((dmg, idx) => dmg >= gamestatus.allyPokemonMaxHealth[idx]));
+                        if (gamestatus.activeAllyIndex === 3) {
+                            // all fainted
+                            gamestatus.allyActiveMove = null;
+                            gamestatus.enemyCurrentMessage = {
+                                message: "All your Pokémon have fainted!",
+                                damage: 0,
+                                duration: 0,
+                                color: "#fa8585"
+                            }
+                            return;
+                        }
+                    }
+                    gamestatus.enemyCurrentMessage = {
+                        message: "The Max Battle Boss uses " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove?.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.damageReduction = 1;
+                    gamestatus.enemyActiveMove = null;
+                    gamestatus.enemyPrepPhase = true;
+                }
+            }
+            else {
+                if (gamestatus.enemyActiveMove != null) {
+                    if (gamestatus.enemyActiveMove.isTarget) {
+                        if (gamestatus.enemyPrepPhase) {
+                            const dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown;
+                            const dodgeWindowStart = dodgeWindowEnd - this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) / 1000;
+                            if (gamestatus.timer >= dodgeWindowStart && gamestatus.timer <= dodgeWindowEnd) {
+                                gamestatus.enemyCurrentMessage = {
+                                    duration: gamestatus.enemyCooldown,
+                                    message: "Move incoming!",
+                                    damage: 0,
+                                    color: "#ffcc00"
+                                }
+                            } else {
+                                gamestatus.enemyCurrentMessage = {
+                                    duration: gamestatus.enemyCooldown,
+                                    message: "Target move being prepared...",
+                                    damage: 0,
+                                    color: "#575757"
+                                }
+                            }
+                        } else {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Max Battle Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    } else {
+                        if (gamestatus.enemyPrepPhase) {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "Spread move being prepared...",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        } else {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Max Battle Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     static formatMoveName(moveName: string) {

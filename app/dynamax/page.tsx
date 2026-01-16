@@ -24,6 +24,7 @@ import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
+import CalculateButtonSimulateTurnBasedDynamax from "@/components/calculate-button-turn-based-dynamax";
 
 export default function Home() {
   
@@ -904,6 +905,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bashBoost={previewAdvEffect === "bash"}/>
             </CardContent>
             {allPokemonSelected() ? (
+              <>
               <CardContent>
                 <CardDescription>Max Battle Simulation</CardDescription>
                 <CalculateButtonSimulateAdvancedDynamax 
@@ -923,6 +925,30 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   weather={weather}
                 />
               </CardContent>
+              {numMembers == 1 ? (
+              <CardContent>
+                <CardDescription>Play Max Battle Simulation (One member only)</CardDescription>
+                <CalculateButtonSimulateTurnBasedDynamax
+                  allEnglishText={allEnglishText}
+                  attacker={attackingPokemon[0]} 
+                  defender={defendingPokemon}
+                  quickMove={selectedQuickMoveAttacker[0]}
+                  chargedMove={selectedChargedMoveAttacker[0]}
+                  largeAttack={selectedQuickMoveDefender}
+                  targetAttack={selectedChargedMoveDefender}
+                  attackerStats={attackerStats[0]}
+                  defenderStats={defenderStats}
+                  bonusAttacker={bonusAttacker[0]}
+                  bonusDefender={bonusDefender}
+                  raidMode={raidMode}
+                  maxMoves={maxMoves[0]}
+                  weather={weather}
+                  types={types}
+                  allMoves={allMoves}
+                />
+              </CardContent>
+            ) : (<></>)}
+              </>
             ) : (
               <CardContent>
                 <CardDescription>You must select all Pokémon and moves to be able to simulate a Max Battle! (All boxes should be displayed in green)</CardDescription>
