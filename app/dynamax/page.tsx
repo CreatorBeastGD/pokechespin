@@ -947,13 +947,14 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   allMoves={allMoves}
                 />
               </CardContent>
-            ) : (<CardContent>
-                <CardDescription>If you want to play a Max Battle simulation, make sure to select all Pokémon and moves first and use one member only! (All boxes should be displayed in green)</CardDescription>
-              </CardContent>)}
+            ) : (
+              <></>
+            )}
               </>
             ) : (
               <CardContent>
                 <CardDescription>You must select all Pokémon and moves to be able to simulate a Max Battle! (All boxes should be displayed in green)</CardDescription>
+                <CardDescription>If you want to play a Solo Max Battle simulation, make sure to select all Pokémon and moves first and use one member only! (All boxes should be displayed in green)</CardDescription>
               </CardContent>
             )
             }
