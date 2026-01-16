@@ -3206,10 +3206,9 @@ export class PoGoAPI {
             }
 
         if (gamestatus.enemyPokemonDamage >= defenderHealth) {
-            gamestatus.enemyCurrentMessage = {
+            gamestatus.globalCurrentMessage = {
                 message: "The Raid Boss has been defeated!",
                 duration: 0,
-                damage: 0,
                 color: "#a2fa85"
             }
         }
