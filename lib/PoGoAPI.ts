@@ -913,7 +913,7 @@ export class PoGoAPI {
             defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
-        console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
+        // console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 
@@ -3311,7 +3311,6 @@ export class PoGoAPI {
                     gamestatus.enemyPrepPhase = false;
                 } else {
                     // Enemy deals damage
-                    console.log(gamestatus.damageReduction + " " + (gamestatus.enemyActiveMove?.isTarget ? "2" : "1") + " " + this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender) + " " +  customBossAtkMult + " " + (advEffects === "bash" ? 1/1.05 : 1));
                     let projectedDamage = Math.floor(this.getDamage(
                         defender,
                         attackers[gamestatus.activeAllyIndex], 
