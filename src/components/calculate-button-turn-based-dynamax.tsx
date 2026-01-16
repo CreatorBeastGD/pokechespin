@@ -309,8 +309,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between">
-              <label>Max Battle ({gameStatus?.timer}s)</label>
-              <label>Max Meter: {gameStatus?.maxEnergy}</label>
+              <label className="text-xs">Max Battle ({gameStatus?.timer}s)</label>
+              <label className="text-xs">Max Meter: {gameStatus?.maxEnergy}</label>
             </div>
             <Separator className=""/>
             <label>{gameStatus?.globalCurrentMessage?.message}</label>
@@ -328,7 +328,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             </div>
             {gameStatus && <Progress color="bg-green-500" value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
             
-            <Progress color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type ?? "normal").toLowerCase()} value={((gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100)) * 100} className="w-full"/>
+            <Progress color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type ?? "normal").toLowerCase()} value={((gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100)) * 100} className="w-full"/>
             <div className="flex flex-row justify-between">
               <label>{gameStatus?.allyCurrentMessage?.message}</label>
             </div>
