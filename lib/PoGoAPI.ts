@@ -2999,7 +2999,7 @@ export class PoGoAPI {
                     if (gamestatus.spawnedOrb.location == gamestatus.allyDodgeDirection && gamestatus.spawnedOrb.timeLeft > 0) {
                         // collected orb
                         gamestatus.maxEnergy += 10;
-                        if (gamestatus.maxEnergy > 100) {
+                        if (gamestatus.maxEnergy >= 100) {
                             gamestatus.maxEnergy = 100;
                             gamestatus.maxPhaseCounter = 4;
                         }
