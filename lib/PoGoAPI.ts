@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.30";
+        return "1.30.1";
     }
 
     static async getAllPokemon() {
@@ -1365,7 +1365,7 @@ export class PoGoAPI {
                     
                     attackerDamage += projectedDamage;
                     //console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
-                    defenderEnergy += Math.floor(projectedDamage / 2);
+                    defenderEnergy += Math.ceil(projectedDamage / 2);
                     if (defenderEnergy > 100) {
                         defenderEnergy = 100;
                     }
@@ -1447,7 +1447,7 @@ export class PoGoAPI {
                 //console.log("Final damage: " + finalDamage);
                 
                 defenderDamage += finalDamage
-                attackerEnergy += Math.floor(finalDamage / 2);
+                attackerEnergy += Math.ceil(finalDamage / 2);
                 for (let i = 0 ; i < peopleCount ; i++) {
                     
                     if (attackerEnergy > 100) {
@@ -2547,7 +2547,10 @@ export class PoGoAPI {
                             finalDamageReduced = 0;
                         }
                         defenderDamage[target][activePokemon[target]] += finalDamageReduced;
-                        attackerEnergy[target][activePokemon[target]] += Math.floor(finalDamage / 2);
+                        attackerEnergy[target][activePokemon[target]] += Math.ceil(finalDamage / 2);
+                        if (attackerEnergy[target][activePokemon[target]] > 100) {
+                            attackerEnergy[target][activePokemon[target]] = 100;
+                        }
                         battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[target][activePokemon[target]], "health": attackerHealth[target][activePokemon[target]], "remainingShields": shieldHP[target][activePokemon[target]]});
                     }
                 } else {
@@ -2577,7 +2580,10 @@ export class PoGoAPI {
                                 finalDamageReduced = 0;
                             }
                             defenderDamage[i][activePokemon[i]] += finalDamageReduced;
-                            attackerEnergy[i][activePokemon[i]] += Math.floor(finalDamage / 2);
+                            attackerEnergy[i][activePokemon[i]] += Math.ceil(finalDamage / 2);
+                            if (attackerEnergy[i][activePokemon[i]] > 100) {
+                                attackerEnergy[i][activePokemon[i]] = 100;
+                            }
                             battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamageReduced, "stackedDamage": defenderDamage[i][activePokemon[i]], "health": attackerHealth[i][activePokemon[i]], "remainingShields": shieldHP[i][activePokemon[i]]});
                         }
                     }
@@ -2737,6 +2743,12 @@ export class PoGoAPI {
                 damage: 0,
                 duration: 0,
                 color: "#ffffff"
+            }
+
+            gamestatus.enrageCurrentMessage = {
+                message: "The Max Battle Boss is acting normally.",
+                duration: 0,
+                color: "#ff0000"
             }
         }
         
@@ -3009,7 +3021,7 @@ export class PoGoAPI {
                         }
 
                         gamestatus.globalCurrentMessage = {
-                            message: "An orb has been collected! (+10 Max Meter)",
+                            message: "Orb collected! (+10 Max Meter)",
                             duration: 0,
                             color: "#85d2fa"
                         }
@@ -3147,7 +3159,7 @@ export class PoGoAPI {
             if (raidMode === "raid-custom-dmax") {
                 if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 600) || 
                     (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && gamestatus.timer === 480)) {
-                    gamestatus.globalCurrentMessage = {
+                    gamestatus.enrageCurrentMessage = {
                         message: "Timeout reached. The Raid Boss wins!",
                         duration: 0,
                         color: "#fa8585"
@@ -3158,8 +3170,8 @@ export class PoGoAPI {
                 // Defender is getting desperate
                 if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 190) || 
                     (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 270)) {
-                    gamestatus.globalCurrentMessage = {
-                        message: "The Raid Boss is getting desperate!",
+                    gamestatus.enrageCurrentMessage = {
+                        message: "The Max Battle Boss is getting desperate!",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3168,8 +3180,8 @@ export class PoGoAPI {
                 // Defender' attacks are getting stronger
                 if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 220) || 
                     (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 300)) {
-                    gamestatus.globalCurrentMessage = {
-                        message: "The Raid Boss' attacks are getting stronger!",
+                    gamestatus.enrageCurrentMessage = {
+                        message: "The Max Battle Boss' attacks are getting stronger!",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3179,8 +3191,8 @@ export class PoGoAPI {
                 if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 600) || 
                     (raidMode == "raid-t5-dmax" && gamestatus.timer === 400) ||
                     (raidMode.endsWith("dmax") && gamestatus.timer === 480)) {
-                    gamestatus.globalCurrentMessage = {
-                        message: "Timeout reached. The Raid Boss wins!",
+                    gamestatus.enrageCurrentMessage = {
+                        message: "Timeout reached. The Max Battle Boss wins!",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3190,8 +3202,8 @@ export class PoGoAPI {
                 // Defender is getting desperate
                 if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 190) || 
                     (raidMode.endsWith("dmax") && gamestatus.timer === 270)) {
-                    gamestatus.globalCurrentMessage = {
-                        message: "The Raid Boss is getting desperate!",
+                    gamestatus.enrageCurrentMessage = {
+                        message: "The Max Battle Boss is getting desperate!",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3200,13 +3212,14 @@ export class PoGoAPI {
                 // Defender' attacks are getting stronger
                 if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 220) || 
                     (raidMode.endsWith("dmax") && gamestatus.timer === 300)) {
-                    gamestatus.globalCurrentMessage = {
-                        message: "The Raid Boss' attacks are getting stronger!",
+                    gamestatus.enrageCurrentMessage = {
+                        message: "The Max Battle Boss' attacks are getting stronger!",
                         duration: 0,
                         color: "#fa8585"
                     }
                     gamestatus.enrage = true;
                 } 
+
             }
 
         if (gamestatus.enemyPokemonDamage >= defenderHealth) {
@@ -3334,7 +3347,7 @@ export class PoGoAPI {
                         gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = 0;
                     }
                     gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
-                    gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.floor(proDamageReal / 2);
+                    gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.ceil(proDamageReal / 2);
                     if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
                         gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
                     }

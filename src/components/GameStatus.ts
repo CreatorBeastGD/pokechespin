@@ -30,6 +30,7 @@ export class GameStatus {
     allyCurrentMessage: {message: string, duration: number, color: string, damage: number} | null = null;
     enemyCurrentMessage: {message: string, duration: number, color: string, damage: number} | null = null;
     globalCurrentMessage: {message: string, duration: number, color: string} | null = null;
+    enrageCurrentMessage: {message: string, duration: number, color: string} | null = null;
 
     allyDodgeTurn: number = 0;
 

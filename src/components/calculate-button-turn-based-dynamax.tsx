@@ -126,6 +126,16 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
   }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
 
+  const getHealthBarColor = (healthPercent: number) => {
+    if (healthPercent > 50) {
+      return "bg-green-500";
+    } else if (healthPercent > 20) {
+      return "bg-yellow-500";
+    } else {
+      return "bg-red-500";
+    }
+  }
+
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
       return "Tier 1 Dynamax";
@@ -309,29 +319,48 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between">
-              <label className="text-xs">Max Battle ({gameStatus?.timer}s)</label>
-              <label className="text-xs">Max Meter: {gameStatus?.maxEnergy}</label>
+              <label className="font-bold text-xs">Max Battle ({gameStatus?.timer}s)</label>
+              <label className="font-bold text-xs">Max Meter: {gameStatus?.maxEnergy}</label>
             </div>
             <Separator className=""/>
-            <label className={gameStatus?.globalCurrentMessage?.message.startsWith("An orb has spawned") ? "text-red-600" : ""}>{gameStatus?.globalCurrentMessage?.message}</label>
-
-            <label>Dynamax Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
-            {gameStatus && <Progress color="bg-green-500" value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
+            <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
+            <Separator className=""/>
+            <label className={"font-bold text-sm " + (gameStatus?.globalCurrentMessage?.message.startsWith("An orb has spawned") ? "text-red-600" : "")}>{gameStatus?.globalCurrentMessage?.message}</label>
+          
+            <div className="flex flex-row justify-between items-end ">
+              <label className="text-xs pt-2">Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
+              
+            </div>
+            {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
             <div className="flex flex-row justify-between">
-              <label>{gameStatus?.enemyCurrentMessage?.message}</label>
+              <label className="text-xs">{gameStatus?.enemyCurrentMessage?.message}</label>
+            </div>
+
+            <Separator className="my-2"/>
+
+            <div className="flex flex-row justify-between items-end ">
+              <label className="text-xs pt-2">Active: {PoGoAPI.getPokemonNamePB(attacker[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].pokemonId, allEnglishText)}</label>
+              
+            </div>
+            {gameStatus && <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100)} value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
+            
+            <div className="flex flex-row justify-between items-end space-x-4">
+              <div className="w-[50%]">
+                <label className="text-xs items-end">Energy: {gameStatus?.allyEnergy[gameStatus!.activeAllyIndex]}/100</label>
+                <Progress separators={Math.floor(100/-chargedMove[gameStatus!.activeAllyIndex].energyDelta)} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+              </div>
+              <div className="w-[50%]">
+                <label className="text-xs items-end">Shields: {gameStatus?.allyPokemonShields[gameStatus!.activeAllyIndex]}/{gameStatus?.allyPokemonMaxShields[gameStatus!.activeAllyIndex]}</label>
+                <Progress separators={3} color="bg-blue-500" value={(gameStatus!.allyPokemonShields[gameStatus!.activeAllyIndex] / gameStatus!.allyPokemonMaxShields[gameStatus!.activeAllyIndex]) * 100} className="w-full"/>
+              </div>
             </div>
 
             <div className="flex flex-row justify-between">
-              <label>Active: {PoGoAPI.getPokemonNamePB(attacker[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].pokemonId, allEnglishText)}</label>
-              <label>Shields: {gameStatus?.allyPokemonShields[gameStatus!.activeAllyIndex]}/{gameStatus?.allyPokemonMaxShields[gameStatus!.activeAllyIndex]}</label>
+              <label className="text-xs">{gameStatus?.allyCurrentMessage?.message}</label>
             </div>
-            {gameStatus && <Progress color="bg-green-500" value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
             
-            <Progress color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type ?? "normal").toLowerCase()} value={((gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100)) * 100} className="w-full"/>
-            <div className="flex flex-row justify-between">
-              <label>{gameStatus?.allyCurrentMessage?.message}</label>
-            </div>
+            
             {(gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage > 0) && !(gameStatus!.activeAllyIndex === 3) && !(gameStatus!.timeout) &&
               <>
               {gameStatus?.maxPhaseCounter === 0 && gameStatus?.allyCooldown === 0 &&
@@ -340,27 +369,54 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
                 <Button onClick={() => SendMessage("fast")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(quickMove[gameStatus!.activeAllyIndex].type).toLowerCase()}>{PoGoAPI.formatMoveName(quickMove[gameStatus.activeAllyIndex].moveId)}</Button>
                 <Button onClick={() => SendMessage("charged")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()}>{PoGoAPI.formatMoveName(chargedMove[gameStatus.activeAllyIndex].moveId)}</Button>
                 <Separator className="my-4"/>
-                <Button onClick={() => SendMessage("dodgeleft")} className="w-full py-2 text-white bg-primary rounded-lg">Dodge to the left</Button>
-                <Button onClick={() => SendMessage("dodgeright")} className="w-full py-2 text-white bg-primary rounded-lg">Dodge to the right</Button>
+                <div className="flex flex-row justify-center items-center space-x-2">
+                  <Button onClick={() => SendMessage("dodgeleft")} className="w-full py-2 text-white bg-primary rounded-lg">{"← Dodge"}</Button>
+                  <Button onClick={() => SendMessage("dodgeright")} className="w-full py-2 text-white bg-primary rounded-lg">{"Dodge →"}</Button>
+                </div>
               </>}
               {(gameStatus?.maxPhaseCounter === 4 || gameStatus?.maxPhaseCounter === 0) && gameStatus?.allyCooldown === 0 &&
               <>
               
                 <Separator className="my-4"/>
-                {(gameStatus!.allyPokemonDamage[0] < gameStatus!.allyPokemonMaxHealth[0]) && (gameStatus!.activeAllyIndex !== 0 || gameStatus!.maxPhaseCounter == 4) ? <Button onClick={() => SendMessage("switch0")} className="w-full py-2 text-white bg-primary rounded-lg">Switch to {PoGoAPI.getPokemonNamePB(attacker[0].pokemonId, allEnglishText)}</Button> : null}
-                {(gameStatus!.allyPokemonDamage[1] < gameStatus!.allyPokemonMaxHealth[1]) && (gameStatus!.activeAllyIndex !== 1 || gameStatus!.maxPhaseCounter == 4) ? <Button onClick={() => SendMessage("switch1")} className="w-full py-2 text-white bg-primary rounded-lg">Switch to {PoGoAPI.getPokemonNamePB(attacker[1].pokemonId, allEnglishText)}</Button> : null}
-                {(gameStatus!.allyPokemonDamage[2] < gameStatus!.allyPokemonMaxHealth[2]) && (gameStatus!.activeAllyIndex !== 2 || gameStatus!.maxPhaseCounter == 4) ? <Button onClick={() => SendMessage("switch2")} className="w-full py-2 text-white bg-primary rounded-lg">Switch to {PoGoAPI.getPokemonNamePB(attacker[2].pokemonId, allEnglishText)}</Button> : null}
+                {(gameStatus!.allyPokemonDamage[0] < gameStatus!.allyPokemonMaxHealth[0]) && (gameStatus!.activeAllyIndex !== 0 || gameStatus!.maxPhaseCounter == 4) ? 
+                  <>
+                    <Button onClick={() => SendMessage("switch0")} className="w-full text-white rounded-lg flex-col">
+                      <label className="text-center">Switch to {PoGoAPI.getPokemonNamePB(attacker[0].pokemonId, allEnglishText)}</label>
+                      <div className="w-full relative">
+                        <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[0] - gameStatus.allyPokemonDamage[0]) / gameStatus.allyPokemonMaxHealth[0]) * 100)} value={((gameStatus.allyPokemonMaxHealth[0] - gameStatus.allyPokemonDamage[0]) / gameStatus.allyPokemonMaxHealth[0]) * 100} className="self-end absolute"/>
+                      </div>
+                    </Button>
+                  </> : null}
+                {(gameStatus!.allyPokemonDamage[1] < gameStatus!.allyPokemonMaxHealth[1]) && (gameStatus!.activeAllyIndex !== 1 || gameStatus!.maxPhaseCounter == 4) ? 
+                  <>
+                    <Button onClick={() => SendMessage("switch1")} className="w-full text-white bg-primary rounded-lg flex-col">
+                      <label className="text-center">Switch to {PoGoAPI.getPokemonNamePB(attacker[1].pokemonId, allEnglishText)}</label>
+                      <div className="w-full relative">
+                        <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[1] - gameStatus.allyPokemonDamage[1]) / gameStatus.allyPokemonMaxHealth[1]) * 100)} value={((gameStatus.allyPokemonMaxHealth[1] - gameStatus.allyPokemonDamage[1]) / gameStatus.allyPokemonMaxHealth[1]) * 100} className="self-end absolute"/>
+                      </div>
+                    </Button>
+                  </> : null}
+                {(gameStatus!.allyPokemonDamage[2] < gameStatus!.allyPokemonMaxHealth[2]) && (gameStatus!.activeAllyIndex !== 2 || gameStatus!.maxPhaseCounter == 4) ? 
+                  <>
+                    <Button onClick={() => SendMessage("switch2")} className="w-full text-white bg-primary rounded-lg flex-col ">
+                      <label className=" text-center">Switch to {PoGoAPI.getPokemonNamePB(attacker[2].pokemonId, allEnglishText)}</label>
+                      <div className="w-full relative">
+                        <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[2] - gameStatus.allyPokemonDamage[2]) / gameStatus.allyPokemonMaxHealth[2]) * 100)} value={((gameStatus.allyPokemonMaxHealth[2] - gameStatus.allyPokemonDamage[2]) / gameStatus.allyPokemonMaxHealth[2]) * 100} className="self-end absolute"/>
+                      </div>
+                    </Button>
+                  </> : null}
               </>}
               {(gameStatus?.maxPhaseCounter! > 0 && gameStatus?.maxPhaseCounter! < 4 ) && gameStatus?.allyCooldown === 0 &&
               <>
                 <Button onClick={() => SendMessage("maxattack")} className="w-full py-2 text-white bg-primary rounded-lg">{PoGoAPI.formatMoveName(PoGoAPI.getDynamaxAttack(attacker[gameStatus!.activeAllyIndex].pokemonId, quickMove[gameStatus!.activeAllyIndex].type, allMoves, maxMoves[gameStatus!.activeAllyIndex][0], quickMove[gameStatus!.activeAllyIndex].moveId).moveId)}</Button>
-                <Button onClick={() => SendMessage("maxbarrier")} className="w-full py-2 text-white bg-primary rounded-lg">Max Guard</Button>
-                <Button onClick={() => SendMessage("maxspirit")} className="w-full py-2 text-white bg-primary rounded-lg">Max Spirit</Button>
+                {((maxMoves[gameStatus!.activeAllyIndex][1] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxbarrier")} className="w-full py-2 text-white bg-primary rounded-lg">Max Guard</Button>}
+                {((maxMoves[gameStatus!.activeAllyIndex][2] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxspirit")} className="w-full py-2 text-white bg-primary rounded-lg">Max Healing</Button>}
               </>
               }
-              {(gameStatus?.allyCooldown! > 0) &&
+              {(gameStatus) &&
               <>
-              <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Next</Button>
+                <Separator className="my-4"/>
+                <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Skip Turn</Button>
               </>
                 
 

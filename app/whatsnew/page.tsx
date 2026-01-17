@@ -17,6 +17,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.1",
+        desc: "~ Some changes in the Solo Max Battle Simulator UI were made.\n",
+        date: "2026-01-17",
+    },
+    {
         title: "v1.30 (Play a Solo Max Battle!)",
         desc: "+ Added 'Play Max Battle Simulation (One Member Only)' mode to PokéChespin for Max Battles!\n"+
                 ">>>>>> Now you can simulate a Max Battle with only one team member, controlling the actions of that member!\n"+
