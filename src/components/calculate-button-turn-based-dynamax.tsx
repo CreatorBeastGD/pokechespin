@@ -348,7 +348,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             <div className="flex flex-row justify-between items-end space-x-4">
               <div className="w-[50%]">
                 <label className="text-xs items-end">Energy: {gameStatus?.allyEnergy[gameStatus!.activeAllyIndex]}/100</label>
-                <Progress separators={Math.floor(100/-chargedMove[gameStatus!.activeAllyIndex].energyDelta)} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+                <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
               </div>
               <div className="w-[50%]">
                 <label className="text-xs items-end">Shields: {gameStatus?.allyPokemonShields[gameStatus!.activeAllyIndex]}/{gameStatus?.allyPokemonMaxShields[gameStatus!.activeAllyIndex]}</label>
