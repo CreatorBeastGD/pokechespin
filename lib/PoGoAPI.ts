@@ -2954,6 +2954,14 @@ export class PoGoAPI {
                         }
                     }
 
+                    if (gamestatus.enemyPokemonDamage >= defenderHealth) {
+                        gamestatus.globalCurrentMessage = {
+                            message: "The Max Battle Boss has been defeated!",
+                            duration: 0,
+                            color: "#85fa8c"
+                        }
+                    }
+
                     return {...gamestatus} as GameStatus;
                 
                 // Cast Dynamax Move - Barrier
@@ -3070,13 +3078,6 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
                     gamestatus.allyActiveMove = null;
-                } else {
-                    gamestatus.allyCurrentMessage = {
-                        message: "No move cast",
-                        damage: 0,
-                        duration: 0,
-                        color: "#a2fa85"
-                    }
                 }
             }
             else {
@@ -3159,8 +3160,8 @@ export class PoGoAPI {
             if (raidMode === "raid-custom-dmax") {
                 if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 600) || 
                     (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && gamestatus.timer === 480)) {
-                    gamestatus.enrageCurrentMessage = {
-                        message: "Timeout reached. The Raid Boss wins!",
+                    gamestatus.globalCurrentMessage = {
+                        message: "Timeout reached.",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3191,8 +3192,8 @@ export class PoGoAPI {
                 if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 600) || 
                     (raidMode == "raid-t5-dmax" && gamestatus.timer === 400) ||
                     (raidMode.endsWith("dmax") && gamestatus.timer === 480)) {
-                    gamestatus.enrageCurrentMessage = {
-                        message: "Timeout reached. The Max Battle Boss wins!",
+                    gamestatus.globalCurrentMessage = {
+                        message: "Timeout reached.",
                         duration: 0,
                         color: "#fa8585"
                     }
@@ -3224,7 +3225,7 @@ export class PoGoAPI {
 
         if (gamestatus.enemyPokemonDamage >= defenderHealth) {
             gamestatus.globalCurrentMessage = {
-                message: "The Raid Boss has been defeated!",
+                message: "The Max Battle Boss has been defeated!",
                 duration: 0,
                 color: "#a2fa85"
             }
@@ -3360,9 +3361,8 @@ export class PoGoAPI {
                         if (gamestatus.activeAllyIndex === 3) {
                             // all fainted
                             gamestatus.allyActiveMove = null;
-                            gamestatus.enemyCurrentMessage = {
+                            gamestatus.globalCurrentMessage = {
                                 message: "All your Pokémon have fainted!",
-                                damage: 0,
                                 duration: 0,
                                 color: "#fa8585"
                             }
