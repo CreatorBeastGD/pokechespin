@@ -39,6 +39,8 @@ export class GameStatus {
     enrage: boolean = false;
     timeout: boolean = false;
 
+    targetDodgeWindow: boolean = false;
+
     constructor() {
         this.timer = 0;
         this.allyPokemonMaxHealth = [];
@@ -63,5 +65,6 @@ export class GameStatus {
         this.damageReduction = 1;
         this.enrage = false;
         this.timeout = false;
+        this.targetDodgeWindow = false;
     }
 }

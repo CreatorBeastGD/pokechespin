@@ -329,7 +329,6 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
           
             <div className="flex flex-row justify-between items-end ">
               <label className="text-xs pt-2">Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
-              
             </div>
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
@@ -341,7 +340,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
             <div className="flex flex-row justify-between items-end ">
               <label className="text-xs pt-2">Active: {PoGoAPI.getPokemonNamePB(attacker[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].pokemonId, allEnglishText)}</label>
-              
+              <label className="text-xs pt-2">{!gameStatus?.targetDodgeWindow && gameStatus?.allyDodgeTurn != 0 ? "Dodged!" : ""}</label>
             </div>
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100)} value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
             
@@ -413,7 +412,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
                 {((maxMoves[gameStatus!.activeAllyIndex][2] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxspirit")} className="w-full py-2 text-white bg-primary rounded-lg">Max Healing</Button>}
               </>
               }
-              {(gameStatus) &&
+              {(gameStatus?.maxPhaseCounter == 0) &&
               <>
                 <Separator className="my-4"/>
                 <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Skip Turn</Button>

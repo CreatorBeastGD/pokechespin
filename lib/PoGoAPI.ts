@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.30.1";
+        return "1.30.2";
     }
 
     static async getAllPokemon() {
@@ -2812,7 +2812,7 @@ export class PoGoAPI {
                     gamestatus.allyCooldown = 1;
                     gamestatus.allyDodgeDirection = "right";
 
-                    if (gamestatus.enemyActiveMove?.isTarget) {
+                    if (gamestatus.enemyActiveMove?.isTarget && gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
                         gamestatus.allyDodgeTurn = gamestatus.timer;
                     }
 
@@ -2831,7 +2831,7 @@ export class PoGoAPI {
                     gamestatus.allyCooldown = 1;
                     gamestatus.allyDodgeDirection = "left";
                     
-                    if (gamestatus.enemyActiveMove?.isTarget) {
+                    if (gamestatus.enemyActiveMove?.isTarget && gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
                         gamestatus.allyDodgeTurn = gamestatus.timer;
                     }
 
@@ -3311,6 +3311,7 @@ export class PoGoAPI {
                         if (this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) == 4000 && gamestatus.damageReduction < 0.3) {
                             gamestatus.damageReduction = 0.3;
                         }
+
                     }
                 } else {
                     gamestatus.damageReduction = 1;
@@ -3347,6 +3348,9 @@ export class PoGoAPI {
                         proDamageReal -= gamestatus.allyPokemonShields[gamestatus.activeAllyIndex];
                         gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = 0;
                     }
+                    
+                    gamestatus.allyDodgeTurn = 0;
+
                     gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
                     gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.ceil(proDamageReal / 2);
                     if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
@@ -3387,6 +3391,7 @@ export class PoGoAPI {
                             const dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown;
                             const dodgeWindowStart = dodgeWindowEnd - this.getDynamaxDodgeWindow(raidMode, defender.pokemonId) / 1000;
                             if (gamestatus.timer >= dodgeWindowStart && gamestatus.timer <= dodgeWindowEnd) {
+                                gamestatus.targetDodgeWindow = true;
                                 gamestatus.enemyCurrentMessage = {
                                     duration: gamestatus.enemyCooldown,
                                     message: "Move incoming!",
@@ -3394,6 +3399,8 @@ export class PoGoAPI {
                                     color: "#ffcc00"
                                 }
                             } else {
+                                gamestatus.targetDodgeWindow = false;
+                                gamestatus.allyDodgeTurn = 0;
                                 gamestatus.enemyCurrentMessage = {
                                     duration: gamestatus.enemyCooldown,
                                     message: "Target move being prepared...",
@@ -3402,6 +3409,8 @@ export class PoGoAPI {
                                 }
                             }
                         } else {
+                            
+                            gamestatus.targetDodgeWindow = false;
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
                                 message: "The Max Battle Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
@@ -3411,6 +3420,8 @@ export class PoGoAPI {
                         }
                     } else {
                         if (gamestatus.enemyPrepPhase) {
+                            gamestatus.targetDodgeWindow = false;
+                            gamestatus.allyDodgeTurn = 0;
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
                                 message: "Spread move being prepared...",

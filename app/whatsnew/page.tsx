@@ -17,6 +17,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2",
+        desc: "~ Minor bug fixes and improvements to the Solo Max Battle Simulator.\n",
+        date: "2026-01-19",
+    },
+    {
         title: "v1.30.1",
         desc: "~ Some changes in the Solo Max Battle Simulator UI were made.\n",
         date: "2026-01-17",
