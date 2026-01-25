@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Roggenrola, Boldore, Gigalith.\n",
+        date: "2026-01-26",
+
+    },
+    {
         title: "v1.30.2",
         desc: "~ Minor bug fixes and improvements to the Solo Max Battle Simulator.\n",
         date: "2026-01-19",

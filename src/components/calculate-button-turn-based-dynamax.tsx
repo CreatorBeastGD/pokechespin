@@ -53,17 +53,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
 
-  const [time, setTime] = useState<number>(0);
-  const [qau, setQau] = useState<any | null>({ attackerQuickAttackUses: 0, defenderQuickAttackUses: 0 });
-  const [cau, setCau] = useState<any | null>({ attackerChargedAttackUses: 0, defenderChargedAttackUses: 0 });
-  const [graphic, setGraphic] = useState<any | null>(null);
-  const [faints, setFaints] = useState<any | null>(null);
+
   const [helperBonus, sethelperBonus] = useState<number>(parseInt(searchParams.get("helper_bonus") ?? "0"));
-  const [attackerDamage, setAttackerDamage] = useState<any[][]>(attacker.map(() => [0,0,0]));
-  const [loading, setLoading] = useState<boolean>(false);
-  const [visibleEntries, setVisibleEntries] = useState(50);
+
   
   const [startedSim, setStartedSim] = useState<boolean>(false);
   
@@ -72,8 +65,6 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   
   const [gameStatus, setGameStatus] = useState<GameStatus | null>(null);
 
-  const [win, setWin] = useState<boolean | null>(null);
-  const [phases, setPhases] = useState<number>(0);
 
   const [customBossCPM, setCustomBossCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
   const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
@@ -107,22 +98,13 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     loadParams();
   }, []);
 
-  const loadMoreEntries = () => {
-    setVisibleEntries(prev => prev + 50);
-  };
 
-  const showLessEntries = () => {
-    setVisibleEntries(50);
-  }
 
   useEffect(() => {
     setStartedSim(false);
     setGameStatus(null);
-    setTime(0);
-    setQau(0);
-    setCau(0);
-    setGraphic(null);
-    setAttackerDamage(attacker.map(() => [0,0,0]));
+
+    console.log("Changed dependencies")
 
   }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
 
@@ -136,35 +118,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     }
   }
 
-  const raidSurname = (raidMode: string) => {
-    if (raidMode === "raid-t1-dmax") {
-      return "Tier 1 Dynamax";
-    } else if (raidMode === "raid-t2-dmax") {
-        return "Tier 2 Dynamax";
-    } else if (raidMode === "raid-t3-dmax") {
-      return "Tier 3 Dynamax";
-    } else if (raidMode === "raid-t4-dmax") {
-      return "Tier 4 Dynamax";
-    } else if (raidMode === "raid-t5-dmax") {
-      return "Tier 5 Dynamax";
-    } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
-        return "Gigantamax";
-    } else if (raidMode === "raid-custom-dmax") {
-      return "Custom Max Battle";
-    } else {
-      return "Normal";
-    }
-  }
-  
-  const sumAllDamage = () => {
-    let sum = 0;
-    for (let i = 0; i < attackerDamage.length; i++) {
-      for (let j = 0; j < attackerDamage[i].length; j++) {
-        sum += attackerDamage[i][j];
-      }
-    }
-    return sum;
-  }
+
 
   const startSimulation = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove || !largeAttack || !targetAttack) return;
@@ -233,20 +187,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     sp.set("adv_effect", advEffect.join(","));
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
-    setTime(0);
-    setQau(0);
-    setCau(0);
-    setGraphic(null);
-    setAttackerDamage(attacker.map(() => [0,0,0]));
   }, [shroom, advEffect]);
 
-  useEffect(() => {
-    setTime(0);
-    setQau(0);
-    setCau(0);
-    setGraphic(null);
-    setAttackerDamage(attacker.map(() => [0,0,0]));
-  } , [raidMode]);
 
   function handleHelperBonus(value: number[]): void {
     if (value[0] < 0) value[0] = 0;
@@ -255,12 +197,6 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("helper_bonus", value[0].toString());
-
-    setTime(0);
-    setQau(0);
-    setCau(0);
-    setGraphic(null);
-    setAttackerDamage(attacker.map(() => [0,0,0]));
 
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
   }
@@ -417,8 +353,6 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
                 <Separator className="my-4"/>
                 <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Skip Turn</Button>
               </>
-                
-
               }
               </>
             }
