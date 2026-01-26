@@ -975,8 +975,8 @@ export class PoGoAPI {
         };
 
         const t5dmaxStats: Record<string, number[]> = {
-            RAIKOU: [8005243, 15, 15, 20000],
-            ENTEI: [8005244, 15, 15, 26500],
+            RAIKOU: [8005243, 15, 15, 25000],
+            ENTEI: [8005244, 15, 15, 27000],
             SUICUNE: [8005245, 15, 15, 22000],
             ARTICUNO: [8005144, 15, 15, 17500],
             MOLTRES: [8005144, 15, 15, 20000],
