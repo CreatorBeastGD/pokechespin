@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Ho-Oh.\n"+
+                "I wont be able to add it on Saturday so... there you go!\n",
+        date: "2026-01-29",
+    },
+    {
         title: "v1.30.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Roggenrola, Boldore, Gigalith.\n",

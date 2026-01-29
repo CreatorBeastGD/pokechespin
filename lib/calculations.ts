@@ -221,6 +221,7 @@ export class Calculator {
       "ROGGENROLA",
       "BOLDORE",
       "GIGALITH",
+      "HO_OH",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
