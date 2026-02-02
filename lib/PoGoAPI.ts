@@ -984,6 +984,7 @@ export class PoGoAPI {
             LATIOS: [8005244, 15, 15, 22500],   
             LATIAS: [8005144, 15, 15, 28000],
             LUGIA: [8005244, 15, 15, 18000],
+            HO_OH: [8005144, 15, 15, 25000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

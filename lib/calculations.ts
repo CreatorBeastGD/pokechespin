@@ -538,7 +538,8 @@ export class Calculator {
             SUICUNE: 22000,
             LATIOS: 23000,
             LATIAS: 25000,
-            LUGIA: 18000
+            LUGIA: 18000,
+            HO_OH: 25000
         };
 
         const t6gmaxHP: Record<string, number> = {

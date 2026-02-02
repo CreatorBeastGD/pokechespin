@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2.3",
+        desc: "+ Changed stats on Tier 5 Max Battles \n"+
+                ">>>>>> Ho-Oh\n >>>>>> ~ HP: 36000 -> 25000 \n"+
+                ">>>>>> ~ CPM: 0.75 -> 0.7 \n",
+        date: "2026-02-02",
+    },
+    {
         title: "v1.30.2.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Ho-Oh.\n"+
