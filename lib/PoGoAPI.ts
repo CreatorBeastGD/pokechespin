@@ -290,7 +290,7 @@ export class PoGoAPI {
         const seenIds = new Set();
         return pokemonList.filter((pokemon: any) => {
           const pokemonId = pokemon.pokedex.pokemonId;
-          if (!(pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_X") || pokemonId.endsWith("_MEGA_Z") ) && !seenIds.has(pokemonId)) {
+          if (!(pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_X") || pokemonId.endsWith("_MEGA_Z") || pokemonId.endsWith("_MEGA_COMPLETE") || pokemonId.endsWith("_MEGA_C") ) && !seenIds.has(pokemonId)) {
             seenIds.add(pokemonId);
             return true;
           }
