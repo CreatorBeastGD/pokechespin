@@ -245,9 +245,9 @@ export default function SearchBarDefenderDynamax({
 
   //console.log(selectedPokemon? selectedPokemon : "null");
 
-  const suffixes = ["_MEGA", "_MEGA_X", "_MEGA_Y"];
+  const suffixes = ["_MEGA", "_MEGA_X", "_MEGA_Y", "_MEGA_Z"];
 
-  const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA", "").replace("_X", "").replace("_Y", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
+  const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA", "").replace("_X", "").replace("_Y", "").replace("_Z", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
   const damageMultiplier = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
