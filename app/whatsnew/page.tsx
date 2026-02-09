@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2.4",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Growlithe, Arcanine.\n",
+        date: "2026-02-08",
+    },
+    {
         title: "v1.30.2.3",
         desc: "+ Changed stats on Tier 5 Max Battles \n"+
                 ">>>>>> Ho-Oh\n >>>>>> ~ HP: 36000 -> 25000 \n"+

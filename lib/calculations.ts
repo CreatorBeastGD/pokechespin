@@ -28,6 +28,7 @@ export class Calculator {
       "RALTS": "raid-t1-dmax",
       "SPHEAL": "raid-t1-dmax",
       "ROGGENROLA": "raid-t1-dmax",
+      "GROWLITHE": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -222,6 +223,8 @@ export class Calculator {
       "BOLDORE",
       "GIGALITH",
       "HO_OH",
+      "GROWLITHE",
+      "ARCANINE",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
