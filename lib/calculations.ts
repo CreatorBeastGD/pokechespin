@@ -76,6 +76,7 @@ export class Calculator {
       "BUTTERFREE_GIGANTAMAX": "raid-t6-gmax",
       "GARBODOR_GIGANTAMAX": "raid-t6-gmax",
       "GRIMMSNARL_GIGANTAMAX": "raid-t6-gmax",
+      "MEOWTH_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
