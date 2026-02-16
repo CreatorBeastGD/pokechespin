@@ -1538,9 +1538,10 @@ export class PoGoAPI {
 
     static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean, defender?: any) {
         let damageMultiplier = 1;
+        let actualDefender = defender.pokemonId ? defender.pokemonId : defender;
         if (raidMode === "raid-custom-dmax") {
             if (desperate) {
-                if (defender === "ETERNATUS_ETERNAMAX_FORM" || defender.endsWith("_GIGANTAMAX")) {
+                if (actualDefender === "ETERNATUS_ETERNAMAX_FORM" || actualDefender.endsWith("_GIGANTAMAX")) {
                     return 6;
                 } else {
                     return 3;
@@ -1552,10 +1553,10 @@ export class PoGoAPI {
         if (raidMode === "raid-t5-dmax") {
           damageMultiplier = 2 * (desperate ? 3 : 1);
         } else if (raidMode === "raid-t6-gmax") {
-            if (defender) {
-                if (defender === "TOXTRICITY_AMPED_GIGANTAMAX" || defender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender === "TOXTRICITY_GIGANTAMAX") {
+            if (actualDefender) {
+                if (actualDefender === "TOXTRICITY_AMPED_GIGANTAMAX" || actualDefender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || actualDefender === "TOXTRICITY_GIGANTAMAX") {
                     return 1.2 * (desperate ? 6 : 1);
-                } else if (defender === "MEOWTH_GIGANTAMAX") {
+                } else if (actualDefender === "MEOWTH_GIGANTAMAX") {
                     return 1 * (desperate ? 6 : 1);
                 } else {
                     return 0.9 * (desperate ? 6 : 1);
