@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.2.5",
+        desc: "+ Changed stats on Tier 6 Max Battles \n"+
+                ">>>>>> Gigantamax Meowth\n >>>>>> ~ HP: 100000 -> 80000 \n"+
+                ">>>>>> ~ CPM: 0.85 -> 3 (what the hell) \n",
+        date: "2026-02-16",
+    },
+    {
         title: "v1.30.2.4",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Growlithe, Arcanine.\n",

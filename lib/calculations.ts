@@ -367,6 +367,7 @@ export class Calculator {
         8006132: 0.65,
         8006569: 1.4,
         8006861: 1.2,
+        8006052: 3,
         5001: 0.5974,
         5003: 0.73,
         5005: 0.79,
@@ -564,7 +565,8 @@ export class Calculator {
             BUTTERFREE_GIGANTAMAX: 100000,
             GARBODOR_GIGANTAMAX: 100000,
             GRIMMSNARL_GIGANTAMAX: 70000,
-            ETERNATUS_ETERNAMAX_FORM: 60000
+            ETERNATUS_ETERNAMAX_FORM: 60000,
+            MEOWTH_GIGANTAMAX: 80000,
         };
 
         if (raidMode === "raid-t5-dmax") {

@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.30.2.4";
+        return "1.30.2.5";
     }
 
     static async getAllPokemon() {
@@ -1006,6 +1006,7 @@ export class PoGoAPI {
             GARBODOR_GIGANTAMAX: [8006569, 15, 15, 100000],
             GRIMMSNARL_GIGANTAMAX: [8006861, 15, 15, 70000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
+            MEOWTH_GIGANTAMAX: [8006052, 15, 15, 80000],
         };
 
         // DMAX Tier 5
@@ -1539,7 +1540,7 @@ export class PoGoAPI {
         let damageMultiplier = 1;
         if (raidMode === "raid-custom-dmax") {
             if (desperate) {
-                if (defender.pokemonId === "ETERNATUS_ETERNAMAX_FORM" || defender.pokemonId.endsWith("_GIGANTAMAX")) {
+                if (defender === "ETERNATUS_ETERNAMAX_FORM" || defender.endsWith("_GIGANTAMAX")) {
                     return 6;
                 } else {
                     return 3;
@@ -1552,13 +1553,15 @@ export class PoGoAPI {
           damageMultiplier = 2 * (desperate ? 3 : 1);
         } else if (raidMode === "raid-t6-gmax") {
             if (defender) {
-                if (defender.pokemonId === "TOXTRICITY_AMPED_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender.pokemonId === "TOXTRICITY_GIGANTAMAX") {
-                    damageMultiplier = 1.2 * (desperate ? 6 : 1);
+                if (defender === "TOXTRICITY_AMPED_GIGANTAMAX" || defender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || defender === "TOXTRICITY_GIGANTAMAX") {
+                    return 1.2 * (desperate ? 6 : 1);
+                } else if (defender === "MEOWTH_GIGANTAMAX") {
+                    return 1 * (desperate ? 6 : 1);
                 } else {
-                    damageMultiplier = 0.9 * (desperate ? 6 : 1);
+                    return 0.9 * (desperate ? 6 : 1);
                 }
             } else {
-                damageMultiplier = 0.9 * (desperate ? 6 : 1);
+                return 0.9 * (desperate ? 6 : 1);
             }
         } else if (raidMode === "raid-t4-dmax" || raidMode === "raid-t3-dmax") {
             damageMultiplier = 1 * (desperate ? 9 : 1);
