@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.30.2.5";
+        return "1.30.3";
     }
 
     static async getAllPokemon() {
@@ -964,6 +964,7 @@ export class PoGoAPI {
             "raid-elite": [5005, 15, 15, 20000],
             "raid-primal": [5005, 15, 15, 22500],
             "raid-mega-leg": [5005, 15, 15, 22500],
+            "raid-t7-supermega": [5005, 15, 15, 25000],
             "raid-t1-dmax": [8001, 15, 15, 1700],
             "raid-t2-dmax": [8002, 15, 15, 5000],
             "raid-t3-dmax": [8003, 15, 15, 10000],
@@ -1052,6 +1053,8 @@ export class PoGoAPI {
             return 15000;
         } else if (raidMode === "raid-elite") {
             return 20000;
+        } else if (raidMode === "raid-t7-supermega") {
+            return 25000;
         } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {
             return 22500;
         } else {

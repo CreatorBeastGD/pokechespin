@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.30.3",
+        desc: "+ Added Super Mega Raids (25000HP) \n"+
+            "Shield and enrage behaviour are not yet implemented for these raids. Stay tuned!",
+        date: "2026-02-21",
+    },
+    {
         title: "v1.30.2.5",
         desc: "+ Changed stats on Tier 6 Max Battles \n"+
                 ">>>>>> Gigantamax Meowth\n >>>>>> ~ HP: 100000 -> 80000 \n"+

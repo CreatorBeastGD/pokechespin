@@ -247,6 +247,8 @@ export default function Home() {
       return "Primal";
     } else if (raidMode === "raid-mega-leg") {
       return "Mega Legendary";
+    } else if (raidMode === "raid-t7-supermega") {
+      return "Super Mega";
     } else if (raidMode === "raid-t1-shadow") {
       return "Tier 1 Shadow";
     } else if (raidMode === "raid-t3-shadow") {
@@ -400,6 +402,7 @@ export default function Home() {
                 <option key={"raid-t5"} value={"raid-t5"}>Tier-5 Raid (15000HP) </option>
                 <option key={"raid-mega"} value={"raid-mega"}>Mega Raid (9000HP) </option>
                 <option key={"raid-mega-leg"} value={"raid-mega-leg"}>Mega Legendary Raid (22500HP) </option>
+                <option key={"raid-t7-supermega"} value={"raid-t7-supermega"}>Super Mega Raid (25000HP) </option>
                 <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
                 <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
                 <option key={"raid-t1-shadow"} value={"raid-t1-shadow"}>Tier-1 Shadow Raid (600HP) </option>
