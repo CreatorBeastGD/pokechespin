@@ -199,11 +199,11 @@ export default function Home() {
   };
 
   const handleBonusChangeAttacker = (bonus: any) => {
-    setBonusAttacker(bonus);
+    setBonusAttacker([bonusAttacker[0], bonus[1], bonus[2], bonus[3]]);
   };
 
   const handleBonusChangeDefender = (bonus: any) => {
-    setBonusDefender(bonus);
+    setBonusDefender([bonusDefender[0], bonus[1], bonus[2], bonus[3]]);
   };
 
   const handleBonusChange = (value: string) => {

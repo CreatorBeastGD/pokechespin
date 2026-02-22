@@ -17,6 +17,15 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.31 (Super Mega Raids, beta until more is known about them...)",
+        desc: "+ Improved Super Mega Raids behaviour on Raids.\n"+
+                ">>>>>> A Super Mega Raid boss will enrage once it reaches 80% of its max HP, and will be subdued once it receives a certain amount of charged moves from mega attackers. One player can only contribute once.\n"+
+                ">>>>>> When a Super Mega Raid boss enrages, it gets a defense multiplier of x4 (subject to change in the future)\n"+
+                ">>>>>> When a Super Mega Raid boss subdues, it loses 20% of its max HP (subject to change in the future)\n"+
+                "~ Fixed a bug where changing a bonus of a pokemon in Raids would abnormally change the weather.",
+        date: "2026-02-22",
+    },
+    {
         title: "v1.30.3",
         desc: "+ Added Super Mega Raids (25000HP) \n"+
             "Shield and enrage behaviour are not yet implemented for these raids. Stay tuned!",

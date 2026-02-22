@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.30.3";
+        return "1.31";
     }
 
     static async getAllPokemon() {
@@ -1206,6 +1206,23 @@ export class PoGoAPI {
         return {time, quickAttackUses, chargedAttackUses, graphic};
     }
 
+    static IsMega(pokemonId: string) {
+        return pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_X") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_Z") || pokemonId.endsWith("_MEGA_COMPLETE") || pokemonId.endsWith("_MEGA_C") || pokemonId.endsWith("_MEGA_ETERNAL");
+    }
+
+    static MegaShields(pokemonId: string) {
+        switch (pokemonId) {
+            case "MALAMAR_MEGA":
+                return 8;
+            case "VICTREEBEL_MEGA":
+                return 8;
+            case "DRAGONITE_MEGA":
+                return 10;
+            default:
+                return 8;
+        }
+    }
+
     static async advancedSimulation(
         attacker: any, 
         defender: any,
@@ -1280,6 +1297,19 @@ export class PoGoAPI {
         let simGoing = true
 
         let multiplier = 1;
+
+        let superMegaMode = raidMode === "raid-t7-supermega";
+
+        let smChargedRequired = 0;
+        let isSuperMegaEnraged = false;
+        let isSuperMegaSubdued = false;
+        let chargedAttackFromMegaUsed = [];
+
+        if (superMegaMode) {
+            smChargedRequired = 8;
+            chargedAttackFromMegaUsed = new Array(peopleCount).fill(false);
+        }
+
 
         while (attackerDamage <= defenderHealth) {
             // Attacker can cast a move
@@ -1364,7 +1394,8 @@ export class PoGoAPI {
                     
                     const projectedDamage = (isEnraged ? 
                         this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier * (boost === "blade" ? 1.1 : 1)) : 
-                        this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1))
+                        isSuperMegaEnraged ? this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1) * (1/4)) : 
+                            this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1) )
                     )
                     tdo += projectedDamage / peopleCount;
                     
@@ -1375,6 +1406,20 @@ export class PoGoAPI {
                         defenderEnergy = 100;
                     }
                     battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy, "stackedDamage": attackerDamage, "health": defenderHealth, "partypower": (multiplier == 2)});
+                    
+                    // The defender was a super mega raid boss and received smChargedRequired charged moves from a mega attacker. It subdues and loses 20% of its max health
+                    if (superMegaMode && isSuperMegaEnraged && attackerMove.energyDelta < 0 && this.IsMega(attacker.pokemonId) && !chargedAttackFromMegaUsed[i]) {
+                        chargedAttackFromMegaUsed[i] = true;
+                        smChargedRequired--;
+                        if (smChargedRequired <= 0) {
+                            isSuperMegaEnraged = false;
+                            isSuperMegaSubdued = true;
+                            //console.log("Defender subdues at time " + time);
+                            attackerDamage = attackerDamage + (defenderHealth * 0.2);
+                            battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
+                        }
+                    }
+
                     // End of simulation
                     if (attackerDamage >= defenderHealth) {
                         //console.log("Defender faints at time " + time + ", end of simulation.");
@@ -1392,6 +1437,12 @@ export class PoGoAPI {
                     isEnraged = true;
                     defenderHealth = defenderHealth * 1.2;
                     //console.log("Defender enrages at time " + time);
+                    battleLog.push({"turn": time, "attacker": "defender", "enraged": true});
+                }
+
+                // Defender is a Super Mega Raid boss and reaches 80% of health, it enrages
+                if (simGoing && superMegaMode && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.8 && (!isSuperMegaEnraged && !isSuperMegaSubdued)) {
+                    isSuperMegaEnraged = true;
                     battleLog.push({"turn": time, "attacker": "defender", "enraged": true});
                 }
 

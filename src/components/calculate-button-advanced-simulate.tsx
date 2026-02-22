@@ -119,6 +119,8 @@ export default function CalculateButtonSimulateAdvanced({
       return "Elite";
     } else if (raidMode === "raid-primal") {
       return "Primal";
+    } else if (raidMode === "raid-t7-supermega") {
+      return "Super Mega";
     } else if (raidMode === "raid-mega-leg") {
       return "Mega Legendary";
     } else if (raidMode === "raid-t1-shadow") {
