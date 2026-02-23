@@ -377,8 +377,8 @@ export default function Home() {
             <CardHeader >
               <CardTitle>Results</CardTitle>
               <CardDescription>Assumming the following stats:</CardDescription>
-              <CardDescription>Attacker: {PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText) !== "???" ? (bonusAttacker[1] !== false ? "Shadow " : "") + PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText)  + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
-              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (bonusDefender[1] !== false ? "Shadow " : "") + (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
+              <CardDescription>Attacker: {PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText) !== "???" ? PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText)  + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
+              <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
             <p className="italic text-slate-700 text-sm">Weather: </p>
