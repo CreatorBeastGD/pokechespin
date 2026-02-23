@@ -140,12 +140,22 @@ export default function SearchBarAttacker({
       setPokemonData(response);
       onSelect(response);
       //console.log();
-      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM")));
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      
+      if (response?.pokemonId.endsWith("_S_FORM")) {
+        setTimeout(() => {
+          // Si es un APEX, añadimos el bonus de Shadow
+          console.log("APEX detected, applying Shadow bonus");
+          handleBonusChange(1, true);
+        }, 100);
+      }
+
     } finally {
       setLoading(false);
     }
@@ -163,13 +173,25 @@ export default function SearchBarAttacker({
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
-      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX");
+      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM"));
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
       newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");  
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
+
+      
+
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+      if (response?.pokemonId.endsWith("_S_FORM")) {
+        setTimeout(() => {
+          // Si es un APEX, añadimos el bonus de Shadow
+          console.log("APEX detected, applying Shadow bonus");
+          handleBonusChange(1, true);
+        }, 100);
+      }
+
     } finally {
       setLoading(false);
     }
@@ -190,6 +212,15 @@ export default function SearchBarAttacker({
       newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
       
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    
+      // Si es un APEX, añadimos el bonus de Shadow
+      if (response?.pokemonId.endsWith("_S_FORM")) {
+        setTimeout(() => {
+          console.log("APEX detected, applying Shadow bonus");
+          handleBonusChange(1, true);
+        }, 100);
+      }
+    
     } finally {
       setLoading(false);
     }

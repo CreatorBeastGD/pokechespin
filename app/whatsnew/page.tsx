@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.31.0.1",
+        desc: "- Removed 'Shadow' forms from all Pokémon dropdowns. (Except for Shadow Apexes on raids, which have different moves.)\n"+
+              "~ If a Shadow Apex is selected on raids, the Shadow bonus will be applied automatically. Shadow Apexes are not available on Max Battles.",
+        date: "2026-02-23",
+    },
+    {
         title: "v1.31 (Super Mega Raids, beta until more is known about them...)",
         desc: "+ Improved Super Mega Raids behaviour on Raids.\n"+
                 ">>>>>> A Super Mega Raid boss will enrage once it reaches 80% of its max HP, and will be subdued once it receives a certain amount of charged moves from mega attackers. One player can only contribute once.\n"+
