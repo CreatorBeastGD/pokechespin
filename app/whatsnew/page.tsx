@@ -18,8 +18,8 @@ const novedades = [
     },
     {
         title: "v1.31.0.1",
-        desc: "- Removed 'Shadow' forms from all Pokémon dropdowns. (Except for Shadow Apexes on raids, which have different moves.)\n"+
-              "~ If a Shadow Apex is selected on raids, the Shadow bonus will be applied automatically. Shadow Apexes are not available on Max Battles.",
+        desc: "- Removed 'Shadow' forms from all Pokémon dropdowns on Max Battles.\n"+
+              "~ If a shadow is selected as an attacker in Raids, it will adjust the shadow bonus automatically.",
         date: "2026-02-23",
     },
     {

@@ -140,7 +140,7 @@ export default function SearchBarAttacker({
       setPokemonData(response);
       onSelect(response);
       //console.log();
-      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM")));
+      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -148,11 +148,14 @@ export default function SearchBarAttacker({
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
       
-      if (response?.pokemonId.endsWith("_S_FORM")) {
+      // Si es un APEX, añadimos el bonus de Shadow
+      if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
-          // Si es un APEX, añadimos el bonus de Shadow
-          console.log("APEX detected, applying Shadow bonus");
           handleBonusChange(1, true);
+        }, 100);
+      } else {
+        setTimeout(() => {
+          handleBonusChange(1, false);
         }, 100);
       }
 
@@ -173,7 +176,7 @@ export default function SearchBarAttacker({
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
       onSelect(response);
-      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM"));
+      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX");
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
@@ -184,11 +187,14 @@ export default function SearchBarAttacker({
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
 
-      if (response?.pokemonId.endsWith("_S_FORM")) {
+      // Si es un APEX, añadimos el bonus de Shadow
+      if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
-          // Si es un APEX, añadimos el bonus de Shadow
-          console.log("APEX detected, applying Shadow bonus");
           handleBonusChange(1, true);
+        }, 100);
+      } else {
+        setTimeout(() => {
+          handleBonusChange(1, false);
         }, 100);
       }
 
@@ -214,10 +220,13 @@ export default function SearchBarAttacker({
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     
       // Si es un APEX, añadimos el bonus de Shadow
-      if (response?.pokemonId.endsWith("_S_FORM")) {
+      if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
-          console.log("APEX detected, applying Shadow bonus");
           handleBonusChange(1, true);
+        }, 100);
+      } else {
+        setTimeout(() => {
+          handleBonusChange(1, false);
         }, 100);
       }
     
@@ -587,9 +596,6 @@ export default function SearchBarAttacker({
           <div className="grid grid-cols-1 mb-4 space-y-2">
             <p>Bonuses</p>
             
-            <p className="italic text-slate-700">
-              <Switch onCheckedChange={(checked) => handleBonusChange(1, checked)} checked={selectedBonuses[1]} /> Shadow Pokémon
-            </p>
             <p className="italic text-slate-700">
               <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
             </p>

@@ -122,11 +122,11 @@ export default function CalculateButtonMaxBoss({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bashBoost ? " using Behemoth Bash Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to <span className="font-bold">{damageBestCase}-{damageWorstCase} damage</span> if dodged. </span>}
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bashBoost ? " using Behemoth Bash Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to <span className="font-bold">{damageBestCase}-{damageWorstCase} damage</span> if dodged. </span>}
           </p>
           <p>
           
-          <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
           </p>
         </div>
       )}

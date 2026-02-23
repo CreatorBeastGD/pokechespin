@@ -243,16 +243,16 @@ export default function CalculateButtonSimulateAdvanced({
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}{boost === "blade" && " with Behemoth Blade Adventure Effect"}{boost === "bash" && " with Behemoth Bash Adventure Effect"}.
+            <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(quickMove.moveId)} and {PoGoAPI.formatMoveName(chargedMove.moveId)} under {bonusAttacker[0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}{boost === "blade" && " with Behemoth Blade Adventure Effect"}{boost === "bash" && " with Behemoth Bash Adventure Effect"}.
           </p>
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
+            <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> needs to use {PoGoAPI.formatMoveName(quickMove.moveId)} {qau.attackerQuickAttackUses} times and {PoGoAPI.formatMoveName(chargedMove.moveId)} {cau.attackerChargedAttackUses} times to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> the fastest way possible.
           </p>
           <p>
-            <span className="font-bold">{(bonusDefender[1] === true && raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
+            <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> uses {PoGoAPI.formatMoveName(quickMoveDefender.moveId)} as its Fast Attack and {PoGoAPI.formatMoveName(chargedMoveDefender.moveId)} as its Charged Attack.
           </p>
           <p>
-            <span className="font-bold">{bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times (per team), dealing an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
+            <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> faints {faints} times (per team), dealing an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
           </p>
           {raidMode == "normal" ? (
             <></>
@@ -261,7 +261,7 @@ export default function CalculateButtonSimulateAdvanced({
           </p>)}
           
           <p className="text-sm text-slate-700 italic">
-            This simulation takes in consideration a team of {teamCount} {bonusAttacker[1] === true ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)} casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
+            This simulation takes in consideration a team of {teamCount} {PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)} casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
           </p>
           <p className="text-sm text-slate-700 italic">
             The simulation  {avoidCharged ? "takes" : "does not take"}  into consideration the use of dodges. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {relobbyTime} seconds in this simulation.
