@@ -939,7 +939,7 @@ export class PoGoAPI {
         const effectiveness = this.getEfectiveness(defender, move, types);
         return Calculator.calculateDamage(
             move.power, 
-            Calculator.getEffectiveAttack((attacker.stats.baseAttack * (attackEnraged ? 1.81 : 1)) , attackerStats[1] , attackerStats[0]), 
+            Calculator.getEffectiveAttack((attacker.stats.baseAttack * (attackEnraged ? 1.80 : 1)) , attackerStats[1] , attackerStats[0]), 
             Calculator.getEffectiveDefense((defender.stats.baseDefense * (attackEnraged ? 1 : 3)), defenderStats[2], defenderStats[0]),
             attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
@@ -1495,7 +1495,7 @@ export class PoGoAPI {
             if (simGoing && defenderDamageStart > -1 && 
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
-                const projectedDamageDefender = (isEnraged ?
+                const projectedDamageDefender = ((isEnraged || isSuperMegaEnraged) ?
                     this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", true, (boost === "bash" ? (1/1.1) : 1)) :
                     this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, (boost === "bash" ? (1/1.1) : 1))
                 )
