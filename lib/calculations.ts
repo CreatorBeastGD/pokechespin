@@ -60,6 +60,9 @@ export class Calculator {
       "LATIOS": "raid-t5-dmax",
       "LUGIA": "raid-t5-dmax",
       "HO_OH": "raid-t5-dmax",
+      "REGICE": "raid-t5-dmax",
+      "REGIROCK": "raid-t5-dmax",
+      "REGISTEEL": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
@@ -77,6 +80,7 @@ export class Calculator {
       "GARBODOR_GIGANTAMAX": "raid-t6-gmax",
       "GRIMMSNARL_GIGANTAMAX": "raid-t6-gmax",
       "MEOWTH_GIGANTAMAX": "raid-t6-gmax",
+      "PIKACHU_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
@@ -92,9 +96,7 @@ export class Calculator {
     }
 
     static UpcomingGMaxPokemon = [
-      "PIKACHU_GIGANTAMAX",
       "EEVEE_GIGANTAMAX",
-      "MEOWTH_GIGANTAMAX",
       "MELMETAL_GIGANTAMAX",
       "CORVIKNIGHT_GIGANTAMAX",
       "ORBEETLE_GIGANTAMAX",
