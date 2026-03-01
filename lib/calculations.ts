@@ -96,6 +96,7 @@ export class Calculator {
     }
 
     static UpcomingGMaxPokemon = [
+      "PIKACHU_GIGANTAMAX",
       "EEVEE_GIGANTAMAX",
       "MELMETAL_GIGANTAMAX",
       "CORVIKNIGHT_GIGANTAMAX",
