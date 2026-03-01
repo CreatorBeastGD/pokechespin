@@ -253,7 +253,11 @@ export default function SearchBarDefenderDynamax({
   const damageMultiplier = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
 
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
-
+  
+  const uniqueForms = availableForms.filter(
+  (form: any, index: number, self: any[]) =>
+    index === self.findIndex((f) => f.pokemonId === form.pokemonId)
+  );
   return (
     <TooltipProvider>
       <Input
@@ -294,7 +298,7 @@ export default function SearchBarDefenderDynamax({
           )}
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-            {availableForms && (availableForms).map((form: any) => (
+            {uniqueForms && (uniqueForms).map((form: any) => (
               <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
             ))}
           </select>

@@ -461,6 +461,11 @@ const importPokemon = async () => {
   
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
 
+  const uniqueForms = availableForms.filter(
+  (form: any, index: number, self: any[]) =>
+    index === self.findIndex((f) => f.pokemonId === form.pokemonId)
+  );
+
   return (
     <>
       <Input
@@ -504,7 +509,7 @@ const importPokemon = async () => {
           )}
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-            {availableForms && (availableForms).map((form: any) => (
+            {uniqueForms && (uniqueForms).map((form: any) => (
               <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
             ))}
           </select>

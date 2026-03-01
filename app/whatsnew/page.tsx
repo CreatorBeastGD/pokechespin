@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.31.1",
+        desc: "+ Fixed some wrong types on new Mega Pokémon from ZA.\n"+
+                " + Fixed a bug with Eternatus Eternamax showing multiple times on dropdowns.\n",
+        date: "2026-03-01",
+    },
+    {
         title: "v1.31.0.1",
         desc: "- Removed 'Shadow' forms from all Pokémon dropdowns on Max Battles.\n"+
               "~ If a shadow is selected as an attacker in Raids, it will adjust the shadow bonus automatically.",

@@ -141,6 +141,7 @@ export default function SearchBarAttacker({
       onSelect(response);
       //console.log();
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+      
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -460,6 +461,11 @@ export default function SearchBarAttacker({
 
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
 
+  const uniqueForms = availableForms.filter(
+  (form: any, index: number, self: any[]) =>
+    index === self.findIndex((f) => f.pokemonId === form.pokemonId)
+  );
+  
   return (
     <>
       <Input
@@ -505,8 +511,10 @@ export default function SearchBarAttacker({
           )}
           
           <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-            {availableForms && (availableForms).map((form: any) => (
-              <option key={form.pokemonId} value={form.pokemonId}>{PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}</option>
+            {uniqueForms.map((form: any) => (
+              <option key={form.pokemonId} value={form.pokemonId}>
+                {PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}
+              </option>
             ))}
           </select>
 

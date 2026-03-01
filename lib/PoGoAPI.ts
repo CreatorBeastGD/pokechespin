@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.31.0.1";
+        return "1.31.1";
     }
 
     static async getAllPokemon() {
@@ -125,33 +125,54 @@ export class PoGoAPI {
             pokemonId = "HO_OH";
         }
         let pokemon = (pokemonList).filter((pokemon: any) => pokemon.pokemonId === pokemonId);
-        if (pokemon.length > 0 && pokemon[0].pokemonId === "ZACIAN_CROWNED_SWORD_FORM") {
-            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "AIR_SLASH_FAST"];
-            pokemon[0].cinematicMoves = ["PLAY_ROUGH", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BLADE"];
-        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") {
-            pokemon[0].quickMoves = ["METAL_CLAW_FAST", "ICE_FANG_FAST"];
-            pokemon[0].cinematicMoves = ["MOONBLAST", "CLOSE_COMBAT", "GIGA_IMPACT", "BEHEMOTH_BASH"];
-        } else if (pokemon.length > 0 && pokemon[0].pokemonId === "ETERNATUS") {
-            pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
-            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "DYNAMAX_CANNON"];
-            pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
-        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ETERNATUS_ETERNAMAX_FORM") {
-            pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
-            pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
-            pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
-        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "BLACEPHALON") {
-            pokemon[0].quickMoves = ["INCINERATE_FAST", "ASTONISH_FAST"];
-            pokemon[0].cinematicMoves = ["SHADOW_BALL", "FLAMETHROWER", "OVERHEAT", "MIND_BLOWN"];
-            pokemon[0].eliteCinematicMove = ["MIND_BLOWN"];
-        /*
-        } else if (pokemon.length > 0 && pokemon[0].pokemonId == "ZERAORA") {
-            pokemon[0].stats.baseAttack = 310;
-            pokemon[0].stats.baseDefense = 156;
-        */
-        } else if (pokemon.length > 0 && (pokemon[0].pokemonId == "METAGROSS" || pokemon[0].pokemonId == "METAGROSS_MEGA" || pokemon[0].pokemonId == "METAGROSS_SHADOW_FORM")) {
-            
-            pokemon[0].quickMoves = ["BULLET_PUNCH_FAST", "ZEN_HEADBUTT_FAST", "FURY_CUTTER_FAST", "SHADOW_CLAW_FAST"];
-            pokemon[0].eliteQuickMove = ["SHADOW_CLAW_FAST"];
+
+        if (pokemon.length > 1) {
+            if (pokemon[0].pokemonId === pokemon[1].pokemonId) {
+                pokemon = [pokemon[0]];
+            }
+        }
+        console.log(pokemon);
+        // This is if somehow someone needs to hard-code data for any pokemon
+        
+        if (pokemon.length > 0) {
+            switch (pokemon[0].pokemonId) {
+                case "ETERNATUS":
+                    pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
+                    pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "DYNAMAX_CANNON"];
+                    pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+                    break;
+                case "ETERNATUS_ETERNAMAX_FORM":
+                    pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
+                    pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
+                    pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
+                    break;
+                case "CLEFABLE_MEGA":
+                    pokemon[0].type2 = "POKEMON_TYPE_FLYING";
+                    break;
+                case "MEGANIUM_MEGA":
+                    pokemon[0].type2 = "POKEMON_TYPE_FAIRY";
+                    break;
+                case "FERALIGATR_MEGA":
+                    pokemon[0].type2 = "POKEMON_TYPE_DRAGON";
+                    break;
+                case "ABSOL_MEGA_Z":
+                    pokemon[0].type2 = "POKEMON_TYPE_GHOST";
+                    break;
+                case "STARRAPTOR_MEGA":
+                    pokemon[0].type = "POKEMON_TYPE_FIGHTING";
+                    break;
+                case "GARCHOMP_MEGA_Z":
+                    pokemon[0].type2 = null;
+                    break;
+                case "BARBANACLE_MEGA":
+                    pokemon[0].type2 = "POKEMON_TYPE_FIGHTING";
+                    break;
+                case "GOLISOPOD_MEGA":
+                    pokemon[0].type2 = "POKEMON_TYPE_STEEL";
+                    break;
+                default:
+                    break;
+            }
         }
 
         return this.filterUniqueById(pokemon);
@@ -167,6 +188,11 @@ export class PoGoAPI {
             name = "HO_OH";
         }
         const list = (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
+
+        console.log(list)
+
+        list.filter((a: any, b: any) => a.pokemonId !== b.pokemonId);
+        
         const origPokemon = this.getPokemonPBByID(name, pokemonList)[0];
         const listFiltered = list ? (list).filter((pokemon: any) => (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId) || (pokemon?.pokedex?.pokemonId === origPokemon?.pokedex?.pokemonId + "_MEGA")) : [];
         return this.filterUniqueById(listFiltered);
