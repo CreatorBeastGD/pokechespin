@@ -164,7 +164,7 @@ export class PoGoAPI {
                 case "GARCHOMP_MEGA_Z":
                     pokemon[0].type2 = null;
                     break;
-                case "BARBANACLE_MEGA":
+                case "BARBARACLE_MEGA":
                     pokemon[0].type2 = "POKEMON_TYPE_FIGHTING";
                     break;
                 case "GOLISOPOD_MEGA":
