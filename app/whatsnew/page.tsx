@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.31.2",
+        desc: "+ Added new options to Max Rankings page!\n"+
+                ">>>>>> You can now toggle between using Dynamax Cannon adventure effect or not, showing differences on attacker and HP% tank rankings.\n"+
+                ">>>>>> You can select how many shields a tank has on the rankings.",
+        date: "2026-03-03",
+
+    },
+    {
         title: "v1.31.1",
         desc: "+ Fixed some wrong types on new Mega Pokémon from ZA.\n"+
                 " + Fixed a bug with Eternatus Eternamax showing multiple times on dropdowns.\n",

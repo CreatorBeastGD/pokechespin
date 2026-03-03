@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.31.1";
+        return "1.31.2";
     }
 
     static async getAllPokemon() {
@@ -108,6 +108,13 @@ export class PoGoAPI {
     }
 
     static getPokemonImageByID(pokemonId: string, pokemonList: any, shiny: boolean = false) {
+        const today = Date.now();
+
+        // April fools!
+        if (today > new Date("2026-4-1").getTime() && today < new Date("2026-4-2").getTime()) {
+            return (Math.random() < 1/4096) ? pokemonList["CHESPIN"].shiny : pokemonList["CHESPIN"].base;
+        }
+
         return (Math.random() < 1/4096) ? pokemonList[pokemonId].shiny : pokemonList[pokemonId].base;
     }
 
@@ -131,7 +138,7 @@ export class PoGoAPI {
                 pokemon = [pokemon[0]];
             }
         }
-        console.log(pokemon);
+        //console.log(pokemon);
         // This is if somehow someone needs to hard-code data for any pokemon
         
         if (pokemon.length > 0) {
@@ -189,7 +196,7 @@ export class PoGoAPI {
         }
         const list = (pokemonList).filter((pokemon: any) => (pokemon.pokemonId).startsWith(name));
 
-        console.log(list)
+        //console.log(list)
 
         list.filter((a: any, b: any) => a.pokemonId !== b.pokemonId);
         
@@ -2126,6 +2133,7 @@ export class PoGoAPI {
         weather: string,
         showAllGmax: boolean = false,
         customBossCPM: number = 1,
+        isDCannon: boolean = false,
     ) {
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
@@ -2146,8 +2154,14 @@ export class PoGoAPI {
             const quickMove: any = this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
+            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                maxMove.power = maxMove.power === 350 ? 450 : 550;
+            }
             //console.log(weather)
             const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, modDefenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1);
+            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                maxMove.power = maxMove.power === 450 ? 350 : 450;
+            }
             attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves)});
         });
         return attackersStat.sort((a, b) => b.damage - a.damage);
@@ -2808,7 +2822,7 @@ export class PoGoAPI {
         types: any,
         allMoves: any
     ) {
-        console.log(attackerMaxMoves)
+        //console.log(attackerMaxMoves)
         // Setup gamestatus if first turn
         if (!gamestatus || order === "init") {
             gamestatus = new GameStatus();
@@ -2871,7 +2885,7 @@ export class PoGoAPI {
                 case "fast":
                     gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
                     gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
-                    console.log(gamestatus.allyCooldown);
+                    //console.log(gamestatus.allyCooldown);
                     break;
 
                 // Charged Move
@@ -3319,7 +3333,7 @@ export class PoGoAPI {
 
         const next = {...gamestatus} as GameStatus;
         
-        console.log(next);
+        //console.log(next);
         return next;
     }
 

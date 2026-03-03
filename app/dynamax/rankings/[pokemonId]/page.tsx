@@ -39,6 +39,7 @@ export default function rankingsPage() {
     const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
 
     const [bestAttackers, setBestAttackers] = useState<any>(null);
+    const [bestAttackerReference, setBestAttackerReference] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
     const [generalBestDefenders, setGeneralBestDefenders] = useState<any>(null);
 
@@ -49,6 +50,10 @@ export default function rankingsPage() {
     const [generalMode, setGeneralMode] = useState<boolean>(false);
 
     const [zamaExtraShield, setZamaExtraShield] = useState<boolean>(false);
+    
+    const [dCannon, setDCannon] = useState<boolean>(false);
+
+    const [extraHP, setExtraHP] = useState<number>(0);
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
@@ -172,6 +177,9 @@ export default function rankingsPage() {
                     setZamaExtraShield(zamaExtraShieldAtt);
                 }
 
+                const extraHPAtt = urlSP.get("extra_shields") ? parseInt(urlSP.get("extra_shields") ?? "0") : 0;
+                setExtraHP(extraHPAtt);
+
                 const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_PERCENT";
                 if (rankingDisplay) {
                     setRankingDisplay(rankingDisplay);
@@ -190,6 +198,11 @@ export default function rankingsPage() {
                 const showAllGmax = urlSP.get("show_all_gmax") ? urlSP.get("show_all_gmax") === "true" : false;
                 if (showAllGmax) {
                     setShowAllGmax(showAllGmax);
+                }
+
+                const dcannonboost = urlSP.get("dynamax_cannon") ? urlSP.get("dynamax_cannon") === "true" : false;
+                if (dcannonboost) {
+                    setDCannon(dcannonboost);
                 }
 
                 const raidMode = urlSP.get("raid_mode") ? urlSP.get("raid_mode") : Calculator.FixedBosses[pokemonId as string] ?? "raid-t1-dmax";
@@ -268,6 +281,8 @@ export default function rankingsPage() {
         urlSP.set("custom_atk_mult", customBossAtkMult.toString());
         urlSP.set("custom_cpm", customBossCPM.toString());
         urlSP.set("custom_hp", customBossHP.toString());
+        urlSP.set("extra_shields", extraHP.toString());
+        urlSP.set("dynamax_cannon", dCannon.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -298,7 +313,7 @@ export default function rankingsPage() {
     
     
     const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
-        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0)) * 100);
+        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0) + extraHP + (dCannon ? (pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && pokemonId !== "ZACIAN_CROWNED_SWORD_FORM") ? 60 : 0 : 0))) * 100;
     }
 
     const getAverageTankScore = (hpdmg: number, hpper: number) => {
@@ -339,14 +354,23 @@ export default function rankingsPage() {
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
 
+
     useEffect(() => {
         if (pokemonInfo && allDataLoaded) {
+            let bestAttackerRef = null;
+            if (dCannon && !bestAttackerReference) {
+                bestAttackerRef = /*bestAttackers ? bestAttackers[0] :*/ null;
+            } else if (!dCannon) {
+                bestAttackerRef = null;
+            }
+            const bestAttackersDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax, customBossCPM, dCannon);
+             
+            setBestAttackers(bestAttackersDCannon);
 
+            //console.log(bestAttackerRef);
 
-            
-            const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax, customBossCPM);
-            setBestAttackers(bestAttackers);
-        }}, [showAllGmax]);
+            setBestAttackerReference(bestAttackerRef);
+        }}, [dCannon, showAllGmax]);
 
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
@@ -605,25 +629,38 @@ export default function rankingsPage() {
                             <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.3 reduction) and worst (x0.6 reduction) case scenario.</p>
                             <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
                             <p>"Players in the Team" assumes every other player is using a 0.5s fast attack for max meter charging. The higher the players in a team, the less having a slow tank affects the group's performance. This setting is applied if "Prioritise Fast Attacks for Tanks" is checked.</p>
+                            <p>"Use Dynamax Cannon Adventure Effect" adds one extra shield to all compatible Pokémon and will increase 100 power to all compatible attacker moves.</p>
                             
                         </CardDescription>
                         <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                             Copy ranking link
                         </button>
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleGmaxSwitch(checked)} checked={showAllGmax} /> Show All Gigantamax Forms in Best Attackers</p>
-                        <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
-                        <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
-                        <p className="italic text-slate-700 text-sm">Tank Ranking shown</p>
+                        
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
+
+                        <p className="italic text-slate-700 text-sm ">Tank Ranking shown</p>
                         <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                             <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
                             <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
                             <option key={"AVG"} value={"AVG"}>Average</option>
                         </select>
-                        { zamaExtraShield && (<CardDescription>
-                            <p><span className="font-bold">IMPORTANT: </span>Zamazenta - Crowned Shield has a 60HP Shield included in its calculations (because of starting a Max Battle with an extra Shield), meaning it will have better scores than usual on HP% and average Tank Score</p>
-                        </CardDescription>)}
+
+                        {(rankingDisplay === "HP_PERCENT" || rankingDisplay === "AVG") && (
+                            <>
+                            <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        <p className="italic text-slate-700 text-sm ">Shield Amount: {extraHP}</p>
+                        <Slider onValueChange={(value) => handleSlider(value[0], setExtraHP, "extra_shields")} value={[extraHP]} max={180} step={60} min={0} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
+                            </>)
+                        }
+
+                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        
+                        
+                        <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
+                        <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
+                        
                         
                         </CardContent>
                     </Card>
@@ -683,8 +720,8 @@ export default function rankingsPage() {
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
                                                         <p className="font-bold text-black">
-                                                            {((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[0]}
-                                                            <span className="text-xs align-top">.{((attacker.damage / bestAttackers[0].damage) * 100).toFixed(2).split('.')[1]}</span>%
+                                                            {((attacker.damage / (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage)) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((attacker.damage / (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage)) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
                                                     </div>
                                                     <div className="w-full">

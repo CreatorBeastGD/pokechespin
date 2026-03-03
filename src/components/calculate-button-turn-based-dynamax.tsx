@@ -104,7 +104,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     setStartedSim(false);
     setGameStatus(null);
 
-    console.log("Changed dependencies")
+    //console.log("Changed dependencies")
 
   }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
 
