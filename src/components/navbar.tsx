@@ -173,8 +173,8 @@ const Navbar = () => {
                 </NavigationMenuItem>
                 <Sheet>
                     <SheetTrigger className="text-xs p-2">Config</SheetTrigger>
-                    <SheetContent className="h-full bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg">
-                        <div className="">
+                    <SheetContent className="h-full max-w-full w-full sm:max-w-md bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-2 sm:p-6 overflow-y-auto">
+                        <div className="w-full">
                             <SheetHeader>
                             <SheetTitle>Configuration</SheetTitle>
                             <SheetDescription className="text-xs text-muted-foreground mt-2">
@@ -186,11 +186,11 @@ const Navbar = () => {
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-primary rounded-lg" onClick={DefaultChanges}>Set to Default</SheetClose>
                             </SheetFooter>
                         </div>
-                        <ScrollArea className="relative h-[60vh] w-full">
-                        <div className="flex flex-col gap-4 mt-4">
+                        <ScrollArea className="relative h-[50vh] sm:h-[60vh] w-full max-w-full">
+                        <div className="flex flex-col gap-4 mt-4 w-full">
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Multipliers</SheetTitle>
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col w-full">
                                 <label className="text-sm">Double Friendship Bonus</label>
                                 <div className="flex items-center space-x-2">
                                     <input checked={doubleFriendshipBonus} onChange={(e) => ChangeDoubleFriendshipBonus(e.target.checked)} type="checkbox" id="doubleFriendshipBonus" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
@@ -199,7 +199,7 @@ const Navbar = () => {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col w-full">
                                 <label htmlFor="customBladeBoostAmount" className="text-sm">Custom AE Boost Amount (Blade and Bash)</label>
                                 <select value={customBladeBoostAmount} onChange={(e) => ChangeBladeBoost(e.target.value)} id="customBladeBoostAmount" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5">
                                     <option value="0.1">x1.1 / x1.05 (Base)</option>
@@ -215,7 +215,7 @@ const Navbar = () => {
                             
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Rankings</SheetTitle>
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col w-full">
                                 <label className="text-sm">Show unreleased Gigantamax Pokémon</label>
                                 <div className="flex items-center space-x-2">
                                     <input checked={showAllGmax} onChange={(e) => ChangeShowAllGmax(e.target.checked)} type="checkbox" id="showAllGmax" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
@@ -224,7 +224,7 @@ const Navbar = () => {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col w-full">
                                 <label className="text-sm">Show Custom Pokémon on Max Rankings</label>
                                 <div className="flex items-center space-x-2">
                                     <input checked={showCustomPokemonOnRankings} onChange={(e) => ChangeShowCustomPokemonOnRankings(e.target.checked)} type="checkbox" id="showAllGmax" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
@@ -233,7 +233,7 @@ const Navbar = () => {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col w-full">
                                 <label className="text-sm">Add Custom Pokémon to Max Rankings</label>
                                 <div className="flex items-center space-x-2">
                                     <textarea defaultValue={customPokemonToRankings} onChange={(e) => ChangeCustomPokemonToRankings(e.target.value)} id="customPokemonToRankings" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="BULBASAUR IVYSAUR VENUSAUR_GIGANTAMAX RAYQUAZA_MEGA KYUREM_BLACK_FORM" />
@@ -242,7 +242,7 @@ const Navbar = () => {
                                     Write any Pokémon ID separated by spaces to add them to the Max Rankings. If an ID is invalid, it will be ignored.
                                 </p>
                             </div>
-                            <div className="flex flex-col ">
+                            <div className="flex flex-col w-full">
                                 <label className="text-sm">Show Custom Pokémon only.</label>
                                 <div className="flex items-center space-x-2">
                                     <input checked={showOnlyCustomPokemonOnRankings} onChange={(e) => ChangeShowOnlyCustomPokemonOnRankings(e.target.checked)} type="checkbox" id="showAllGmax" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
