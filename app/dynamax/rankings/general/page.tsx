@@ -388,7 +388,6 @@ export default function rankingsPage() {
                             <option value="raid-t4-dmax">Tier 4 Max Battles</option>
                             <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                             <option value="raid-t6-gmax">Gigantamax Battles</option>
-                            <option value="raid-t6-gmax-standard">Standard Gigantamax Battles</option>
                         </select>
 
                         <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleGmaxSwitch(checked)} checked={showAllGmax} /> Show All Gigantamax Pokémon in Attackers Overall Ranking</p>
@@ -480,7 +479,6 @@ export default function rankingsPage() {
                                 <option value="raid-t4-dmax">Tier 4 Max Battles</option>
                                 <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                                 <option value="raid-t6-gmax">Gigantamax Battles</option>
-                                <option value="raid-t6-gmax-standard">Standard Gigantamax Battles</option>
                             </select>
                         
                         

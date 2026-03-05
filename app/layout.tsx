@@ -62,7 +62,7 @@ export default function RootLayout({
             Pokémon GO API used: <a className="link" href="https://github.com/pokemon-go-api/pokemon-go-api">mario6700-pogo</a> and <a className="link" href="https://www.pokebattler.com">PokéBattler</a>
           </p>
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
-            2025 CreatorBeastGD.
+            2026 CreatorBeastGD.
           </p>
           <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white bg-black text-xs w-1/2 border-2 border-white border-opacity-10">
             <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center"><BuyMeACoffeeIcon/>

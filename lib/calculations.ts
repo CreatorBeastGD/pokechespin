@@ -416,7 +416,7 @@ export class Calculator {
       }
 
       static getFriendshipBonus(friendship: number) {
-        if (false) { 
+        if (localStorage.getItem("doubleFriendshipBonus") === "true") { 
           return friendship === 1 ? 1.06 : friendship === 2 ? 1.1 : friendship === 3 ? 1.14 : friendship === 4 ? 1.2 : friendship === 5 ? 1.24 : 1;
         } else {
           return friendship === 1 ? 1.03 : friendship === 2 ? 1.05 : friendship === 3 ? 1.07 : friendship === 4 ? 1.1 : friendship === 5 ? 1.12 : 1;
@@ -606,18 +606,38 @@ export class Calculator {
       }
 
       static BladeBoost(raidMode: string) {
+        const customBoost = localStorage.getItem("customBladeBoostAmount");
         if (raidMode.endsWith("dmax") || raidMode.endsWith("gmax") || raidMode.endsWith("gmax-standard")) {
-          return 1.05;
+          return customBoost ? 1+(parseFloat(customBoost)/2) : 1.05;
         } else {
-          return 1.1
+          return customBoost ? 1+(parseFloat(customBoost)) : 1.1;
         }
       }
 
       static BashBoost(raidMode: string) {
+        const customBoost = localStorage.getItem("customBladeBoostAmount");
         if (raidMode.endsWith("dmax") || raidMode.endsWith("gmax") || raidMode.endsWith("gmax-standard")) {
-          return 1.05;
+          return customBoost ? 1+(parseFloat(customBoost)/2) : 1.05;
         } else {
-          return 1.1
+          return customBoost ? 1+(parseFloat(customBoost)) : 1.1;
+        }
+      }
+
+      static GetDuggoAttackBoost() {
+        const customBoost = localStorage.getItem("customBladeBoostAmount");
+        if (customBoost && parseFloat(customBoost) > 0) {
+          switch (localStorage.getItem("customBladeBoostAmount")) {
+            case "0.3":
+              return 1.05;
+            case "0.4":
+              return 1.1;
+            case "0.5":
+              return 1.15;
+            default:
+              return 1;
+          }
+        } else {
+          return 1;
         }
       }
 

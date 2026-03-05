@@ -34,16 +34,13 @@ export default function CalculateButtonMaxBoss({
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
   const [damage, setDamage] = useState<number | null>(0);
-  const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number | null>(0);
-  const [damageBestCase, setDamageBestCase] = useState<number | null>(0);
-  const [damageWorstCase, setDamageWorstCase] = useState<number | null>(0);
+  const [targetAllValues, setTargetAllValues] = useState<any>(null);
   const [customCPM, setCustomCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
   const [customAtkMult, setCustomAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
 
   useEffect(() => {
     setDamage(0);
-    setHealth(0);
   }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bashBoost, customCPM, customAtkMult]);
 
   useEffect(() => {
@@ -76,41 +73,27 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/1.05) : 1) * (isLarge ? 1 : 2),
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
       raidMode === "raid-custom-dmax" ? true : false
     );
-    setDamageBestCase(PoGoAPI.getDamage(
+    setTargetAllValues(PoGoAPI.getAllDamageValuesFromTargetMove(
       attackingPoke, 
-      defendingPoke,
-      move,
-      types,
-      attackingStats,
-      defendingStats,
-      bonusAttacking,
-      bonusDefending,
-      "normal",
-      0,
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.3),
-      raidMode === "raid-custom-dmax" ? true : false
-    ));
-    setDamageWorstCase(PoGoAPI.getDamage(
-      attackingPoke, 
-      defendingPoke,
-      move,
-      types,
-      attackingStats,
-      defendingStats,
-      bonusAttacking,
-      bonusDefending,
-      "normal",
-      0,
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/1.05) : 1) * (2 * 0.6),
-      raidMode === "raid-custom-dmax" ? true : false
-    )); 
+      defendingPoke, 
+      move, 
+      types, 
+      attackingStats, 
+      defendingStats, 
+      bonusAttacking, 
+      bonusDefending, 
+      "normal", 
+      0, 
+      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
+      raidMode === "raid-custom-dmax" ? true : false,
+      raidMode
+    ))
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
     const remainingStamina = effStamina - damage;
     setDamage(damage);
-    setHealth(remainingStamina);
     setEffStamina(effStamina);
   };
 
@@ -122,12 +105,18 @@ export default function CalculateButtonMaxBoss({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bashBoost ? " using Behemoth Bash Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to <span className="font-bold">{damageBestCase}-{damageWorstCase} damage</span> if dodged. </span>}
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bashBoost ? " using Behemoth Bash Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){!isLarge && <span>, which will be reduced to <span className="font-bold">{targetAllValues[0]}-{targetAllValues[targetAllValues.length - 2]} damage</span> if dodged. </span>}
           </p>
           <p>
-          
-          <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
+            <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> has {Math.floor((effStamina ?? 0) - (damage ?? 0)) > 0 ? Math.floor((effStamina ?? 0) - (damage ?? 0)) : 0}HP left ({Math.floor(((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100) > 0 ? (((effStamina ?? 0) - (damage ?? 0)) / (effStamina??0) * 100).toFixed(2) : 0}%)
           </p>
+          {!isLarge && 
+          <div>
+            <p>
+              The following list shows all possible damage values if the defender dodges depending on the turn: [<span className="font-bold">{targetAllValues.slice(0, -1).join(", ")}</span>].
+            </p>
+          </div>
+          }
         </div>
       )}
     </>

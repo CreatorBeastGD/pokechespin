@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import html2canvas from 'html2canvas';
 import CookieBanner from '@/components/cookie-banner';
 import Navbar from '@/components/navbar';
+import { Calculator } from '../../../lib/calculations';
 
 
 
@@ -199,7 +200,7 @@ const BreakpointsPage = () => {
                   defenderBonus, 
                   raidMode,
                   usesShroom ? 2 : 1,
-                  PoGoAPI.getHelperBonusDamage(helpers) * (adventureEffect === "blade" ? 1.05 : 1.0),
+                  PoGoAPI.getHelperBonusDamage(helpers) * (adventureEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1.0),
                 );
                 //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
                 table[2*(i-20)][j] = damage;

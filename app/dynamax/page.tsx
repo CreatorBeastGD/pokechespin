@@ -720,7 +720,6 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"raid-t4-dmax"} value={"raid-t4-dmax"}>Tier-4 Max Battle (20000HP) </option>
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (Varying) </option>
-                <option key={"raid-t6-gmax-standard"} value={"raid-t6-gmax-standard"}>Standard Gigantamax Battle (115000HP) </option>
                 <option key={"raid-custom-dmax"} value={"raid-custom-dmax"}>Custom Dynamax Battle</option>
               </select>
 
@@ -767,8 +766,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   onChange={(e) => setPreviewAdvEffect(e.target.value)}
                   >
                     <option value="none">No Adventure Effect</option>
-                    <option value="blade">Behemoth Blade (x1.05 ATK)</option>
-                    <option value="bash">Behemoth Bash (x1.05 DEF)</option>
+                    <option value="blade">Behemoth Blade (+ATK)</option>
+                    <option value="bash">Behemoth Bash (+DEF)</option>
                     <option value="cannon">Dynamax Cannon (+1 max level)</option>
                   </select>
 
@@ -831,7 +830,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
                 bladeBoost={previewAdvEffect === "blade"}
               />
@@ -848,7 +847,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
                 bladeBoost={previewAdvEffect === "blade"}
               />
@@ -867,7 +866,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? 1.05 : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
                 shroomBonus={previewShroom ? 2 : 1}
                 dynamaxCannonBonus={previewAdvEffect === "cannon"}
                 bladeBoost={previewAdvEffect === "blade"}

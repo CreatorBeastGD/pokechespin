@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.32 (Configurable Bonuses!)",
+        desc: "+ Added a new 'Configurations' button and sheet to PokéChespin!\n"+
+                  ">>>>>> Now you can adjust the values of some bonuses, such as double friendship or Behemoth Blade/Bash boost, reflecting their changes on some events (like Max Finale or certain seasons).\n"+
+              "- Option 'Standard Gigantamax Battle' has been removed from Max Battle Mode selector on Max Rankings.\n"+
+              "~ Maybe some other configurations comming soon... Who knows?",
+        date: "2026-03-05",
+    },
+    {
         title: "v1.31.2",
         desc: "+ Added new options to Max Rankings page!\n"+
                 ">>>>>> You can now toggle between using Dynamax Cannon adventure effect or not, showing differences on attacker and HP% tank rankings.\n"+

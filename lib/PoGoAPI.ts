@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.31.2";
+        return "1.32";
     }
 
     static async getAllPokemon() {
@@ -233,87 +233,13 @@ export class PoGoAPI {
                     animationId: "MIND_BLOWN",
                 };
             }
-            /*
-            else if (moveId === "MAX_BEHEMOTH_BLADE") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BLADE",
-                    power: 250,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BLADE",
-                };
-            }
-            else if (moveId === "MAX_BEHEMOTH_BLADE2") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BLADE2",
-                    power: 300,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BLADE",
-                };
-            }
-            else if (moveId === "MAX_BEHEMOTH_BLADE3") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BLADE3",
-                    power: 350,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BLADE",
-                };
-            }
-            else if (moveId === "MAX_BEHEMOTH_BASH") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BASH",
-                    power: 250,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BASH",
-                };
-            }
-            else if (moveId === "MAX_BEHEMOTH_BASH2") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BASH2",
-                    power: 300,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BASH",
-                };
-            }
-            else if (moveId === "MAX_BEHEMOTH_BASH3") {
-                return {
-                    moveId: "MAX_BEHEMOTH_BASH3",
-                    power: 350,
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_STEEL",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "MAX_BEHEMOTH_BASH",
-                };
-            }
-            */
             throw new Error(`Move with ID ${moveId} not found`);
         }
         if (moveId === "BEHEMOTH_BLADE") {
-            move.power = 200;
+            move.power = Math.round(200 * Calculator.GetDuggoAttackBoost());
             move.energyDelta = -100;
         } else if (moveId === "BEHEMOTH_BASH") {
-            move.power = 125;
+            move.power = 125 * Calculator.GetDuggoAttackBoost();
             move.energyDelta = -50;
         }
         return move;
@@ -926,6 +852,43 @@ export class PoGoAPI {
             shroomBonus ? shroomBonus : 1
         );
     }
+
+    static getAllDamageValuesFromTargetMove(
+        attacker: any, 
+        defender: any, 
+        move: any, 
+        types: any, 
+        attackerStats: any, 
+        defenderStats: any, 
+        bonusAttacker?: any, 
+        bonusDefender?: any, 
+        raidMode?: any,
+        shroomBonus?: any,
+        damageMultiplier?: any,
+        isDynamaxBoss = false,
+        realRaidMode = "normal"
+    ) {
+        const raid = raidMode ? raidMode : "normal";
+        if (raid !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
+            bonusDefender = [bonusDefender[0], false, false, 0];
+        }
+        // console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
+        const effectiveness = this.getEfectiveness(defender, move, types);
+        const multiplierArray = realRaidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard" ? [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 1] : [0.3, 0.4, 0.5, 0.6, 1];
+        return multiplierArray.map(mult => Calculator.calculateDamage(
+            move.power, 
+            Calculator.getEffectiveAttackRawCPM(attacker.stats.baseAttack, attackerStats[1] , isDynamaxBoss ? attackerStats[0] : Calculator.getCPM(attackerStats[0])), 
+            Calculator.getEffectiveDefenseRawCPM(defender.stats.baseDefense, defenderStats[2], raidMode === "raid-custom-dmax" ? defenderStats[0] : Calculator.getCPM(defenderStats[0])),
+            attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1,
+            effectiveness,
+            move.type,
+            mult * (damageMultiplier ? damageMultiplier : 1),
+            bonusAttacker,
+            bonusDefender,
+            shroomBonus ? shroomBonus : 1
+        ));
+    }
     
     static getDamage(
         attacker: any, 
@@ -1041,6 +1004,7 @@ export class PoGoAPI {
             GRIMMSNARL_GIGANTAMAX: [8006861, 15, 15, 70000],
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
             MEOWTH_GIGANTAMAX: [8006052, 15, 15, 80000],
+            PIKACHU_GIGANTAMAX: [8006052, 15, 15, 80000],
         };
 
         // DMAX Tier 5
@@ -1159,7 +1123,7 @@ export class PoGoAPI {
             maxHealth = this.getRaidHealth(raidMode);
         }
         while (damage <= maxHealth) {
-            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
+            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
             time += quickMove.durationMs;
             energy += quickMove.energyDelta;
             if (energy > 100) {
@@ -1174,14 +1138,14 @@ export class PoGoAPI {
             
             // WARNING: chargedMove.energy is negative
             if (energy >= -chargedMove.energyDelta) {
-                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
-                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
+                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
+                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
                 if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
                     if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
                         energy = energy + chargedMove.energyDelta <= 0 ? 0 : energy + chargedMove.energyDelta;
                         time += chargedMove.durationMs;
                         chargedAttackUses++;
-                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? 1.1 : 1);
+                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
                         turn++;
                         graphic.push({"turn": turn, "type": "charged"});
                     }
@@ -1350,7 +1314,7 @@ export class PoGoAPI {
                 attackerFaint = false;
                 // Defender has casted a charged move, attacker may try to evade it
                 if (avoids === true && defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
-                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, boost === "bash" ? (1/1.1) : 1));
+                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1));
                 
                     if (defenderMove.energyDelta < 0 && 
                         time < defenderDamageStart + defenderMove.damageWindowStartMs && 
@@ -1426,9 +1390,9 @@ export class PoGoAPI {
                 for (let i = 0; i < peopleCount && simGoing; i++) {
                     
                     const projectedDamage = (isEnraged ? 
-                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier * (boost === "blade" ? 1.1 : 1)) : 
-                        isSuperMegaEnraged ? this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1) * (1/4)) : 
-                            this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? 1.1 : 1) )
+                        this.getDamageEnraged(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, false, multiplier * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1)) : 
+                        isSuperMegaEnraged ? this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) * (1/4)) : 
+                            this.getDamage(attacker, defender, attackerMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 0, multiplier * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) )
                     )
                     tdo += projectedDamage / peopleCount;
                     
@@ -1529,8 +1493,8 @@ export class PoGoAPI {
                 time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
             {
                 const projectedDamageDefender = ((isEnraged || isSuperMegaEnraged) ?
-                    this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", true, (boost === "bash" ? (1/1.1) : 1)) :
-                    this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, (boost === "bash" ? (1/1.1) : 1))
+                    this.getDamageEnraged(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", true, (boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1)) :
+                    this.getDamage(defender, attacker, defenderMove, types, defenderStats, attackerStats, bonusDefender, bonusAttacker, "normal", 1, (boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1))
                 )
                 const finalDamage = Math.floor(((attackerFaint) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
                 //console.log("Final damage: " + finalDamage);
@@ -1643,7 +1607,7 @@ export class PoGoAPI {
             if (actualDefender) {
                 if (actualDefender === "TOXTRICITY_AMPED_GIGANTAMAX" || actualDefender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || actualDefender === "TOXTRICITY_GIGANTAMAX") {
                     return 1.2 * (desperate ? 6 : 1);
-                } else if (actualDefender === "MEOWTH_GIGANTAMAX") {
+                } else if (actualDefender === "MEOWTH_GIGANTAMAX" || actualDefender === "PIKACHU_GIGANTAMAX") {
                     return 1 * (desperate ? 6 : 1);
                 } else {
                     return 0.9 * (desperate ? 6 : 1);
@@ -2370,7 +2334,7 @@ export class PoGoAPI {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
-                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" ? customBossAtkMult * (advEffects[i] === "bash" ? (1/1.05) : 1) : this.getDamageMultiplier(raidMode,false, false, defender)) * (advEffects[i] === "bash" ? (1/1.05) : 1), isCustomDmax);
+                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" ? customBossAtkMult * (advEffects[i] === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1) : this.getDamageMultiplier(raidMode,false, false, defender)) * (advEffects[i] === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1), isCustomDmax);
                     //console.log("Attacker " + i + " projected damage from defender's targeted move: " + projectedDamageDefender + " vs current HP: " + attackerHealth[i][activePokemon[i]]);
                     if (projectedDamageDefender < attackerHealth[i][activePokemon[i]] ) {
                         // Attacker i evades the move
@@ -2404,9 +2368,9 @@ export class PoGoAPI {
                 if (!firstDmgReduction[i] && time > 0) {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
-                        const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
+                        const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
                         const maxEnergyQuickAttack = Calculator.getMaxEnergyGain(projectedDamageQuick, defenderHealth);
-                        const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1,  this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
+                        const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1,  this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
                         const maxEnergyCinematicAttack = Calculator.getMaxEnergyGain(projectedDamageCinematic, defenderHealth);
                         if ((attackerEnergy[i][activePokemon[i]] >= -attackersCinematicMove[i][activePokemon[i]].energyDelta) 
                             && (!prioritiseEnergy ||
@@ -2435,7 +2399,7 @@ export class PoGoAPI {
                 firstDmgReduction[i] = false;
                 // Attacker i deals damage
                 if (attackerMove[i] !== null && attackerDamageStart[i] > -1 && time === attackerDamageStart[i] + attackerMove[i].damageWindowStartMs && activePokemon[i] < 3) {
-                    const projectedDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? 1.05 : 1)));
+                    const projectedDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackerMove[i], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
                     tdo[i] += projectedDamage;
                     attackerDamage[i][activePokemon[i]] += projectedDamage;
                     //console.log("Attacker " + i + " deals " + projectedDamage + " damage with move: " + attackerMove[i].moveId + " at time " + time);
@@ -2498,7 +2462,7 @@ export class PoGoAPI {
                             if (advEffects[i] === "cannon" && (attackers[i][activePokemon[i]].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i][activePokemon[i]].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
                                 dmaxAttack.power = dmaxAttack.power + (attackerMaxMoves[i][activePokemon[i]][0] === 3 ? 100 : 50);
                             }
-                            const maxMoveDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getHelperBonusDamage(helperBonus) * this.getDefenseMultiplier(raidMode) * (advEffects[i] === "blade" ? 1.05 : 1)));
+                            const maxMoveDamage = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, dmaxAttack, types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, (shrooms[i] === true ? 2 : 1), this.getHelperBonusDamage(helperBonus) * this.getDefenseMultiplier(raidMode) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
                             if (advEffects[i] === "cannon" && (attackers[i][activePokemon[i]].pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && attackers[i][activePokemon[i]].pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
                                 dmaxAttack.power = dmaxAttack.power - (attackerMaxMoves[i][activePokemon[i]][0] === 3 ? 100 : 50);
                             }
@@ -2572,9 +2536,9 @@ export class PoGoAPI {
                     for (let j = 0 ; j < 3 ; j++) {
                         tankScore[i][j] = (
                             ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ 1.05) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ 1.05) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                           ) / 2
                     }
                 }
@@ -2633,7 +2597,7 @@ export class PoGoAPI {
                             [weather, false, false, 0], 
                             "normal", 
                             0, 
-                            (attackerEvades[target] ? 1 : 2) * (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ 1.05) : 1 )* customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) * (advEffects[target] === "bash" ? (1/ 1.05) : 1),
+                            (attackerEvades[target] ? 1 : 2) * (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 )* customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) * (advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
                             isCustomDmax
                         );
                         const finalDamage = Math.floor(projectedDamageDefender);
@@ -2666,7 +2630,7 @@ export class PoGoAPI {
                                 [weather, false, false, 0], 
                                 "normal", 
                                 0, 
-                                (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ 1.05) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId  )) * (advEffects[i] === "bash" ? (1/ 1.05) : 1),
+                                (raidMode === "raid-custom-dmax" ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId  )) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
                                 isCustomDmax
                             );
                             const finalDamage = Math.floor(projectedDamageDefender);
@@ -3030,7 +2994,7 @@ export class PoGoAPI {
                             [weather, false, false, 0],
                             [weather, false, false, 0] ,
                             raidMode, (shroom === "true" ? 2 : 1),
-                            this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? 1.05 : 1)
+                            this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1)
                         ));
 
                         // Cannon fix
@@ -3153,7 +3117,7 @@ export class PoGoAPI {
                         [weather, false, false, 0], 
                         [weather, false, false, 0] , 
                         raidMode, (shroom === "true" ? 2 : 1), 
-                        this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? 1.05 : 1)
+                        this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1)
                     ));
                     gamestatus.enemyPokemonDamage += projectedDamage;
                     gamestatus.maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth);
@@ -3436,7 +3400,7 @@ export class PoGoAPI {
                         [weather, false, false, 0] , 
                         "normal", 
                         1, 
-                        (gamestatus.damageReduction * (gamestatus.enemyActiveMove?.isTarget ? 2 : 1)) * this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender.pokemonId) * (raidMode == "raid-custom-dmax" ? customBossAtkMult : 1) * (advEffects === "bash" ? 1/1.05 : 1),
+                        (gamestatus.damageReduction * (gamestatus.enemyActiveMove?.isTarget ? 2 : 1)) * this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender.pokemonId) * (raidMode == "raid-custom-dmax" ? customBossAtkMult : 1) * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1),
                         isCustomDmax
                     ));
                     let proDamageReal = projectedDamage;

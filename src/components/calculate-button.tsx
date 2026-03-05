@@ -5,6 +5,7 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
 import { Calculator } from "../../lib/calculations";
 
+
 export default function CalculateButton({
   attacker,
   defender,
@@ -35,6 +36,7 @@ export default function CalculateButton({
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number>(0);
+  
 
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
