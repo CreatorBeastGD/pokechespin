@@ -18,8 +18,6 @@ import {
 import { useState, useEffect } from "react";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
-import { set } from "mongoose";
-import { Scroll } from "lucide-react";
 
 const Navbar = () => {
 
@@ -176,7 +174,7 @@ const Navbar = () => {
                     <SheetTrigger className="text-xs p-2">Config</SheetTrigger>
                     
                         <SheetContent className="h-full w-full bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-6">
-                        <ScrollArea className="h-[75%]">
+                        <ScrollArea className="h-[90vh]">
                         <div className="w-full">
                             <SheetHeader>
                             <SheetTitle>Configuration</SheetTitle>
