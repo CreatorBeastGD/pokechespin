@@ -182,7 +182,7 @@ const Navbar = () => {
                             </SheetHeader>
                             
                         </div>
-                        <ScrollArea className="h-[80vh]">
+                        <ScrollArea className="h-[70vh]">
                         <div className="flex flex-col gap-4 mt-4 w-full">
                             <SheetDescription className="text-xs text-muted-foreground mt-2">
                                 Here you can configure some settings for your calculator, such as double friendship bonus, custom AE boosts from Max Finale and more. These settings will be saved in your local storage, so they will be applied every time you use the calculator. Please note that these settings are not saved in the URL, so if you share a link with someone else, they won't see the same settings as you.
