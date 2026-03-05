@@ -115,6 +115,10 @@ export class PoGoAPI {
             return (Math.random() < 1/4096) ? pokemonList["CHESPIN"].shiny : pokemonList["CHESPIN"].base;
         }
 
+        if (localStorage.getItem("showAllPokemonAsShiny") === "true") {
+            return pokemonList[pokemonId].shiny;
+        }
+
         return (Math.random() < 1/4096) ? pokemonList[pokemonId].shiny : pokemonList[pokemonId].base;
     }
 
@@ -1775,10 +1779,17 @@ export class PoGoAPI {
         types: any,
         dmaxDifficulty: string = "raid-t6-gmax",
     ) {
-        const availableDmaxPoke = Calculator.DynamaxPokemon;
+
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
+
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]; fastMove: any}[] = [];
-        availableDmaxPoke.forEach((defender: string) => {
+        allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
             const fastAttack = this.getFastestQuickMove(pokemonData, pokemonData, types, dmaxDifficulty, allMoves);
             let average = 0;
@@ -1828,6 +1839,21 @@ export class PoGoAPI {
         return tierList.sort((a, b) => a.tier - b.tier);
     }
 
+    static CorrectPokemonFromCustom(pokemonList: any): string[] {
+        let origList = Calculator.tryParseCustomPokemonList();
+        let correctedList: string[] = [];
+        if (origList.length > 0) {
+            origList.forEach((pokemon: string) => {
+                const pokemonData = this.getPokemonPBByID(pokemon, pokemonList);
+                
+                if (pokemonData.length > 0) {
+                    correctedList.push(pokemon);
+                }
+            });
+        }
+        return correctedList;
+    }
+
     static getAttackerTierList(
         pokemonList: any,
         allMoves: any,
@@ -1837,9 +1863,13 @@ export class PoGoAPI {
     ) {
         //console.log("Calculating attacker tier list for " + dmaxDifficulty);
         let allMaxPoke = Calculator.DynamaxPokemon;
-        if (showAllGmax) {
+        if (localStorage.getItem("showAllGmax") === "true" || showAllGmax) {
             allMaxPoke = [...allMaxPoke, ...Calculator.UpcomingGMaxPokemon];
-        }
+        } if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
         //console.log(allMaxPoke);
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
@@ -1999,7 +2029,15 @@ export class PoGoAPI {
         let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
         const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
         bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
-        availableDmaxPoke.forEach((defender: string) => {
+        
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
+        
+        allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
             let percentAfterLarge = 0;
             let percentAfterTargetBestCase = 0;
@@ -2052,7 +2090,15 @@ export class PoGoAPI {
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
         let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any;}[] = [];
-        availableDmaxPoke.forEach((defender: string) => {
+        
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
+        
+        allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
 
             //console.log("HP of " + pokemonData.pokemonId +": "+ Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]) + " After attack: " + this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))
@@ -2108,10 +2154,15 @@ export class PoGoAPI {
         }
 
         let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any;}[] = [];
-        let allMaxPoke = availableDmaxPoke;
-        if (showAllGmax) {
-            allMaxPoke = [...availableDmaxPoke, ...Calculator.UpcomingGMaxPokemon];
-        }
+        
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showAllGmax") === "true" || showAllGmax) {
+            allMaxPoke = [...allMaxPoke, ...Calculator.UpcomingGMaxPokemon];
+        } if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
         //console.log(allMaxPoke)
         allMaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];

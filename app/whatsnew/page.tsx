@@ -17,6 +17,15 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.33 (Your Custom Pokémon List on Max Rankings!)",
+        desc: "+ Added a new 'Custom Pokémon in Max Rankings' config to PokéChespin!\n"+
+                ">>>>>> Now you can choose to show custom Pokémon that are not currently available in Max Battles on the Max Rankings, allowing you to check how good they are as attackers and defenders in Max Battles!\n"+
+                ">>>>>> You can choose to show all custom Pokémon, or only the ones you have added yourself on the 'Custom Pokémon' textarea.\n"+
+                "+ Added 'Show all Pokémon as shiny' config to PokéChespin!\n"+
+                ">>>>>> Now you can choose to show all Pokémon as shiny on PokéChespin, allowing you to see how they look as shiny while checking their rankings!\n",
+        date: "2026-03-05",
+    },
+    {
         title: "v1.32 (Configurable Bonuses!)",
         desc: "+ Added a new 'Configurations' button and sheet to PokéChespin!\n"+
                   ">>>>>> Now you can adjust the values of some bonuses, such as double friendship or Behemoth Blade/Bash boost, reflecting their changes on some events (like Max Finale or certain seasons).\n"+

@@ -57,7 +57,6 @@ export default function rankingsPage() {
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
-    const [showAllGmax, setShowAllGmax] = useState<boolean>(false);
 
     const router = useRouter();
     const sp = useParams();
@@ -106,9 +105,8 @@ export default function rankingsPage() {
             urlSP.get("prioritise_fast_attack") ? setPrioritiseFast(urlSP.get("prioritise_fast_attack") === "true") : setPrioritiseFast(false);
             urlSP.get("zamazenta_extra_shield") ? setZamaExtraShield(urlSP.get("zamazenta_extra_shield") === "true") : setZamaExtraShield(false);
             urlSP.get("players_in_team") ? setPlayersInTeam(parseInt(urlSP.get("players_in_team")!)) : setPlayersInTeam(1);
-            urlSP.get("show_all_gmax") ? setShowAllGmax(urlSP.get("show_all_gmax") === "true") : setShowAllGmax(false);
-
-            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty, showAllGmax);
+            
+            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty, false);
             let tierListDefenders = PoGoAPI.getDefenderTierList(pokemonList, allMoves, types, dmaxDifficulty);
             setBestAttackers(tierListAttackers);
             setBestDefenders(tierListDefenders);
@@ -121,7 +119,7 @@ export default function rankingsPage() {
         setShowTierListAttackers([]);
         setShowTierListDefenders([]);
         if (sp && allDataLoaded && !paramsLoaded) {
-            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty, showAllGmax);
+            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty, false);
             let tierListDefenders = PoGoAPI.getDefenderTierList(pokemonList, allMoves, types, dmaxDifficulty);
             setBestAttackers(tierListAttackers);
             setBestDefenders(tierListDefenders);
@@ -163,22 +161,6 @@ export default function rankingsPage() {
     const toggleShowAllAttackers = () => {
         setShowBestAttackers(!showBestAttackers);
     }
-
-    const handleGmaxSwitch = (checked: boolean) => {
-        setShowAllGmax(checked);
-        const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set("show_all_gmax", checked.toString());
-        const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
-
-    useEffect(() => {
-        if (everythingLoaded) {
-            let tierListAttackers = PoGoAPI.getAttackerTierList(pokemonList, allMoves, types, dmaxDifficulty, showAllGmax);
-            setBestAttackers(tierListAttackers);
-        }
-    }, [showAllGmax]);
-
 
     const TankScorePenalization = (defender: any): number => {
         return ((playersInTeam * 2) / (((playersInTeam * 2) - 2) + (1000 / defender.fastMove.durationMs)));
@@ -389,9 +371,7 @@ export default function rankingsPage() {
                             <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                             <option value="raid-t6-gmax">Gigantamax Battles</option>
                         </select>
-
-                        <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleGmaxSwitch(checked)} checked={showAllGmax} /> Show All Gigantamax Pokémon in Attackers Overall Ranking</p>
-                        
+  
                         
                         <Separator className="mt-4"/>
                             <div className="flex flex-column items-center justify-center space-x-4 w-full">

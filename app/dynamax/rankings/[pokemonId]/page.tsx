@@ -57,7 +57,6 @@ export default function rankingsPage() {
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
-    const [showAllGmax, setShowAllGmax] = useState<boolean>(false);
 
     const [customBossAtkMult, setCustomBossAtkMult] = useState<number>(1);
     const [customBossCPM, setCustomBossCPM] = useState<number>(1);
@@ -195,11 +194,6 @@ export default function rankingsPage() {
                     setShowGeneralBestDefenders(general);
                 }
 
-                const showAllGmax = urlSP.get("show_all_gmax") ? urlSP.get("show_all_gmax") === "true" : false;
-                if (showAllGmax) {
-                    setShowAllGmax(showAllGmax);
-                }
-
                 const dcannonboost = urlSP.get("dynamax_cannon") ? urlSP.get("dynamax_cannon") === "true" : false;
                 if (dcannonboost) {
                     setDCannon(dcannonboost);
@@ -219,7 +213,7 @@ export default function rankingsPage() {
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax, customCPM);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, customCPM);
                     setBestAttackers(bestAttackers);
                     const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, customCPM, customAtkMult);
                     setBestDefenders(bestDefenders);
@@ -231,7 +225,7 @@ export default function rankingsPage() {
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, showAllGmax, customCPM);
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, customCPM);
                     setBestAttackers(bestAttackers);
                     const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, customAtkMult, customCPM);
                     setGeneralBestDefenders(bestGeneralDefenders);
@@ -275,7 +269,6 @@ export default function rankingsPage() {
         urlSP.set("general", showGeneralBestDefenders.toString());
         urlSP.set("prioritise_fast_attack", prioritiseFast.toString());
         urlSP.set("ranking_display", rankingDisplay);
-        urlSP.set("show_all_gmax", showAllGmax.toString());
         urlSP.set("zamazenta_extra_shield", zamaExtraShield.toString());
         urlSP.set("players_in_team", playersInTeam.toString());
         urlSP.set("custom_atk_mult", customBossAtkMult.toString());
@@ -346,31 +339,25 @@ export default function rankingsPage() {
         }
     });
 
-    const handleGmaxSwitch = (checked: boolean) => {
-        setShowAllGmax(checked);
-        const newSearchParams = new URLSearchParams(window.location.search);
-        newSearchParams.set("show_all_gmax", checked.toString());
-        const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
 
 
     useEffect(() => {
         if (pokemonInfo && allDataLoaded) {
             let bestAttackerRef = null;
+            const bestAttackersNonDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, false);
             if (dCannon && !bestAttackerReference) {
-                bestAttackerRef = /*bestAttackers ? bestAttackers[0] :*/ null;
+                bestAttackerRef = bestAttackersNonDCannon ? bestAttackersNonDCannon[0] : null;
             } else if (!dCannon) {
                 bestAttackerRef = null;
             }
-            const bestAttackersDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, showAllGmax, customBossCPM, dCannon);
+            const bestAttackersDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, dCannon);
              
             setBestAttackers(bestAttackersDCannon);
 
             //console.log(bestAttackerRef);
 
             setBestAttackerReference(bestAttackerRef);
-        }}, [dCannon, showAllGmax]);
+        }}, [dCannon]);
 
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
@@ -636,8 +623,6 @@ export default function rankingsPage() {
                             Copy ranking link
                         </button>
 
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleGmaxSwitch(checked)} checked={showAllGmax} /> Show All Gigantamax Forms in Best Attackers</p>
-                        
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
 
                         <p className="italic text-slate-700 text-sm ">Tank Ranking shown</p>
