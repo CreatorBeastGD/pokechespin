@@ -174,20 +174,23 @@ const Navbar = () => {
                     <SheetTrigger className="text-xs p-2">Config</SheetTrigger>
                     
                         <SheetContent className="h-full w-full bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-6">
-                        <ScrollArea className="h-[80vh]">
+                        
                         <div className="w-full">
                             <SheetHeader>
                             <SheetTitle>Configuration</SheetTitle>
+                            
+                            </SheetHeader>
+                            
+                        </div>
+                        <ScrollArea className="h-[80vh]">
+                        <div className="flex flex-col gap-4 mt-4 w-full">
                             <SheetDescription className="text-xs text-muted-foreground mt-2">
                                 Here you can configure some settings for your calculator, such as double friendship bonus, custom AE boosts from Max Finale and more. These settings will be saved in your local storage, so they will be applied every time you use the calculator. Please note that these settings are not saved in the URL, so if you share a link with someone else, they won't see the same settings as you.
                             </SheetDescription>
-                            </SheetHeader>
                             <SheetFooter>
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-primary rounded-lg" onClick={ApplyChanges}>Apply Changes</SheetClose>
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-primary rounded-lg" onClick={DefaultChanges}>Set to Default</SheetClose>
                             </SheetFooter>
-                        </div>
-                        <div className="flex flex-col gap-4 mt-4 w-full">
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Multipliers</SheetTitle>
                             <div className="flex flex-col w-full">
