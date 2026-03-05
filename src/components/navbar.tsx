@@ -173,7 +173,7 @@ const Navbar = () => {
                 </NavigationMenuItem>
                 <Sheet>
                     <SheetTrigger className="text-xs p-2">Config</SheetTrigger>
-                    <SheetContent className="h-full max-w-full w-full  bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-2 sm:p-6 overflow-y-auto">
+                    <SheetContent className="h-full w-full bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-6 overflow-y-auto">
                         <div className="w-full">
                             <SheetHeader>
                             <SheetTitle>Configuration</SheetTitle>
