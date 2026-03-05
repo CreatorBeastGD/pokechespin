@@ -173,7 +173,7 @@ const Navbar = () => {
                 </NavigationMenuItem>
                 <Sheet>
                     <SheetTrigger className="text-xs p-2">Config</SheetTrigger>
-                    <SheetContent className="h-full max-w-full w-full sm:max-w-md bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-2 sm:p-6 overflow-y-auto">
+                    <SheetContent className="h-full max-w-full w-full  bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg p-2 sm:p-6 overflow-y-auto">
                         <div className="w-full">
                             <SheetHeader>
                             <SheetTitle>Configuration</SheetTitle>
@@ -186,7 +186,6 @@ const Navbar = () => {
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-primary rounded-lg" onClick={DefaultChanges}>Set to Default</SheetClose>
                             </SheetFooter>
                         </div>
-                        <ScrollArea className="relative h-[50vh] sm:h-[60vh] w-full max-w-full">
                         <div className="flex flex-col gap-4 mt-4 w-full">
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Multipliers</SheetTitle>
@@ -264,9 +263,6 @@ const Navbar = () => {
                             </div>     
                         </div>
 
-                        
-
-                        </ScrollArea>
                         
                     </SheetContent>
                 </Sheet>
