@@ -626,7 +626,7 @@ export class Calculator {
       static GetDuggoAttackBoost() {
         const customBoost = localStorage.getItem("customBladeBoostAmount");
         if (customBoost && parseFloat(customBoost) > 0) {
-          switch (localStorage.getItem("customBladeBoostAmount")) {
+          switch (customBoost) {
             case "0.3":
               return 1.05;
             case "0.4":

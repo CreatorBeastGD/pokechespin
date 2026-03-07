@@ -1786,6 +1786,8 @@ export class PoGoAPI {
         } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
             allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
         } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
 
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]; fastMove: any}[] = [];
@@ -1870,6 +1872,8 @@ export class PoGoAPI {
         } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
             allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
         } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
         //console.log(allMaxPoke);
         const bossList = Calculator.GetBossesFromBossList(dmaxDifficulty);
         let tierList: { pokemon: any; tier: number, versus: { boss: any; pokemon: any; tier: number}[]}[] = [];
@@ -2036,6 +2040,8 @@ export class PoGoAPI {
         } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
             allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
         } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
         
         allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
@@ -2096,7 +2102,10 @@ export class PoGoAPI {
             allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
         } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
             allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
-        } 
+        }
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
+        
         
         allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
@@ -2163,6 +2172,8 @@ export class PoGoAPI {
         } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
             allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
         } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
         //console.log(allMaxPoke)
         allMaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
