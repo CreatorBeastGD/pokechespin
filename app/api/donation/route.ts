@@ -30,13 +30,13 @@ export async function POST(request: Request) {
 
     
     const donatorEmail = body.data?.supporter_email;
-    const donationMsgType = body.data?.type;
+    const donationMsgType = body.data?.status;
 
     switch (donationMsgType) {
-        case "donation.refunded":
+        case "refunded":
             return NextResponse.json({ message: "Donation refunded", data: body }, { status: 200 });
             break;
-        case "donation.created":
+        case "succeeded":
             return NextResponse.json({ message: "Donation created", data: body }, { status: 200 });
             break;
         default:
