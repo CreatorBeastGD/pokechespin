@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const webhookSecret = process.env.BMAC_WEBHOOK_SECRET;
 
     if (!webhookSecret || !signature) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ error: "Unauthorized", signature: signature }, { status: 401 });
     }
 
     // Calcular la firma local
