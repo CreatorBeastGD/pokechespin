@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Ranking from "../../../models/Ranking";
+import Donation from "../../../models/Donation";
 import { connectDB } from "../../../lib/mongodb";
 import { createHmac } from "crypto";
 
@@ -28,6 +28,18 @@ export async function POST(request: Request) {
     // Parsear el body a JSON después de verificar
     const body = JSON.parse(rawBody);
 
+    
+    const donatorEmail = body.data?.supporter_email;
+    const donationMsgType = body.data?.type;
+
+    switch (donationMsgType) {
+        case "donation.refunded":
+            break;
+            return NextResponse.json({ message: "Donation refunded", data: body }, { status: 200 });
+        case "donation.created":
+            return NextResponse.json({ message: "Donation created", data: body }, { status: 200 });
+            break;
+    }
+
     // ...procesar la donación aquí...
-    return NextResponse.json({ message: "Donation received", data: body }, { status: 200 });
 }
