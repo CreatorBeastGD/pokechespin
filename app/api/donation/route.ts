@@ -34,8 +34,8 @@ export async function POST(request: Request) {
 
     switch (donationMsgType) {
         case "donation.refunded":
-            break;
             return NextResponse.json({ message: "Donation refunded", data: body }, { status: 200 });
+            break;
         case "donation.created":
             return NextResponse.json({ message: "Donation created", data: body }, { status: 200 });
             break;
