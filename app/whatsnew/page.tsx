@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.33.0.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Pikachu.\n",
+        date: "2026-03-09",
+    },
+    {
         title: "v1.33 (Your Custom Pokémon List on Max Rankings!)",
         desc: "+ Added a new 'Custom Pokémon in Max Rankings' config to PokéChespin!\n"+
                 ">>>>>> Now you can choose to show custom Pokémon that are not currently available in Max Battles on the Max Rankings, allowing you to check how good they are as attackers and defenders in Max Battles!\n"+
