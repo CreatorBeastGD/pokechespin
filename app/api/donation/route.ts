@@ -39,6 +39,9 @@ export async function POST(request: Request) {
         case "donation.created":
             return NextResponse.json({ message: "Donation created", data: body }, { status: 200 });
             break;
+        default:
+            return NextResponse.json({ message: "Unhandled donation event", data: body.data }, { status: 200 });
+
     }
 
     // ...procesar la donación aquí...
