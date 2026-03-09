@@ -29,5 +29,5 @@ export async function POST(request: Request) {
     const body = JSON.parse(rawBody);
 
     // ...procesar la donación aquí...
-    return NextResponse.json({ message: "Donation received", data: body }, { status: 200 });
+    return NextResponse.json({ message: "Donation received",signature: signature, data: body }, { status: 200 });
 }
