@@ -58,7 +58,7 @@ export default function CalculateButtonSimulateAdvanced({
   const [visibleEntries, setVisibleEntries] = useState(50);
   const [peopleCount, setPeopleCount] = useState<number>(parseInt(searchParams.get("teams_number") ?? "1"));
   const [partyPower, setPartyPower] = useState<boolean>(searchParams.get("party_power") === "true");
-
+  const [energyResolveBug, setEnergyResolveBug] = useState<boolean>(searchParams.get("energy_resolve_bug") === "true");
   
   useEffect(() => {
     const loadParams = () => {
@@ -67,6 +67,7 @@ export default function CalculateButtonSimulateAdvanced({
       const relobby_time = searchParams.get("relobby_time");
       const teams_number = searchParams.get("teams_number");
       const party_power = searchParams.get("party_power");
+      const energy_resolve_bug = searchParams.get("energy_resolve_bug");
 
       if (dodge) {
         setAvoidCharged(dodge === "true");
@@ -82,6 +83,9 @@ export default function CalculateButtonSimulateAdvanced({
       }
       if (party_power) {
         setPartyPower(party_power === "true");
+      }
+      if (energy_resolve_bug) {
+        setEnergyResolveBug(energy_resolve_bug === "true");
       }
     }
 
@@ -142,7 +146,7 @@ export default function CalculateButtonSimulateAdvanced({
     const attackerBonusesMod = [bonusAttacker[0], bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]];
     const defenderBonusesMod = [bonusAttacker[0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost);
+      await PoGoAPI.advancedSimulation(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, attackerBonusesMod, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost, energyResolveBug);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);
@@ -164,6 +168,7 @@ export default function CalculateButtonSimulateAdvanced({
     setAvoidCharged(avoidCharged);
     setPeopleCount(peopleCount);
     setPartyPower(partyPower);
+    setEnergyResolveBug(energyResolveBug);
     
     const sp = new URLSearchParams(searchParams.toString());
     sp.set("can_dodge", avoidCharged.toString());
@@ -171,6 +176,7 @@ export default function CalculateButtonSimulateAdvanced({
     sp.set("relobby_time", relobbyTime.toString());
     sp.set("teams_number", peopleCount.toString());
     sp.set("party_power", partyPower.toString());
+    sp.set("energy_resolve_bug", energyResolveBug.toString());
     window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
     
     setTime(0);
@@ -178,7 +184,7 @@ export default function CalculateButtonSimulateAdvanced({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
-  }, [teamCount, relobbyTime, avoidCharged, peopleCount, partyPower]);
+  }, [teamCount, relobbyTime, avoidCharged, peopleCount, partyPower, energyResolveBug]);
 
   useEffect(() => {
     setTime(0);
@@ -223,6 +229,7 @@ export default function CalculateButtonSimulateAdvanced({
       <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPartyPower)} checked={partyPower}/> Use Party Power {peopleCount === 1 && ("(Not available for 1 team)")}</p>
+        <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnergyResolveBug)} checked={energyResolveBug}/> Energy Resolve Bug</p>
         <p>Set the number of Pokémon in the team ({teamCount}):</p>
         <Slider onValueChange={(value) => handleTeamCount(value)} value={[teamCount]} max={6} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
         <p>Set custom relobby time ({relobbyTime} seconds):</p>

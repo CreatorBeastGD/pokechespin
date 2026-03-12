@@ -1242,7 +1242,8 @@ export class PoGoAPI {
         enraged: boolean = raidMode.endsWith("shadow"),
         peopleCount?: any,
         partyPower?: any,
-        boost: string = "none"
+        boost: string = "none",
+        energyResolveBug: boolean = true
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
@@ -1356,7 +1357,7 @@ export class PoGoAPI {
                         attackerQuickAttackUses++;
                         attackerMove = quickMoveAttacker;
 
-                        energyResolveCooldown[indexAlternator] = time + 600;
+                        energyResolveCooldown[indexAlternator] = time + (energyResolveBug ? 600 : 1);
                         indexAlternator = 1 - indexAlternator;
 
                         /* Once energy resolve gets fixed, uncomment this
