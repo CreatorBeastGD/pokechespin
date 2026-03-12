@@ -19,7 +19,7 @@ const novedades = [
     {
         title: "v1.33.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
-                ">>>>>> Pikachu.\n",
+                ">>>>>> Pikachu. (Oh whoops forgot about Raichu)\n",
         date: "2026-03-09",
     },
     {

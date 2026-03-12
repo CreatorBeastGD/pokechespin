@@ -231,6 +231,7 @@ export class Calculator {
       "GROWLITHE",
       "ARCANINE",
       "PIKACHU",
+      "RAICHU",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
