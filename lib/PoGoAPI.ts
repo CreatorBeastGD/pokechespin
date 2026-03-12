@@ -95,6 +95,9 @@ export class PoGoAPI {
     }
 
     static getPokemonNamePB(pokemonId: string, textList: any) {
+        if (pokemonId == "PIKACHU_WCS_2025_FORM") {
+            return "Pikachu - WCS 2025";
+        }
         return pokemonId ? this.formatPokemonText(textList.pokemon[pokemonId], textList) : "???";
     }
 
@@ -147,6 +150,14 @@ export class PoGoAPI {
         
         if (pokemon.length > 0) {
             switch (pokemon[0].pokemonId) {
+                case "PIKACHU":
+                    pokemon[0].cinematicMoves = ["WILD_CHARGE","DISCHARGE","THUNDERBOLT", "THUNDER", "SURF"];
+                    pokemon[0].eliteCinematicMove = ["SURF", "THUNDER"];
+                    break;
+                case "PIKACHU_GIGANTAMAX":
+                    pokemon[0].cinematicMoves = ["WILD_CHARGE","DISCHARGE","THUNDERBOLT", "THUNDER", "SURF"];
+                    pokemon[0].eliteCinematicMove = ["SURF", "THUNDER"];
+                    break;
                 case "ETERNATUS":
                     pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
                     pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "DYNAMAX_CANNON"];
