@@ -1251,7 +1251,7 @@ export class PoGoAPI {
         let partyPowerLimit = (partyPower ? (peopleCount === 2 ? 18 : (peopleCount === 3 ? 9 : (peopleCount > 3 ? 6 : -1))) : -1);
         let partyPowerActivated = false;
 
-        let time = 0;
+        let time = 1;
 
         // Damage window start, will be -1 if the attacker is not casting a move
         let attackerDamageStart = -1;
@@ -1311,6 +1311,9 @@ export class PoGoAPI {
             chargedAttackFromMegaUsed = new Array(peopleCount).fill(false);
         }
 
+        let energyResolveCooldown = new Array(2).fill(0);
+        let indexAlternator = 0;
+
 
         while (attackerDamage <= defenderHealth) {
             // Attacker can cast a move
@@ -1349,12 +1352,20 @@ export class PoGoAPI {
                     else {
                         //console.log("Attacker casts a quick move at time " + time);
                         attackerDamageStart = time - 1;
+                        
+                        attackerQuickAttackUses++;
                         attackerMove = quickMoveAttacker;
+
+                        energyResolveCooldown[indexAlternator] = time + 600;
+                        indexAlternator = 1 - indexAlternator;
+
+                        /* Once energy resolve gets fixed, uncomment this
                         attackerEnergy += quickMoveAttacker.energyDelta;
                         if (attackerEnergy > 100) {
                             attackerEnergy = 100;
                         }
-                        attackerQuickAttackUses++;
+
+                        */
                     }
 
                     // Attacker has a purified gem and can use it
@@ -1454,6 +1465,7 @@ export class PoGoAPI {
                     battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
                 }
             }
+
             // Attacker has finished casting its move
             if (simGoing && attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
                 attackerDamageStart = -1;
@@ -1543,6 +1555,22 @@ export class PoGoAPI {
                 defenderMove = null;
 
             }
+
+            if (energyResolveCooldown[0] == time) {
+                attackerEnergy += quickMoveAttacker.energyDelta;
+                if (attackerEnergy > 100) {
+                    attackerEnergy = 100;
+                }
+            }
+
+            if (energyResolveCooldown[1] == time) {
+                attackerEnergy += quickMoveAttacker.energyDelta;
+                if (attackerEnergy > 100) {
+                    attackerEnergy = 100;
+                }
+            }
+
+
             if (defenderDamageStart < -1) {
                 defenderDamageStart++;
             }
