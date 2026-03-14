@@ -10,7 +10,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.33.0.1";
+        return "1.34";
     }
 
     static async getAllPokemon() {
@@ -1235,6 +1235,52 @@ export class PoGoAPI {
         }
     }
 
+    static MegaBoostToApply(pokemonTeam: any[], playerAmount: any, allTypes: any, activePokemonIndex: any, moveType: any) {
+        let typeBonus: { [type: string]: number } = {};
+        for (let i = 0; i < allTypes.length; i++) {
+            typeBonus["POKEMON_TYPE_"+(allTypes[i].type).toUpperCase()] = 1;
+        }
+        let effectIsPassive = false;
+        for (let pokemon of pokemonTeam) {
+            if (this.IsMega(pokemon.pokemonId) || pokemon.pokemonId.endsWith("_PRIMAL")) {
+                typeBonus[pokemon.type] = 1.3;
+                if (pokemon.type2) {
+                    typeBonus[pokemon.type2] = 1.3;
+                }
+                if (pokemon.pokemonId === "RAYQUAZA_MEGA") {
+                    typeBonus["POKEMON_TYPE_PSYCHIC"] = 1.3;
+                    effectIsPassive = true;
+                }
+                if (pokemon.pokemonId === "KYOGRE_PRIMAL") {
+                    typeBonus["POKEMON_TYPE_ELECTRIC"] = 1.3;
+                    typeBonus["POKEMON_TYPE_BUG"] = 1.3;
+                    effectIsPassive = true;
+                }
+                if (pokemon.pokemonId === "GROUDON_PRIMAL") {
+                    typeBonus["POKEMON_TYPE_GRASS"] = 1.3;
+                    effectIsPassive = true;
+                }
+                for (let type in typeBonus) {
+                    if (typeBonus[type] === 1) {
+                        typeBonus[type] = 1.1;
+                    }
+                }
+            }
+        }
+        if (playerAmount === 1) {
+            return 1;
+        }
+        if (effectIsPassive) {
+            return typeBonus[moveType] ? typeBonus[moveType] : 1;
+        } else {
+            if (activePokemonIndex != null && pokemonTeam[activePokemonIndex] && (this.IsMega(pokemonTeam[activePokemonIndex].pokemonId))) {
+                return typeBonus[moveType] ? typeBonus[moveType] : 1;
+            } else {
+                return 1;
+            }
+        }
+    }
+
     static async advancedSimulation(
         attacker: any, 
         defender: any,
@@ -1621,7 +1667,403 @@ export class PoGoAPI {
 
     }
 
-    
+    static async advancedSimulationMultiTeam(
+        attacker: any, 
+        defender: any,
+        quickMoveAttacker: any, 
+        chargedMoveAttacker: any, 
+        quickMoveDefender: any, 
+        chargedMoveDefender: any, 
+        attackerStats: any, 
+        defenderStats: any,
+        raidMode: any, 
+        bonusAttacker: any, 
+        bonusDefender: any, 
+        teamCount: any,
+        avoids?: any,
+        relobbyTime?: any,
+        enraged: boolean = raidMode.endsWith("shadow"),
+        peopleCount?: any,
+        partyPower?: any,
+        boost: string = "none",
+        energyResolveBug: boolean = true
+    ) {
+        if (raidMode !== "normal") {
+            defenderStats = this.convertStats(defenderStats, raidMode);
+        }
+
+        teamCount = attacker.length;
+        console.log("Team count: " + teamCount);
+
+        console.log(bonusAttacker);
+
+        let partyPowerCounter = 0;
+        let partyPowerLimit = (partyPower ? (peopleCount === 2 ? 18 : (peopleCount === 3 ? 9 : (peopleCount > 3 ? 6 : -1))) : -1);
+        let partyPowerActivated = false;
+
+        let time = 1;
+
+        // Damage window start, will be -1 if the attacker is not casting a move
+        let attackerDamageStart = -1;
+        let defenderDamageStart = -1;
+
+
+        let attackerEnergy = Array(teamCount).fill(0);
+        let defenderEnergy = 0;
+        let attackerHealth = Array(teamCount).fill(0).map((_, i) => Math.floor(Calculator.getEffectiveStamina(attacker[i].stats.baseStamina, attackerStats[i][3], attackerStats[i][0])));
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defenderStats[3], defenderStats[0], raidMode);
+        
+        let attackerFaints = 0;
+        let attackerEvades = false;
+        let attackerFaint = Array(teamCount).fill(false);
+
+        let attackerDamage = 0;
+        let defenderDamage = Array(teamCount).fill(0);
+        let tdo = 0;
+        let attackerQuickAttackUses = 0;
+        let defenderQuickAttackUses = 0;
+        let attackerChargedAttackUses = 0;
+        let defenderChargedAttackUses = 0;
+
+        let currentAttackerIndex = 0;
+
+        //console.log (quickMoveAttacker, chargedMoveAttacker, quickMoveDefender, chargedMoveDefender);
+
+        let attackerMove = null;
+        let defenderMove = null;
+        
+        let battleLog = []
+
+        let firstDmgReduction = false;
+
+        const types = await this.getTypes();
+
+        let hasEnraged = false;
+        let isEnraged = false;
+
+        let purifiedGemsCount = 0;
+
+        let purifiedGemsLimit = 5 * peopleCount;
+
+        let purifiedGemCooldown = -1;
+        
+        let simGoing = true
+
+        let multiplier = 1;
+
+        let superMegaMode = raidMode === "raid-t7-supermega";
+
+        let smChargedRequired = 0;
+        let isSuperMegaEnraged = false;
+        let isSuperMegaSubdued = false;
+        let chargedAttackFromMegaUsed = [];
+
+        if (superMegaMode) {
+            smChargedRequired = 8;
+            chargedAttackFromMegaUsed = new Array(peopleCount).fill(false);
+        }
+
+        let energyResolveCooldown = new Array(2).fill(0);
+        let indexAlternator = 0;
+
+
+        while (attackerDamage <= defenderHealth) {
+            // Attacker can cast a move
+            if (attackerDamageStart == -1) {
+                attackerFaint[currentAttackerIndex] = false;
+                // Defender has casted a charged move, attacker may try to evade it
+                if (avoids === true && defenderDamageStart != -1 && !attackerEvades && defenderMove != null) {
+                    const projectedDamageDefender = Math.floor(0.25 * this.getDamage(defender, attacker[currentAttackerIndex], defenderMove, types, defenderStats, attackerStats[currentAttackerIndex], bonusDefender, bonusAttacker[currentAttackerIndex], "normal", 1, boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1));
+                
+                    if (defenderMove.energyDelta < 0 && 
+                        time < defenderDamageStart + defenderMove.damageWindowStartMs && 
+                        (projectedDamageDefender + defenderDamage[currentAttackerIndex]) < attackerHealth[currentAttackerIndex]) {
+                        // Attacker evades the move
+                        //console.log("Attacker evades the next move!")
+                        attackerEvades = true;
+                        firstDmgReduction = true;
+
+                        attackerDamageStart = -1001;
+                        for (let i = 0 ; i < peopleCount ; i++) {
+                            battleLog.push({"turn": (time + 500), "attacker": "attacker", "dodge": true, "currentAttackerIndex": currentAttackerIndex});
+                        }
+                    }
+                }
+                
+                // If the attacker is not evading, it can cast a move
+                if (!firstDmgReduction) {
+                    // Attacker can select its charged move
+                    if (attackerEnergy[currentAttackerIndex] >= -chargedMoveAttacker[currentAttackerIndex].energyDelta) {
+                        //console.log("Attacker casts a charged move at time " + time);
+                        attackerDamageStart = time - 1;
+                        attackerMove = chargedMoveAttacker[currentAttackerIndex];
+                        attackerEnergy[currentAttackerIndex] += chargedMoveAttacker[currentAttackerIndex].energyDelta;
+                        attackerChargedAttackUses++;
+                    }
+                    // Attacker will cast a quick move
+                    else {
+                        //console.log("Attacker casts a quick move at time " + time);
+                        attackerDamageStart = time - 1;
+                        
+                        attackerQuickAttackUses++;
+                        attackerMove = quickMoveAttacker[currentAttackerIndex];
+
+                        energyResolveCooldown[indexAlternator] = time + (energyResolveBug ? 600 : 1);
+                        indexAlternator = 1 - indexAlternator;
+
+                        /* Once energy resolve gets fixed, uncomment this
+                        attackerEnergy += quickMoveAttacker.energyDelta;
+                        if (attackerEnergy > 100) {
+                            attackerEnergy = 100;
+                        }
+
+                        */
+                    }
+
+                    // Attacker has a purified gem and can use it
+                    if (enraged && (purifiedGemsCount < purifiedGemsLimit) && isEnraged && purifiedGemCooldown == -1) {
+                        for (let i = 0 ; i < peopleCount ; i++) {
+                            purifiedGemsCount++;
+                            battleLog.push({"turn": time, "attacker": "attacker", "purifiedgem": true});
+                        }
+                        purifiedGemCooldown = -5001;
+                    }
+
+                    // Attacker can activate its Party Power´
+                    if (partyPowerCounter === partyPowerLimit && !partyPowerActivated) {
+                        partyPowerActivated = true;
+                        partyPowerCounter = 0;
+                    }
+
+                    // 8 Purified gems have been used, the defender subdues
+                    if (enraged && purifiedGemsCount >= 8 && isEnraged) {
+                        isEnraged = false;
+                        //console.log("Defender subdues at time " + time);
+                        battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
+                    }
+                }
+                firstDmgReduction = false;
+            }
+            // Attacker deals damage
+            if (attackerMove !== null && attackerDamageStart > -1 && time === attackerDamageStart + attackerMove.damageWindowStartMs) 
+            {
+                if (attackerMove.energyDelta < 0 && partyPowerActivated) {
+                    partyPowerActivated = false;
+                    multiplier = 2;
+                } else if (attackerMove.energyDelta >= 0 && partyPowerCounter < partyPowerLimit) {
+                    partyPowerCounter++;
+                }
+
+                for (let i = 0; i < peopleCount && simGoing; i++) {
+                    
+                    const projectedDamage = (isEnraged ? 
+                        this.getDamageEnraged(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, false, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1)) : 
+                        isSuperMegaEnraged ? this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) * (1/4)) : 
+                            this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) )
+                    )
+                    tdo += projectedDamage / peopleCount;
+                    
+                    attackerDamage += projectedDamage;
+                    //console.log("Attacker deals " + projectedDamage + " damage with move " + attackerMove.moveId + " at time " + time);
+                    defenderEnergy += Math.ceil(projectedDamage / 2);
+                    if (defenderEnergy > 100) {
+                        defenderEnergy = 100;
+                    }
+                    battleLog.push({"turn": time, "attacker": "attacker", "move": attackerMove.moveId, "damage": projectedDamage, "energy": attackerEnergy[currentAttackerIndex], "stackedDamage": attackerDamage, "health": defenderHealth, "partypower": (multiplier == 2), "currentAttackerIndex": currentAttackerIndex});
+                    
+                    // The defender was a super mega raid boss and received smChargedRequired charged moves from a mega attacker. It subdues and loses 20% of its max health
+                    if (superMegaMode && isSuperMegaEnraged && attackerMove.energyDelta < 0 && this.IsMega(attacker[currentAttackerIndex].pokemonId) && !chargedAttackFromMegaUsed[i]) {
+                        chargedAttackFromMegaUsed[i] = true;
+                        smChargedRequired--;
+                        if (smChargedRequired <= 0) {
+                            isSuperMegaEnraged = false;
+                            isSuperMegaSubdued = true;
+                            //console.log("Defender subdues at time " + time);
+                            attackerDamage = attackerDamage + (defenderHealth * 0.2);
+                            battleLog.push({"turn": time, "attacker": "defender", "subdued": true, "currentAttackerIndex": currentAttackerIndex});
+                        }
+                    }
+
+                    // End of simulation
+                    if (attackerDamage >= defenderHealth) {
+                        //console.log("Defender faints at time " + time + ", end of simulation.");
+                        battleLog.push({"turn": time, "attacker": "defender", "relobby": false, "currentAttackerIndex": currentAttackerIndex});
+                        simGoing = false;
+                        break;
+                    }
+                }
+                
+                multiplier = 1;
+
+                // Defender is a shadow raid boss and reaches 60% of health, it will enrage
+                if (simGoing && enraged && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.6 && !hasEnraged) {
+                    hasEnraged = true;
+                    isEnraged = true;
+                    defenderHealth = defenderHealth * 1.2;
+                    //console.log("Defender enrages at time " + time);
+                    battleLog.push({"turn": time, "attacker": "defender", "enraged": true});
+                }
+
+                // Defender is a Super Mega Raid boss and reaches 80% of health, it enrages
+                if (simGoing && superMegaMode && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.8 && (!isSuperMegaEnraged && !isSuperMegaSubdued)) {
+                    isSuperMegaEnraged = true;
+                    battleLog.push({"turn": time, "attacker": "defender", "enraged": true});
+                }
+
+                // Defender reaches 15% of health, it subdues
+                if (simGoing && enraged && ((defenderHealth - attackerDamage) / defenderHealth) <= 0.15 && isEnraged) {
+                    isEnraged = false;
+                    //console.log("Defender subdues at time " + time);
+                    battleLog.push({"turn": time, "attacker": "defender", "subdued": true});
+                }
+            }
+
+            // Attacker has finished casting its move
+            if (simGoing && attackerMove != null && attackerDamageStart >= 0 && time >= attackerDamageStart + attackerMove.durationMs) {
+                attackerDamageStart = -1;
+                attackerMove = null;
+                //console.log("Attacker has finished casting its move at time " + time);
+            }
+            
+            // Defender can cast a move
+            if (simGoing && defenderDamageStart == -1) {
+                defenderDamageStart = time - 1;
+                // Defender can select its charged move
+                if (defenderEnergy >= -chargedMoveDefender.energyDelta) {
+                    if (Math.random() > 0.5) {
+                        //console.log("Defender casts a charged move at time " + time);
+                        defenderMove = chargedMoveDefender;
+                        defenderEnergy += chargedMoveDefender.energyDelta;
+                        defenderChargedAttackUses++;
+                    } else {
+                        //console.log("Defender casts a quick move at time " + time);
+                        defenderMove = quickMoveDefender;
+                        defenderEnergy += quickMoveDefender.energyDelta;
+                        if (defenderEnergy > 100) {
+                            defenderEnergy = 100;
+                        }
+                        defenderQuickAttackUses++;
+                    }
+                }
+                // Defender will cast a quick move
+                else {
+                    //console.log("Defender casts a quick move at time " + time);
+                    defenderMove = quickMoveDefender;
+                    defenderEnergy += quickMoveDefender.energyDelta;
+                    if (defenderEnergy > 100) {
+                        defenderEnergy = 100;
+                    }
+                    defenderQuickAttackUses++;
+                }
+            }
+            // Defender deals damage
+            if (simGoing && defenderDamageStart > -1 && 
+                time === defenderDamageStart + defenderMove?.damageWindowStartMs) 
+            {
+                const projectedDamageDefender = ((isEnraged || isSuperMegaEnraged) ?
+                    this.getDamageEnraged(defender, attacker[currentAttackerIndex], defenderMove, types, defenderStats, attackerStats[currentAttackerIndex], bonusDefender, bonusAttacker[currentAttackerIndex], "normal", true, (boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1)) :
+                    this.getDamage(defender, attacker[currentAttackerIndex], defenderMove, types, defenderStats, attackerStats[currentAttackerIndex], bonusDefender, bonusAttacker[currentAttackerIndex], "normal", 1, (boost === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1))
+                )
+                const finalDamage = Math.floor(((attackerFaint[currentAttackerIndex]) ? 0 : (attackerEvades ? 0.25 : 1)) * projectedDamageDefender);
+                //console.log("Final damage: " + finalDamage);
+                
+                defenderDamage[currentAttackerIndex] += finalDamage
+                attackerEnergy[currentAttackerIndex] += Math.ceil(finalDamage / 2);
+                if (attackerEnergy[currentAttackerIndex] > 100) {
+                    attackerEnergy[currentAttackerIndex] = 100;
+                }
+                for (let i = 0 ; i < peopleCount ; i++) {
+                    if (defenderDamage[currentAttackerIndex] != 0) {
+                        battleLog.push({"turn": time, "attacker": "defender", "move": defenderMove.moveId, "damage": finalDamage, "energy": defenderEnergy, "stackedDamage": defenderDamage[currentAttackerIndex], "health": attackerHealth[currentAttackerIndex], "currentAttackerIndex": currentAttackerIndex});
+                    }
+                }
+                //console.log("Defender deals damage: " + (attackerFaint ? 0 : projectedDamageDefender + (attackerEvades ? " reduced x0.25" : "")) + " with move " + defenderMove.moveId + " at time " + time);
+                
+                attackerEvades = false;
+                // Attacker faints
+                if (defenderDamage[currentAttackerIndex] >= attackerHealth[currentAttackerIndex]) {
+                    attackerEnergy[currentAttackerIndex] = 0;
+                    //console.log("Attacker faints at time " + time);
+                    attackerFaints++;
+                    defenderDamage[currentAttackerIndex] = 0;
+                    attackerFaint[currentAttackerIndex] = true;
+                    attackerMove = null;
+                    // Attacker has a 1.5 second delay before the next attacker is sent.
+                    // If the attacker faints teamCount times, the attacker will have a 10 second delay before the next attacker is sent.
+                    if ((!attackerFaint.includes(false))) {
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": true, "tdo": tdo, "currentAttackerIndex": currentAttackerIndex});
+                        //console.log("Attacker has a 8 second delay before the next attacker is sent.");
+                        attackerDamageStart = (relobbyTime * -1000) - 1;
+                        attackerFaint = Array(teamCount).fill(false);
+                    } else {
+                        battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo, "currentAttackerIndex": currentAttackerIndex});
+                        attackerDamageStart = -1001;
+                    }
+                    currentAttackerIndex = (currentAttackerIndex + 1) % teamCount;
+                    tdo = 0;
+                }
+            }
+            // Defender has finished casting its move
+            if (simGoing && defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
+                defenderDamageStart = (Math.floor(Math.random() * 3) * -500) - 1501;
+                defenderMove = null;
+
+            }
+
+            if (energyResolveCooldown[0] == time) {
+                attackerEnergy[currentAttackerIndex] += quickMoveAttacker[currentAttackerIndex].energyDelta;
+                if (attackerEnergy[currentAttackerIndex] > 100) {
+                    attackerEnergy[currentAttackerIndex] = 100;
+                }
+            }
+
+            if (energyResolveCooldown[1] == time) {
+                attackerEnergy[currentAttackerIndex] += quickMoveAttacker[currentAttackerIndex].energyDelta;
+                if (attackerEnergy[currentAttackerIndex] > 100) {
+                    attackerEnergy[currentAttackerIndex] = 100;
+                }
+            }
+
+
+            if (defenderDamageStart < -1) {
+                defenderDamageStart++;
+            }
+            if (attackerDamageStart < -1) {
+                attackerDamageStart++;
+            }
+            if (purifiedGemCooldown < -1) {
+                purifiedGemCooldown++;
+            }
+            time++;
+            if (!simGoing) {
+                break;
+            }
+        }
+
+        console.log("sim done")
+
+        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage};
+        
+
+        // In a raid battle, the defender is the raid boss
+
+        // A raid boss will attack each 1.5/2.5 seconds, chosen randomly
+
+        // Raid Boss has an energy bar of 100, and will have a 50% chance of using a charged move when it has enough energy
+
+        // Each attack has a damage window start and end time, which is the time in which the attack will deal damage
+
+        // Each Pokemon will attack when the damage window is open, and will deal damage based on the damage window
+
+        // damage window parameter on attacks are attack.damageWindowStartMs and attack.damageWindowEndMs
+
+        // When the attacker faints, he will have a 1.5 second delay before the next attacker is sent
+
+        // Both Pokémon will gain energy based on the energyDelta of the attack
+        
+        // Both Pokémon will gain 50% energy of the damage taken (1 energy per 2 damage taken)
+
+    }
 
     static sumAllElements(arr: any[][]) {
         return arr.reduce((acc, val) => acc + val.reduce((acc2, val2) => acc2 + val2, 0), 0);

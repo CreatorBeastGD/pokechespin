@@ -17,6 +17,18 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.34 (PokéChespin for Raids overhaul!)",
+        desc: "+ Changed 'PokéChespin for Raids' to look similar to the Max Battles page. This includes the following changes:\n"+
+                ">>>>>> + Added the possibility to select up to 6 attackers per team, simulating a real Raid team.\n"+
+                ">>>>>>>>> This enables the posibility to simulate raids with multiple different attackers!\n"+
+                ">>>>>> + Added a new 'Mega Boost' selector, showing the impact of Mega Evolutions on all calculations (even non-same type attacks!).\n"+
+                ">>>>>> ~ The mega boost received on a simulation will be dependant of the Mega Evolution selected on the attackers, and will only apply if more than 1 player is simulated.\n"+
+                ">>>>>> ~ Moved the 'Friendship' bonus to the 'Results' section.\n"+
+                "Even with this change, most of the previous links are compatible with this update."+
+                "...Well, one step closer to a Solo Raid Player with this change...",
+        date: "2026-03-14",
+    },
+    {
         title: "v1.33.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Pikachu. (Oh whoops forgot about Raichu)\n",

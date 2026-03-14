@@ -18,11 +18,11 @@ import WeaknessResistanceTable from "./WeaknessResistanceTable";
 
 
 interface SearchBarAttackerProps {
-  onSelect: (pokemon: any) => void;
-  onQuickMoveSelect: (moveId: string, move: any) => void;
-  onChargedMoveSelect: (moveId: string, move: any) => void;
-  onChangedStats: (stats: any) => void;
-  onBonusChange: (bonuses: any) => void;
+  onSelect: (pokemon: any, slot: any) => void;
+  onQuickMoveSelect: (moveId: string, move: any, slot: any) => void;
+  onChargedMoveSelect: (moveId: string, move: any, slot: any) => void;
+  onChangedStats: (stats: any, slot: any) => void;
+  onBonusChange: (bonuses: any, slot: any) => void;
   pokemonList: any;
   searchBarNames: any;
   allMoves: any;
@@ -33,6 +33,7 @@ interface SearchBarAttackerProps {
   initialValues?: any;
   paramsLoaded?: boolean;
   allTypes?: any;
+  memberSlot?: number;
 }
 
 export default function SearchBarAttacker({ 
@@ -50,7 +51,8 @@ export default function SearchBarAttacker({
     slot,
     initialValues,
     paramsLoaded,
-    allTypes
+    allTypes,
+    memberSlot
   }: SearchBarAttackerProps, ) {
 
     const raidModeLevelMultiplier = PoGoAPI.convertStats([40, 15, 15, 15], raidMode)[0];
@@ -100,25 +102,25 @@ export default function SearchBarAttacker({
 
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
-    onQuickMoveSelect(moveId, move);
+    onQuickMoveSelect(moveId, move, memberSlot);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack", moveId);
+    newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", moveId);
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleStatsSelect = (stats: any) => {
     setStats(stats);
-    onChangedStats(stats);
+    onChangedStats(stats, memberSlot);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
 
   const handleBonusSelect = (bonus: any) => {
     setSelectedBonuses(bonus);
-    onBonusChange(bonus);
+    onBonusChange(bonus, memberSlot);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot == 1 ? "attacker_bonuses" : "defender_bonuses", bonus.join(","));
+    newSearchParams.set(slot == 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", bonus.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }
   
@@ -138,14 +140,14 @@ export default function SearchBarAttacker({
     try {
       const response = PoGoAPI.getPokemonPBByID(pokemonD.pokemonId, pokemonList)[0];
       setPokemonData(response);
-      onSelect(response);
+      onSelect(response, memberSlot);
       //console.log();
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
       
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
+      newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
       
@@ -176,14 +178,13 @@ export default function SearchBarAttacker({
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
       setPokemonData(response);
-      onSelect(response);
+      onSelect(response, memberSlot);
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX");
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
-
+      newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
+      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" + memberSlot : "defender_fast_attack");
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" + memberSlot : "defender_cinematic_attack");
       
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
@@ -212,11 +213,11 @@ export default function SearchBarAttacker({
     try {
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
-      onSelect(response);
+      onSelect(response, memberSlot);
       const newSearchParams = new URLSearchParams(searchParams.toString());    
-      newSearchParams.set(slot === 1 ? "attacker" : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack");
+      newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
+      newSearchParams.delete(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack");
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack");
       
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     
@@ -240,16 +241,16 @@ export default function SearchBarAttacker({
     if (paramsLoaded) {
       
     setSelectedChargedMove(moveId);
-    onChargedMoveSelect(moveId, move);
+    onChargedMoveSelect(moveId, move, memberSlot);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack", moveId);
+    newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedForm(event.target.value);
-    onSelect(searchForm(event.target.value));
+    onSelect(searchForm(event.target.value), memberSlot);
     setSelectedQuickMove(null);
     setSelectedChargedMove(null);
   };
@@ -277,17 +278,17 @@ export default function SearchBarAttacker({
 
   useEffect(() => {
     
-    onChangedStats(stats);
+    onChangedStats(stats, memberSlot);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", stats.join(","));
+    newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [stats]);
 
   useEffect(() => {
-    onBonusChange(selectedBonuses);
+    onBonusChange(selectedBonuses, memberSlot);
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", selectedBonuses.join(","));
+    newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", selectedBonuses.join(","));
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [selectedBonuses]);
 
@@ -418,11 +419,11 @@ export default function SearchBarAttacker({
                               
                               // Actualizamos la URL una sola vez al final
                               const newSearchParams = new URLSearchParams(searchParams.toString());
-                              newSearchParams.set(slot === 1 ? "attacker" : "defender", pokemonData.pokemonId);
-                              newSearchParams.set(slot === 1 ? "attacker_stats" : "defender_stats", data.stats.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_bonuses" : "defender_bonuses", data.bonuses.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_fast_attack" : "defender_fast_attack", data.quickMove);
-                              newSearchParams.set(slot === 1 ? "attacker_cinematic_attack" : "defender_cinematic_attack", data.chargedMove);
+                              newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", pokemonData.pokemonId);
+                              newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", data.stats.join(","));
+                              newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
+                              newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
+                              newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
                               window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
                           }, 100);
                       } finally {
@@ -572,7 +573,7 @@ export default function SearchBarAttacker({
                 style={{ objectFit: 'scale-down', width: '200px', height: '200px' }}
             />
           {(slot === 1 || (slot === 2 && raidMode === "normal")) && 
-          <div className="grid grid-cols-1">
+          <div className="grid grid-cols-1 mb-4">
           <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
             <p>Level: {stats[0]}</p>
             <div className="flex flex-row">
@@ -600,16 +601,6 @@ export default function SearchBarAttacker({
             </div>
         </div>
           }
-          {raidmode === "normal" ? (
-          <div className="grid grid-cols-1 mb-4 space-y-2">
-            <p>Bonuses</p>
-            
-            <p className="italic text-slate-700">
-              <Switch onCheckedChange={(checked) => handleBonusChange(2, checked)} checked={selectedBonuses[2]} /> Mega boost
-            </p>
-            <p>Friendship level ({selectedBonuses[3]}) <label className="italic"></label> </p>
-            <Slider onValueChange={(value) => handleBonusChange(3, value[0])} defaultValue={[selectedBonuses[3]]} max={5} step={1} className="w-[60%] mb-5" color={"bg-blue-500"}/>
-          </div>) : (<p className="italic text-xs">You have set a Raid Boss as the Defender Pokémon. Bonuses won't be affected.</p>)}
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>

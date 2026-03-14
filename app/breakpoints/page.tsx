@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import html2canvas from 'html2canvas';
 import CookieBanner from '@/components/cookie-banner';
 import Navbar from '@/components/navbar';
+import { Calculator } from '../../lib/calculations';
 
 
 
@@ -35,6 +36,11 @@ const BreakpointsPage = () => {
     const [minCinematic, setMinCinematic] = useState<any>(null);
     const [maxCinematic, setMaxCinematic] = useState<any>(null);
     const [defenderStatsLoad, setDefenderStatsLoad] = useState<any>(null);
+    const [megaBoost, setMegaBoost] = useState<number>(1);
+    const [advEffect, setAdvEffect] = useState<string>("none");
+    const [friendship, setFriendship] = useState<number>(0);
+
+
       useEffect(() => {
         const fetchAllPokemonPB = async () => {
           const pokemonlist = await PoGoAPI.getAllPokemonPB();
@@ -62,15 +68,19 @@ const BreakpointsPage = () => {
       useEffect (() => {
         if (allDataLoaded) {
             const urlParams = new URLSearchParams(window.location.search);
-            const attacker = urlParams.get('attacker');
+            const slot = urlParams.get('slot') || '0';
+            const attacker = urlParams.get('attacker'+slot);
             const defender = urlParams.get('defender');
-            const attackerFastAttack = urlParams.get('attacker_fast_attack');
-            const attackerCinematicAttack = urlParams.get('attacker_cinematic_attack');
+            const attackerFastAttack = urlParams.get('attacker_fast_attack'+slot);
+            const attackerCinematicAttack = urlParams.get('attacker_cinematic_attack'+slot);
             const raidmode = urlParams.get('raid_mode') || 'normal';
-            const attackerBonuses = urlParams.get('attacker_bonuses') || 'EXTREME,false,false,0';
+            const attackerBonuses = urlParams.get('attacker_bonuses'+slot) || 'EXTREME,false,false,0';
             const defenderBonuses = urlParams.get('defender_bonuses') || 'EXTREME,false,false,0';
             const weather = urlParams.get('weather') || 'EXTREME';
             const defenderStats = urlParams.get('defender_stats') || '50,15,15,15';
+            const megaBoost = urlParams.get('mega_boost') || '1';
+            const advEffect = urlParams.get('adv_effect') || 'none';
+            const friendshipBonus = urlParams.get('friendship') || '0';
 
             if (attacker) {setAttackingPokemon(PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0])} ;
             if (defender) {setDefendingPokemon(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0])};
@@ -81,12 +91,19 @@ const BreakpointsPage = () => {
             setBonusDefender(defenderBonuses.split(','));
             setWeather(weather);
             setDefenderStatsLoad(defenderStats.split(',').map((stat: string) => parseInt(stat)));
+            setMegaBoost(parseFloat(megaBoost));
+            setAdvEffect(advEffect);
+            setFriendship(parseFloat(friendshipBonus));
+
             if (!attacker || !defender || !attackerFastAttack || !attackerCinematicAttack) {
                 setError("Missing parameters");
             }
             else {
                 setParamsLoaded(true);
             }
+
+            urlParams.delete('slot');
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
             
         }
       }, [allDataLoaded]);
@@ -115,7 +132,7 @@ const BreakpointsPage = () => {
         const rows = 32*2 - 1; // Example value for rows
         const cols = 16; // Example value for cols
         const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
-        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", parseInt(bonusAttacker[3])];
+        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", (friendship)];
         const defenderBonus = [weather, bonusDefender[1] === "true", bonusDefender[2] === "true", parseInt(bonusDefender[3])];
         //console.log(attackerBonus);
         // Breakpoints will be calculated from level 20 to level 50
@@ -124,7 +141,7 @@ const BreakpointsPage = () => {
             for (let j = 0; j <= 15; j++) {
                 const attackerStats = [i, j, 15, 15];
                 const defenderStats = defenderStatsLoad;
-                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode);
+                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode, false, megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1));
                 //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
                 table[2*(i-20)][j] = damage;
 

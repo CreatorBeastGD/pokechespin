@@ -19,18 +19,27 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import CookieBanner from "@/components/cookie-banner";
 import Navbar from "@/components/navbar";
 import { Calculator } from "../lib/calculations";
+import { Tabs, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList } from "@radix-ui/react-tabs";
+import { Slider } from "@/components/ui/slider";
 
 export default function Home() {
-  const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+
+  const [numMembers, setNumMembers] = useState<number>(searchParams.get("num_pokemon") ? parseInt(searchParams.get("num_pokemon") as string) : 1);
+    
+  const [attackingPokemon, setAttackingPokemon] = useState<any[]>(Array(numMembers).fill(null));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
-  const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(null);
-  const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(null);
+  const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
+  const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
-  const [attackerStats, setAttackerStats] = useState<any | null>([50, 15, 15, 15]);
+  const [attackerStats, setAttackerStats] = useState<any[][]>(Array(numMembers).fill([50, 15, 15, 15]));
   const [defenderStats, setDefenderStats] = useState<any | null>([50, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("normal");
-  const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
+  const [bonusAttacker, setBonusAttacker] = useState<any[][]>(Array(numMembers).fill(["EXTREME", false, false, 0]));
   const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
   const [searchBarNames, setSearchBarNames] = useState<any>(null);
@@ -40,20 +49,23 @@ export default function Home() {
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
   const [advEffect, setAdvEffect] = useState<string>("none");
+  const [megaBoost, setMegaBoost] = useState<number>(1);
+  const [friendship, setFriendship] = useState<number>(0);
 
-   const [types, setTypes] = useState<any>(null);
+  const [types, setTypes] = useState<any>(null);
+  
 
   const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
 
+  const [cleared, setCleared] = useState<boolean>(true);
   
-
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
+  
+  const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(searchParams.get("slot") ? parseInt(searchParams.get("slot") as string) : 1);
 
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
       setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
+      
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
       setAllPokemonPB(pokemonlist);
       //console.log("Fetched all Pokémon from PokeBattler API");
@@ -87,39 +99,173 @@ export default function Home() {
     
   }, []);
 
+  // Limpia los params de los pokemon que no se usan.
+  useEffect(() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.set("num_pokemon", numMembers.toString());
+  
+      setTimeout(() => {
+        for (let j = numMembers + 1; j < 6 ; j++) {
+            searchParams.delete(`attacker${j}`);
+            searchParams.delete(`attacker_fast_attack${j}`);
+            searchParams.delete(`attacker_cinematic_attack${j}`);
+            searchParams.delete(`attacker_stats${j}`);
+            searchParams.delete(`attacker_bonuses${j}`);
+        }
+        window.history.replaceState({}, "", `${window.location.pathname}?${searchParams.toString()}`);
+      }, 1);
+    }, [numMembers]);
+
+  const handleNumMembersChange = (value: number[]) => {
+    const newNumMembers = value[0];
+
+    if (selectedPokemonSlot > newNumMembers)  {
+      setSelectedPokemonSlot(newNumMembers);
+    }
+
+    const newAttackingPokemon = [...attackingPokemon.slice(0, newNumMembers)];
+    const newSelectedQuickMoveAttacker = [...selectedQuickMoveAttacker.slice(0, newNumMembers)];
+   
+    const newSelectedChargedMoveAttacker = [...selectedChargedMoveAttacker.slice(0, newNumMembers)];
+    const newAttackerStats = [...attackerStats.slice(0, newNumMembers)];
+    
+    const newBonusAttacker = [...bonusAttacker.slice(0, newNumMembers)];
+
+    // Add new empty arrays if increasing the number of members
+    while (newAttackingPokemon.length < newNumMembers) {
+      newAttackingPokemon.push((null));
+      newSelectedQuickMoveAttacker.push((null));
+      newSelectedChargedMoveAttacker.push((null));
+      newAttackerStats.push(([50, 15, 15, 15]));
+      newBonusAttacker.push((["EXTREME", false, false, 0]));
+    }
+
+    setNumMembers(newNumMembers);
+    setAttackingPokemon(newAttackingPokemon);
+    setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
+    setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    setAttackerStats(newAttackerStats);
+    setBonusAttacker(newBonusAttacker);
+  };
+
   useEffect(() => {
     if (allDataLoaded) {
-      //console.log ("All data loaded, checking for URL parameters");
-      const loadParams = () => {
-        const attacker = searchParams.get("attacker");
+
+
+      const newAttackingPokemon = Array.from({ length: numMembers }, (_, i) => {attackingPokemon[i] ? attackingPokemon[i] : null});
+      const newSelectedQuickMoveAttacker = Array.from({ length: numMembers }, (_, i) => {selectedQuickMoveAttacker[i] ? selectedQuickMoveAttacker[i] : null});
+      const newSelectedChargedMoveAttacker = Array.from({ length: numMembers }, (_, i) => {selectedChargedMoveAttacker[i] ? selectedChargedMoveAttacker[i] : null});
+      const newAttackerStats = Array.from({ length: numMembers }, (_, i) => attackerStats[i]);
+      const newBonusAttacker = Array.from({ length: numMembers }, (_, i) => bonusAttacker[i]);
+      const newUrlParams = new URLSearchParams(window.location.search);
+
+
+      // Old link checker
+        const oldAttacker = searchParams.get("attacker");
+        const oldQuickMove = searchParams.get("attacker_fast_attack");
+        const oldChargedMove = searchParams.get("attacker_cinematic_attack");
+        const oldAttackerStats = searchParams.get("attacker_stats");
+        const oldBonusAttacker = searchParams.get("attacker_bonuses");
+
+        if (oldAttacker) {
+          newAttackingPokemon[0] = PoGoAPI.getPokemonPBByID(oldAttacker, pokemonList)[0];
+        }
+        if (oldQuickMove) {
+          newSelectedQuickMoveAttacker[0] = PoGoAPI.getMovePBByID(oldQuickMove, allMoves);
+        }
+        if (oldChargedMove) {
+          newSelectedChargedMoveAttacker[0] = PoGoAPI.getMovePBByID(oldChargedMove, allMoves);
+        }
+        if (oldAttackerStats) {
+          newAttackerStats[0] = oldAttackerStats.split(",").map((stat: string) => parseFloat(stat));
+        }
+        if (oldBonusAttacker) {
+          const bonus = oldBonusAttacker.split(",");
+          newBonusAttacker[0] = bonus;
+        }
+
+        newUrlParams.delete("slot");
+
+        if (oldAttacker) {
+          newUrlParams.delete("attacker");
+          newUrlParams.set(`attacker1`, oldAttacker);
+        } if (oldQuickMove) {
+          newUrlParams.delete("attacker_fast_attack");
+          newUrlParams.set(`attacker_fast_attack1`, oldQuickMove);
+        } if (oldChargedMove) {
+          newUrlParams.delete("attacker_cinematic_attack");
+          newUrlParams.set(`attacker_cinematic_attack1`, oldChargedMove);
+        } if (oldAttackerStats) {
+          newUrlParams.delete("attacker_stats");
+          newUrlParams.set(`attacker_stats1`, oldAttackerStats);
+        } if (oldBonusAttacker) {
+          newUrlParams.delete("attacker_bonuses");
+          newUrlParams.set(`attacker_bonuses1`, oldBonusAttacker);
+        }
+
+        setTimeout(() => {
+          window.history.replaceState({}, "", `${window.location.pathname}?${newUrlParams.toString()}`);
+        }, 1);
+      
+      for (let i = 1; i <= numMembers; i++) {
+        const attackerParam = searchParams.get(`attacker${i}`);
+        const quickMoveParam = searchParams.get(`attacker_fast_attack${i}`);
+        const chargedMoveParam = searchParams.get(`attacker_cinematic_attack${i}`);
+        const statsParam = searchParams.get(`attacker_stats${i}`);
+        const bonusParam = searchParams.get(`attacker_bonuses${i}`);
+
+        if (attackerParam) {
+          newAttackingPokemon[i - 1] = PoGoAPI.getPokemonPBByID(attackerParam, pokemonList)[0];
+        }
+        if (quickMoveParam) {
+          newSelectedQuickMoveAttacker[i - 1] = PoGoAPI.getMovePBByID(quickMoveParam, allMoves);
+        }
+        if (chargedMoveParam) {
+          newSelectedChargedMoveAttacker[i - 1] = PoGoAPI.getMovePBByID(chargedMoveParam, allMoves);
+        }
+        if (statsParam) {
+          newAttackerStats[i - 1] = statsParam.split(",").map((stat: string) => parseFloat(stat));
+        }
+        if (bonusParam) {
+          const bonus = bonusParam.split(",");
+          newBonusAttacker[i - 1] = bonus;
+        }
+      }
+
+      setAttackingPokemon(newAttackingPokemon);
+      setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
+      setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+      setAttackerStats(newAttackerStats);
+      setBonusAttacker(newBonusAttacker);
+
         const defender = searchParams.get("defender");
-        const attackerStats = searchParams.get("attacker_stats");
         const defenderStats = searchParams.get("defender_stats");
-        const bonusAttacker = searchParams.get("attacker_bonuses");
         const bonusDefender = searchParams.get("defender_bonuses");
-        const attackerFastAttack = searchParams.get("attacker_fast_attack");
         const defenderFastAttack = searchParams.get("defender_fast_attack");
-        const attackerChargedAttack = searchParams.get("attacker_cinematic_attack");
         const defenderChargedAttack = searchParams.get("defender_cinematic_attack");
         const weather = searchParams.get("weather");
         const raidMode = searchParams.get("raid_mode");
         const advEffect = searchParams.get("adv_effect");
+        const megaBoost = searchParams.get("mega_boost");
+        const friendshipBonus = searchParams.get("friendship");
 
-        if (attacker) {
-          const attackerPokemon = PoGoAPI.getPokemonPBByID(attacker, pokemonList)[0];
-          setAttackingPokemon(attackerPokemon);
+        if (weather) {
+          let newBonusAttacker = bonusAttacker.map((bonus, index) => {
+            return [weather, bonus[1], bonus[2], bonus[3]];
+          });
+          if (friendshipBonus) {
+            setFriendship(parseFloat(friendshipBonus));
+
+            newBonusAttacker = bonusAttacker.map((bonus, index) => {
+              return [weather, bonus[1], bonus[2], friendshipBonus];
+            });
+          }
+          setBonusAttacker(newBonusAttacker);
         }
+
         if (defender) {
           const defenderPokemon = PoGoAPI.getPokemonPBByID(defender, pokemonList)[0];
           setDefendingPokemon(defenderPokemon);
-        }
-        if (attackerFastAttack) {
-          const fastAttack = PoGoAPI.getMovePBByID(attackerFastAttack, allMoves);
-          setSelectedQuickMoveAttacker(fastAttack);
-        }
-        if (attackerChargedAttack) {
-          const chargedAttack = PoGoAPI.getMovePBByID(attackerChargedAttack, allMoves);
-          setSelectedChargedMoveAttacker(chargedAttack);
         }
         if (defenderFastAttack) {
           const fastAttack = PoGoAPI.getMovePBByID(defenderFastAttack, allMoves);
@@ -129,19 +275,8 @@ export default function Home() {
           const chargedAttack = PoGoAPI.getMovePBByID(defenderChargedAttack, allMoves);
           setSelectedChargedMoveDefender(chargedAttack);
         }
-        if (attackerStats) {
-          setAttackerStats(attackerStats.split(",").map((stat: string) => parseFloat(stat)));
-        }
         if (defenderStats) {
           setDefenderStats(defenderStats.split(",").map((stat: string) => parseFloat(stat)));
-        }
-        //console.log("BA", bonusAttacker);
-        if (bonusAttacker) {
-          const ba = bonusAttacker.split(",");
-          ba[0] = weather ? weather : ba[0];
-          setBonusAttacker(ba);
-        } if (bonusAttacker === null) {
-          setBonusAttacker([weather ? weather : "EXTREME", false, false, 0]);
         }
         //console.log("BD", bonusDefender);
         if (bonusDefender) {
@@ -153,19 +288,84 @@ export default function Home() {
         if (advEffect) {
           setAdvEffect(advEffect);
         }
+        if (megaBoost) {
+          setMegaBoost(parseFloat(megaBoost));
+        } 
+        
+
         setParamsLoaded(true);
-      }
-      loadParams();
     }
   }, [allDataLoaded]);
 
-  const handleAttackerSelect = (pokemon: any) => {
+  const handleAttackerSelect = (pokemon: any, slot: number) => {
+    if (pokemon === null) {
+      setCleared(false);
+      const newSearchParams = new URLSearchParams(window.location.search);
+
+      const newAttackingPokemon = attackingPokemon.map((p, index) => {
+        if (index === slot - 1) {
+          return null;
+        }
+        return p;
+      });
+      setAttackingPokemon(newAttackingPokemon);
+      newSearchParams.delete(`attacker${slot}`);
+
+      const newQuickMoveList = selectedQuickMoveAttacker.map((move, index) => {
+        if (index === slot - 1) {
+          return null;
+        } return move;
+      });
+      setSelectedQuickMoveAttacker(newQuickMoveList);
+      newSearchParams.delete(`attacker_quick_move${slot}`);
+
+      const newChargedMoveList = selectedChargedMoveAttacker.map((move, index) => {
+        if (index === slot - 1) {
+          return null;
+        } return move;
+      });
+      setSelectedChargedMoveAttacker(newChargedMoveList);
+      newSearchParams.delete(`attacker_charged_move${slot}`);
+
+      const newAttackerStatsList = attackerStats.map((stats, index) => {
+        if (index === slot - 1) {
+          return [50, 15, 15, 15];
+        } return stats;
+      });
+      setAttackerStats(newAttackerStatsList);
+      newSearchParams.delete(`attacker_stats${slot}`);
+
+      const newBonusAttackerList = bonusAttacker.map((bonus, index) => {
+        if (index === slot - 1) {
+          return ["EXTREME", false, false, friendship];
+        } return bonus;
+      });
+      setBonusAttacker(newBonusAttackerList);
+      newSearchParams.delete(`attacker_bonuses${slot}`);
+
+      window.history.replaceState({}, "", `${window.location.pathname}?${newSearchParams}`);
+      setTimeout(() => {
+        setCleared(true);
+      }, 100);
+    }
     if (pokemon !== undefined) {
-      setAttackingPokemon(pokemon);
-      setSelectedQuickMoveAttacker(null);
-      setSelectedChargedMoveAttacker(null);
+      const newAttackingPokemon = attackingPokemon.map((p, index) => {
+        if (index === slot - 1) {
+          return pokemon;
+        } return p;
+      });
+      setAttackingPokemon(newAttackingPokemon);
     }
   };
+
+  function allPokemonSelected() {
+    for (let i = 0; i < numMembers; i++) {
+      if (!attackingPokemon[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   const handleDefenderSelect = (pokemon: any) => {
     if (pokemon !== undefined) {
@@ -175,12 +375,26 @@ export default function Home() {
     }
   };
 
-  const handleQuickMoveSelectAttacker = (moveId: string, move: any) => {
-    setSelectedQuickMoveAttacker(move);
+  const handleQuickMoveSelectAttacker = (moveId: string, move: any, slot: any) => {
+    if (move !== undefined) {
+      const newSelectedQuickMoveAttacker = selectedQuickMoveAttacker.map((m, index) => {
+        if (index === slot - 1) {
+          return move;
+        } return m;
+      });
+      setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
+    }
   };
 
-  const handleChargedMoveSelectAttacker = (moveId: string, move: any) => {
-    setSelectedChargedMoveAttacker(move);
+  const handleChargedMoveSelectAttacker = (moveId: string, move: any, slot: any) => {
+    if (move !== undefined) {
+      const newSelectedChargedMoveAttacker = selectedChargedMoveAttacker.map((m, index) => {
+        if (index === slot - 1) {
+          return move;
+        } return m;
+      });
+      setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    }
   };
 
   const handleQuickMoveSelectDefender = (moveId: string, move: any) => {
@@ -191,16 +405,26 @@ export default function Home() {
     setSelectedChargedMoveDefender(move);
   };
 
-  const handleChangedStatsAttacker = (stats: any) => {
-    setAttackerStats(stats);
+  const handleChangedStatsAttacker = (stats: any, slot: any) => {
+    const newAttackerStats = attackerStats.map((s, index) => {
+      if (index === slot - 1) {
+        return stats;
+      } return s;
+    });
+    setAttackerStats(newAttackerStats);
   };
 
   const handleChangedStatsDefender = (stats: any) => {
     setDefenderStats(stats);
   };
 
-  const handleBonusChangeAttacker = (bonus: any) => {
-    setBonusAttacker([bonusAttacker[0], bonus[1], bonus[2], bonus[3]]);
+  const handleBonusChangeAttacker = (bonus: any, slot: any) => {
+    const newBonusAttacker = bonusAttacker.map((b, index) => {
+      if (index === slot - 1) {
+        return [b[0], bonus[1], bonus[2], bonus[3]];
+      } return b;
+    });
+    setBonusAttacker(newBonusAttacker);
   };
 
   const handleBonusChangeDefender = (bonus: any) => {
@@ -208,7 +432,10 @@ export default function Home() {
   };
 
   const handleBonusChange = (value: string) => {
-    setBonusAttacker([value, bonusAttacker[1], bonusAttacker[2], bonusAttacker[3]]);
+    const newBonusAttacker = bonusAttacker.map((b, index) => {
+      return [value, b[1], b[2], friendship];
+    });
+    setBonusAttacker(newBonusAttacker);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("weather", value);
@@ -229,6 +456,29 @@ export default function Home() {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("adv_effect", value);
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
+
+  const handleMegaBoostChange = (value: number) => {
+    setMegaBoost(value);
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("mega_boost", value.toString());
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+  }
+
+  const handleFriendshipChange = (value: number) => {
+    setFriendship(value);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    let weather = newSearchParams.get("weather") || "EXTREME";
+
+    let newBonusAttacker = bonusAttacker.map((b, index) => {
+      return [weather, b[1], b[2], value];
+    });
+    setBonusAttacker(newBonusAttacker);
+
+    newSearchParams.set("friendship", value.toString());
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    
   }
 
   const raidSurname = (raidMode: string) => {
@@ -270,9 +520,15 @@ export default function Home() {
     });
   };
 
+  const handleBarChange = (bar: string, value: number) => {
+    if (bar === "slot") {
+      setSelectedPokemonSlot(value);
+    }
+  }
+
   function checkBreakpoints(event: React.MouseEvent<HTMLButtonElement>): void {
-    if (defenderStats && attackingPokemon && defendingPokemon && selectedQuickMoveAttacker && selectedChargedMoveAttacker) {
-      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}`;
+    if (defenderStats && attackingPokemon[selectedPokemonSlot - 1] && defendingPokemon && selectedQuickMoveAttacker[selectedPokemonSlot - 1] && selectedChargedMoveAttacker[selectedPokemonSlot - 1]) {
+      const newUrl = `${window.location.origin}${window.location.pathname}/breakpoints?${searchParams.toString()}&slot=${selectedPokemonSlot}`;
       router.push(newUrl);
     } else {
       alert("Please select all required fields before checking breakpoints! (Attacker Pokémon, Defender Pokémon, Attacker's Fast Attack, Attacker's Charged Attack)");
@@ -300,33 +556,51 @@ export default function Home() {
             <CardTitle>Attacking Pokémon</CardTitle>
             <CardDescription>Set an attacking Pokémon</CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
+            <CardDescription>Select the number of Pokémon in your team ({numMembers})</CardDescription>
+            <Slider onValueChange={handleNumMembersChange} value={[numMembers]} min={1} max={6} step={1} className="w-[60%] mb-1" color={"bg-blue-500"} />
+          
           </CardHeader>
           {(pokemonList && searchBarNames && allMoves) ? (
             <CardContent>
-            <SearchBarAttacker
-              allEnglishText={allEnglishText}
-              assets={imageLinks}
-              allMoves={allMoves}
-              searchBarNames={searchBarNames}
-              pokemonList={pokemonList}
-              onSelect={handleAttackerSelect}
-              onQuickMoveSelect={handleQuickMoveSelectAttacker}
-              onChargedMoveSelect={handleChargedMoveSelectAttacker}
-              onChangedStats={handleChangedStatsAttacker}
-              onBonusChange={handleBonusChangeAttacker}
-              slot={1}
-              initialValues={
-                {
-                  attacker: attackingPokemon,
-                  quickMove: selectedQuickMoveAttacker,
-                  chargedMove: selectedChargedMoveAttacker,
-                  attackerStats: attackerStats,
-                  bonusAttacker: bonusAttacker
+            <Tabs defaultValue={"member-"+(selectedPokemonSlot)+""} value={"member-"+(selectedPokemonSlot)+""} className="">
+              <TabsList className="flex flex-row items-center space-x-4 w-full">
+                {attackingPokemon.map((i: any, idx: any) => {
+                  return <TabsTrigger
+                    className={attackingPokemon[idx] ? (selectedChargedMoveAttacker[idx] && selectedQuickMoveAttacker[idx] ? "green text-white data-[state=active]:bg-green-500" : "bg-blue-500 text-white data-[state=active]:bg-blue-500") : "bg-red-500 text-white data-[state=active]:bg-red-500"} 
+                    key={idx} value={`member-${idx + 1}`} onClick={() => handleBarChange("slot", idx + 1)}>{idx+1}</TabsTrigger>
+                })}
+              </TabsList>
+            </Tabs>
+            {Array.from({ length: numMembers }, (_, slotIndex) => (
+              selectedPokemonSlot === slotIndex + 1 && (
+                <SearchBarAttacker
+                key={slotIndex + 1}
+                allEnglishText={allEnglishText}
+                assets={imageLinks}
+                allMoves={allMoves}
+                searchBarNames={searchBarNames}
+                pokemonList={pokemonList}
+                onSelect={(pokemon) => handleAttackerSelect(pokemon, slotIndex + 1)}
+                onQuickMoveSelect={handleQuickMoveSelectAttacker}
+                onChargedMoveSelect={handleChargedMoveSelectAttacker}
+                onChangedStats={handleChangedStatsAttacker}
+                onBonusChange={handleBonusChangeAttacker}
+                slot={1}
+                initialValues={
+                  {
+                    attacker: attackingPokemon[slotIndex],
+                    quickMove: selectedQuickMoveAttacker[slotIndex],
+                    chargedMove: selectedChargedMoveAttacker[slotIndex],
+                    attackerStats: attackerStats[slotIndex],
+                    bonusAttacker: bonusAttacker[slotIndex]
+                  }
                 }
-              }
-              paramsLoaded={paramsLoaded}
-              allTypes={types}
-            />
+                paramsLoaded={paramsLoaded}
+                allTypes={types}
+                memberSlot={slotIndex+1}
+              /> 
+              )
+            ))}
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
@@ -378,12 +652,12 @@ export default function Home() {
             <CardHeader >
               <CardTitle>Results</CardTitle>
               <CardDescription>Assumming the following stats:</CardDescription>
-              <CardDescription>Attacker: {PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText) !== "???" ? PoGoAPI.getPokemonNamePB(attackingPokemon?.pokemonId, allEnglishText)  + " (Level " + attackerStats[0] + " " + attackerStats[1] + "-" + attackerStats[2] + "-" + attackerStats[3] + ")" : "TBD"}</CardDescription>
+              <CardDescription>Attacker: {PoGoAPI.getPokemonNamePB(attackingPokemon[selectedPokemonSlot-1]?.pokemonId, allEnglishText) !== "???" ? PoGoAPI.getPokemonNamePB(attackingPokemon[selectedPokemonSlot-1]?.pokemonId, allEnglishText)  + " (Level " + attackerStats[selectedPokemonSlot-1][0] + " " + attackerStats[selectedPokemonSlot-1][1] + "-" + attackerStats[selectedPokemonSlot-1][2] + "-" + attackerStats[selectedPokemonSlot-1][3] + ")" : "TBD"}</CardDescription>
               <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
             <p className="italic text-slate-700 text-sm">Weather: </p>
-            <select onChange={(e) => handleBonusChange(e.target.value)} value={bonusAttacker[0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+            <select onChange={(e) => handleBonusChange(e.target.value)} value={bonusAttacker[0][0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
               <option value="EXTREME">Extreme</option>
               <option value="SUNNY">Sunny</option>
               <option value="WINDY">Windy</option>
@@ -418,6 +692,17 @@ export default function Home() {
               <option value={"bash"}>Behemoth Bash (++DEF)</option>
             </select>
 
+            <p className="italic text-slate-700 text-sm">Mega Boost level on Calculations: </p>
+            <select onChange={(e) => handleMegaBoostChange(parseFloat(e.target.value))} value={megaBoost} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+              <option value={"1"}>No Mega Boost</option>
+              <option value={"1.1"}>Non-Same Type Boost (x1.1)</option>
+              <option value={"1.3"}>Same Type Boost (x1.3)</option>
+            </select>
+
+              <p className="italic text-slate-700 text-sm">Friendship level ({friendship})</p>
+              <Slider onValueChange={(value) => handleFriendshipChange(value[0])} value={[friendship]} max={5} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
+            
+
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
@@ -435,15 +720,15 @@ export default function Home() {
               <CardDescription> Damage dealt per fast attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
+                attacker={attackingPokemon[selectedPokemonSlot-1]} 
                 defender={defendingPokemon} 
-                move={selectedQuickMoveAttacker} 
-                attackerStats={attackerStats}
+                move={selectedQuickMoveAttacker[selectedPokemonSlot-1]} 
+                attackerStats={attackerStats[selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                bonusAttacker={bonusAttacker}
+                bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1}
+                additionalBonus={megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
                 bladeBoost={advEffect === "blade"}
                 />
             </CardContent>
@@ -451,15 +736,15 @@ export default function Home() {
               <CardDescription> Damage dealt per charged attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
+                attacker={attackingPokemon[selectedPokemonSlot-1]} 
                 defender={defendingPokemon} 
-                move={selectedChargedMoveAttacker}
-                attackerStats={attackerStats}
+                move={selectedChargedMoveAttacker[selectedPokemonSlot-1]}
+                attackerStats={attackerStats[selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
-                bonusAttacker={bonusAttacker}
+                bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1}
+                additionalBonus={megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
                 bladeBoost={advEffect === "blade"}
               />
             </CardContent>
@@ -467,14 +752,14 @@ export default function Home() {
               <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
               <CalculateButtonSimulate 
                 allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
+                attacker={attackingPokemon[selectedPokemonSlot-1]} 
                 defender={defendingPokemon} 
-                quickMove={selectedQuickMoveAttacker} 
-                chargedMove={selectedChargedMoveAttacker}
-                attackerStats={attackerStats}
+                quickMove={selectedQuickMoveAttacker[selectedPokemonSlot-1]} 
+                chargedMove={selectedChargedMoveAttacker[selectedPokemonSlot-1]}
+                attackerStats={attackerStats[selectedPokemonSlot-1]}
                 defenderStats={defenderStats}
                 raidMode={raidMode}
-                bonusAttacker={bonusAttacker}
+                bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 bladeBoost={advEffect === "blade"}
                 />
