@@ -3738,7 +3738,7 @@ export class PoGoAPI {
                         attackersBonuses[gamestatus.activeAllyIndex], 
                         "normal", 
                         1, 
-                        (gamestatus.enrage ? 1.8 : 1)*(gamestatus.damageReduction * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                        (gamestatus.enrage ? 1.8 : 1) * (gamestatus.damageReduction * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ));
                     let proDamageReal = projectedDamage;
                     

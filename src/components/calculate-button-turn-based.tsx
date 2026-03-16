@@ -266,9 +266,9 @@ export default function CalculateButtonSimulateTurnBased({
               </>}
                 {gameStatus?.isRelobby !== 2 && (<>
                   <Separator className="my-4"/>
-                  <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Skip Turn</Button>
+                  <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Next Turn</Button>
                 </>)}
-                {gameStatus?.isRelobby !== 1 && (
+                {gameStatus?.isRelobby !== 1 && gameStatus?.allyCooldown === 0 && (
                   <>
                     <Separator className="my-4"/>
                     <Button onClick={() => SendMessage("relobby")} className="w-full py-2 text-white bg-primary rounded-lg">Relobby</Button>
