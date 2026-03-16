@@ -151,6 +151,12 @@ export class PoGoAPI {
         
         if (pokemon.length > 0) {
             switch (pokemon[0].pokemonId) {
+                case "TOUCANNON": 
+                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "DRILL_PECK", "ROCK_BLAST", "RETURN", "BEAK_BLAST"];
+                    break;
+                case "TOUCANNON_SHADOW_FORM": 
+                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "DRILL_PECK", "ROCK_BLAST", "FRUSTRATION", "BEAK_BLAST"];
+                    break;
                 case "PIKACHU":
                     pokemon[0].cinematicMoves = ["WILD_CHARGE","DISCHARGE","THUNDERBOLT", "THUNDER", "SURF"];
                     pokemon[0].eliteCinematicMove = ["SURF", "THUNDER"];
@@ -3431,7 +3437,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 0
                 case "switch0":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                     if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
                         gamestatus.activeAllyIndex = 0;
                     }
@@ -3442,14 +3448,13 @@ export class PoGoAPI {
                         duration: 0,
                         color: "#a2fa85"
                     }
-
-                    
                     return {...gamestatus} as RaidStatus;
+
 
                 // Switch to pokémon slot 1
                 case "switch1":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                     if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
                         gamestatus.activeAllyIndex = 1;
                     }
@@ -3460,13 +3465,13 @@ export class PoGoAPI {
                         duration: 0,
                         color: "#a2fa85"
                     }
-                    
                     return {...gamestatus} as RaidStatus;
+                    
                 
                 // Switch to pokémon slot 2
                 case "switch2":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                     if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
                         gamestatus.activeAllyIndex = 2;
                     }
@@ -3477,12 +3482,12 @@ export class PoGoAPI {
                         duration: 0,
                         color: "#a2fa85"
                     } 
-                    
                     return {...gamestatus} as RaidStatus;
+                    
                 
                 case "switch3":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                         if (gamestatus.activeAllyIndex != 3 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[3] < gamestatus.allyPokemonMaxHealth[3]) {
                             gamestatus.activeAllyIndex = 3;
                         }
@@ -3493,12 +3498,11 @@ export class PoGoAPI {
                         duration: 0,
                         color: "#a2fa85"
                     }
-
                     return {...gamestatus} as RaidStatus;
                 
                 case "switch4":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                         if (gamestatus.activeAllyIndex != 4 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[4] < gamestatus.allyPokemonMaxHealth[4]) {
                             gamestatus.activeAllyIndex = 4;
                         }
@@ -3511,10 +3515,11 @@ export class PoGoAPI {
                     }
 
                     return {...gamestatus} as RaidStatus;
+
                     
                 case "switch5":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = 1;
                         if (gamestatus.activeAllyIndex != 5 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[5] < gamestatus.allyPokemonMaxHealth[5]) {
                             gamestatus.activeAllyIndex = 5;
                         }
@@ -3628,10 +3633,17 @@ export class PoGoAPI {
                         damage: 0,
                         color: "#575757"
                     };
-                } else {
+                } else if (gamestatus.allyDodgeTurn > 0) {
                     gamestatus.allyCurrentMessage = {
                         duration: gamestatus.allyCooldown,
                         message: "Dodging...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Swapping...",
                         damage: 0,
                         color: "#575757"
                     };
