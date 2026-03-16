@@ -3350,7 +3350,7 @@ export class PoGoAPI {
             }
 
             gamestatus.enrageCurrentMessage = {
-                message: "The Max Battle Boss is acting normally.",
+                message: "The Raid Boss is acting normally.",
                 duration: 0,
                 color: "#ff0000"
             }
