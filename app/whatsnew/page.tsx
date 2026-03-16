@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.35 (Solo Raid player!)",
+        desc: "+ Added 'Solo Raid Player' mode to PokéChespin for Raids!\n"+
+                ">>>>>> Now you can simulate a raid with any attacker you want, controlling its actions turn by turn, just like on the Solo Max Battle Simulator!\n"+
+                "If you find any issues with this, let me know!\n",
+        date: "2026-03-16",
+
+    },
+    {
         title: "v1.34 (PokéChespin for Raids overhaul!)",
         desc: "+ Changed 'PokéChespin for Raids' to look similar to the Max Battles page. This includes the following changes:\n"+
                 ">>>>>> + Added the possibility to select up to 6 attackers per team, simulating a real Raid team.\n"+

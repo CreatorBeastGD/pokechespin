@@ -100,28 +100,34 @@ export default function SearchBarAttacker({
     }
   }, [initialValues]); // Agrega `initialValues` como dependencia
 
-  const handleQuickMoveSelect = (moveId: string, move: any) => {
+  const handleQuickMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, memberSlot);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", moveId);
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   };
 
-  const handleStatsSelect = (stats: any) => {
+  const handleStatsSelect = (stats: any, write: boolean = true) => {
     setStats(stats);
     onChangedStats(stats, memberSlot);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   }
 
-  const handleBonusSelect = (bonus: any) => {
+  const handleBonusSelect = (bonus: any, write: boolean = true) => {
     setSelectedBonuses(bonus);
     onBonusChange(bonus, memberSlot);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot == 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", bonus.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot == 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", bonus.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   }
   
   useEffect(() => {
@@ -131,10 +137,10 @@ export default function SearchBarAttacker({
     }
   } , [clickedSuggestion]);
 
-  const searchPokemonInit = (pokemonD: any) => {
+  const searchPokemonInit = (pokemonD: any, write: boolean = true) => {
     setPokemon(pokemonD.pokedex.pokemonId);
-    handleQuickMoveSelect("", null);
-    handleChargedMoveSelect("", null);
+    handleQuickMoveSelect("", null, write);
+    handleChargedMoveSelect("", null, write);
     setLoading(true);
     setError(null);
     try {
@@ -146,20 +152,23 @@ export default function SearchBarAttacker({
       
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
-
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
       
+      if (write) {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
+
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        
+      }
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
           handleBonusChange(1, true);
-        }, 100);
+        }, 2);
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
-        }, 100);
+        }, 2);
       }
 
     } finally {
@@ -193,11 +202,11 @@ export default function SearchBarAttacker({
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
           handleBonusChange(1, true);
-        }, 100);
+        }, 2);
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
-        }, 100);
+        }, 2);
       }
 
     } finally {
@@ -225,11 +234,11 @@ export default function SearchBarAttacker({
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
           handleBonusChange(1, true);
-        }, 100);
+        }, 2);
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
-        }, 100);
+        }, 2);
       }
     
     } finally {
@@ -237,14 +246,16 @@ export default function SearchBarAttacker({
     }
   };
 
-  const handleChargedMoveSelect = (moveId: string, move: any) => {
+  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     if (paramsLoaded) {
       
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, memberSlot);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
     }
   };
 
@@ -406,16 +417,18 @@ export default function SearchBarAttacker({
 
 
                           // Luego actualizamos todo en orden
-                          await searchPokemonInit(pokemonData);
-                          handleStatsSelect(data.stats);
-                          handleBonusSelect(data.bonuses);
+                          await searchPokemonInit(pokemonData, true);
+                          handleStatsSelect(data.stats, true);
+                          handleBonusSelect(data.bonuses, true);
+                          handleQuickMoveSelect(data.quickMove, quickMove, true);
+                          handleChargedMoveSelect(data.chargedMove, chargedMove, true);
 
                           setImportMaxMove(data.maxmoves || [1, 0, 0]);
 
+                          console.log("Import successful, importing on link...");
+
                           // Pequeño delay para asegurar que el pokémon se cargó completamente
                           setTimeout(() => {
-                              handleQuickMoveSelect(data.quickMove, quickMove);
-                              handleChargedMoveSelect(data.chargedMove, chargedMove);
                               
                               // Actualizamos la URL una sola vez al final
                               const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -424,12 +437,13 @@ export default function SearchBarAttacker({
                               newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
                               newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
                               newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
+                              
                               window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-                          }, 100);
+                          }, 300);
                       } finally {
                           setTimeout(() => {
                             setIsImporting(false);
-                          }, 100);
+                          }, 350);
                       }
                   } else {
                       setError("Invalid file format.");

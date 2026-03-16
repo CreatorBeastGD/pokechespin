@@ -22,6 +22,7 @@ import { Calculator } from "../lib/calculations";
 import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import { Slider } from "@/components/ui/slider";
+import CalculateButtonSimulateTurnBased from "@/components/calculate-button-turn-based";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -100,12 +101,12 @@ export default function Home() {
   }, []);
 
   // Limpia los params de los pokemon que no se usan.
-  useEffect(() => {
+    useEffect(() => {
       const searchParams = new URLSearchParams(window.location.search);
       searchParams.set("num_pokemon", numMembers.toString());
-  
+
       setTimeout(() => {
-        for (let j = numMembers + 1; j < 6 ; j++) {
+        for (let j = numMembers + 1; j <= 6 ; j++) {
             searchParams.delete(`attacker${j}`);
             searchParams.delete(`attacker_fast_attack${j}`);
             searchParams.delete(`attacker_cinematic_attack${j}`);
@@ -781,6 +782,28 @@ export default function Home() {
                 bonusDefender={bonusDefender}
                 boost={advEffect}
                 />
+            </CardContent>
+            <CardContent>
+              <CardDescription> Play Raid simulation (one player only)</CardDescription>
+              <CalculateButtonSimulateTurnBased
+                  allEnglishText={allEnglishText}
+                  attacker={attackingPokemon} 
+                  defender={defendingPokemon}
+                  quickMove={selectedQuickMoveAttacker}
+                  chargedMove={selectedChargedMoveAttacker}
+                  defenderQuickMove={selectedQuickMoveDefender}
+                  defenderChargedMove={selectedChargedMoveDefender}
+                  attackerStats={attackerStats}
+                  defenderStats={defenderStats}
+                  bonusAttacker={bonusAttacker}
+                  bonusDefender={bonusDefender}
+                  raidMode={raidMode}
+                  weather={bonusAttacker[0][0]}
+                  types={types}
+                  allMoves={allMoves}
+                  advenEffect={advEffect}
+                  relobbyTimer={parseInt(searchParams.get("relobby_time") || "8")}
+              />
             </CardContent>
         </Card>
       </div>

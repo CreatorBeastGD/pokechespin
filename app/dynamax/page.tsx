@@ -82,7 +82,7 @@ export default function Home() {
     searchParams.set("custom_atk_mult", customAtkMult.toString());
 
     setTimeout(() => {
-      for (let j = numMembers + 1; j < 4 ; j++) {
+      for (let j = numMembers + 1; j <= 4 ; j++) {
         for (let i = 1; i <= 3; i++) {
           searchParams.delete(`attacker${j}${i}`);
           searchParams.delete(`attacker_fast_attack${j}${i}`);
@@ -926,7 +926,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               </CardContent>
               {numMembers == 1 ? (
               <CardContent>
-                <CardDescription>Play Max Battle Simulation (One member only)</CardDescription>
+                <CardDescription>Play Max Battle Simulation (One player only)</CardDescription>
                 <CalculateButtonSimulateTurnBasedDynamax
                   allEnglishText={allEnglishText}
                   attacker={attackingPokemon[0]} 

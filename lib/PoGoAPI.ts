@@ -3,6 +3,7 @@ import { float } from "html2canvas/dist/types/css/property-descriptors/float";
 import nextConfig from "../next.config";
 import { Calculator } from "./calculations";
 import { GameStatus } from "../src/components/GameStatus";
+import { RaidStatus } from "@/components/RaidStatus";
 
 const API = nextConfig.API_URL;
 const API_PB = nextConfig.API_PB_URL;
@@ -10,7 +11,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.34";
+        return "1.35";
     }
 
     static async getAllPokemon() {
@@ -2139,9 +2140,9 @@ export class PoGoAPI {
                 valueList.push(arr[i]);
             }
         }
-        //console.log(indexList)
+        console.log(arr)
         if (indexList.length === 0) {
-            return 3;
+            return arr.length;
         } else {
             return indexList[this.getHigherElementIndex(valueList)];
         }
@@ -3308,6 +3309,527 @@ export class PoGoAPI {
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }
 
+    static TurnBasedSimulatorAllyTurnRaid(
+        attackers: any[], 
+        defender: any, 
+        attackersQuickMove: any[],
+        attackersCinematicMove: any[],
+        defenderQuickMove: any,
+        defenderCinematicMove: any,
+        attackersStats: any[][],
+        attackersBonuses: any[][],
+        raidMode: string,
+        weather: string = "EXTREME",
+        advEffects: string = "none",
+        order: string,
+        gamestatus: RaidStatus | null,
+        types: any,
+        allMoves: any,
+        relobbyTimer: number = 8
+    ) {
+        //console.log(attackerMaxMoves)
+        // Setup gamestatus if first turn
+        if (!gamestatus || order === "init") {
+            gamestatus = new RaidStatus(attackers.length, relobbyTimer);
+            gamestatus.globalCurrentMessage = {
+                message: "Battle started!",
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.allyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.enemyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+
+            gamestatus.enrageCurrentMessage = {
+                message: "The Max Battle Boss is acting normally.",
+                duration: 0,
+                color: "#ff0000"
+            }
+        }
+        
+        if (order === "init") {
+            gamestatus.allyPokemonMaxHealth = [];
+            for (let i = 0 ; i < attackers.length ; i++) {
+                gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
+                
+            }
+            gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+            console.log(gamestatus.enemyPokemonMaxHealth);
+        }
+        
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+        
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+
+        // ally can cast a move
+        if (gamestatus.allyCooldown == 0) {
+            switch (order) {
+                case "init":
+                    console.log(gamestatus);
+                    return {...gamestatus} as RaidStatus;
+                // Fast Move
+                case "fast":
+                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
+                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    //console.log(gamestatus.allyCooldown);
+                    break;
+
+                // Charged Move
+                case "charged":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    } else {
+                        gamestatus.allyCurrentMessage = {
+                            message: "No move cast",
+                            damage: 0,
+                            duration: 0,
+                            color: "#a2fa85"
+                        }
+                    }
+                    break;
+                
+                // Dodge to the right
+                case "dodge":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+
+                    if (gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    
+                    if ((gamestatus.hasDodged != true) && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd-1)) {
+                        gamestatus.damageReduction = 0.25; 
+                        gamestatus.hasDodged = true;
+                    } else {
+                        gamestatus.damageReduction = 1;
+                    }
+
+                    break;
+                
+                
+                // Switch to pokémon slot 0
+                case "switch0":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                    if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
+                        gamestatus.activeAllyIndex = 0;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    
+                    return {...gamestatus} as RaidStatus;
+
+                // Switch to pokémon slot 1
+                case "switch1":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                    if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
+                        gamestatus.activeAllyIndex = 1;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    
+                    return {...gamestatus} as RaidStatus;
+                
+                // Switch to pokémon slot 2
+                case "switch2":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                    if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
+                        gamestatus.activeAllyIndex = 2;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    } 
+                    
+                    return {...gamestatus} as RaidStatus;
+                
+                case "switch3":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                        if (gamestatus.activeAllyIndex != 3 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[3] < gamestatus.allyPokemonMaxHealth[3]) {
+                            gamestatus.activeAllyIndex = 3;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+                
+                case "switch4":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                        if (gamestatus.activeAllyIndex != 4 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[4] < gamestatus.allyPokemonMaxHealth[4]) {
+                            gamestatus.activeAllyIndex = 4;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+                    
+                case "switch5":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 0.5;
+                        if (gamestatus.activeAllyIndex != 5 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[5] < gamestatus.allyPokemonMaxHealth[5]) {
+                            gamestatus.activeAllyIndex = 5;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+                
+                case "relobby":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = gamestatus.relobbyTimer;
+                    gamestatus.activeAllyIndex = 0;
+                    gamestatus.allyEnergy = Array(attackers.length).fill(0);
+                    gamestatus.allyPokemonDamage = Array(attackers.length).fill(0);
+                    gamestatus.allyCurrentMessage = {
+                        message: "Relobbying...",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    gamestatus.isRelobby = 1;
+                    return {...gamestatus} as RaidStatus;
+                
+            }
+        } 
+        if (gamestatus.allyCooldown > 0) {
+            gamestatus.allyCooldown -= 0.5;
+            if (gamestatus.allyCooldown <= 0) {
+                gamestatus.allyCooldown = 0;
+
+                if (gamestatus.isRelobby === 1) {
+                    gamestatus.isRelobby = 0;
+                    gamestatus.allyCooldown = !gamestatus.enemyPrepPhase ? 
+                    gamestatus.dodgeWindowEnd - gamestatus.timer : 0;
+                }
+
+                if (gamestatus.allyActiveMove != null) {
+                    // ally deals damage
+                    const projectedDamage = Math.floor(this.getDamage(
+                        attackers[gamestatus.activeAllyIndex], 
+                        defender, 
+                        gamestatus.allyActiveMove.move, 
+                        types, 
+                        attackersStats[gamestatus.activeAllyIndex], 
+                        defenderStats, 
+                        attackersBonuses[gamestatus.activeAllyIndex], 
+                        [weather, false, false, 0] , 
+                        raidMode, 1, 
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, gamestatus.activeAllyIndex, gamestatus.allyActiveMove.move.type)
+                    ));
+                    gamestatus.enemyPokemonDamage += projectedDamage;
+
+                    gamestatus.enemyEnergy += Math.ceil(projectedDamage / 2);
+                    if (gamestatus.enemyEnergy > 100) {
+                        gamestatus.enemyEnergy = 100;
+                    }
+                    
+                    if (!gamestatus.allyActiveMove.isCharged) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    }
+
+                    if (raidMode.endsWith("shadow") || raidMode.endsWith("supermega")) {
+                        const remainingHealthPercentage = (gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage) / gamestatus.enemyPokemonMaxHealth;
+                        if ((remainingHealthPercentage <= (raidMode.endsWith("supermega") ? 0.8 : 0.6)) && !gamestatus.isSubdued && !gamestatus.enrage) {
+                            gamestatus.enrage = true;
+                            gamestatus.enrageCurrentMessage = {
+                                message: "The Raid Boss enrages!",
+                                duration: 0,
+                                color: "#ff0000"
+                            }
+                        } if (raidMode.endsWith("shadow") && remainingHealthPercentage <= 0.15 && gamestatus.enrage) {
+                            gamestatus.enrage = false;
+                            gamestatus.isSubdued = true;
+                            gamestatus.enrageCurrentMessage = {
+                                message: "The Raid Boss subdued.",
+                                duration: 0,
+                                color: "#a2fa85"
+                            }
+                        }
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    gamestatus.allyActiveMove = null;
+                }
+            }
+            else {
+                if (gamestatus.isRelobby === 1) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Relobbying...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else if (gamestatus.allyActiveMove != null) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Using " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId),
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Dodging...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                }
+            }
+        }
+
+        this.TurnBasedSimulatorEnemyTurnRaid(
+            attackers, 
+            defender, 
+            attackersQuickMove, 
+            attackersCinematicMove,
+            attackersStats, 
+            attackersBonuses,
+            defenderQuickMove, 
+            defenderCinematicMove, 
+            raidMode, 
+            weather, 
+            advEffects,  
+            gamestatus, 
+            types, 
+            allMoves
+        );
+        
+        gamestatus.timer += 0.5;
+
+        if (gamestatus.enemyPokemonDamage >= defenderHealth) {
+            gamestatus.globalCurrentMessage = {
+                message: "The Raid Boss has been defeated!",
+                duration: 0,
+                color: "#a2fa85"
+            }
+        }
+
+        if (gamestatus.timer >= (gamestatus.lastHitTime > 300 ? gamestatus.lastHitTime : 300)) {
+            gamestatus.globalCurrentMessage = {
+                message: "Timeout reached.",
+                duration: 0,
+                color: "#fa8585"
+            }
+            gamestatus.timeout = true;
+        }
+
+
+        const next = {...gamestatus} as RaidStatus;
+        
+        console.log(next);
+        return next;
+    }
+
+    static TurnBasedSimulatorEnemyTurnRaid(
+        attackers: any[], 
+        defender: any, 
+        attackersQuickMove: any[], 
+        attackersCinematicMove: any[], 
+        attackersStats: any[][], 
+        attackersBonuses: any[][],
+        defenderQuickAttack: any, 
+        defenderCinematicAttack: any, 
+        raidMode: string, 
+        weather: string = "EXTREME",
+        advEffects: string = "none",
+        gamestatus: RaidStatus,
+        types: any = null,
+        allMoves: any = null,
+    ) {        
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+        
+        // enemy can cast a move
+        if (gamestatus.enemyCooldown == 0) {
+            if (gamestatus.enemyActiveMove == null) {
+                // Choose move
+                gamestatus.dodgeWindowStart = gamestatus.timer;
+                gamestatus.enemyPrepPhase = true;
+                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() > 0.5) {
+                    gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
+                    gamestatus.enemyCooldown = (Math.floor(Math.random()*3))*0.5+1.5;
+                } else {
+                    gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
+                    gamestatus.enemyCooldown = (Math.floor(Math.random()*3))*0.5+1.5;
+                }
+                gamestatus.dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown + Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+            } else {
+                // Enemy starts to cast move
+                gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+            }
+        }
+        if (gamestatus.enemyCooldown > 0) {
+            gamestatus.enemyCooldown -= 0.5;
+            if (gamestatus.enemyCooldown <= 0) {
+                gamestatus.enemyCooldown = 0;
+                if (gamestatus.enemyPrepPhase === true) {
+                    gamestatus.enemyPrepPhase = false;
+                } else {
+                    // Enemy deals damage
+                    let projectedDamage = Math.floor(this.getDamage(
+                        defender,
+                        attackers[gamestatus.activeAllyIndex], 
+                        gamestatus.enemyActiveMove?.move, 
+                        types,
+                        defenderStats,  
+                        attackersStats[gamestatus.activeAllyIndex], 
+                        [weather, false, false, 0], 
+                        attackersBonuses[gamestatus.activeAllyIndex], 
+                        "normal", 
+                        1, 
+                        (gamestatus.enrage ? 1.8 : 1)*(gamestatus.damageReduction * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ));
+                    let proDamageReal = projectedDamage;
+                    
+                    gamestatus.allyDodgeTurn = 0;
+                    gamestatus.enemyEnergy += gamestatus.enemyActiveMove?.move.energyDelta || 0;
+                    if (gamestatus.enemyEnergy > 100) {
+                        gamestatus.enemyEnergy = 100;
+                    } 
+
+                    if (!gamestatus.isRelobby) {
+                        gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.ceil(proDamageReal / 2);
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    }
+
+                    gamestatus.hasDodged = false;
+
+                    // mon fucking dies
+                    if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.allyCooldown = 0;
+                        gamestatus.activeAllyIndex = this.getHigherElementIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]), gamestatus.allyPokemonDamage.map((dmg, idx) => dmg >= gamestatus.allyPokemonMaxHealth[idx]));
+                        if (gamestatus.activeAllyIndex === attackers.length) {
+                            // all fainted
+                            gamestatus.activeAllyIndex = 0;
+                            gamestatus.allyActiveMove = null;
+                            gamestatus.globalCurrentMessage = {
+                                message: "All your Pokémon have fainted!",
+                                duration: 0,
+                                color: "#fa8585"
+                            }
+                            gamestatus.isRelobby = 2;
+                        }
+                    }
+                    gamestatus.enemyCurrentMessage = {
+                        message: "The Raid Boss uses " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove?.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.damageReduction = 1;
+                    gamestatus.enemyActiveMove = null;
+                    gamestatus.enemyPrepPhase = true;
+                }
+            }
+            else {
+                if (gamestatus.enemyActiveMove != null) {
+                    if (gamestatus.enemyActiveMove.isCharged) {
+                        if (gamestatus.enemyPrepPhase) {
+                            gamestatus.targetDodgeWindow = true;
+                            gamestatus.allyDodgeTurn = 0;
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "Charged move being prepared...",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        } else {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    } else {
+                        if (gamestatus.enemyPrepPhase) {
+                            gamestatus.targetDodgeWindow = true;
+                            gamestatus.allyDodgeTurn = 0;
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "Fast move being prepared...",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        } else {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     static TurnBasedSimulatorAllyTurn(
         attackers: any[], 
         defender: any, 
@@ -3350,12 +3872,6 @@ export class PoGoAPI {
                 damage: 0,
                 duration: 0,
                 color: "#ffffff"
-            }
-
-            gamestatus.enrageCurrentMessage = {
-                message: "The Max Battle Boss is acting normally.",
-                duration: 0,
-                color: "#ff0000"
             }
         }
         
@@ -3965,7 +4481,7 @@ export class PoGoAPI {
                     }
 
                     // mon fucking dies
-                    if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] > gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
+                    if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
                         gamestatus.allyActiveMove = null;
                         gamestatus.allyCooldown = 0;
                         gamestatus.activeAllyIndex = this.getHigherElementIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]), gamestatus.allyPokemonDamage.map((dmg, idx) => dmg >= gamestatus.allyPokemonMaxHealth[idx]));
@@ -4050,6 +4566,7 @@ export class PoGoAPI {
     }
 
     static formatMoveName(moveName: string) {
+        if (!moveName) return "???";
         return moveName.replace("_FAST", "").replaceAll("_", " ").replaceAll("PLUS", "+").toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ").replace("2", "").replace("3", "");
     }
 
