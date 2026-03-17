@@ -2136,6 +2136,15 @@ export class PoGoAPI {
         return arr.reduce((acc, val, index) => val < arr[acc] ? index : acc, 0);
     }
     
+    static getHigherIndexNotDead(arr: any[]) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] > 0) {
+                return i;
+            }
+        }
+        return arr.length;
+    }
+    
 
     static getHigherElementIndexNotDead(arr: any[], faints: any[]) {
         let indexList = [];
@@ -3774,7 +3783,7 @@ export class PoGoAPI {
                     if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
                         gamestatus.allyActiveMove = null;
                         gamestatus.allyCooldown = 0;
-                        gamestatus.activeAllyIndex = this.getHigherElementIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]), gamestatus.allyPokemonDamage.map((dmg, idx) => dmg >= gamestatus.allyPokemonMaxHealth[idx]));
+                        gamestatus.activeAllyIndex = this.getHigherIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]));
                         if (gamestatus.activeAllyIndex === attackers.length) {
                             // all fainted
                             gamestatus.activeAllyIndex = 0;
@@ -4496,7 +4505,7 @@ export class PoGoAPI {
                     if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
                         gamestatus.allyActiveMove = null;
                         gamestatus.allyCooldown = 0;
-                        gamestatus.activeAllyIndex = this.getHigherElementIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]), gamestatus.allyPokemonDamage.map((dmg, idx) => dmg >= gamestatus.allyPokemonMaxHealth[idx]));
+                        gamestatus.activeAllyIndex = this.getHigherIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]));
                         if (gamestatus.activeAllyIndex === 3) {
                             // all fainted
                             gamestatus.allyActiveMove = null;
