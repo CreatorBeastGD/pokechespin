@@ -11,7 +11,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.35";
+        return "1.35.1";
     }
 
     static async getAllPokemon() {
@@ -1274,7 +1274,7 @@ export class PoGoAPI {
                 }
             }
         }
-        if (playerAmount === 1) {
+        if (playerAmount === 1 && localStorage.getItem("selfMegaBoost") === "false") {
             return 1;
         }
         if (effectIsPassive) {

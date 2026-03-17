@@ -28,6 +28,10 @@ const Navbar = () => {
     let [customPokemonToRankings, setCustomPokemonToRankings] = useState("");
     let [showCustomPokemonOnRankings, setShowCustomPokemonOnRankings] = useState(false);
     let [showOnlyCustomPokemonOnRankings, setShowOnlyCustomPokemonOnRankings] = useState(false);
+    let [selfMegaBoost, setSelfMegaBoost] = useState(false);
+    let [showDPSOnSoloRaid, setShowDPSOnSoloRaid] = useState(false);
+    let [showHPOnSoloRaid, setShowHPOnSoloRaid] = useState(false);
+
 
     useEffect(() => {
         const doubleFriendshipBonusStorage = localStorage.getItem("doubleFriendshipBonus");
@@ -37,6 +41,9 @@ const Navbar = () => {
         const customPokemonToRankingsStorage = localStorage.getItem("customPokemonToRankings");
         const showCustomPokemonOnRankingsStorage = localStorage.getItem("showCustomPokemonOnRankings");
         const showOnlyCustomPokemonOnRankingsStorage = localStorage.getItem("showOnlyCustomPokemonOnRankings");
+        const selfMegaBoostStorage = localStorage.getItem("selfMegaBoost");
+        const showDPSOnSoloRaidStorage = localStorage.getItem("showDPSOnSoloRaid");
+        const showHPOnSoloRaidStorage = localStorage.getItem("showHPOnSoloRaid");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -79,6 +86,24 @@ const Navbar = () => {
         } else {
             localStorage.setItem("customBladeBoostAmount", "0.1");
         }
+
+        if (selfMegaBoostStorage) {
+            setSelfMegaBoost(selfMegaBoostStorage === "true");
+        } else {
+            localStorage.setItem("selfMegaBoost", "false");
+        }
+
+        if (showDPSOnSoloRaidStorage) {
+            setShowDPSOnSoloRaid(showDPSOnSoloRaidStorage === "true");
+        } else {
+            localStorage.setItem("showDPSOnSoloRaid", "false");
+        }
+
+        if (showHPOnSoloRaidStorage) {
+            setShowHPOnSoloRaid(showHPOnSoloRaidStorage === "true");
+        } else {
+            localStorage.setItem("showHPOnSoloRaid", "false");
+        }
     }, []);
 
     let ChangeBladeBoost = (option: string) => {
@@ -118,6 +143,9 @@ const Navbar = () => {
         localStorage.setItem("customPokemonToRankings", customPokemonToRankings);
         localStorage.setItem("showCustomPokemonOnRankings", showCustomPokemonOnRankings.toString());
         localStorage.setItem("showOnlyCustomPokemonOnRankings", showOnlyCustomPokemonOnRankings.toString());
+        localStorage.setItem("selfMegaBoost", selfMegaBoost.toString());
+        localStorage.setItem("showDPSOnSoloRaid", showDPSOnSoloRaid.toString());
+        localStorage.setItem("showHPOnSoloRaid", showHPOnSoloRaid.toString());
 
         // reload page
         window.location.reload();
@@ -131,6 +159,9 @@ const Navbar = () => {
         setCustomPokemonToRankings("");
         setShowCustomPokemonOnRankings(false);
         setShowOnlyCustomPokemonOnRankings(false);
+        setSelfMegaBoost(false);
+        setShowDPSOnSoloRaid(false);
+        setShowHPOnSoloRaid(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -138,6 +169,9 @@ const Navbar = () => {
         localStorage.setItem("customPokemonToRankings", "");
         localStorage.setItem("showCustomPokemonOnRankings", "false");
         localStorage.setItem("showOnlyCustomPokemonOnRankings", "false");
+        localStorage.setItem("selfMegaBoost", "false");
+        localStorage.setItem("showDPSOnSoloRaid", "false");
+        localStorage.setItem("showHPOnSoloRaid", "false");
         // reload page
         window.location.reload();
     }
@@ -215,6 +249,15 @@ const Navbar = () => {
                                     The first value (++) will be used on Raids, while the second value (+) will be used on Max Battles.
                                 </SheetDescription>
                             </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Self Mega Boost</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={selfMegaBoost} onChange={(e) => setSelfMegaBoost(e.target.checked)} type="checkbox" id="selfMegaBoost" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Applies Mega Boost to your own Pokémon, making it not needed to have more than 2 players to activate.
+                                    </p>
+                                </div>
+                            </div>  
                             
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Rankings</SheetTitle>
@@ -262,6 +305,24 @@ const Navbar = () => {
                                     <input checked={showAllPokemonAsShiny} onChange={(e) => ChangeShowAllPokemonAsShiny(e.target.checked)} type="checkbox" id="doubleFriendshipBonus" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Pokémon have a 100% chance to be shiny instead of 1/4096.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Show DPS on Solo Raid Simulations</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={showDPSOnSoloRaid} onChange={(e) => setShowDPSOnSoloRaid(e.target.checked)} type="checkbox" id="showDPSOnSoloRaid" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Shows how many damage per second you are dealing to the boss on Solo Raid Simulations.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Show HP values on Solo Raid Simulations</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={showHPOnSoloRaid} onChange={(e) => setShowHPOnSoloRaid(e.target.checked)} type="checkbox" id="showHPOnSoloRaid" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Shows the current HP values of the active Pokémon on Solo Raid Simulations.
                                     </p>
                                 </div>
                             </div>     

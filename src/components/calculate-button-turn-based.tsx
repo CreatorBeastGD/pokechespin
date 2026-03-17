@@ -58,6 +58,8 @@ export default function CalculateButtonSimulateTurnBased({
   const [startedSim, setStartedSim] = useState<boolean>(false);
   
   const [gameStatus, setGameStatus] = useState<RaidStatus | null>(null);
+  const [showDPS, setShowDPS] = useState<boolean>(false);
+  const [showHP, setShowHP] = useState<boolean>(false);
 
   useEffect(() => {
     setStartedSim(false);
@@ -66,6 +68,12 @@ export default function CalculateButtonSimulateTurnBased({
     //console.log("Changed dependencies")
 
   }, [relobbyTimer, attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, defenderQuickMove, defenderChargedMove, advenEffect]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setShowDPS(window.localStorage.getItem("showDPSOnSoloRaid") === "true");
+    setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
+  }, []);
 
   const getHealthBarColor = (healthPercent: number) => {
     if (healthPercent > 50) {
@@ -163,7 +171,7 @@ export default function CalculateButtonSimulateTurnBased({
           
             <div className="flex flex-row justify-between items-end ">
               <label className="text-xs pt-2">Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
-              
+              <label className="text-xs pt-2">{showHP ? `HP: ${gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage}/${gameStatus?.enemyPokemonMaxHealth}` : ""}</label>
             </div>
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
@@ -173,9 +181,9 @@ export default function CalculateButtonSimulateTurnBased({
 
             <Separator className="my-2"/>
 
-            <div className="flex flex-row justify-between items-end ">
+            <div className="flex flex-row justify-between items-end">
               <label className="text-xs pt-2">Active: {PoGoAPI.getPokemonNamePB(attacker[gameStatus!.activeAllyIndex].pokemonId, allEnglishText)}</label>
-              <label className="text-xs pt-2">{!gameStatus?.targetDodgeWindow && gameStatus?.allyDodgeTurn != 0 ? "Dodged!" : ""}</label>
+              <label className="text-xs pt-2">{showHP ? `HP: ${gameStatus!.allyPokemonMaxHealth[gameStatus!.activeAllyIndex] - gameStatus!.allyPokemonDamage[gameStatus!.activeAllyIndex]}/${gameStatus?.allyPokemonMaxHealth[gameStatus!.activeAllyIndex]}` : ""}</label>
             </div>
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100)} value={((gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex] - gameStatus.allyPokemonDamage[gameStatus.activeAllyIndex]) / gameStatus.allyPokemonMaxHealth[gameStatus.activeAllyIndex]) * 100} className="w-full"/>}
             
@@ -183,6 +191,9 @@ export default function CalculateButtonSimulateTurnBased({
               <div className="w-[50%]">
                 <label className="text-xs items-end">Energy: {gameStatus?.allyEnergy[gameStatus!.activeAllyIndex]}/100</label>
                 <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex]?.energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex]?.type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+              </div>
+              <div className="w-[50%] flex flex-col items-end">
+                <label className={"text-xs items-end"}>{showDPS ? ((gameStatus!.enemyPokemonDamage ? gameStatus!.enemyPokemonDamage : 0)/ (gameStatus!.timer || 1)).toFixed(2) + " DPS" : ""} </label>
               </div>
             </div>
 

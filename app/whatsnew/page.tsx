@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.35.1 ",
+        desc: "+ Added new configs related to Raids to the 'Configuration' sheet to PokéChespin!\n"+
+                ">>>>>> 'Show HP values on Solo Raid Simulations' config: Shows the current HP values of the active Pokémon on Solo Raid Simulations.\n"+
+                ">>>>>> 'Show DPS on Solo Raid Simulations' config: Shows how many damage per second you are dealing to the boss on Solo Raid Simulations.\n"+
+                ">>>>>> 'Self Mega Boost' config: Shows the boost received by the attacker when using a Mega Evolution on Solo Raid Simulations.\n",
+        date: "2026-03-17",
+    },
+    {
         title: "v1.35 (Solo Raid player!)",
         desc: "+ Added 'Solo Raid Player' mode to PokéChespin for Raids!\n"+
                 ">>>>>> Now you can simulate a raid with any attacker you want, controlling its actions turn by turn, just like on the Solo Max Battle Simulator!\n"+

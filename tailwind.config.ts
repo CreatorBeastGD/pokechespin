@@ -7,6 +7,9 @@ export default {
 		"./src/**/*.{js,ts,jsx,tsx,mdx}",
 	  ],
   theme: {
+	text: {
+		tiny: '0.625rem',
+	},
 	screens: {
 		sm: '640px',
 		md: '768px',
