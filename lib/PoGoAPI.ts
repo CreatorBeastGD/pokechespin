@@ -3815,7 +3815,7 @@ export class PoGoAPI {
                             gamestatus.allyDodgeTurn = 0;
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
-                                message: "Charged move being prepared...",
+                                message: "Move being prepared...",
                                 damage: 0,
                                 color: "#575757"
                             }
@@ -3833,7 +3833,7 @@ export class PoGoAPI {
                             gamestatus.allyDodgeTurn = 0;
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
-                                message: "Fast move being prepared...",
+                                message: "Move being prepared...",
                                 damage: 0,
                                 color: "#575757"
                             }
