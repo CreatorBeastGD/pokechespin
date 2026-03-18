@@ -76,9 +76,9 @@ export default function CalculateButtonSimulateTurnBased({
   }, []);
 
   const getHealthBarColor = (healthPercent: number) => {
-    if (healthPercent > 50) {
+    if (healthPercent >= 50) {
       return "bg-green-500";
-    } else if (healthPercent > 20) {
+    } else if (healthPercent >= 25) {
       return "bg-yellow-500";
     } else {
       return "bg-red-500";
