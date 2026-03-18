@@ -3378,7 +3378,7 @@ export class PoGoAPI {
                 
             }
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
-            console.log(gamestatus.enemyPokemonMaxHealth);
+            //console.log(gamestatus.enemyPokemonMaxHealth);
         }
         
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
@@ -3389,7 +3389,7 @@ export class PoGoAPI {
         if (gamestatus.allyCooldown == 0) {
             switch (order) {
                 case "init":
-                    console.log(gamestatus);
+                    //console.log(gamestatus);
                     return {...gamestatus} as RaidStatus;
                 // Fast Move
                 case "fast":
@@ -3699,7 +3699,7 @@ export class PoGoAPI {
 
         const next = {...gamestatus} as RaidStatus;
         
-        console.log(next);
+        //console.log(next);
         return next;
     }
 
@@ -3748,6 +3748,7 @@ export class PoGoAPI {
                     gamestatus.enemyPrepPhase = false;
                 } else {
                     // Enemy deals damage
+                    console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
                     let projectedDamage = Math.floor(this.getDamage(
                         defender,
                         attackers[gamestatus.activeAllyIndex], 
@@ -3756,7 +3757,7 @@ export class PoGoAPI {
                         defenderStats,  
                         attackersStats[gamestatus.activeAllyIndex], 
                         [weather, false, false, 0], 
-                        attackersBonuses[gamestatus.activeAllyIndex], 
+                        [weather, this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId), false, 0],
                         "normal", 
                         1, 
                         (gamestatus.enrage ? 1.8 : 1) * (gamestatus.damageReduction * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
@@ -3849,6 +3850,10 @@ export class PoGoAPI {
                 }
             }
         }
+    }
+
+    static isShadow(pokemonId: string) {
+        return pokemonId.endsWith("_SHADOW_FORM") || pokemonId.endsWith("_S_FORM");
     }
 
     static TurnBasedSimulatorAllyTurn(
