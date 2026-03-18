@@ -3727,7 +3727,7 @@ export class PoGoAPI {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
-                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() > 0.5) {
+                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() > 0.7) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
                     gamestatus.enemyCooldown = (Math.floor(Math.random()*3))*0.5+1.5;
                 } else {
