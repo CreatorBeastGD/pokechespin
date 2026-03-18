@@ -3729,11 +3729,17 @@ export class PoGoAPI {
                 gamestatus.enemyPrepPhase = true;
                 if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() > 0.7) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
-                    gamestatus.enemyCooldown = (Math.floor(Math.random()*3))*0.5+1.5;
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
                 } else {
                     gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
-                    gamestatus.enemyCooldown = (Math.floor(Math.random()*3))*0.5+1.5;
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
                 }
+                gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "Move being prepared...",
+                                damage: 0,
+                                color: "#575757"
+                            }
                 gamestatus.dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown + Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
             } else {
                 // Enemy starts to cast move
@@ -3746,6 +3752,9 @@ export class PoGoAPI {
                 gamestatus.enemyCooldown = 0;
                 if (gamestatus.enemyPrepPhase === true) {
                     gamestatus.enemyPrepPhase = false;
+                    if (gamestatus.enemyActiveMove?.isCharged) {
+                        gamestatus.enemyEnergy += defenderCinematicAttack.energyDelta;
+                    }
                 } else {
                     // Enemy deals damage
                     console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
@@ -3765,10 +3774,12 @@ export class PoGoAPI {
                     let proDamageReal = projectedDamage;
                     
                     gamestatus.allyDodgeTurn = 0;
-                    gamestatus.enemyEnergy += gamestatus.enemyActiveMove?.move.energyDelta || 0;
-                    if (gamestatus.enemyEnergy > 100) {
-                        gamestatus.enemyEnergy = 100;
-                    } 
+                    if (!gamestatus.enemyActiveMove?.isCharged) {
+                        gamestatus.enemyEnergy += gamestatus.enemyActiveMove?.move.energyDelta || 0;
+                        if (gamestatus.enemyEnergy > 100) {
+                            gamestatus.enemyEnergy = 100;
+                        } 
+                    }
 
                     if (!gamestatus.isRelobby) {
                         gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
@@ -3804,6 +3815,7 @@ export class PoGoAPI {
                         color: "#fa8585"
                     }
                     gamestatus.damageReduction = 1;
+                    gamestatus.prevWasCharged = !!gamestatus.enemyActiveMove?.isCharged;
                     gamestatus.enemyActiveMove = null;
                     gamestatus.enemyPrepPhase = true;
                 }

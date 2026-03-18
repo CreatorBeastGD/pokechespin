@@ -44,6 +44,7 @@ export class RaidStatus {
     relobbyTimer: number = 0;
 
     isSubdued: boolean = false;
+    prevWasCharged: boolean = false;
 
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
