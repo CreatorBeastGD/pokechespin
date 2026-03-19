@@ -3734,12 +3734,15 @@ export class PoGoAPI {
                     gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
                 }
+                
+                gamestatus.targetDodgeWindow = true;
+                gamestatus.allyDodgeTurn = 0;
                 gamestatus.enemyCurrentMessage = {
-                                duration: gamestatus.enemyCooldown,
-                                message: "Move being prepared...",
-                                damage: 0,
-                                color: "#575757"
-                            }
+                    duration: gamestatus.enemyCooldown,
+                    message: "Move being prepared...",
+                    damage: 0,
+                    color: "#575757"
+                }
                 gamestatus.dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown + Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
             } else {
                 // Enemy starts to cast move
@@ -3823,16 +3826,7 @@ export class PoGoAPI {
             else {
                 if (gamestatus.enemyActiveMove != null) {
                     if (gamestatus.enemyActiveMove.isCharged) {
-                        if (gamestatus.enemyPrepPhase) {
-                            gamestatus.targetDodgeWindow = true;
-                            gamestatus.allyDodgeTurn = 0;
-                            gamestatus.enemyCurrentMessage = {
-                                duration: gamestatus.enemyCooldown,
-                                message: "Move being prepared...",
-                                damage: 0,
-                                color: "#575757"
-                            }
-                        } else {
+                        if (!gamestatus.enemyPrepPhase) {
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
                                 message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
@@ -3841,16 +3835,7 @@ export class PoGoAPI {
                             }
                         }
                     } else {
-                        if (gamestatus.enemyPrepPhase) {
-                            gamestatus.targetDodgeWindow = true;
-                            gamestatus.allyDodgeTurn = 0;
-                            gamestatus.enemyCurrentMessage = {
-                                duration: gamestatus.enemyCooldown,
-                                message: "Move being prepared...",
-                                damage: 0,
-                                color: "#575757"
-                            }
-                        } else {
+                        if (!gamestatus.enemyPrepPhase) {
                             gamestatus.enemyCurrentMessage = {
                                 duration: gamestatus.enemyCooldown,
                                 message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
