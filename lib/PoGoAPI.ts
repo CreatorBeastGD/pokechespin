@@ -3897,6 +3897,12 @@ export class PoGoAPI {
                 duration: 0,
                 color: "#ffffff"
             }
+            
+            gamestatus.enrageCurrentMessage = {
+                message: "The Max Battle Boss is acting normally.",
+                duration: 0,
+                color: "#ff0000"
+            }
         }
         
         if (gamestatus.allyPokemonMaxHealth.length === 0) {
