@@ -3679,14 +3679,6 @@ export class PoGoAPI {
         
         gamestatus.timer += 0.5;
 
-        if (gamestatus.enemyPokemonDamage >= defenderHealth) {
-            gamestatus.globalCurrentMessage = {
-                message: "The Raid Boss has been defeated!",
-                duration: 0,
-                color: "#a2fa85"
-            }
-        }
-
         if (gamestatus.timer >= (gamestatus.lastHitTime > 300 ? gamestatus.lastHitTime : 300)) {
             gamestatus.globalCurrentMessage = {
                 message: "Timeout reached.",
@@ -3694,6 +3686,14 @@ export class PoGoAPI {
                 color: "#fa8585"
             }
             gamestatus.timeout = true;
+        }
+
+        if (gamestatus.enemyPokemonDamage >= defenderHealth) {
+            gamestatus.globalCurrentMessage = {
+                message: "The Raid Boss has been defeated!",
+                duration: 0,
+                color: "#a2fa85"
+            }
         }
 
 
