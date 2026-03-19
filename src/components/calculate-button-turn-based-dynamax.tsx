@@ -106,7 +106,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
     //console.log("Changed dependencies")
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, maxMoves, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
 
   const getHealthBarColor = (healthPercent: number) => {
     if (healthPercent > 50) {
