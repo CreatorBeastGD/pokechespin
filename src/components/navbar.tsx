@@ -31,6 +31,7 @@ const Navbar = () => {
     let [selfMegaBoost, setSelfMegaBoost] = useState(false);
     let [showDPSOnSoloRaid, setShowDPSOnSoloRaid] = useState(false);
     let [showHPOnSoloRaid, setShowHPOnSoloRaid] = useState(false);
+    let [freezeRejoin, setFreezeRejoin] = useState(true);
 
 
     useEffect(() => {
@@ -44,6 +45,7 @@ const Navbar = () => {
         const selfMegaBoostStorage = localStorage.getItem("selfMegaBoost");
         const showDPSOnSoloRaidStorage = localStorage.getItem("showDPSOnSoloRaid");
         const showHPOnSoloRaidStorage = localStorage.getItem("showHPOnSoloRaid");
+        const freezeRejoinStorage = localStorage.getItem("freezeRejoin");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -104,6 +106,12 @@ const Navbar = () => {
         } else {
             localStorage.setItem("showHPOnSoloRaid", "false");
         }
+
+        if (freezeRejoinStorage) {
+            setFreezeRejoin(freezeRejoinStorage === "true");
+        } else {
+            localStorage.setItem("freezeRejoin", "true");
+        }
     }, []);
 
     let ChangeBladeBoost = (option: string) => {
@@ -146,7 +154,7 @@ const Navbar = () => {
         localStorage.setItem("selfMegaBoost", selfMegaBoost.toString());
         localStorage.setItem("showDPSOnSoloRaid", showDPSOnSoloRaid.toString());
         localStorage.setItem("showHPOnSoloRaid", showHPOnSoloRaid.toString());
-
+        localStorage.setItem("freezeRejoin", freezeRejoin.toString());
         // reload page
         window.location.reload();
     }
@@ -162,6 +170,7 @@ const Navbar = () => {
         setSelfMegaBoost(false);
         setShowDPSOnSoloRaid(false);
         setShowHPOnSoloRaid(false);
+        setFreezeRejoin(true);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -172,6 +181,7 @@ const Navbar = () => {
         localStorage.setItem("selfMegaBoost", "false");
         localStorage.setItem("showDPSOnSoloRaid", "false");
         localStorage.setItem("showHPOnSoloRaid", "false");
+        localStorage.setItem("freezeRejoin", "true");
         // reload page
         window.location.reload();
     }
@@ -298,11 +308,23 @@ const Navbar = () => {
                                 </div>
                             </div>
                             <Separator className="bg-white bg-opacity-10" />
+                            <SheetTitle>Behavior</SheetTitle>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Rejoin freeze bug</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={freezeRejoin} onChange={(e) => setFreezeRejoin(e.target.checked)} type="checkbox" id="freezeRejoin" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Enables the 'Rejoin freeze' bug, which makes your Pokémon freeze when rejoining if the boss is casting a move, making you take that damage from the boss. This config is ON by default.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Customization</SheetTitle>
                             <div className="flex flex-col ">
                                 <label className="text-sm">Show all Pokémon as shiny</label>
                                 <div className="flex items-center space-x-2">
-                                    <input checked={showAllPokemonAsShiny} onChange={(e) => ChangeShowAllPokemonAsShiny(e.target.checked)} type="checkbox" id="doubleFriendshipBonus" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <input checked={showAllPokemonAsShiny} onChange={(e) => ChangeShowAllPokemonAsShiny(e.target.checked)} type="checkbox" id="showAllPokemonAsShiny" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Pokémon have a 100% chance to be shiny instead of 1/4096.
                                     </p>

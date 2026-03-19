@@ -11,7 +11,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.35.1";
+        return "1.35.2";
     }
 
     static async getAllPokemon() {
@@ -3566,8 +3566,9 @@ export class PoGoAPI {
 
                 if (gamestatus.isRelobby === 1) {
                     gamestatus.isRelobby = 0;
+                     
                     gamestatus.allyCooldown = !gamestatus.enemyPrepPhase ? 
-                    gamestatus.dodgeWindowEnd - gamestatus.timer : 0;
+                    ((localStorage.getItem("freezeRejoin") === "true") ? (gamestatus.dodgeWindowEnd - gamestatus.timer) : 0 ) : 0;
                 }
 
                 if (gamestatus.allyActiveMove != null) {

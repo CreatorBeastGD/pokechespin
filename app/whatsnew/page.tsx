@@ -17,6 +17,15 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.35.2",
+        desc: "+ Added a new 'Rejoin freeze bug' config to PokéChespin!\n"+
+                ">>>>>> 'Rejoin freeze bug': Enables the 'Rejoin freeze' bug, which makes your Pokémon freeze when rejoining if the boss is casting a move, making you take that damage from the boss. This config is ON by default.\n"+
+                "+ Several bug-fixes and improvements to the Solo Raid simulator.\n"+
+                "Special thanks to SpiritedBloom, Jay258 and DarKnight for your help testing the Solo Raid Simulator and giving me feedback to improve it!\n",
+        date: "2026-03-19",
+
+    },
+    {
         title: "v1.35.1 ",
         desc: "+ Added new configs related to Raids to the 'Configuration' sheet to PokéChespin!\n"+
                 ">>>>>> 'Show HP values on Solo Raid Simulations' config: Shows the current HP values of the active Pokémon on Solo Raid Simulations.\n"+
