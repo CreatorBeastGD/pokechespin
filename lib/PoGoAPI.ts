@@ -199,6 +199,21 @@ export class PoGoAPI {
                 case "GOLISOPOD_MEGA":
                     pokemon[0].type2 = "POKEMON_TYPE_STEEL";
                     break;
+                case "HERACROSS":
+                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
+                    break;
+                case "HERACROSS_MEGA":
+                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
+                    break;
+                case "HERACROSS_SHADOW_FORM":
+                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
+                    break;
+                case "MOLTRES":
+                    pokemon[0].cinematicMoves = ["HEAT_WAVE", "ANCIENT_POWER", "FIRE_BLAST", "OVERHEAT", "RETURN", "SKY_ATTACK", "FLY"];
+                    break;
+                case "MOLTRES_SHADOW_FORM":
+                    pokemon[0].cinematicMoves = ["HEAT_WAVE", "ANCIENT_POWER", "FIRE_BLAST", "OVERHEAT", "RETURN", "SKY_ATTACK", "FLY"];
+                    break;
                 default:
                     break;
             }
@@ -1004,6 +1019,7 @@ export class PoGoAPI {
             LATIAS: [8005144, 15, 15, 28000],
             LUGIA: [8005244, 15, 15, 18000],
             HO_OH: [8005144, 15, 15, 25000],
+            REGICE: [8005243, 15, 15, 20000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {
