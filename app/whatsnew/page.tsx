@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.35.2.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Regice.\n"+
+            "+ Changed stats on Tier 5 Max Battles \n"+
+            ">>>>>> Regice\n >>>>>> ~ HP: 22500 -> 20000 \n",
+            date: "2026-03-23",
+    },
+    {
         title: "v1.35.2",
         desc: "+ Added a new 'Rejoin freeze bug' config to PokéChespin!\n"+
                 ">>>>>> 'Rejoin freeze bug': Enables the 'Rejoin freeze' bug, which makes your Pokémon freeze when rejoining if the boss is casting a move, making you take that damage from the boss. This config is ON by default.\n"+
