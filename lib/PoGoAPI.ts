@@ -214,6 +214,14 @@ export class PoGoAPI {
                 case "MOLTRES_SHADOW_FORM":
                     pokemon[0].cinematicMoves = ["HEAT_WAVE", "ANCIENT_POWER", "FIRE_BLAST", "OVERHEAT", "RETURN", "SKY_ATTACK", "FLY"];
                     break;
+                case "CINDERACE_GIGANTAMAX":
+                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
+                    pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
+                    break;
+                case "CINDERACE":
+                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
+                    pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
+                    break;
                 default:
                     break;
             }
@@ -268,6 +276,18 @@ export class PoGoAPI {
                     damageWindowStartMs: 3998,
                     damageWindowEndMs: 4000,
                     animationId: "MIND_BLOWN",
+                };
+            }
+            if (moveId === "PYRO_BALL") {
+                return {
+                    moveId: "PYRO_BALL",
+                    power: 150,
+                    durationMs: 2000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_FIRE",
+                    damageWindowStartMs: 1998,
+                    damageWindowEndMs: 2000,
+                    animationId: "PYRO_BALL",
                 };
             }
             throw new Error(`Move with ID ${moveId} not found`);
