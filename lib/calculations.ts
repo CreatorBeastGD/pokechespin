@@ -423,8 +423,9 @@ export class Calculator {
         return this.RAID_BOSS_HP[raidMode];
       }
 
-      static getMaxEnergyGain(damage: number, bossHP: number) {
-        return Math.max(1, Math.floor(damage / (bossHP / 200)));
+      static getMaxEnergyGain(damage: number, bossHP: number, raidMode: string = "normal") {
+        let multiplier = raidMode === "normal" ? 1 : raidMode === "raid-t5-dmax" ? 2 : raidMode === "raid-t6-gmax" ? 15 : 1;
+        return Math.max(1, Math.floor((damage * multiplier) / (bossHP / 200)));
       }
     
       static getCPM(level: number) {

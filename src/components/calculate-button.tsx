@@ -78,7 +78,7 @@ export default function CalculateButton({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, gaining {Calculator.getMaxEnergyGain((damage??0), effStamina)} energy</span>}
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode)} energy</span>}
           </p>
           <p>
           
