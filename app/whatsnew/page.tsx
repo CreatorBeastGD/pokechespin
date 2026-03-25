@@ -19,7 +19,7 @@ const novedades = [
     {
         title: "v1.35.2.2",
         desc: "+ Changed energy gain on Tier 5 and Tier 6 Max Battles.\n"+
-                ">>>>>> Now, energy gain on Max Battles is calculated with the formula: max(1, floor((damage * multiplier) / (bossHP / 200)))), where multiplier is 1 for normal raids, 2 for Tier 5 Dynamax raids and 15 for Tier 6 Gigantamax raids. This change reflects the differences in energy gain between normal raids and Max Battles, making it more accurate and consistent with the actual game mechanics.",
+                ">>>>>> Now, energy gain on Max Battles is calculated with the formula: max(1, floor((damage * multiplier) / (bossHP / 200)))), where multiplier is 1 for any Max Battle, 2 for Tier 5 Max Battles and 15 for Tier 6 Gigantamax Battles.",
         date: "2026-03-25",
     },
     {
