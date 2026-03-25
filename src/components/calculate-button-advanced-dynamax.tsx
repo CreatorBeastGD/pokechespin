@@ -387,7 +387,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
                             (item.purifiedgem ? "Purified Gem used." : 
                               item.desperate ? "Defender Pokémon' attacks are getting stronger!" :
                                item.enraged ? "The defender Pokémon is getting desperate!" : 
-                               item.energyGain ? ("Energy gained: " + item.energyGain) : 
+                               item.energyGain ? ("Energy gained: " + item.energyGain.toFixed(0)) : 
                                item.shield ? "Shield used by member " + (item.member+1) :
                                item.heal ? "Heal used by member " + (item.member+1) : 
                                item.particle ? "Max Orb has been generated on member " + (item.member+1) :

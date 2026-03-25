@@ -11,7 +11,7 @@ const API_PB = nextConfig.API_PB_URL;
 export class PoGoAPI {
     
     static getVersion() {
-        return "1.35.2.2";
+        return "1.35.3";
     }
 
     static async getAllPokemon() {
@@ -1127,7 +1127,7 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t4-dmax") {
             return [9500, 10000]
         } else if (raidMode === "raid-t5-dmax") {
-            return [9500, 10000]
+            return [8500, 9500]
         } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
             return [2500, 5000]
         } else if (raidMode === "raid-custom-dmax") {
@@ -4037,13 +4037,16 @@ export class PoGoAPI {
                 case "switch0":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
-                    if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
-                        gamestatus.activeAllyIndex = 0;
-                    }
-
                     
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
+                        if (gamestatus.activeAllyIndex == 0) {
+                            gamestatus.timer = gamestatus.timer + 4;
+                        }
+                    }
+                    
+                    if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
+                        gamestatus.activeAllyIndex = 0;
                     }
 
                     gamestatus.allyCurrentMessage = {
@@ -4060,12 +4063,17 @@ export class PoGoAPI {
                 case "switch1":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
-                    if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
-                        gamestatus.activeAllyIndex = 1;
-                    }
+                    
                     
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
+                        if (gamestatus.activeAllyIndex == 1) {
+                            gamestatus.timer = gamestatus.timer + 4;
+                        }
+                    }
+                    
+                    if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
+                        gamestatus.activeAllyIndex = 1;
                     }
 
                     gamestatus.allyCurrentMessage = {
@@ -4081,12 +4089,17 @@ export class PoGoAPI {
                 case "switch2":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
-                    if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
-                        gamestatus.activeAllyIndex = 2;
-                    }
+                    
 
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
+                        if (gamestatus.activeAllyIndex == 2) {
+                            gamestatus.timer = gamestatus.timer + 4;
+                        }
+                    }
+                    
+                    if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
+                        gamestatus.activeAllyIndex = 2;
                     }
 
                     gamestatus.allyCurrentMessage = {
@@ -4140,6 +4153,7 @@ export class PoGoAPI {
                         gamestatus.maxPhaseCounter -= 1;
                         if (gamestatus.maxPhaseCounter==0) {
                             gamestatus.maxEnergy = 0;
+                            gamestatus.timer = gamestatus.timer + 4.5;
                         }
                     }
 
@@ -4167,6 +4181,11 @@ export class PoGoAPI {
                             gamestatus.maxEnergy = 0;
                         }
 
+                        if (gamestatus.maxPhaseCounter==0) {
+                            gamestatus.maxEnergy = 0;
+                            gamestatus.timer = gamestatus.timer + 4.5;
+                        }
+
                         gamestatus.allyCurrentMessage = {
                             message: "Your Pokémon used Max Guard!",
                             damage: 0,
@@ -4191,6 +4210,11 @@ export class PoGoAPI {
                         gamestatus.maxPhaseCounter -= 1;
                         if (gamestatus.maxPhaseCounter==0) {
                             gamestatus.maxEnergy = 0;
+                        }
+
+                        if (gamestatus.maxPhaseCounter==0) {
+                            gamestatus.maxEnergy = 0;
+                            gamestatus.timer = gamestatus.timer + 4.5;
                         }
 
                         gamestatus.allyCurrentMessage = {
@@ -4368,7 +4392,7 @@ export class PoGoAPI {
                 }
 
                 // Defender' attacks are getting stronger
-                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 220) || 
+                if ((gamestatus.bossCastedMove) && ((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 220) || 
                     (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 300)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss' attacks are getting stronger!",
@@ -4400,7 +4424,7 @@ export class PoGoAPI {
                 }
 
                 // Defender' attacks are getting stronger
-                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 220) || 
+                if ((gamestatus.bossCastedMove) && ((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 220) || 
                     (raidMode.endsWith("dmax") && gamestatus.timer === 300)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss' attacks are getting stronger!",
@@ -4409,7 +4433,6 @@ export class PoGoAPI {
                     }
                     gamestatus.enrage = true;
                 } 
-
             }
 
         if (gamestatus.enemyPokemonDamage >= defenderHealth) {
@@ -4419,6 +4442,8 @@ export class PoGoAPI {
                 color: "#a2fa85"
             }
         }
+
+        gamestatus.bossCastedMove = false;
 
 
         const next = {...gamestatus} as GameStatus;
@@ -4474,7 +4499,7 @@ export class PoGoAPI {
             if (gamestatus.enemyActiveMove == null) {
                 // Choose move
                 gamestatus.enemyPrepPhase = true;
-                if (Math.random() > 0.5) {
+                if (Math.random() > 0.5 || (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] != 0 && Math.random() > 0.33)) {
                     gamestatus.enemyActiveMove = {move: defenderTargetAttack, isTarget: true};
                     gamestatus.enemyCooldown = Math.ceil(targetCooldown * 2 / 1000) / 2;
                 } else {
@@ -4571,6 +4596,7 @@ export class PoGoAPI {
                     gamestatus.damageReduction = 1;
                     gamestatus.enemyActiveMove = null;
                     gamestatus.enemyPrepPhase = true;
+                    gamestatus.bossCastedMove = true;
                 }
             }
             else {

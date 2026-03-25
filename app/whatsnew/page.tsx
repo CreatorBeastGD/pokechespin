@@ -17,6 +17,19 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.35.3",
+        desc: "+ Changed some features on PokéChespin for Max Battles.\n"+
+                ">>>>>> The energy generation will now work as floats instead of integers. You can check how much energy you are generating in the calculator, including those decimals!\n"+
+                ">>>>>> Energy Gain will have a multiplier of x2 in Tier 5 Max Battles and x15 in Gigantamax Battles.\n"+
+                ">>>>>> T5 Max Battles have had their attack rate reduced:\n"+
+                ">>>>>>>>> Large moves: from 9.5s to 8.5s of preparation\n"+
+                ">>>>>>>>> Target moves: from 10s to 9.5s of preparation\n"+
+                "+ Changed some behaviour on the Solo Max Battle Simulator!\n"+
+                ">>>>>> Now, landing your last Max Move of a round will consume 4.5s of the timer. In addition to that, starting the Max Phase with the same Pokémon that you had on field will add 4s to the timer.\n"+
+                ">>>>>> If your active Pokémon has Max Guard active and the boss is selecting a move, it will now have a 66% of selecting its Target move.\n",
+        date: "2026-03-25",
+    },
+    {
         title: "v1.35.2.2",
         desc: "+ Changed energy gain on Tier 5 and Tier 6 Max Battles.\n"+
                 ">>>>>> Now, energy gain on Max Battles is calculated with the formula: max(1, floor((damage * multiplier) / (bossHP / 200)))), where multiplier is 1 for any Max Battle, 2 for Tier 5 Max Battles and 15 for Tier 6 Gigantamax Battles.",

@@ -256,7 +256,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between">
               <label className="font-bold text-xs">Max Battle ({gameStatus?.timer}s)</label>
-              <label className="font-bold text-xs">Max Meter: {gameStatus?.maxEnergy}</label>
+              <label className="font-bold text-xs">Max Meter: {Math.floor(gameStatus?.maxEnergy || 0)}</label>
             </div>
             <Separator className=""/>
             <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
@@ -345,7 +345,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
               <>
                 <Button onClick={() => SendMessage("maxattack")} className="w-full py-2 text-white bg-primary rounded-lg">{PoGoAPI.formatMoveName(PoGoAPI.getDynamaxAttack(attacker[gameStatus!.activeAllyIndex].pokemonId, quickMove[gameStatus!.activeAllyIndex].type, allMoves, maxMoves[gameStatus!.activeAllyIndex][0], quickMove[gameStatus!.activeAllyIndex].moveId).moveId)}</Button>
                 {((maxMoves[gameStatus!.activeAllyIndex][1] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxbarrier")} className="w-full py-2 text-white bg-primary rounded-lg">Max Guard</Button>}
-                {((maxMoves[gameStatus!.activeAllyIndex][2] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxspirit")} className="w-full py-2 text-white bg-primary rounded-lg">Max Healing</Button>}
+                {((maxMoves[gameStatus!.activeAllyIndex][2] + (advEffect[0] == "cannon" && !(attacker[gameStatus!.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attacker[gameStatus!.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" ) ? 1 : 0)) > 0) && <Button onClick={() => SendMessage("maxspirit")} className="w-full py-2 text-white bg-primary rounded-lg">Max Spirit</Button>}
               </>
               }
               {(gameStatus?.maxPhaseCounter == 0) &&
