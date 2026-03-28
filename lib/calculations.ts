@@ -97,7 +97,6 @@ export class Calculator {
     }
 
     static UpcomingGMaxPokemon = [
-      "PIKACHU_GIGANTAMAX",
       "EEVEE_GIGANTAMAX",
       "MELMETAL_GIGANTAMAX",
       "CORVIKNIGHT_GIGANTAMAX",
@@ -248,6 +247,8 @@ export class Calculator {
       "BUTTERFREE_GIGANTAMAX",
       "GARBODOR_GIGANTAMAX",
       "GRIMMSNARL_GIGANTAMAX",
+      "MEOWTH_GIGANTAMAX",
+      "PIKACHU_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
       "ETERNATUS"
@@ -590,7 +591,7 @@ export class Calculator {
             GRIMMSNARL_GIGANTAMAX: 70000,
             ETERNATUS_ETERNAMAX_FORM: 60000,
             MEOWTH_GIGANTAMAX: 80000,
-            PIKACHU_GIGANTAMAX: 100000,
+            PIKACHU_GIGANTAMAX: 80000,
         };
 
         if (raidMode === "raid-t5-dmax") {
