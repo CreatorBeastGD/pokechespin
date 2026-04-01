@@ -28,7 +28,7 @@ const novedades = [
                 ">>>>>> Gigantamax Pikachu.\n"+
                 "+ Changed some stats on Tier 6 Max Battles \n"+
                 ">>>>>> Gigantamax Pikachu\n >>>>>> ~ CPM: 3 -> 1.7 \n",
-        date: "2026-03-30",
+        date: "2026-04-01",
     },
     {
         title: "v1.35.3",
