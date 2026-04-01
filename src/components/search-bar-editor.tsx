@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -15,14 +15,11 @@ import TypeBadge from "./TypeBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Type } from "lucide-react";
 import WeaknessResistanceTable from "./WeaknessResistanceTable";
+import { set } from "mongoose";
 
 
-interface SearchBarAttackerProps {
-  onSelect: (pokemon: any, slot: any) => void;
-  onQuickMoveSelect: (moveId: string, move: any, slot: any) => void;
-  onChargedMoveSelect: (moveId: string, move: any, slot: any) => void;
-  onChangedStats: (stats: any, slot: any) => void;
-  onBonusChange: (bonuses: any, slot: any) => void;
+interface SearchBarEditorProps {
+  onSelect: (pokemon: any) => void;
   pokemonList: any;
   searchBarNames: any;
   allMoves: any;
@@ -30,18 +27,17 @@ interface SearchBarAttackerProps {
   allEnglishText: any;
   raidMode?: string;
   slot?: number;
-  initialValues?: any;
   paramsLoaded?: boolean;
   allTypes?: any;
   memberSlot?: number;
+  customMoveDeletionChecker?: boolean;
+  setCustomMoveDeletionChecker?: any;
+  deletedMoveId?: string;
+  setDeletedMoveId?: any;
 }
 
-export default function SearchBarAttacker({ 
+export default function SearchBarEditor({ 
     onSelect, 
-    onQuickMoveSelect, 
-    onChargedMoveSelect, 
-    onChangedStats, 
-    onBonusChange, 
     raidMode, 
     pokemonList, 
     searchBarNames, 
@@ -49,11 +45,14 @@ export default function SearchBarAttacker({
     assets, 
     allEnglishText,
     slot,
-    initialValues,
     paramsLoaded,
     allTypes,
-    memberSlot
-  }: SearchBarAttackerProps, ) {
+    memberSlot,
+    customMoveDeletionChecker,
+    setCustomMoveDeletionChecker,
+    deletedMoveId,
+    setDeletedMoveId
+  }: SearchBarEditorProps, ) {
 
     const raidModeLevelMultiplier = PoGoAPI.convertStats([40, 15, 15, 15], raidMode)[0];
 
@@ -75,59 +74,30 @@ export default function SearchBarAttacker({
 
   const [importMaxMove, setImportMaxMove] = useState<number[]>([1, 0, 0]);
   
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const initialLoad = useRef(false);
+
+  const [customFastMove, setCustomFastMove] = useState<string>("");
+  const [fmSuggestions, setFMSuggestions] = useState<any[]>([]);
+  const [customFMList, setCustomFMList] = useState<any[]>([]);
+
+  const [customChargedMove, setCustomChargedMove] = useState<string>("");
+  const [cmSuggestions, setCMSuggestions] = useState<any[]>([]);
+  const [customCMList, setCustomCMList] = useState<any[]>([]);
+
+  const [customPokeData, setCustomPokeData] = useState<any[]>([]);
 
 
-  useEffect(() => {
-    //console.log(initialValues);
-    if (!initialLoad.current && initialValues && paramsLoaded) {
-      initialLoad.current = true;
-      if (initialValues.attacker) searchPokemonInit(initialValues.attacker);
-      if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
-      if (initialValues.bonusAttacker) {
-        const normalizedBonuses = initialValues.bonusAttacker.map((bonus: any, index: number) => {
-          if (index === 0) return bonus; // EXTREME sigue como string
-          if (index === 3) return parseInt(bonus); // Último es número
-          return bonus === "true"; // Conviértelo en booleano
-        });
-        handleBonusSelect(normalizedBonuses);
-      }
-      if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
-      if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
-      //console.log("Initial values loaded");
-    }
-  }, [initialValues]); // Agrega `initialValues` como dependencia
-
-  const handleQuickMoveSelect = (moveId: string, move: any, write: boolean = true) => {
+  const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
-    onQuickMoveSelect(moveId, move, memberSlot);
-    if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", moveId);
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
   };
 
-  const handleStatsSelect = (stats: any, write: boolean = true) => {
+  const handleStatsSelect = (stats: any) => {
     setStats(stats);
-    onChangedStats(stats, memberSlot);
-    if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
+    
   }
 
-  const handleBonusSelect = (bonus: any, write: boolean = true) => {
+  const handleBonusSelect = (bonus: any) => {
     setSelectedBonuses(bonus);
-    onBonusChange(bonus, memberSlot);
-    if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot == 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", bonus.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
+    
   }
   
   useEffect(() => {
@@ -137,29 +107,29 @@ export default function SearchBarAttacker({
     }
   } , [clickedSuggestion]);
 
-  const searchPokemonInit = (pokemonD: any, write: boolean = true) => {
+  const searchPokemonInit = (pokemonD: any) => {
     setPokemon(pokemonD.pokedex.pokemonId);
-    handleQuickMoveSelect("", null, write);
-    handleChargedMoveSelect("", null, write);
+    handleQuickMoveSelect("", null);
+    handleChargedMoveSelect("", null);
     setLoading(true);
     setError(null);
     try {
       const response = PoGoAPI.getPokemonPBByID(pokemonD.pokemonId, pokemonList)[0];
+      if (!response) {
+        setPokemonData(null);
+        setAvailableForms([]);
+        setCustomFMList([]);
+        setCustomCMList([]);
+        setError("Pokemon not found.");
+        return;
+      }
       setPokemonData(response);
-      onSelect(response, memberSlot);
-      //console.log();
+      onSelect(response);
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
       
-      setAvailableForms(allForms);// Construir nueva URL
+      setAvailableForms(allForms);
       setSelectedForm(pokemonD.pokemonId);
       
-      if (write) {
-        const newSearchParams = new URLSearchParams(searchParams.toString());
-        newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
-
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-        
-      }
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -176,6 +146,25 @@ export default function SearchBarAttacker({
     }
   };
 
+  useEffect(() => {
+    // Un movimiento custom se ha borrado, si estamos viendo un Pokémon con movimientos custom, refrescamos los movimientos para mostrar que el movimiento ha sido borrado
+    if (customMoveDeletionChecker) {
+      setTimeout(() => {
+        if (pokemonData) {
+          const pokemonDataRefreshed = PoGoAPI.getPokemonPBByID(pokemonData.pokemonId, pokemonList)[0];
+          setPokemonData(pokemonDataRefreshed);
+          
+          let newCustomFMoves = customFMList.filter((moveId) => moveId !== deletedMoveId);
+          let newCustomCMoves = customCMList.filter((moveId) => moveId !== deletedMoveId);
+          setCustomFMList(newCustomFMoves);
+          setCustomCMList(newCustomCMoves);
+
+        }
+        setCustomMoveDeletionChecker(false);
+      }, 2);
+    }
+  }, [customMoveDeletionChecker]);
+
   const searchPokemon = () => {
     setLoading(true);
     setError(null);
@@ -186,18 +175,25 @@ export default function SearchBarAttacker({
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
+      if (!response) {
+        setPokemonData(null);
+        setAvailableForms([]);
+        setCustomFMList([]);
+        setCustomCMList([]);
+        setError("Pokemon not found.");
+        return;
+      }
       setPokemonData(response);
-      onSelect(response, memberSlot);
+      onSelect(response);
       const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX");
       setAvailableForms(allForms);// Construir nueva URL
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack" + memberSlot : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" + memberSlot : "defender_cinematic_attack");
+
+      let customFMoves = [...(response.quickMoves ?? [])];
+      setCustomFMList(customFMoves);
+
+      let customCMoves = [...(response.cinematicMoves ?? [])];
+      setCustomCMList(customCMoves);
       
-
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -221,15 +217,23 @@ export default function SearchBarAttacker({
     handleChargedMoveSelect("", null);
     try {
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
+      if (!response) {
+        setPokemonData(null);
+        setAvailableForms([]);
+        setCustomFMList([]);
+        setCustomCMList([]);
+        setError("Pokemon not found.");
+        return;
+      }
       setPokemonData(response);
-      onSelect(response, memberSlot);
-      const newSearchParams = new URLSearchParams(searchParams.toString());    
-      newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
-      newSearchParams.delete(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack");
-      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack");
+      onSelect(response);
       
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    
+      let customFMoves = [...(response.quickMoves ?? [])];
+      setCustomFMList(customFMoves);
+
+      let customCMoves = [...(response.cinematicMoves ?? [])];
+      setCustomCMList(customCMoves);
+      
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -247,23 +251,12 @@ export default function SearchBarAttacker({
   };
 
   const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
-    if (paramsLoaded) {
-      
     setSelectedChargedMove(moveId);
-    onChargedMoveSelect(moveId, move, memberSlot);
-    if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    }
-    }
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedForm(event.target.value);
-    onSelect(searchForm(event.target.value), memberSlot);
-    setSelectedQuickMove(null);
-    setSelectedChargedMove(null);
+    onSelect(searchForm(event.target.value));
   };
 
   // [level, attack, defense, stamina]
@@ -287,41 +280,11 @@ export default function SearchBarAttacker({
     });
   };
 
-  useEffect(() => {
-    
-    onChangedStats(stats, memberSlot);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [stats]);
-
-  useEffect(() => {
-    onBonusChange(selectedBonuses, memberSlot);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", selectedBonuses.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-  }, [selectedBonuses]);
-
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPokemon(value);
-
-    // Filtrar sugerencias
-    if (value.length > 0) {
-      const filteredSuggestions = PoGoAPI.getPokemonPBBySpeciesName(value, pokemonList, allEnglishText).filter((p: any) => ((PoGoAPI.getPokemonNamePB(p.pokedex.pokemonId, allEnglishText))
-        .toLowerCase()))
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
-    }
-  };
 
   const handleSuggestionClick = (suggestion: any) => {
     setPokemon(suggestion);
     setClickedSuggestion(true);
-    searchPokemon();
     setSuggestions([]);
   };
 
@@ -417,29 +380,16 @@ export default function SearchBarAttacker({
 
 
                           // Luego actualizamos todo en orden
-                          await searchPokemonInit(pokemonData, true);
-                          handleStatsSelect(data.stats, true);
-                          handleBonusSelect(data.bonuses, true);
-                          handleQuickMoveSelect(data.quickMove, quickMove, true);
+                          await searchPokemonInit(pokemonData);
+                          handleStatsSelect(data.stats);
+                          handleBonusSelect(data.bonuses);
+                          handleQuickMoveSelect(data.quickMove, quickMove);
                           handleChargedMoveSelect(data.chargedMove, chargedMove, true);
 
                           setImportMaxMove(data.maxmoves || [1, 0, 0]);
 
                           console.log("Import successful, importing on link...");
 
-                          // Pequeño delay para asegurar que el pokémon se cargó completamente
-                          setTimeout(() => {
-                              
-                              // Actualizamos la URL una sola vez al final
-                              const newSearchParams = new URLSearchParams(searchParams.toString());
-                              newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", pokemonData.pokemonId);
-                              newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", data.stats.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
-                              newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
-                              
-                              window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-                          }, 300);
                       } finally {
                           setTimeout(() => {
                             setIsImporting(false);
@@ -465,14 +415,9 @@ export default function SearchBarAttacker({
   const effDefense = Calculator.getEffectiveDefense(selectedPokemon?.stats?.baseDefense, (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15), slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidModeLevelMultiplier);
   const effStamina = Calculator.getEffectiveStamina(selectedPokemon?.stats?.baseStamina, (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15), slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidModeLevelMultiplier);
 
-
   //console.log(selectedPokemon? selectedPokemon : "null");
 
   const suffixes = ["_MEGA", "_MEGA_X", "_MEGA_Y", "_MEGA_Z"];
-
-  const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA", "").replace("_X", "").replace("_Y", "").replace("_Z", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
-  const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
-  const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
 
@@ -482,7 +427,104 @@ export default function SearchBarAttacker({
   );
 
   const showID = localStorage.getItem("showIDs") === "true";
+
+    const handleMoveChange = (e: React.ChangeEvent<HTMLInputElement>, moveType: string) => {
+    const value = e.target.value;
+    if (moveType === "fast") {
+      setCustomFastMove(value);
+      if (value.length > 0) {
+        const filteredMoves = PoGoAPI.getMovePBByName(value, allMoves, true, [selectedPokemon?.quickMoves, customFMList].flat());
+        setFMSuggestions(filteredMoves);
+      } else {
+        setFMSuggestions([]);
+      }
+    } else {
+      setCustomChargedMove(value);
+      if (value.length > 0) {
+        const filteredMoves = PoGoAPI.getMovePBByName(value, allMoves, false, [selectedPokemon?.cinematicMoves, customCMList].flat());
+        setCMSuggestions(filteredMoves);
+      } else {
+        setCMSuggestions([]);
+      }
+    }
+  }
+
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPokemon(value);
+
+    // Filtrar sugerencias
+    if (value.length > 0) {
+      const filteredSuggestions = PoGoAPI.getPokemonPBBySpeciesName(value, pokemonList, allEnglishText).filter((p: any) => ((PoGoAPI.getPokemonNamePB(p.pokedex.pokemonId, allEnglishText))
+        .toLowerCase()))
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleMoveSuggestionClick = (suggestion: any, moveType: string) => {
+    if (suggestion.moveId) {
+      if (moveType === "fast") {
+        setCustomFastMove(suggestion.moveId);
+        setFMSuggestions([]);
+      } else {
+        setCustomChargedMove(suggestion.moveId);
+        setCMSuggestions([]);
+      }
+
+    }
+  };
   
+  function handleAddCustomMove(moveType: string): void {
+    if (moveType === "fast") {
+      let newList = [...customFMList];
+      newList.push(customFastMove);
+      setCustomFMList(newList);
+      setCustomFastMove("");
+    } else {
+      let newList = [...customCMList];
+      newList.push(customChargedMove);
+      setCustomCMList(newList);
+      setCustomChargedMove("");
+    }
+  }
+
+  function deleteMoveFromList(moveType: string, moveId: string) {
+    if (moveType === "fast" && customFMList.length > 1) {
+      setCustomFMList(customFMList.filter((id) => id !== moveId));
+    } else if (moveType === "charged" && customCMList.length > 1) {
+      setCustomCMList(customCMList.filter((id) => id !== moveId));
+    }
+  }
+
+
+
+  function saveCustomMovesToPokemon() {
+    PoGoAPI.setCustomPokemonMoves(selectedPokemon.pokemonId, customFMList, customCMList);
+    setTimeout(() => {
+      setCustomPokeData(PoGoAPI.getAllCustomPokemonMoves());
+      alert("Custom moves saved for " + PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText) + "!");
+    }, 2);
+  }
+
+  function resetCustomMovesToDefault() {
+    PoGoAPI.setCustomPokemonMovesToDefault(selectedPokemon.pokemonId);
+
+    setTimeout(() => {
+      const pokemonData = PoGoAPI.getPokemonPBByID(selectedPokemon.pokemonId, pokemonList)[0];
+      setCustomFMList(pokemonData.quickMoves);
+      setCustomCMList(pokemonData.cinematicMoves);
+      setCustomPokeData(PoGoAPI.getAllCustomPokemonMoves());
+      alert("Custom moves reset to default for " + PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText) + "!");
+    }, 2);
+  }
+
+  useEffect(() => {
+    setCustomPokeData(PoGoAPI.getAllCustomPokemonMoves());
+  }, []);
+
   return (
     <>
       <Input
@@ -507,9 +549,19 @@ export default function SearchBarAttacker({
       )}
       <div>
         <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-        {slot === 1 && (<Button onClick={exportPokemon} className="mt-4 mb-2 mr-2">Export</Button>)}
-        {slot === 1 && (<Button onClick={importPokemon} className="mt-4 mb-2">Import</Button>)}
+        <Button onClick={saveCustomMovesToPokemon} className="mt-4 mb-2 mr-2">Save</Button>
+        <Button onClick={resetCustomMovesToDefault} className="mt-4 mb-2">Default</Button>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Clicking "Default" will reset the Pokémon's values to their original state. This action cannot be undone, so make sure you want to reset before clicking it.
+      </p>
+      <p className="text-sm text-muted-foreground mt-2">
+        Custom data exist for {Object.keys(customPokeData).length} Pokémon (
+          {Object.entries(customPokeData).map(([pokeKey], index, arr) => (
+            <span key={pokeKey}>{pokeKey}{index < arr.length - 1 ? ", " : ""}</span>
+          ))}
+        )
+      </p>
       {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
@@ -538,44 +590,19 @@ export default function SearchBarAttacker({
 
           <p>Stats (CP {raidmode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, Calculator.getRaidBossHP(raidmode))}) </p>
           <div className="flex flex-row items-center space-x-2">
-            <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {effAttack })</span></p>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="" >?</button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + (slot == 1 ? stats[1] : (slot == 2 && raidMode === "normal") ? stats[1] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effAttack)}</p>
-              </PopoverContent>
-            </Popover>
+            <p>Attack: {selectedPokemon.stats?.baseAttack}</p>
+            
           </div>
           <Progress color={"bg-red-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseAttack / 505) * 100}/>
           
           <div className="flex flex-row items-center space-x-2">
-            <p>Defense: {selectedPokemon.stats?.baseDefense} <span className="text-xs">(Effective Defense: {effDefense})</span></p> 
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="" >?</button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effDefense)}</p>
-              </PopoverContent>
-            </Popover>
+            <p>Defense: {selectedPokemon.stats?.baseDefense}</p> 
+            
           </div>
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
           
           <div className="flex flex-row items-center space-x-2">
-            <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina) + "" + (raidMode !== "normal" && slot == 2 ? " (" + Calculator.getRaidBossHP(raidmode) + ")" : "")})</span></p> 
-            {(slot === 1 || raidMode === "normal") &&
-            (
-              <Popover>
-              <PopoverTrigger asChild>
-                <button className="" >?</button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <p>Effective Stamina: {"Floor( ( " + selectedPokemon?.stats?.baseStamina + " + " + (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + ") = " + (Math.floor(effStamina))}</p>
-              </PopoverContent>
-            </Popover>
-            )}
+            <p>Stamina: {selectedPokemon.stats?.baseStamina} </p> 
           </div>
           
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
@@ -591,89 +618,109 @@ export default function SearchBarAttacker({
             />
           {(slot === 1 || (slot === 2 && raidMode === "normal")) && 
           <div className="grid grid-cols-1 mb-4">
-          <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
-            <p>Level: {stats[0]}</p>
-            <div className="flex flex-row">
-              <Slider onValueChange={(value) => handleChangeStat(value, 0)} value={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1 mr-2" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
-              <button onClick={() => handleChangeStat([stats[0]-0.5], 0)} className="bg-blue-500 text-white px-4 rounded mr-2">–</button>
-              <button onClick={() => handleChangeStat([stats[0]+0.5], 0)} className="bg-blue-500 text-white px-4 rounded">+</button>
-            </div>
-            <p className={stats[1] == 15 ? "text-red-600" : "text-yellow-600"}>Attack: </p>
-            <div className="flex flex-row">
-              <Slider onValueChange={(value) => handleChangeStat(value, 1)} value={[stats[1]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[1] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-              <button onClick={() => handleChangeStat([stats[1]-1], 1)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-              <button onClick={() => handleChangeStat([stats[1]+1], 1)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-            </div>
-            <p className={stats[2] == 15 ? "text-red-600" : "text-yellow-600"}>Defense: </p>
-            <div className="flex flex-row">
-              <Slider onValueChange={(value) => handleChangeStat(value, 2)} value={[stats[2]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[2] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-              <button onClick={() => handleChangeStat([stats[2]-1], 2)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-              <button onClick={() => handleChangeStat([stats[2]+1], 2)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-            </div>
-            <p className={stats[3] == 15 ? "text-red-600" : "text-yellow-600"}>Stamina: </p>
-            <div className="flex flex-row">
-              <Slider onValueChange={(value) => handleChangeStat(value, 3)} value={[stats[3]]} max={15} step={1} className="w-[60%] mb-1 mr-2" color={stats[3] == 15 ? "bg-red-500" : "bg-yellow-600"}/>
-              <button onClick={() => handleChangeStat([stats[3]-1], 3)} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
-              <button onClick={() => handleChangeStat([stats[3]+1], 3)} className="bg-yellow-600 text-white px-4 rounded">+</button>
-            </div>
+          
         </div>
           }
           <div className="flex flex-row space-x-4">
             <div>
               <p>Fast Attacks:</p>
-              {preferredMovesQuick.map((move: string) => (
-                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+              {customFMList.map((move: string) => (
+                PoGoAPI.getMovePBByID(move, allMoves)?.type && (<Card
                   key={move}
-                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
+                  className={`mb-4`}
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customQuickMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
                     {showID && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
+                    <div>
+                      <Button className="text-xs bg-red-500 p-2" onClick={() => deleteMoveFromList("fast", move)}>
+                        Delete
+                      </Button>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
-                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power ?? 0}</CardDescription>
-                    <CardDescription>Energy: {(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta ?? 0}</CardDescription>
-                    <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
-                  </CardContent>
                 </Card>)
-              ))}     
+              ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle>New Fast Move</CardTitle>
+                  <div>
+                    <Input
+                      placeholder="Move ID"
+                      type="text"
+                      value={customFastMove}
+                      onChange={(e) => handleMoveChange(e, "fast")}
+                      onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(fmSuggestions[0], "fast")}
+                    />
+                    {fmSuggestions.length > 0 && (
+                      <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+                        {fmSuggestions.map((suggestion) => (
+                          <li
+                            key={suggestion.moveId}
+                            className="p-2 cursor-pointer hover:bg-gray-200 "
+                            onClick={() => handleMoveSuggestionClick(suggestion, "fast")}
+                          >
+                            {suggestion.moveId}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <Button className="text-xs bg-green-500 mr-2 p-2" onClick={() => handleAddCustomMove("fast")}>
+                      Add
+                    </Button>
+                  </div>
+                </CardHeader>
+              </Card>  
             </div>
 
             <div>
               <p>Charged Attacks:</p>
-              {preferredMovesCharged.map((move: string) => (
-                PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
+              {customCMList.map((move: string) => (
+                PoGoAPI.getMovePBByID(move, allMoves)?.type && (<Card
                   key={move}
-                  className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
+                  className={`mb-4`}
                 >
                   <CardHeader>
-                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
-                    {showID && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
+                      <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
+                      {showID && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
+                      <div>
+                        <Button className="text-xs bg-red-500 p-2" onClick={() => deleteMoveFromList("charged", move)}>
+                          Delete
+                        </Button>
+                      </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
-                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(move, allMoves)).power}</CardDescription>
-                    <CardDescription>Duration: {PoGoAPI.getMovePBByID(move, allMoves).durationMs / 1000}s</CardDescription>
-                    
-                    <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) : 0}</CardDescription>
-                    <div className="w-full flex flex-row justify-between mt-2 space-x-2">
-                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 100 && (
-                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
-                      )}
-                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 50 && (
-                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
-                      )}
-                      {(-(PoGoAPI.getMovePBByID(move, allMoves)).energyDelta) <= 33 && (
-                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} show={false} />
-                      )}
-                    </div>
-
-                  </CardContent>
-                </Card>)
+                  </Card>)
               ))}
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>New Charged Move</CardTitle>
+                  <div>
+                    <Input
+                      placeholder="Move ID"
+                      type="text"
+                      value={customChargedMove}
+                      onChange={(e) => handleMoveChange(e, "charged")}
+                      onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(cmSuggestions[0], "charged")}
+                    />
+                    {cmSuggestions.length > 0 && (
+                      <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+                        {cmSuggestions.map((suggestion) => (
+                          <li
+                            key={suggestion.moveId}
+                            className="p-2 cursor-pointer hover:bg-gray-200 "
+                            onClick={() => handleMoveSuggestionClick(suggestion, "charged")}
+                          >
+                            {suggestion.moveId}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <Button className="text-xs bg-green-500 mr-2 p-2" onClick={() => handleAddCustomMove("charged")}>
+                      Add
+                    </Button>
+                  </div>
+                </CardHeader>
+              </Card>
             </div>
           </div>
         </div>

@@ -32,6 +32,7 @@ const Navbar = () => {
     let [showDPSOnSoloRaid, setShowDPSOnSoloRaid] = useState(false);
     let [showHPOnSoloRaid, setShowHPOnSoloRaid] = useState(false);
     let [freezeRejoin, setFreezeRejoin] = useState(true);
+    let [showIDs, setShowIDs] = useState(false);
 
 
     useEffect(() => {
@@ -46,6 +47,7 @@ const Navbar = () => {
         const showDPSOnSoloRaidStorage = localStorage.getItem("showDPSOnSoloRaid");
         const showHPOnSoloRaidStorage = localStorage.getItem("showHPOnSoloRaid");
         const freezeRejoinStorage = localStorage.getItem("freezeRejoin");
+        const showIDsStorage = localStorage.getItem("showIDs");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -112,6 +114,12 @@ const Navbar = () => {
         } else {
             localStorage.setItem("freezeRejoin", "true");
         }
+
+        if (showIDsStorage) {
+            setShowIDs(showIDsStorage === "true");
+        } else {
+            localStorage.setItem("showIDs", "false");
+        }
     }, []);
 
     let ChangeBladeBoost = (option: string) => {
@@ -142,6 +150,7 @@ const Navbar = () => {
     let ChangeCustomPokemonToRankings = (option: string) => {
         setCustomPokemonToRankings(option);
     }
+    
 
     let ApplyChanges = () => {
         localStorage.setItem("doubleFriendshipBonus", doubleFriendshipBonus.toString());
@@ -155,6 +164,7 @@ const Navbar = () => {
         localStorage.setItem("showDPSOnSoloRaid", showDPSOnSoloRaid.toString());
         localStorage.setItem("showHPOnSoloRaid", showHPOnSoloRaid.toString());
         localStorage.setItem("freezeRejoin", freezeRejoin.toString());
+        localStorage.setItem("showIDs", showIDs.toString());
         // reload page
         window.location.reload();
     }
@@ -171,6 +181,7 @@ const Navbar = () => {
         setShowDPSOnSoloRaid(false);
         setShowHPOnSoloRaid(false);
         setFreezeRejoin(true);
+        setShowIDs(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -182,6 +193,10 @@ const Navbar = () => {
         localStorage.setItem("showDPSOnSoloRaid", "false");
         localStorage.setItem("showHPOnSoloRaid", "false");
         localStorage.setItem("freezeRejoin", "true");
+        localStorage.setItem("showIDs", "false");
+        localStorage.removeItem("moveOverrides");
+        localStorage.removeItem("customMoveOverrides");
+        localStorage.removeItem("newMoveOverrides");
         // reload page
         window.location.reload();
     }
@@ -347,7 +362,27 @@ const Navbar = () => {
                                         Shows the current HP values of the active Pokémon on Solo Raid Simulations.
                                     </p>
                                 </div>
-                            </div>     
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Show IDs on Pokémon and Moves</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={showIDs} onChange={(e) => setShowIDs(e.target.checked)} type="checkbox" id="showIDs" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Shows the IDs of Pokémon and moves on Pokémon options.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Go to PokéChespin Editor</label>
+                                <div className="space-x-2">
+                                    <p className="text-xs text-muted-foreground mb-2">
+                                        Redirects you to PokéChespin Editor, where you will be able to edit moves, Pokémon movesets, and create new moves.
+                                    </p>
+                                    <div className="flex items-center space-x-2 mx-2">
+                                        <SheetClose className="w-full mx-2 text-xs bg-green-500 p-2 rounded-lg" onClick={() => window.location.href = "/editor"}>Go to Editor</SheetClose>
+                                    </div>
+                                </div>
+                            </div>      
                         </div>
                     </ScrollArea>
                     </SheetContent>

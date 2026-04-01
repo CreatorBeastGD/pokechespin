@@ -17,6 +17,20 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36 (PokéChespin Editor!)",
+        desc: "+ Added a new 'PokéChespin Editor' page to the app!\n"+
+                ">>>>>> Have you ever imagined how, for example, a Mega Rayquaza would perform with Dragon Energy and Dragon Breath? or what about making Ember be a water-type move?\n"+
+                ">>>>>> Now you can do all of that and more with the new PokéChespin Editor! This new page allows you to edit existing moves, create new moves and edit Pokémon movesets, giving you the freedom to experiment with any kind of move you want and see how it performs on the damage calculator!\n"+
+                ">>>>>> You can also create custom moves that will be available on the damage calculator, allowing you to test them with any Pokémon and see how they perform against different defenders!\n"+
+                ">>>>>> To access the editor, just click on the 'Go to Editor' button on the Configuration section, and you will be redirected to the editor page. You can also access it directly by going to pokechespin.net/editor.\n"+
+                ">>>>>> I hope you like this new feature, and I can't wait to see all the crazy moves you come up with! If you have any suggestions or find any bugs, please let me know!\n"+
+                "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Gigantamax Pikachu.\n"+
+                "+ Changed some stats on Tier 6 Max Battles \n"+
+                ">>>>>> Gigantamax Pikachu\n >>>>>> ~ CPM: 3 -> 1.7 \n",
+        date: "2026-03-30",
+    },
+    {
         title: "v1.35.3",
         desc: "+ Changed some features on PokéChespin for Max Battles.\n"+
                 ">>>>>> The energy generation will now work as floats instead of integers. You can check how much energy you are generating in the calculator, including those decimals!\n"+

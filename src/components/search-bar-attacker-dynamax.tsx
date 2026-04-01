@@ -466,6 +466,8 @@ const importPokemon = async () => {
     index === self.findIndex((f) => f.pokemonId === form.pokemonId)
   );
 
+  const showIDs = localStorage.getItem("showIDs") === "true";
+
   return (
     <>
       <Input
@@ -502,6 +504,7 @@ const importPokemon = async () => {
       {pokemonData ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
+          {showIDs && <p className="text-xs italic text-gray-500">ID: {selectedPokemon.pokemonId}</p>}
           <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />} <button onClick={() => setShowWeaknesses(!showWeaknesses)}>?</button></p>
 
           {weaknesses && showWeaknesses && (
@@ -620,7 +623,8 @@ const importPokemon = async () => {
                   onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
-                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ""}</CardTitle>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteQuickMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customQuickMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
+                    {showIDs && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
@@ -639,6 +643,7 @@ const importPokemon = async () => {
                 >
                 <CardHeader>
                   <CardTitle className="text-white">{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).moveId)}</CardTitle>
+                  {showIDs && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves).moveId}</p>}
                 </CardHeader>
                   <CardContent>
                   <CardDescription className="text-slate-300">Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(dynamaxMove.moveId, allMoves)).type)} /></CardDescription>
@@ -660,7 +665,8 @@ const importPokemon = async () => {
                   onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
-                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
+                    {showIDs && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>

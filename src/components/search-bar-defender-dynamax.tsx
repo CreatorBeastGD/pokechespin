@@ -258,6 +258,9 @@ export default function SearchBarDefenderDynamax({
   (form: any, index: number, self: any[]) =>
     index === self.findIndex((f) => f.pokemonId === form.pokemonId)
   );
+
+  const showIDs = localStorage.getItem("showIDs") === "true";
+
   return (
     <TooltipProvider>
       <Input
@@ -291,6 +294,7 @@ export default function SearchBarDefenderDynamax({
       {pokemonData ? (
         <div>
           <h2>Name: {PoGoAPI.getPokemonNamePB(selectedPokemon.pokemonId, allEnglishText)}</h2>
+          {showIDs && <p className="text-xs italic text-gray-500">ID: {selectedPokemon.pokemonId}</p>}
           <p>Type(s): <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type)} />  {(selectedPokemon.type2) && <TypeBadge type={PoGoAPI.formatTypeName(selectedPokemon.type2)} />} <button onClick={() => setShowWeaknesses(!showWeaknesses)}>?</button></p>
           
           {weaknesses && showWeaknesses && (
@@ -354,6 +358,7 @@ export default function SearchBarDefenderDynamax({
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
+                    {showIDs && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>
@@ -385,6 +390,7 @@ export default function SearchBarDefenderDynamax({
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ""}</CardTitle>
+                    {showIDs && <p className="text-xs italic text-gray-500">{PoGoAPI.getMovePBByID(move, allMoves).moveId}</p>}
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(move, allMoves)).type)} /></CardDescription>

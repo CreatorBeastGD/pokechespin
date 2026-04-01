@@ -10,8 +10,9 @@ const API_PB = nextConfig.API_PB_URL;
 
 export class PoGoAPI {
     
+    
     static getVersion() {
-        return "1.35.3";
+        return "1.36";
     }
 
     static async getAllPokemon() {
@@ -107,8 +108,12 @@ export class PoGoAPI {
             return "Dynamax Cannon";
         } if (moveId === "MIND_BLOWN") {
             return "Mind Blown";
+        } if (moveId === "GIGATON_HAMMER") {
+            return "Gigaton Hammer";
         }
-        return this.formatMoveText(textList.moves[moveId], textList);
+        const storage = localStorage.getItem("newMoveOverrides");
+        const customMove = storage ? JSON.parse(storage)[moveId] : null;
+        return customMove ? customMove.name : this.formatMoveText(textList.moves[moveId], textList);
     }
 
     static getPokemonImageByID(pokemonId: string, pokemonList: any, shiny: boolean = false) {
@@ -222,12 +227,48 @@ export class PoGoAPI {
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
                     break;
+                case "TINKATON":
+                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "PLAY_ROUGH", "BULLDOZE", "HEAVY_SLAM", "GIGATON_HAMMER"];
+                    pokemon[0].eliteCinematicMove = ["GIGATON_HAMMER"];
                 default:
                     break;
             }
         }
 
-        return this.filterUniqueById(pokemon);
+        if (pokemon.length !== 0) {
+            // Overrides from config
+            let overridedPokemon = { ...pokemon[0] }; // CON ESTO CREAS UNA COPIA!!!
+            const overrides = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+            let customQuickMoves = overrides[pokemonId]?.fast || [];
+            let customCinematicMoves = overrides[pokemonId]?.charged || [];
+
+            overridedPokemon.quickMoves.forEach((element: any) => {
+                if (customQuickMoves.includes(element)) {
+                    customQuickMoves = customQuickMoves.filter((move: any) => move !== element);
+                }
+            });
+
+            overridedPokemon.cinematicMoves.forEach((element: any) => {
+                if (customCinematicMoves.includes(element)) {
+                    customCinematicMoves = customCinematicMoves.filter((move: any) => move !== element);
+                }
+            });
+
+            if (overrides[pokemonId]) {
+                console.log("Applying custom moves for " + pokemonId, overrides[pokemonId], customQuickMoves, customCinematicMoves);
+                overridedPokemon.customQuickMoves = customQuickMoves;
+                overridedPokemon.quickMoves = overrides[pokemonId].fast;
+                overridedPokemon.customCinematicMoves = customCinematicMoves;
+                overridedPokemon.cinematicMoves = overrides[pokemonId].charged;
+            }
+
+            console.log(this.filterUniqueById([overridedPokemon]));
+
+            return this.filterUniqueById([overridedPokemon]);
+        } else {
+            return []; // Devuelve un array vacío si no se encuentra el Pokémon
+        }
+        
     }
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
@@ -250,9 +291,112 @@ export class PoGoAPI {
         return this.filterUniqueById(listFiltered);
     }
 
+    static getAllCustomPokemonMoves() {
+        let customMoves = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+        console.log("Custom pokemon moves loaded:", customMoves);
+        return customMoves;
+    }
+
+    static getAllCustomMoveValues() {
+        let customMoves = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        console.log("Custom move values loaded:", customMoves);
+        return Object.values(customMoves);
+    }
+
+    static setCustomPokemonMoves(pokemonId: any, customFMList: any[], customCMList: any[]) {
+        let customMoves = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+        customMoves[pokemonId] = { fast: customFMList, charged: customCMList };
+        localStorage.setItem("moveOverrides", JSON.stringify(customMoves));
+    }
+
+    static deleteCustomPokemonMoveFromPokemon(moveId: string) {
+        let customMoves = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+        for (const pokemonId in customMoves) {
+            if (customMoves[pokemonId].fast.includes(moveId)) {
+                customMoves[pokemonId].fast = customMoves[pokemonId].fast.filter((move: any) => move !== moveId);
+            } else if (customMoves[pokemonId].charged.includes(moveId)) {
+                customMoves[pokemonId].charged = customMoves[pokemonId].charged.filter((move: any) => move !== moveId);
+            }
+        }
+        localStorage.setItem("moveOverrides", JSON.stringify(customMoves));
+    }
+
+    static setCustomPokemonMovesToDefault(pokemonId: any) {
+        let customMoves = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+        delete customMoves[pokemonId];
+        localStorage.setItem("moveOverrides", JSON.stringify(customMoves));
+    }
+
+    static setCustomMoveValues(customMoveData: { moveId: any; type: string; power: number; energyDelta: number; durationMs: number; }) {
+        let customMoves = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        customMoves[customMoveData.moveId] = customMoveData;
+        localStorage.setItem("customMoveOverrides", JSON.stringify(customMoves));
+    }
+
+    static setCustomMoveValuesToDefault(moveId: any) {
+        let customMoves = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        delete customMoves[moveId];
+        localStorage.setItem("customMoveOverrides", JSON.stringify(customMoves));
+    }
+
+    static createCustomMove(moveName: string, isFast: boolean, moveList: any[]): string {
+        let moveId = moveName.toUpperCase().replace(/ /g, "_") + (isFast ? "_FAST" : "");
+        if (moveId == "" || moveId == "_FAST") {
+            return "Move name cannot be empty.";
+        }
+        let existingMove = moveList.find((move: any) => move.moveId === moveId);
+        if (existingMove) {
+            return "Move with the ID " + moveId + " already exists. Please choose a different name for your move.";
+        }
+        const newMove = {
+            name: moveName,
+            moveId: moveId,
+            power: isFast ? 10 : 50,
+            durationMs: 1000,
+            energyDelta: isFast ? 10 : -50,
+            type: "POKEMON_TYPE_NORMAL",
+            damageWindowStartMs: 998,
+            damageWindowEndMs: 1000,
+            animationId: moveId,
+        };
+        let customMoves = JSON.parse(localStorage.getItem("newMoveOverrides") || "{}");
+        customMoves[moveId] = newMove;
+        localStorage.setItem("newMoveOverrides", JSON.stringify(customMoves));
+        return "Move with the ID " + moveId + " created successfully. To edit its values, search for it in the Move Editor.";
+    }
+
+    static deleteCustomMove(moveId: string) {
+        let customMoves = JSON.parse(localStorage.getItem("newMoveOverrides") || "{}");
+        let customMoveOverrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        this.deleteCustomPokemonMoveFromPokemon(moveId);
+        delete customMoves[moveId];
+        delete customMoveOverrides[moveId];
+        localStorage.setItem("newMoveOverrides", JSON.stringify(customMoves));
+        localStorage.setItem("customMoveOverrides", JSON.stringify(customMoveOverrides));
+    }
+
+    static getAllCustomMoves(): any[] {
+        let moves = Object.values(JSON.parse(localStorage.getItem("newMoveOverrides") || "{}"));
+        const overrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        moves.forEach((move: any) => {
+            if (overrides[move.moveId]) {
+                console.log("Applying custom values for move " + move.moveId, overrides[move.moveId]);
+                move.power = overrides[move.moveId].power;
+                move.energyDelta = overrides[move.moveId].energyDelta;
+                move.durationMs = overrides[move.moveId].durationMs;
+                move.damageWindowStartMs = overrides[move.moveId].durationMs-2;
+                move.damageWindowEndMs = overrides[move.moveId].durationMs;
+                move.type = overrides[move.moveId].type;
+            }
+        })
+        return moves;
+    }
+
 
     static getMovePBByID(moveId: string, moveList: any[]) {
-        const move = moveList.find((move: any) => move.moveId === moveId);
+        const myOverrides = this.getAllCustomMoves();
+        const move = (myOverrides.find((move: any) => move.moveId === moveId)) ? myOverrides.find((move: any) => move.moveId === moveId) : moveList.find((move: any) => move.moveId === moveId);
+        
         if (!move) {
             if (moveId === "DYNAMAX_CANNON") {
                 return {
@@ -289,8 +433,20 @@ export class PoGoAPI {
                     damageWindowEndMs: 2000,
                     animationId: "PYRO_BALL",
                 };
+            } if (moveId === "GIGATON_HAMMER") {
+                return {
+                    moveId: "GIGATON_HAMMER",
+                    power: 300,
+                    durationMs: 3000,
+                    energyDelta: -100,
+                    type: "POKEMON_TYPE_STEEL",
+                    damageWindowStartMs: 2998,
+                    damageWindowEndMs: 3000,
+                    animationId: "GIGATON_HAMMER",
+                };
             }
-            throw new Error(`Move with ID ${moveId} not found`);
+            
+            return null;
         }
         if (moveId === "BEHEMOTH_BLADE") {
             move.power = Math.round(200 * Calculator.GetDuggoAttackBoost());
@@ -299,7 +455,21 @@ export class PoGoAPI {
             move.power = 125 * Calculator.GetDuggoAttackBoost();
             move.energyDelta = -50;
         }
-        return move;
+
+        // Move overrides
+        let overridenMove = { ...move };
+        const overrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
+        if (overrides[moveId]) {
+            console.log("Applying custom values for move " + moveId, overrides[moveId]);
+            overridenMove.power = overrides[moveId].power;
+            overridenMove.energyDelta = overrides[moveId].energyDelta;
+            overridenMove.durationMs = overrides[moveId].durationMs;
+            overridenMove.damageWindowStartMs = overrides[moveId].durationMs-2;
+            overridenMove.damageWindowEndMs = overrides[moveId].durationMs;
+            overridenMove.type = overrides[moveId].type;
+        }
+
+        return overridenMove;
     }
 
     static filterUniquePokemon(pokemonList: any[]) {
@@ -321,6 +491,19 @@ export class PoGoAPI {
         const lista = this.filterUniquePokemon(list);
         return lista;
       }
+
+    static getMovePBByName(name:string, moveList: any, isFast: boolean = false, alreadySetMoves: any[] = []) {
+        let list = moveList.filter((move: any) => {
+            return move.moveId && move.moveId.toLowerCase().startsWith(name.toLowerCase().replace(/ /g, "_"));
+        });
+        list = list.concat(...this.getAllCustomMoves().filter((move: any) => move.moveId.toLowerCase().startsWith(name.toLowerCase().replace(/ /g, "_"))));
+        list = list.filter((move: any) => !alreadySetMoves.includes(move.moveId));
+        if (isFast) {
+            return list.filter((move: any) => move.energyDelta > 0);
+        } else {
+            return list.filter((move: any) => move.energyDelta < 0);
+        }
+    }
 
     static async getAllPokemonNames() {
         const response = await this.getAllPokemon();
@@ -2297,6 +2480,9 @@ export class PoGoAPI {
         pokemon.quickMoves.forEach((move: any) => {
             let moveData = this.getMovePBByID(move, allMoves);
             moveData.power = 10;
+            if (moveData.moveId.startsWith("HIDDEN_POWER_")) {
+                moveData.type = "POKEMON_TYPE_NORMAL";
+            }
             const damage = this.getDamage(pokemon, boss, moveData, types, [40,15,15,15], [40,15,15,15], ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1);
             //console.log("Quick Move: " + moveData.moveId + " Damage: " + damage);
             if (damage > bestDamage) {
