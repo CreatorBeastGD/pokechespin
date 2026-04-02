@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.1",
+        desc: "~ Small improvements and bugfixes to the Solo Raider in Raids.\n"+
+                ">>>>>> Now, the correct message will show when you defeat a boss at timeout.\n"+
+                ">>>>>> You now can relobby mid-move.\n",
+        date: "2026-04-02",
+    },
+    {
         title: "v1.36 (PokéChespin Editor!)",
         desc: "+ Added a new 'PokéChespin Editor' page to the app!\n"+
                 ">>>>>> Have you ever imagined how, for example, a Mega Rayquaza would perform with Dragon Energy and Dragon Breath? or what about making Ember be a water-type move?\n"+

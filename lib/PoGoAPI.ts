@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36";
+        return "1.36.1";
     }
 
     static async getAllPokemon() {
@@ -3608,7 +3608,7 @@ export class PoGoAPI {
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
 
         // ally can cast a move
-        if (gamestatus.allyCooldown == 0) {
+        if (gamestatus.allyCooldown == 0 || order === "relobby") {
             switch (order) {
                 case "init":
                     //console.log(gamestatus);

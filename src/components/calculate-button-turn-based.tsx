@@ -167,7 +167,7 @@ export default function CalculateButtonSimulateTurnBased({
             <Separator className=""/>
             <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
             <Separator className=""/>
-            <label className={"font-bold text-sm " + (gameStatus?.globalCurrentMessage?.message.startsWith("An orb has spawned") ? "text-red-600" : "")}>{gameStatus?.globalCurrentMessage?.message}</label>
+            <label className={"font-bold text-sm"}>{(gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage) < 0 ? "The Raid Boss has been defeated!" : (gameStatus?.globalCurrentMessage?.message)}</label>
           
             <div className="flex flex-row justify-between items-end ">
               <label className="text-xs pt-2">Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
@@ -279,7 +279,7 @@ export default function CalculateButtonSimulateTurnBased({
                   <Separator className="my-4"/>
                   <Button onClick={() => SendMessage("next")} className="w-full py-2 text-white bg-primary rounded-lg">Next Turn</Button>
                 </>)}
-                {gameStatus?.isRelobby !== 1 && gameStatus?.allyCooldown === 0 && (
+                {gameStatus?.isRelobby !== 1 && (
                   <>
                     <Separator className="my-4"/>
                     <Button onClick={() => SendMessage("relobby")} className="w-full py-2 text-white bg-primary rounded-lg">Relobby</Button>
