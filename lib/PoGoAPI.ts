@@ -189,35 +189,14 @@ export class PoGoAPI {
                 case "FERALIGATR_MEGA":
                     pokemon[0].type2 = "POKEMON_TYPE_DRAGON";
                     break;
-                case "ABSOL_MEGA_Z":
-                    pokemon[0].type2 = "POKEMON_TYPE_GHOST";
-                    break;
-                case "STARRAPTOR_MEGA":
+                case "STARAPTOR_MEGA":
                     pokemon[0].type = "POKEMON_TYPE_FIGHTING";
-                    break;
-                case "GARCHOMP_MEGA_Z":
-                    pokemon[0].type2 = null;
                     break;
                 case "BARBARACLE_MEGA":
                     pokemon[0].type2 = "POKEMON_TYPE_FIGHTING";
                     break;
                 case "GOLISOPOD_MEGA":
                     pokemon[0].type2 = "POKEMON_TYPE_STEEL";
-                    break;
-                case "HERACROSS":
-                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
-                    break;
-                case "HERACROSS_MEGA":
-                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
-                    break;
-                case "HERACROSS_SHADOW_FORM":
-                    pokemon[0].quickMoves = ["COUNTER_FAST", "STRUGGLE_BUG_FAST", "FURY_CUTTER_FAST"];
-                    break;
-                case "MOLTRES":
-                    pokemon[0].cinematicMoves = ["HEAT_WAVE", "ANCIENT_POWER", "FIRE_BLAST", "OVERHEAT", "RETURN", "SKY_ATTACK", "FLY"];
-                    break;
-                case "MOLTRES_SHADOW_FORM":
-                    pokemon[0].cinematicMoves = ["HEAT_WAVE", "ANCIENT_POWER", "FIRE_BLAST", "OVERHEAT", "RETURN", "SKY_ATTACK", "FLY"];
                     break;
                 case "CINDERACE_GIGANTAMAX":
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
