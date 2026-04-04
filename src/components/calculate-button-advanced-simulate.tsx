@@ -207,17 +207,7 @@ export default function CalculateButtonSimulateAdvanced({
 
   const getRequiredPeople = (raidMode: string) => {
     
-    return (( ((time ?? 0) / 1000) / getRaidTime(raidMode))*peopleCount).toFixed(2);
-  }
-
-  const getRaidTime = (raidMode: string) => {
-    let raidTime = 0;
-    if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4") {
-      raidTime = 180;
-    } else {
-      raidTime = 300;
-    }
-    return raidTime;
+    return (( ((time ?? 0) / 1000) / PoGoAPI.getRaidTime(raidMode))*peopleCount).toFixed(2);
   }
 
   function handleRelobbyTime(value: number[]): void {
@@ -259,7 +249,7 @@ export default function CalculateButtonSimulateAdvanced({
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
         <div className="mt-4 space-y-4">
           <p>
-            This team takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with  under {bonusAttacker[0][0].toLowerCase().replaceAll("_", " ")} weather{bonusAttacker[1] == true ? ", Shadow bonus (x1.2)" : ""}{bonusAttacker[2] ? ", Mega boost (x1.3)" : ""} and Friendship Level {bonusAttacker[3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}{boost === "blade" && " with Behemoth Blade Adventure Effect"}{boost === "bash" && " with Behemoth Bash Adventure Effect"}.
+            This team takes {((time ?? 0) / 1000).toFixed(1)} seconds to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> under {bonusAttacker[0][0].toLowerCase().replaceAll("_", " ")} weather and Friendship Level {bonusAttacker[0][3]} bonus{partyPower && (peopleCount > 1) && " with Party Power activated"}{boost === "blade" && " with Behemoth Blade Adventure Effect"}{boost === "bash" && " with Behemoth Bash Adventure Effect"}.
           </p>
           
           <p>
@@ -268,7 +258,7 @@ export default function CalculateButtonSimulateAdvanced({
           {raidMode == "normal" ? (
             <></>
           ) : (<p>
-            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true&& raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time with these given conditions. ({getRaidTime(raidMode)} seconds.)
+            {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true&& raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time with these given conditions. ({PoGoAPI.getRaidTime(raidMode)} seconds.)
           </p>)}
           
           <p className="text-sm text-slate-700 italic">

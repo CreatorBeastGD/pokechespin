@@ -17,6 +17,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.2",
+        desc: "~ Improvements on the Solo Raider in Raids.\n"+
+                ">>>>>> Added the 'Energy Resolve Bug' to the simulator, you can decide if using it or not!\n"+
+                ">>>>>> Added the slider of 'Relobby Time' to that section to avoid confusions.\n"+
+                "+ Deleted (yes, i did delete those...) some texts related to the random simulator.",
+        date: "2026-04-04",
+    },
+    {
         title: "v1.36.1",
         desc: "~ Small improvements and bugfixes to the Solo Raider in Raids.\n"+
                 ">>>>>> Now, the correct message will show when you defeat a boss at timeout.\n"+

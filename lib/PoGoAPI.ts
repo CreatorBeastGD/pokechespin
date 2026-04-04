@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36.1";
+        return "1.36.2";
     }
 
     static async getAllPokemon() {
@@ -214,6 +214,8 @@ export class PoGoAPI {
             }
         }
 
+        
+
         if (pokemon.length !== 0) {
             // Overrides from config
             let overridedPokemon = { ...pokemon[0] }; // CON ESTO CREAS UNA COPIA!!!
@@ -252,6 +254,16 @@ export class PoGoAPI {
 
     static getPokemonPBByDexNum(num: number, pokemonList: any) {
         return (pokemonList).filter((pokemon: any) => pokemon.pokedex.pokemonNum === num);
+    }
+
+    static getRaidTime(raidMode: string) {
+        let raidTime = 0;
+        if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4") {
+            raidTime = 180;
+        } else {
+            raidTime = 300;
+        }
+        return raidTime;
     }
 
     static getPokemonPBByName(name: string, pokemonList: any) {
@@ -3541,7 +3553,8 @@ export class PoGoAPI {
         gamestatus: RaidStatus | null,
         types: any,
         allMoves: any,
-        relobbyTimer: number = 8
+        relobbyTimer: number = 8,
+        enableEnergyResolveBug: boolean = true,
     ) {
         //console.log(attackerMaxMoves)
         // Setup gamestatus if first turn
@@ -3576,7 +3589,6 @@ export class PoGoAPI {
             gamestatus.allyPokemonMaxHealth = [];
             for (let i = 0 ; i < attackers.length ; i++) {
                 gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
-                
             }
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
             //console.log(gamestatus.enemyPokemonMaxHealth);
@@ -3585,6 +3597,15 @@ export class PoGoAPI {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
         
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+        
+        if (gamestatus.nextEnergyGainTurn && gamestatus.timer >= gamestatus.nextEnergyGainTurn) {
+            gamestatus.nextEnergyGainTurn = null;
+            gamestatus.allyEnergy[gamestatus.activeAllyIndex] += gamestatus.nextEnergyGainAmount || 0;
+            gamestatus.nextEnergyGainAmount = 0;
+            if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+            }
+        }
 
         // ally can cast a move
         if (gamestatus.allyCooldown == 0 || order === "relobby") {
@@ -3594,9 +3615,24 @@ export class PoGoAPI {
                     return {...gamestatus} as RaidStatus;
                 // Fast Move
                 case "fast":
+
+                    
+
                     gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
                     gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
                     gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    
+                    if (!enableEnergyResolveBug) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    } else {
+                        // Energy resolve bug: you get the energy one turn later.
+                        gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
+                        gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                    }
+                    
                     //console.log(gamestatus.allyCooldown);
                     break;
 
@@ -3792,13 +3828,6 @@ export class PoGoAPI {
                     if (gamestatus.enemyEnergy > 100) {
                         gamestatus.enemyEnergy = 100;
                     }
-                    
-                    if (!gamestatus.allyActiveMove.isCharged) {
-                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
-                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
-                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
-                        }
-                    }
 
                     if (raidMode.endsWith("shadow") || raidMode.endsWith("supermega")) {
                         const remainingHealthPercentage = (gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage) / gamestatus.enemyPokemonMaxHealth;
@@ -3878,10 +3907,10 @@ export class PoGoAPI {
             types, 
             allMoves
         );
-        
+
         gamestatus.timer += 0.5;
 
-        if (gamestatus.timer >= (gamestatus.lastHitTime > 300 ? gamestatus.lastHitTime : 300)) {
+        if (gamestatus.timer >= (gamestatus.lastHitTime > PoGoAPI.getRaidTime(raidMode) ? gamestatus.lastHitTime : PoGoAPI.getRaidTime(raidMode))) {
             gamestatus.globalCurrentMessage = {
                 message: "Timeout reached.",
                 duration: 0,
@@ -3999,6 +4028,8 @@ export class PoGoAPI {
                     // mon fucking dies
                     if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
                         gamestatus.allyActiveMove = null;
+                        gamestatus.nextEnergyGainTurn = null;
+                        gamestatus.nextEnergyGainAmount = 0;
                         gamestatus.allyCooldown = 0;
                         gamestatus.activeAllyIndex = this.getHigherIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]));
                         if (gamestatus.activeAllyIndex === attackers.length) {

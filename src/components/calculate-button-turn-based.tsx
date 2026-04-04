@@ -31,8 +31,7 @@ export default function CalculateButtonSimulateTurnBased({
   weather,
   types,
   allMoves,
-  advenEffect,
-  relobbyTimer
+  advenEffect
 }: {
   attacker: any;
   defender: any;
@@ -50,7 +49,6 @@ export default function CalculateButtonSimulateTurnBased({
   types: any;
   allMoves: any;
   advenEffect: string;
-  relobbyTimer: number;
 }) {
   
   const searchParams = useSearchParams();
@@ -61,15 +59,19 @@ export default function CalculateButtonSimulateTurnBased({
   const [showDPS, setShowDPS] = useState<boolean>(false);
   const [showHP, setShowHP] = useState<boolean>(false);
 
+  const [energyResolveBug, setEnergyResolveBug] = useState<boolean>(searchParams.get("energy_resolve_bug") === "true");
+  const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
+
   useEffect(() => {
     setStartedSim(false);
     setGameStatus(null);
 
     //console.log("Changed dependencies")
 
-  }, [relobbyTimer, attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, defenderQuickMove, defenderChargedMove, advenEffect]);
+  }, [relobbyTime, energyResolveBug, attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, defenderQuickMove, defenderChargedMove, advenEffect]);
 
   useEffect(() => {
+    setEnergyResolveBug(searchParams.get("energy_resolve_bug") === "true");
     if (typeof window === "undefined") return;
     setShowDPS(window.localStorage.getItem("showDPSOnSoloRaid") === "true");
     setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
@@ -111,7 +113,8 @@ export default function CalculateButtonSimulateTurnBased({
         null,
         types,
         allMoves,
-        relobbyTimer
+        relobbyTime,
+        energyResolveBug
       )
 
     setGameStatus(
@@ -146,23 +149,50 @@ export default function CalculateButtonSimulateTurnBased({
         message,
         gameStatus,
         types,
-        allMoves
+        allMoves,
+        relobbyTime,
+        energyResolveBug
       )
       setGameStatus(newState);
   }
 
+  const handleSwitch = (checked: boolean, handle: any) => {
+    handle(checked);
+    if (checked) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("energy_resolve_bug", "true");
+      window.history.replaceState(null, "", "?" + newSearchParams.toString());
+    } else {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("energy_resolve_bug", "false");
+      window.history.replaceState(null, "", "?" + newSearchParams.toString());
+    }
+  }
+
+  const handleRelobbyTime = (value: number) => {
+    setRelobbyTime(value);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("relobby_time", value.toString());
+    window.history.replaceState(null, "", "?" + newSearchParams.toString());
+  }
+  
   return (
     <>
       <Button onClick={startSimulation} className="w-full py-2 text-white bg-primary rounded-lg">
         Play
       </Button>
+      <p className="text-sm italic text-muted-foreground mt-2">
+        <Switch onCheckedChange={(checked) => handleSwitch(checked, setEnergyResolveBug)} checked={energyResolveBug}/> Energy Resolve Bug
+      </p>
+      <p className="text-sm italic text-muted-foreground my-2">Set custom relobby time ({relobbyTime} seconds):</p>
+        <Slider onValueChange={(value) => handleRelobbyTime(value[0])} value={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
       <div className="w-full">
         
       {startedSim &&
         <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between">
-              <label className="font-bold text-xs">Raid ({gameStatus ? (300-gameStatus.timer > 0 ? 300-gameStatus.timer : 0) : 0}s)</label>
+              <label className="font-bold text-xs">Raid ({gameStatus ? (PoGoAPI.getRaidTime(raidMode) - gameStatus.timer > 0 ? PoGoAPI.getRaidTime(raidMode) - gameStatus.timer : 0) : 0}s)</label>
             </div>
             <Separator className=""/>
             <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
@@ -190,7 +220,7 @@ export default function CalculateButtonSimulateTurnBased({
             <div className="flex flex-row justify-between items-end space-x-4">
               <div className="w-[50%]">
                 <label className="text-xs items-end">Energy: {gameStatus?.allyEnergy[gameStatus!.activeAllyIndex]}/100</label>
-                <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex]?.energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex]?.type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+                <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex]?.energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
               </div>
               <div className="w-[50%] flex flex-col items-end">
                 <label className={"text-xs items-end"}>{showDPS ? ((gameStatus!.enemyPokemonDamage ? gameStatus!.enemyPokemonDamage : 0)/ (gameStatus!.timer || 1)).toFixed(2) + " DPS" : ""} </label>

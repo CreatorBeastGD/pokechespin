@@ -802,7 +802,6 @@ export default function Home() {
                   types={types}
                   allMoves={allMoves}
                   advenEffect={advEffect}
-                  relobbyTimer={parseInt(searchParams.get("relobby_time") || "8")}
               />
             </CardContent>
         </Card>

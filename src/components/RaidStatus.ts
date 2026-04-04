@@ -46,6 +46,9 @@ export class RaidStatus {
     isSubdued: boolean = false;
     prevWasCharged: boolean = false;
 
+    nextEnergyGainTurn: number | null = null;
+    nextEnergyGainAmount: number = 0;
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);
@@ -68,5 +71,6 @@ export class RaidStatus {
         this.timeout = false;
         this.targetDodgeWindow = false;
         this.relobbyTimer = relobbyTimer;
+        this.nextEnergyGainTurn = null;
     }
 }
