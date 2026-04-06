@@ -1214,6 +1214,7 @@ export class PoGoAPI {
             LUGIA: [8005244, 15, 15, 18000],
             HO_OH: [8005144, 15, 15, 25000],
             REGICE: [8005243, 15, 15, 20000],
+            REGIROCK: [8005243, 15, 15, 20000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

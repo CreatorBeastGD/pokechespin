@@ -578,6 +578,7 @@ export class Calculator {
             LUGIA: 18000,
             HO_OH: 25000,
             REGICE: 20000,
+            REGIROCK: 20000,
         };
 
         const t6gmaxHP: Record<string, number> = {
