@@ -17,6 +17,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.2.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Trapinch, Vibrava, Flygon.\n",
+        date: "2026-04-06",
+    },
+    {
         title: "v1.36.2",
         desc: "~ Improvements on the Solo Raider in Raids.\n"+
                 ">>>>>> Added the 'Energy Resolve Bug' to the simulator, you can decide if using it or not!\n"+

@@ -30,6 +30,7 @@ export class Calculator {
       "ROGGENROLA": "raid-t1-dmax",
       "GROWLITHE": "raid-t1-dmax",
       "PIKACHU": "raid-t1-dmax",
+      "TRAPINCH": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -232,6 +233,9 @@ export class Calculator {
       "PIKACHU",
       "RAICHU",
       "REGICE",
+      "TRAPINCH",
+      "VIBRAVA",
+      "FLYGON",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
