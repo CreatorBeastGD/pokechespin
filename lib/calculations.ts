@@ -434,9 +434,15 @@ export class Calculator {
         return initValue / 100;
       }
 
+      // Source: NFL Research Team
       static getMaxEnergyGain(damage: number, bossHP: number, raidMode: string = "normal") {
         let multiplier = raidMode === "normal" ? 1 : raidMode === "raid-t5-dmax" ? 2 : raidMode === "raid-t6-gmax" ? 15 : 1;
-        return Math.max(1, this.energyRound(((damage * multiplier) / (bossHP / 200))));
+        let decimals = raidMode === "normal" ? 1 : raidMode === "raid-t5-dmax" ? 2 : raidMode === "raid-t6-gmax" ? 2 : 2;
+        
+        let max_energy_gain = damage * 200 * multiplier / bossHP;
+        max_energy_gain = Math.floor(max_energy_gain * Math.pow(10, decimals)) / Math.pow(10, decimals);
+        max_energy_gain = Math.max(1, max_energy_gain);
+        return max_energy_gain;
       }
     
       static getCPM(level: number) {
