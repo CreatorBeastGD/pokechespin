@@ -388,7 +388,7 @@ export default function SearchBarEditor({
 
                           setImportMaxMove(data.maxmoves || [1, 0, 0]);
 
-                          console.log("Import successful, importing on link...");
+                          //console.log("Import successful, importing on link...");
 
                       } finally {
                           setTimeout(() => {

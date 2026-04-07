@@ -92,8 +92,8 @@ export default function Home() {
 
       const allTypesData = await PoGoAPI.getTypes();
       setTypes(allTypesData);
-      console.log("Fetched all types from PokeBattler API");
-      console.log(allTypesData);
+      //console.log("Fetched all types from PokeBattler API");
+      //console.log(allTypesData);
 
       
       setAllDataLoaded(true);

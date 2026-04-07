@@ -55,7 +55,7 @@ export default function SearchBarMoveEditor({
   
 
   const searchMove = (move?: any) => {
-    console.log(move);
+    //console.log(move);
     setLoading(true);
     setError(null);
     setSuggestions([])
@@ -77,7 +77,7 @@ export default function SearchBarMoveEditor({
       setCustomDuration(response.durationMs);
       setCustomType(response.type);
 
-      console.log(response);
+      //console.log(response);
       
     } finally {
       setLoading(false);

@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36.2.1";
+        return "1.36.3";
     }
 
     static async getAllPokemon() {
@@ -29,6 +29,37 @@ export class PoGoAPI {
     static async getAllPokemonPB() {
         const response = await fetch(API_PB + "pokemon");
         return (await response.json()).pokemon;
+    }
+
+    static getAllPokemonPB_ID(pokemonList: any, onlyBaseForms: boolean = true) {
+        const excludedList = [
+            "ZAMAZENTA_GIGANTAMAX", "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX", "ZACIAN_GIGANTAMAX", "ZACIAN_CROWNED_SWORD_GIGANTAMAX", "URSHIFU", "URSHIFU_GIGANTAMAX", "TORNADUS", "THUNDURUS", "LANDORUS", "ENAMORUS", "TOXTRICITY_LOW_KEY_GIGANTAMAX","TOXTRICITY_AMPED_GIGANTAMAX", "ETERNATUS_ETERNAMAX_FORM", "EEVEE_GOFEST_2024_MTIARA_FORM", "EEVEE_GOFEST_2024_STIARA_FORM", "ESPEON_GOFEST_2024_SSCARF_FORM", "UMBREON_GOFEST_2024_MSCARF_FORM", "SNORLAX_WILDAREA_2024_FORM", "FALINKS_GOFEST_2025_TRAIN_CONDUCTOR_FORM", "GIMMIGHOUL_COIN_A1_FORM", "PSYDUCK_SWIM_2025_FORM", "BEWEAR_WILDAREA_2025_FORM", "SINISTCHA_UNREMARKABLE_FORM", "SINISTCHA_MASTERPIECE_FORM", "POLTCHAGEIST_COUNTERFEIT_FORM", "POLTCHAGEIST_ARTISAN_FORM", "SUDOWOODO_WINTER_2025_FORM", "CHARJABUG_WINTER_2025_FORM", "VIKAVOLT_WINTER_2025_FORM", "DITTO_SPRING_2026_A_FORM", "DITTO_SPRING_2026_B_FORM", "TATSUGIRI_CURLY_FORM", "TATSUGIRI_DROOPY_FORM", "TATSUGIRI_STRETCHY_FORM", "DUDUNSPARCE_TWO_FORM", "DUDUNSPARCE_THREE_FORM", "KORAIDON_APEX_FORM", "MIRAIDON_ULTIMATE_FORM", "AERODACTYL_SUMMER_2023_FORM", "BASCULIN_WHITE_STRIPED_FORM", "BEARTIC_WINTER_2020_FORM", "OINKOLOGNE_FEMALE_FORM", "MAUSHOLD_FAMILY_OF_THREE_FORM", "MAUSHOLD_FAMILY_OF_FOUR_FORM", "SQUAWKABILLY_GREEN_FORM", "SQUAWKABILLY_BLUE_FORM", "SQUAWKABILLY_YELLOW_FORM", "SQUAWKABILLY_WHITE_FORM", "PALAFIN_ZERO_FORM", "ROCKRUFF_DUSK_FORM", "SCATTERBUG_ARCHIPELAGO_FORM", "SCATTERBUG_CONTINENTAL_FORM", "SCATTERBUG_ELEGANT_FORM", "SCATTERBUG_FANCY_FORM", "SCATTERBUG_GARDEN_FORM", "SCATTERBUG_HIGH_PLAINS_FORM", "SCATTERBUG_ICY_SNOW_FORM", "SCATTERBUG_JUNGLE_FORM", "SCATTERBUG_MARINE_FORM", "SCATTERBUG_MEADOW_FORM", "SCATTERBUG_MODERN_FORM", "SCATTERBUG_MONSOON_FORM", "SCATTERBUG_OCEAN_FORM", "SCATTERBUG_POKEBALL_FORM", "SCATTERBUG_POLAR_FORM", "SCATTERBUG_RIVER_FORM", "SCATTERBUG_SANDSTORM_FORM", "SCATTERBUG_SAVANNA_FORM", "SCATTERBUG_SUN_FORM", "SCATTERBUG_TUNDRA_FORM", "SPEWPA_ARCHIPELAGO_FORM", "SPEWPA_CONTINENTAL_FORM", "SPEWPA_ELEGANT_FORM", "SPEWPA_FANCY_FORM", "SPEWPA_GARDEN_FORM", "SPEWPA_HIGH_PLAINS_FORM", "SPEWPA_ICY_SNOW_FORM", "SPEWPA_JUNGLE_FORM", "SPEWPA_MARINE_FORM", "SPEWPA_MEADOW_FORM", "SPEWPA_MODERN_FORM", "SPEWPA_MONSOON_FORM", "SPEWPA_OCEAN_FORM", "SPEWPA_POKEBALL_FORM", "SPEWPA_POLAR_FORM", "SPEWPA_RIVER_FORM", "SPEWPA_SANDSTORM_FORM", "SPEWPA_SAVANNA_FORM", "SPEWPA_SUN_FORM", "SPEWPA_TUNDRA_FORM", "SLOWKING_2022_FORM", "MAGEARNA_ORIGINAL_COLOR_FORM", "MINIOR_BLUE_FORM", "MINIOR_GREEN_FORM", "MINIOR_INDIGO_FORM", "MINIOR_ORANGE_FORM", "MINIOR_RED_FORM", "MINIOR_VIOLET_FORM", "MINIOR_YELLOW_FORM", "MIMIKYU_BUSTED_FORM", "MIMIKYU_DISGUISED_FORM", "WISHIWASHI_SOLO_FORM", "SABLEYE_COSTUME_2020_FORM", "DELIBIRD_WINTER_2020_FORM", "CUBCHOO_WINTER_2020_FORM", "SLOWPOKE_2020_FORM", "SLOWBRO_2021_FORM", "HOOPA_CONFINED_FORM", "GOURGEIST", "PUMPKABOO", "AEGISLASH", "VIVILLON_ARCHIPELAGO_FORM", "VIVILLON_CONTINENTAL_FORM", "VIVILLON_ELEGANT_FORM", "VIVILLON_FANCY_FORM", "VIVILLON_GARDEN_FORM", "VIVILLON_HIGH_PLAINS_FORM", "VIVILLON_ICY_SNOW_FORM", "VIVILLON_JUNGLE_FORM", "VIVILLON_MARINE_FORM", "VIVILLON_MEADOW_FORM", "VIVILLON_MODERN_FORM", "VIVILLON_MONSOON_FORM", "VIVILLON_OCEAN_FORM", "VIVILLON_POKEBALL_FORM", "VIVILLON_POLAR_FORM", "VIVILLON_RIVER_FORM", "VIVILLON_SANDSTORM_FORM", "VIVILLON_SAVANNA_FORM", "VIVILLON_SUN_FORM", "VIVILLON_TUNDRA_FORM", "FLABEBE_RED_FORM", "FLABEBE_YELLOW_FORM", "FLABEBE_ORANGE_FORM", "FLABEBE_BLUE_FORM", "FLABEBE_WHITE_FORM", "FLOETTE_RED_FORM", "FLOETTE_YELLOW_FORM", "FLOETTE_ORANGE_FORM", "FLOETTE_BLUE_FORM", "FLOETTE_WHITE_FORM", "FLORGES_RED_FORM", "FLORGES_YELLOW_FORM", "FLORGES_ORANGE_FORM", "FLORGES_BLUE_FORM", "FLORGES_WHITE_FORM", "FURFROU_NATURAL_FORM", "FURFROU_HEART_FORM", "FURFROU_STAR_FORM", "FURFROU_DIAMOND_FORM", "FURFROU_DEBUTANTE_FORM", "FURFROU_MATRON_FORM", "FURFROU_DANDY_FORM", "FURFROU_LA_REINE_FORM", "FURFROU_KABUKI_FORM", "FURFROU_PHARAOH_FORM", "LAPRAS_COSTUME_2020_FORM", "GENGAR_COSTUME_2020_FORM", "PYROAR_FEMALE_FORM", "MEOWSTIC_FEMALE_FORM", "ZACIAN", "ZAMAZENTA", "SINISTEA_PHONY_FORM", "SINISTEA_ANTIQUE_FORM", "POLTEAGEIST_PHONY_FORM", "POLTEAGEIST_ANTIQUE_FORM", "FRILLISH_FEMALE_FORM", "JELLICENT_FEMALE_FORM", "DEERLING_SPRING_FORM", "DEERLING_SUMMER_FORM", "DEERLING_AUTUMN_FORM", "DEERLING_WINTER_FORM", "SAWSBUCK_SPRING_FORM", "SAWSBUCK_SUMMER_FORM", "SAWSBUCK_AUTUMN_FORM", "SAWSBUCK_WINTER_FORM", "GENESECT_SHOCK_FORM", "GENESECT_BURN_FORM", "GENESECT_CHILL_FORM", "GENESECT_DOUSE_FORM", "SQUIRTLE_FALL_2019_FORM", "CHARMANDER_FALL_2019_FORM", "BULBASAUR_FALL_2019_FORM", "MELOETTA_ARIA_FORM", "KELDEO_ORDINARY_FORM", "DARMANITAN_STANDARD_FORM", "SPINDA_08_FORM", "SPINDA_09_FORM", "SPINDA_10_FORM", "SPINDA_11_FORM", "SPINDA_12_FORM", "SPINDA_13_FORM", "SPINDA_14_FORM", "SPINDA_15_FORM", "SPINDA_16_FORM", "SPINDA_17_FORM", "SPINDA_18_FORM", "SPINDA_19_FORM", "MEWTWO_A_FORM", "BASCULIN_RED_STRIPED_FORM", "BASCULIN_BLUE_STRIPED_FORM", "SHAYMIN_LAND_FORM", "GIRATINA_ALTERED_FORM", "SPINDA_00_FORM", "SPINDA_01_FORM", "SPINDA_02_FORM", "SPINDA_03_FORM", "SPINDA_04_FORM", "SPINDA_05_FORM", "SPINDA_06_FORM", "SPINDA_07_FORM", "DEOXYS_NORMAL_FORM", "UNOWN_A_FORM", "UNOWN_B_FORM", "UNOWN_C_FORM", "UNOWN_D_FORM", "UNOWN_E_FORM", "UNOWN_F_FORM", "UNOWN_G_FORM", "UNOWN_H_FORM", "UNOWN_I_FORM", "UNOWN_J_FORM", "UNOWN_K_FORM", "UNOWN_L_FORM", "UNOWN_M_FORM", "UNOWN_N_FORM", "UNOWN_O_FORM", "UNOWN_P_FORM", "UNOWN_Q_FORM", "UNOWN_R_FORM", "UNOWN_T_FORM", "UNOWN_U_FORM", "UNOWN_V_FORM", "UNOWN_W_FORM", "UNOWN_X_FORM", "UNOWN_Y_FORM", "UNOWN_Z_FORM", "UNOWN_EXCLAMATION_POINT_FORM", "UNOWN_QUESTION_MARK_FORM", "LYCANROC", "TOXTRICITY_LOW_KEY", "TOXTRICITY_AMPED", "MORPEKO_HANGRY_FORM", "MORPEKO_FULL_BELLY_FORM", "ORICORIO", "ZYGARDE_FIFTY_PERCENT_FORM", "ZYGARDE_COMPLETE_TEN_PERCENT_FORM", "ZYGARDE_COMPLETE_FIFTY_PERCENT_FORM", "GASTRODON", "BURMY", "EISCUE",  "SHELLOS"
+        ];
+        let list = pokemonList.map((pokemon: any) => pokemon.pokemonId);
+        if (onlyBaseForms) {
+            // Excludes Megas
+            list = list.filter((id: string) => !id.includes("_MEGA"));
+
+            // Excludes Shadow Forms
+            list = list.filter((id: string) => !id.includes("_SHADOW_FORM"));
+
+            // Excludes Apex Shadow Forms
+            list = list.filter((id: string) => !id.includes("_S_FORM"));
+
+            // Excludes Primals
+            list = list.filter((id: string) => !id.includes("_PRIMAL"));
+
+            // Excludes Impossible GMAXES and impossible base form IDs
+            list = list.filter((id: string) => !excludedList.includes(id));
+            
+            // Ignores all Pikachu except normal and Gigantamax
+            list = list.filter((id: string) => (!id.includes("PIKACHU") || id === "PIKACHU" || id === "PIKACHU_GIGANTAMAX"));
+        }
+        let stringList = "";
+        list.forEach((id: string) => {
+            stringList += id + " ";
+        });
+        return stringList;
     }
 
     static async getAvailableMaxPokemonPB() {
@@ -128,7 +159,7 @@ export class PoGoAPI {
             return pokemonList[pokemonId].shiny;
         }
 
-        return (Math.random() < 1/4096) ? pokemonList[pokemonId].shiny : pokemonList[pokemonId].base;
+        return (Math.random() < 1/4096) ? (pokemonList[pokemonId] ? pokemonList[pokemonId].shiny : pokemonList["UNOWN_A_FORM"].shiny) : (pokemonList[pokemonId] ? pokemonList[pokemonId].base : pokemonList["UNOWN_A_FORM"].base);
     }
 
     static filterUniqueById(list: any[]) {
@@ -236,14 +267,14 @@ export class PoGoAPI {
             });
 
             if (overrides[pokemonId]) {
-                console.log("Applying custom moves for " + pokemonId, overrides[pokemonId], customQuickMoves, customCinematicMoves);
+                //console.log("Applying custom moves for " + pokemonId, overrides[pokemonId], customQuickMoves, customCinematicMoves);
                 overridedPokemon.customQuickMoves = customQuickMoves;
                 overridedPokemon.quickMoves = overrides[pokemonId].fast;
                 overridedPokemon.customCinematicMoves = customCinematicMoves;
                 overridedPokemon.cinematicMoves = overrides[pokemonId].charged;
             }
 
-            console.log(this.filterUniqueById([overridedPokemon]));
+            //console.log(this.filterUniqueById([overridedPokemon]));
 
             return this.filterUniqueById([overridedPokemon]);
         } else {
@@ -284,13 +315,13 @@ export class PoGoAPI {
 
     static getAllCustomPokemonMoves() {
         let customMoves = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
-        console.log("Custom pokemon moves loaded:", customMoves);
+        //console.log("Custom pokemon moves loaded:", customMoves);
         return customMoves;
     }
 
     static getAllCustomMoveValues() {
         let customMoves = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
-        console.log("Custom move values loaded:", customMoves);
+        //console.log("Custom move values loaded:", customMoves);
         return Object.values(customMoves);
     }
 
@@ -371,7 +402,7 @@ export class PoGoAPI {
         const overrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
         moves.forEach((move: any) => {
             if (overrides[move.moveId]) {
-                console.log("Applying custom values for move " + move.moveId, overrides[move.moveId]);
+                //console.log("Applying custom values for move " + move.moveId, overrides[move.moveId]);
                 move.power = overrides[move.moveId].power;
                 move.energyDelta = overrides[move.moveId].energyDelta;
                 move.durationMs = overrides[move.moveId].durationMs;
@@ -451,7 +482,7 @@ export class PoGoAPI {
         let overridenMove = { ...move };
         const overrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
         if (overrides[moveId]) {
-            console.log("Applying custom values for move " + moveId, overrides[moveId]);
+            //console.log("Applying custom values for move " + moveId, overrides[moveId]);
             overridenMove.power = overrides[moveId].power;
             overridenMove.energyDelta = overrides[moveId].energyDelta;
             overridenMove.durationMs = overrides[moveId].durationMs;
@@ -718,11 +749,13 @@ export class PoGoAPI {
         return weaknesses;
     }
 
-    static getEfectiveness(defendingPokemon: any, move: any, types: any) {
+    static getEfectiveness(defendingPokemon: any, move: any, types: any, attackingPokemon?: any) {
         const defenderFirstType = this.formatTypeName(defendingPokemon.type);
         const defenderSecondType = defendingPokemon.type2 ? this.formatTypeName(defendingPokemon.type2) : null;
 
-        
+
+        //console.log(attackingPokemon);
+
         const defenderFirstTypeWeaknesses = this.getTypeWeaknesses(defenderFirstType, types);
         const defenderSecondTypeWeaknesses = defenderSecondType ? this.getTypeWeaknesses(defenderSecondType, types) : {};
         const effectiveness = (defenderFirstTypeWeaknesses[this.formatTypeName(move.type)] ?? 1) * (defenderSecondTypeWeaknesses[this.formatTypeName(move.type)] ?? 1);
@@ -1141,7 +1174,7 @@ export class PoGoAPI {
             bonusDefender = [bonusDefender[0], false, false, 0];
         }
         // console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
-        const effectiveness = this.getEfectiveness(defender, move, types);
+        const effectiveness = this.getEfectiveness(defender, move, types, attacker);
         return Calculator.calculateDamage(
             move.power, 
             Calculator.getEffectiveAttackRawCPM(attacker.stats.baseAttack, attackerStats[1] , isDynamaxBoss ? attackerStats[0] : Calculator.getCPM(attackerStats[0])), 
@@ -1911,9 +1944,9 @@ export class PoGoAPI {
         }
 
         teamCount = attacker.length;
-        console.log("Team count: " + teamCount);
+        //console.log("Team count: " + teamCount);
 
-        console.log(bonusAttacker);
+        //console.log(bonusAttacker);
 
         let partyPowerCounter = 0;
         let partyPowerLimit = (partyPower ? (peopleCount === 2 ? 18 : (peopleCount === 3 ? 9 : (peopleCount > 3 ? 6 : -1))) : -1);
@@ -2366,7 +2399,7 @@ export class PoGoAPI {
                 valueList.push(arr[i]);
             }
         }
-        console.log(arr)
+        //console.log(arr)
         if (indexList.length === 0) {
             return arr.length;
         } else {
@@ -3992,7 +4025,7 @@ export class PoGoAPI {
                     }
                 } else {
                     // Enemy deals damage
-                    console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
+                    //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
                     let projectedDamage = Math.floor(this.getDamage(
                         defender,
                         attackers[gamestatus.activeAllyIndex], 

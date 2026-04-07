@@ -18,6 +18,8 @@ import {
 import { useState, useEffect } from "react";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
+import { PoGoAPI } from "../../lib/PoGoAPI";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
 
@@ -33,6 +35,9 @@ const Navbar = () => {
     let [showHPOnSoloRaid, setShowHPOnSoloRaid] = useState(false);
     let [freezeRejoin, setFreezeRejoin] = useState(true);
     let [showIDs, setShowIDs] = useState(false);
+
+    let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
+    let [allPokemon, setAllPokemon] = useState<any>(null);
 
 
     useEffect(() => {
@@ -120,6 +125,14 @@ const Navbar = () => {
         } else {
             localStorage.setItem("showIDs", "false");
         }
+
+        async function fetchAllPokemon() {
+            const response = await PoGoAPI.getAllPokemonPB();
+            setAllPokemon(response);
+            setAllPokemonOptionLoaded(true);
+        }
+
+        fetchAllPokemon();
     }, []);
 
     let ChangeBladeBoost = (option: string) => {
@@ -245,6 +258,8 @@ const Navbar = () => {
                         <div className="flex flex-col gap-4 mt-4 w-full">
                             <SheetDescription className="text-xs text-muted-foreground mt-2">
                                 Here you can configure some settings for your calculator, such as double friendship bonus, custom AE boosts from Max Finale and more. These settings will be saved in your local storage, so they will be applied every time you use the calculator. Please note that these settings are not saved in the URL, so if you share a link with someone else, they won't see the same settings as you.
+                            </SheetDescription><SheetDescription className="text-xs text-muted-foreground ">
+                                Setting to default will reset all settings to their default values, including custom move data added through the Editor. Applying changes will save the current settings.
                             </SheetDescription>
                             <SheetFooter>
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-green-500 rounded-lg" onClick={ApplyChanges}>Apply Changes</SheetClose>
@@ -307,7 +322,7 @@ const Navbar = () => {
                             <div className="flex flex-col w-full">
                                 <label className="text-sm">Add Custom Pokémon to Max Rankings</label>
                                 <div className="flex items-center space-x-2">
-                                    <textarea defaultValue={customPokemonToRankings} onChange={(e) => ChangeCustomPokemonToRankings(e.target.value)} id="customPokemonToRankings" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="BULBASAUR IVYSAUR VENUSAUR_GIGANTAMAX RAYQUAZA_MEGA KYUREM_BLACK_FORM" />
+                                    <textarea value={customPokemonToRankings} onChange={(e) => ChangeCustomPokemonToRankings(e.target.value)} id="customPokemonToRankings" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="BULBASAUR IVYSAUR VENUSAUR_GIGANTAMAX RAYQUAZA_MEGA KYUREM_BLACK_FORM" />
                                 </div>
                                 <p className="text-xs text-muted-foreground">
                                     Write any Pokémon ID separated by spaces to add them to the Max Rankings. If an ID is invalid, it will be ignored.
@@ -322,6 +337,24 @@ const Navbar = () => {
                                     </p>
                                 </div>
                             </div>
+                            {allPokemonOptionLoaded && (
+                            <div className="flex flex-col w-full">
+                                <label className="text-sm">Import ALL Pokémon</label>
+                                <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-2 mx-2">
+                                        <Button className="w-full mx-2 text-xs bg-green-500 p-2 rounded-lg" onClick={() => {setTimeout(() => {ChangeCustomPokemonToRankings(PoGoAPI.getAllPokemonPB_ID(allPokemon, true))}, 1)}}>Import</Button>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground mb-2">
+                                        Import all existing Pokémon from the PokéBattler API to be shown on Max Rankings. This option excludes Megaevolutions and Shadow Forms.
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mb-2">
+                                        This option overwrites your Custom Pokémon list with <span className="font-bold text-white">+1000 Pokémon</span>. This option WILL make every ranking page load much slower, so use this option at your own risk. 
+                                    </p>
+                                    </div>
+                                </div>
+                            </div>
+                                )}
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Behavior</SheetTitle>
                             <div className="flex flex-col ">

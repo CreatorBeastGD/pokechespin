@@ -695,7 +695,7 @@ export class Calculator {
       static tryParseCustomPokemonList(): string[] {
         const customListString = localStorage.getItem("customPokemonToRankings");
         if (customListString) {
-          console.log(customListString.split(" ").map(name => name.trim().toUpperCase()))
+          //console.log(customListString.split(" ").map(name => name.trim().toUpperCase()))
           return customListString.split(" ").map(name => name.trim().toUpperCase());
         } else {
           return [];

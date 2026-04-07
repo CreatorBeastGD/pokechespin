@@ -16,7 +16,7 @@ async function getRankings(func: (data: any) => void) {
             return [];
         }
         const data = await res.json();
-        console.log("Rankings data:", data);
+        //console.log("Rankings data:", data);
         
         // Handle both counts array and potential error responses
         const counts = Array.isArray(data.counts) ? data.counts : [];

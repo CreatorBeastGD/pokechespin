@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.3 (ALL Pokémon on Max Rankings!)",
+        desc: "+ Added a new config, called 'Import ALL Pokémon'\n"+
+                ">>>>>> This new config allows you to import all Pokémon available on the PokeBattler API to the Max Rankings, allowing you to check how good they are as attackers and defenders in Max Battles!\n"+
+                ">>>>>> This option overwrites your Custom Pokémon list with +1000 Pokémon. This option WILL make every ranking page load much slower, so use this option at your own risk.",
+        date: "2026-04-08",
+    },
+    {
         title: "v1.36.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Trapinch, Vibrava, Flygon.\n",

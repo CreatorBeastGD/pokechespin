@@ -133,7 +133,7 @@ export default function CalculateButtonSimulateTurnBased({
 
   const SendMessage = async (message: string) => {
     if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
-    console.log(raidMode)  
+    //console.log(raidMode)  
     const newState = PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
         attacker,
         defender,
