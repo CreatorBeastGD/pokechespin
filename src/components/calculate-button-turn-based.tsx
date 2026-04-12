@@ -62,9 +62,12 @@ export default function CalculateButtonSimulateTurnBased({
   const [energyResolveBug, setEnergyResolveBug] = useState<boolean>(searchParams.get("energy_resolve_bug") === "true");
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
 
+  const [relobbyConfirmation, setRelobbyConfirmation] = useState<boolean>(false);
+
   useEffect(() => {
     setStartedSim(false);
     setGameStatus(null);
+    setRelobbyConfirmation(false);
 
     //console.log("Changed dependencies")
 
@@ -134,6 +137,8 @@ export default function CalculateButtonSimulateTurnBased({
   const SendMessage = async (message: string) => {
     if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
     //console.log(raidMode)  
+    setRelobbyConfirmation(false);
+    
     const newState = PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
         attacker,
         defender,
@@ -311,8 +316,22 @@ export default function CalculateButtonSimulateTurnBased({
                 </>)}
                 {gameStatus?.isRelobby !== 1 && (
                   <>
-                    <Separator className="my-4"/>
-                    <Button onClick={() => SendMessage("relobby")} className="w-full py-2 text-white bg-primary rounded-lg">Relobby</Button>
+                  <Separator className="my-4"/>
+                    {relobbyConfirmation ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          <Button onClick={() => {SendMessage("relobby"); }} className="w-full py-2 text-white bg-green-500 rounded-lg">Yes</Button>
+                          <Button onClick={() => setRelobbyConfirmation(false)} className="w-full py-2 text-white bg-primary rounded-lg">No</Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground text-center">
+                          Are you sure you want to relobby?
+                        </p>
+                      </div>
+                    ) : (
+                      <Button onClick={() => setRelobbyConfirmation(true)} className="w-full py-2 text-white bg-primary rounded-lg">
+                        Relobby
+                      </Button>
+                    )}
                   </>
                 )}
               </>
