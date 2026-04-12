@@ -16,9 +16,12 @@ const novedades = [
 
         date: "🎂 2025-12-31",
     },
+    
     {
         title: "v1.36.4",
-        desc: "+ Added a confirmation button on 'Relobby' button on the Solo Raider Simulator to avoid accidental relobbies.\n",
+        desc: "+ Added a confirmation button on 'Relobby' button on the Solo Raider Simulator to avoid accidental relobbies.\n"+
+                "+ Added a new 'Include unreleased Gigantamax Pokémon on General Ranking Calculations' config to PokéChespin!\n"+
+                ">>>>>> Now you can choose to include unreleased Gigantamax Pokémon on General Ranking calculations, making all Attacker and Tank rankings vary greatly! (This calculates against all 33 Gigantamax Pokémon.)\n",
         date: "2026-04-12",
     },
     {

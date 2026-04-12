@@ -94,6 +94,13 @@ export class Calculator {
           list.push(key);
         }
       });
+      if (criteriaToSearch === "raid-t6-gmax" && localStorage.getItem("addAllGmaxesToGeneralRankings") === "true") {
+        this.UpcomingGMaxPokemon.forEach(pokemon => {
+          if (!list.includes(pokemon)) {
+            list.push(pokemon);
+          }
+        });
+      }
       return list;
     }
 

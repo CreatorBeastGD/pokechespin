@@ -35,6 +35,7 @@ const Navbar = () => {
     let [showHPOnSoloRaid, setShowHPOnSoloRaid] = useState(false);
     let [freezeRejoin, setFreezeRejoin] = useState(true);
     let [showIDs, setShowIDs] = useState(false);
+    let [addAllGmaxesToGeneralRankings, setAddAllGmaxesToGeneralRankings] = useState(false);
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -53,6 +54,7 @@ const Navbar = () => {
         const showHPOnSoloRaidStorage = localStorage.getItem("showHPOnSoloRaid");
         const freezeRejoinStorage = localStorage.getItem("freezeRejoin");
         const showIDsStorage = localStorage.getItem("showIDs");
+        const addAllGmaxesToGeneralRankingsStorage = localStorage.getItem("addAllGmaxesToGeneralRankings");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -126,6 +128,12 @@ const Navbar = () => {
             localStorage.setItem("showIDs", "false");
         }
 
+        if (addAllGmaxesToGeneralRankingsStorage) {
+            setAddAllGmaxesToGeneralRankings(addAllGmaxesToGeneralRankingsStorage === "true");
+        } else {
+            localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
+        }
+
         async function fetchAllPokemon() {
             const response = await PoGoAPI.getAllPokemonPB();
             setAllPokemon(response);
@@ -178,6 +186,7 @@ const Navbar = () => {
         localStorage.setItem("showHPOnSoloRaid", showHPOnSoloRaid.toString());
         localStorage.setItem("freezeRejoin", freezeRejoin.toString());
         localStorage.setItem("showIDs", showIDs.toString());
+        localStorage.setItem("addAllGmaxesToGeneralRankings", addAllGmaxesToGeneralRankings.toString());
         // reload page
         window.location.reload();
     }
@@ -195,6 +204,7 @@ const Navbar = () => {
         setShowHPOnSoloRaid(false);
         setFreezeRejoin(true);
         setShowIDs(false);
+        setAddAllGmaxesToGeneralRankings(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -210,6 +220,7 @@ const Navbar = () => {
         localStorage.removeItem("moveOverrides");
         localStorage.removeItem("customMoveOverrides");
         localStorage.removeItem("newMoveOverrides");
+        localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
         // reload page
         window.location.reload();
     }
@@ -307,6 +318,15 @@ const Navbar = () => {
                                     <input checked={showAllGmax} onChange={(e) => ChangeShowAllGmax(e.target.checked)} type="checkbox" id="showAllGmax" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Show all unreleased Gigantamax Pokémon on Max Rankings (Attackers)
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label className="text-sm">Include unreleased Gigantamax Pokémon on General Ranking Calculations</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={addAllGmaxesToGeneralRankings} onChange={(e) => setAddAllGmaxesToGeneralRankings(e.target.checked)} type="checkbox" id="includeUnreleasedGmax" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Calculations will take into account every existing Gigantamax Pokémon, released or not, making all Attacker and Tank rankings vary greatly.
                                     </p>
                                 </div>
                             </div>
