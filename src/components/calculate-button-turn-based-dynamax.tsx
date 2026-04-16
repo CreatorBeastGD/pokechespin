@@ -70,6 +70,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
   const [customBossHP, setCustomBossHP] = useState<number>((Number)(searchParams.get("custom_hp") || 10000));
   
+  const [showHP, setShowHP] = useState<boolean>(false);
+
   useEffect(() => {
     setCustomBossCPM((Number)(searchParams.get("custom_cpm") || 1));
     setCustomBossAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
@@ -96,6 +98,9 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     }
 
     loadParams();
+    
+    if (typeof window === "undefined") return;
+    setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
   }, []);
 
 
@@ -265,6 +270,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
           
             <div className="flex flex-row justify-between items-end ">
               <label className="text-xs pt-2">Boss: {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</label>
+              <label className="text-xs pt-2">{showHP ? `HP: ${gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage}/${gameStatus?.enemyPokemonMaxHealth}` : ""}</label>
             </div>
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
