@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36.4";
+        return "1.36.5";
     }
 
     static async getAllPokemon() {
@@ -1335,14 +1335,14 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t4-dmax") {
             return [9500, 10000]
         } else if (raidMode === "raid-t5-dmax") {
-            return [8500, 9500]
+            return [6500, 7500]
         } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
             return [2500, 5000]
         } else if (raidMode === "raid-custom-dmax") {
             if (defenderId === "ETERNATUS_ETERNAMAX_FORM" || defenderId.endsWith("_GIGANTAMAX")) {
                 return [2500, 5000]
             } else {
-                return [9500, 10000]
+                return [6500, 7500]
             }
         } else {
             return [9500, 10000]

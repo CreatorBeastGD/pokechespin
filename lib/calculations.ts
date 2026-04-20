@@ -243,6 +243,7 @@ export class Calculator {
       "TRAPINCH",
       "VIBRAVA",
       "FLYGON",
+      "REGIROCK",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
