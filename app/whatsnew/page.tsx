@@ -17,12 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
-        title: "v1.36.5",
+        title: "v1.36.5.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Regirock.\n"+
                 ">>>>>> T5 Max Battles have had their attack rate increased:\n"+
                 ">>>>>>>>> Large moves: from 8.5s to 6.5s of preparation\n"+
-                ">>>>>>>>> Target moves: from 9.5s to 7.5s of preparation\n",
+                ">>>>>>>>> Target moves: from 9.5s to 7.5s of preparation\n"+
+                ">>>>>> T5 Max Battles have had their Energy Gain Multiplier increased from x2 to x4!",
         date: "2026-04-14",
     },
     
