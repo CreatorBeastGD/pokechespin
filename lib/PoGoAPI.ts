@@ -128,6 +128,9 @@ export class PoGoAPI {
     }
 
     static getPokemonNamePB(pokemonId: string, textList: any) {
+        if (pokemonId === "GEM") {
+            return "Purified Gem";
+        }
         if (pokemonId == "PIKACHU_WCS_2025_FORM") {
             return "Pikachu - WCS 2025";
         }

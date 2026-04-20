@@ -309,7 +309,7 @@ export default function CalculateButtonSimulateAdvanced({
                       <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 bg-slate-200 p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker[item.currentAttackerIndex].pokemonId : defender.pokemonId), allEnglishText)}</p>
+                          <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.purifiedgem ? ("GEM") : (attacker[item.currentAttackerIndex]?.pokemonId)) : defender.pokemonId), allEnglishText)}</p>
                         </div>
                         <div className="flex flex-col space-y-1">
                           {(item.relobby === true || item.relobby === false) ? 
