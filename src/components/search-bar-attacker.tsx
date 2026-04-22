@@ -168,7 +168,14 @@ export default function SearchBarAttacker({
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
+          
         }, 2);
+      }
+
+      if (!PoGoAPI.IsMega(response?.pokemonId) && stats[0] > 51) {
+        setTimeout(() => {
+           handleChangeStat([51], 0);
+        }, 2);     
       }
 
     } finally {
@@ -206,7 +213,15 @@ export default function SearchBarAttacker({
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
+          
         }, 2);
+      }
+
+      
+      if (!PoGoAPI.IsMega(response?.pokemonId) && stats[0] > 51) {
+        setTimeout(() => {
+           handleChangeStat([51], 0);
+        }, 2);     
       }
 
     } finally {
@@ -238,6 +253,12 @@ export default function SearchBarAttacker({
       } else {
         setTimeout(() => {
           handleBonusChange(1, false);
+          
+        }, 2);
+      }
+      if (!PoGoAPI.IsMega(response?.pokemonId) && stats[0] > 51) {
+        setTimeout(() => {
+          handleChangeStat([51], 0);
         }, 2);
       }
     
@@ -268,15 +289,15 @@ export default function SearchBarAttacker({
 
   // [level, attack, defense, stamina]
   const handleChangeStat = (value: number[], index: number) => {
-  if (index === 0 && (value[0] < 1 || value[0] > 51)) return;
-  if (index > 0 && (value[0] < 0 || value[0] > 15)) return;
+    if (index === 0 && (value[0] < 1 || value[0] > (PoGoAPI.IsMega(selectedPokemon.pokemonId) ? 55 : 51))) return;
+    if (index > 0 && (value[0] < 0 || value[0] > 15)) return;
 
-  setStats((prev: number[]) => {
-    const newStats = [...prev];
-    newStats[index] = value[0];
-    return newStats;
-  });
-};
+    setStats((prev: number[]) => {
+      const newStats = [...prev];
+      newStats[index] = value[0];
+      return newStats;
+    });
+  };
 
   // Bonuses = [weather-boost, shadow, mega, friendship]
   const handleBonusChange = (bonusIndex: number, value: any) => {
@@ -288,12 +309,8 @@ export default function SearchBarAttacker({
   };
 
   useEffect(() => {
-    
     onChangedStats(stats, memberSlot);
-
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    
   }, [stats]);
 
   useEffect(() => {
@@ -391,7 +408,7 @@ export default function SearchBarAttacker({
                               return;
                           }
 
-                         else if (data.stats[0] < 1 || data.stats[0] > 51 || data.stats[1] < 0 || data.stats[1] > 15 || data.stats[2] < 0 || data.stats[2] > 15 || data.stats[3] < 0 || data.stats[3] > 15) {
+                         else if (data.stats[0] < 1 || data.stats[0] > (PoGoAPI.IsMega(pokemonData.pokemonId) ? 55 : 51) || data.stats[1] < 0 || data.stats[1] > 15 || data.stats[2] < 0 || data.stats[2] > 15 || data.stats[3] < 0 || data.stats[3] > 15) {
                               setError("Invalid stats in the imported file.");
                               setIsImporting(false);
                               return;
@@ -582,7 +599,7 @@ export default function SearchBarAttacker({
           
             <Image
               unoptimized
-                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + ((selectedBonuses[1] === true && (slot === 1 || (slot === 2 && raidMode === "normal"))) ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
+                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + ((selectedBonuses[1] === true) ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
                 alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
@@ -594,7 +611,7 @@ export default function SearchBarAttacker({
           <p>Stat picker <span className="italic text-xs">(You can slide to select your desired stats!)</span> </p>
             <p>Level: {stats[0]}</p>
             <div className="flex flex-row">
-              <Slider onValueChange={(value) => handleChangeStat(value, 0)} value={[stats[0]]} max={51} step={0.5} min={1} className="w-[60%] mb-1 mr-2" color={stats[0] == 51 ? "bg-blue-500" : "bg-blue-700"}/>
+              <Slider onValueChange={(value) => handleChangeStat(value, 0)} value={[stats[0]]} max={(PoGoAPI.IsMega(selectedPokemon.pokemonId)) ? 55 : 51} step={0.5} min={1} className="w-[60%] mb-1 mr-2" color={stats[0] >= 51 ? "bg-blue-500" : "bg-blue-700"}/>
               <button onClick={() => handleChangeStat([stats[0]-0.5], 0)} className="bg-blue-500 text-white px-4 rounded mr-2">–</button>
               <button onClick={() => handleChangeStat([stats[0]+0.5], 0)} className="bg-blue-500 text-white px-4 rounded">+</button>
             </div>

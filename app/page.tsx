@@ -57,6 +57,7 @@ export default function Home() {
   
 
   const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
+  const [defenderStatsBug, setDefenderStatsBug] = useState<string>("");
 
   const [cleared, setCleared] = useState<boolean>(true);
   
@@ -66,6 +67,8 @@ export default function Home() {
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
       setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
+      console.log("DsB", searchParams.get("defender_stats"));
+      setDefenderStatsBug(searchParams.get("defender_stats") ? searchParams.get("defender_stats")! : "50,15,15,15");
       
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
       setAllPokemonPB(pokemonlist);
@@ -240,7 +243,8 @@ export default function Home() {
       setBonusAttacker(newBonusAttacker);
 
         const defender = searchParams.get("defender");
-        const defenderStats = searchParams.get("defender_stats");
+        const defenderStats = defenderStatsBug; // Man, I FUCKING love React
+        console.log("DS", defenderStatsBug);
         const bonusDefender = searchParams.get("defender_bonuses");
         const defenderFastAttack = searchParams.get("defender_fast_attack");
         const defenderChargedAttack = searchParams.get("defender_cinematic_attack");
@@ -413,10 +417,22 @@ export default function Home() {
       } return s;
     });
     setAttackerStats(newAttackerStats);
+
+    setTimeout(() => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(`attacker_stats${slot}`, stats.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }, 1);
   };
 
   const handleChangedStatsDefender = (stats: any) => {
     setDefenderStats(stats);
+
+    setTimeout(() => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("defender_stats", stats.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }, 1);
   };
 
   const handleBonusChangeAttacker = (bonus: any, slot: any) => {

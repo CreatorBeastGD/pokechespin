@@ -17,6 +17,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.6",
+        desc: "+ Added level 55 for megaevolutions.\n"+
+                ">>>>>> If you select a megaevolution as an attacker on Raids, you can level it up to level 55, similar to the bonuses received during Go Tour: Kalos.\n"+
+                "+ You can now select Shadow forms as defenders on Raids and the bonus will apply.",
+        date: "2026-04-16",
+    },
+    {
         title: "v1.36.5.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Regirock.\n"+

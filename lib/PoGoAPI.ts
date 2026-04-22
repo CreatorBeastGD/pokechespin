@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36.5.1";
+        return "1.36.6";
     }
 
     static async getAllPokemon() {
@@ -1473,6 +1473,9 @@ export class PoGoAPI {
     }
 
     static IsMega(pokemonId: string) {
+        if (!pokemonId) {
+            return false;
+        }
         return pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_X") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_Z") || pokemonId.endsWith("_MEGA_COMPLETE") || pokemonId.endsWith("_MEGA_C") || pokemonId.endsWith("_MEGA_ETERNAL");
     }
 
@@ -3583,6 +3586,7 @@ export class PoGoAPI {
         defenderCinematicMove: any,
         attackersStats: any[][],
         attackersBonuses: any[][],
+        defenderBonuses: any[],
         raidMode: string,
         weather: string = "EXTREME",
         advEffects: string = "none",
@@ -3855,7 +3859,7 @@ export class PoGoAPI {
                         attackersStats[gamestatus.activeAllyIndex], 
                         defenderStats, 
                         attackersBonuses[gamestatus.activeAllyIndex], 
-                        [weather, false, false, 0] , 
+                        defenderBonuses, 
                         raidMode, 1, 
                         (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, gamestatus.activeAllyIndex, gamestatus.allyActiveMove.move.type)
                     ));
@@ -3936,7 +3940,8 @@ export class PoGoAPI {
             attackersStats, 
             attackersBonuses,
             defenderQuickMove, 
-            defenderCinematicMove, 
+            defenderCinematicMove,
+            defenderBonuses, 
             raidMode, 
             weather, 
             advEffects,  
@@ -3979,7 +3984,8 @@ export class PoGoAPI {
         attackersStats: any[][], 
         attackersBonuses: any[][],
         defenderQuickAttack: any, 
-        defenderCinematicAttack: any, 
+        defenderCinematicAttack: any,
+        defenderBonuses: any[], 
         raidMode: string, 
         weather: string = "EXTREME",
         advEffects: string = "none",
@@ -4036,7 +4042,7 @@ export class PoGoAPI {
                         types,
                         defenderStats,  
                         attackersStats[gamestatus.activeAllyIndex], 
-                        [weather, false, false, 0], 
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId), false, 0],
                         "normal", 
                         1, 

@@ -86,7 +86,7 @@ export default function CalculateButtonSimulate({
   const calculateDamage = async () => {
     if (!attacker || !defender || !quickMove || !chargedMove) return;
     
-    const defenderBonusesMod = [bonusAttacker[0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
+    const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, bladeBoost);
     setShownGraphic(false);
     setTime(time);

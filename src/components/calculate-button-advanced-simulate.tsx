@@ -155,7 +155,7 @@ export default function CalculateButtonSimulateAdvanced({
     }
     setLoading(true);
     // Both should have the same weather boost.
-    const defenderBonusesMod = [bonusAttacker[0][0], raidMode==="normal" ? bonusDefender[1] : false, raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
+    const defenderBonusesMod = [bonusAttacker[0][0], bonusDefender[1], raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
       await PoGoAPI.advancedSimulationMultiTeam(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost, energyResolveBug);
     setLoading(false);
