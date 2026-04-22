@@ -1066,7 +1066,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid, defendingPokemon.pokemonId);
-            bonusDefender = [bonusDefender[0], false, false, 0];
+            bonusDefender = [bonusDefender[0], bonusDefender[1], false, 0];
         }
         //console.log(defenderStats, raidMode);
         const types = await this.getTypes();
@@ -1174,7 +1174,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
-            bonusDefender = [bonusDefender[0], false, false, 0];
+            bonusDefender = [bonusDefender[0], bonusDefender[1], false, 0];
         }
         // console.log(attacker.pokemonId + " " + defender.pokemonId + " " + move.moveId + " " + types + " " + attackerStats + " " + defenderStats + " " + bonusAttacker + " " + bonusDefender + " " + raidMode + " " + shroomBonus + " " + damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types, attacker);
