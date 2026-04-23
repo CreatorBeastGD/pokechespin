@@ -4610,8 +4610,8 @@ export class PoGoAPI {
 
         // Custom DMAX
             if (raidMode === "raid-custom-dmax") {
-                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 600) || 
-                    (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && gamestatus.timer === 480)) {
+                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer >= 600) || 
+                    (!defender.pokemonId.endsWith("_GIGANTAMAX") && !defender.pokemonId.endsWith("_ETERNAMAX_FORM") && gamestatus.timer >= 480)) {
                     gamestatus.globalCurrentMessage = {
                         message: "Timeout reached.",
                         duration: 0,
@@ -4621,8 +4621,8 @@ export class PoGoAPI {
                 }
 
                 // Defender is getting desperate
-                if (((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 190) || 
-                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 270)) {
+                if (!gamestatus.enrage && ((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer >= 190) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer >= 270)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss is getting desperate!",
                         duration: 0,
@@ -4641,9 +4641,9 @@ export class PoGoAPI {
                     gamestatus.enrage = true;
                 }
             } else {
-                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 600) || 
-                    (raidMode == "raid-t5-dmax" && gamestatus.timer === 400) ||
-                    (raidMode.endsWith("dmax") && gamestatus.timer === 480)) {
+                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer >= 600) || 
+                    (raidMode == "raid-t5-dmax" && gamestatus.timer >= 400) ||
+                    (raidMode.endsWith("dmax") && gamestatus.timer >= 480)) {
                     gamestatus.globalCurrentMessage = {
                         message: "Timeout reached.",
                         duration: 0,
@@ -4653,8 +4653,8 @@ export class PoGoAPI {
                 }
 
                 // Defender is getting desperate
-                if (((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 190) || 
-                    (raidMode.endsWith("dmax") && gamestatus.timer === 270)) {
+                if (!gamestatus.enrage && ((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer >= 190) || 
+                    (raidMode.endsWith("dmax") && gamestatus.timer >= 270)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss is getting desperate!",
                         duration: 0,
