@@ -4631,8 +4631,8 @@ export class PoGoAPI {
                 }
 
                 // Defender' attacks are getting stronger
-                if ((gamestatus.bossCastedMove) && ((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 220) || 
-                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer === 300)) {
+                if ((gamestatus.bossCastedMove) && ((defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer >= 220) || 
+                    (!(defender.pokemonId.endsWith("_GIGANTAMAX") || defender.pokemonId.endsWith("_ETERNAMAX_FORM")) && gamestatus.timer >= 300)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss' attacks are getting stronger!",
                         duration: 0,
@@ -4663,8 +4663,8 @@ export class PoGoAPI {
                 }
 
                 // Defender' attacks are getting stronger
-                if ((gamestatus.bossCastedMove) && ((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer === 220) || 
-                    (raidMode.endsWith("dmax") && gamestatus.timer === 300)) {
+                if ((gamestatus.bossCastedMove) && ((raidMode.endsWith("gmax") || raidMode.endsWith("standard")) && gamestatus.timer >= 220) || 
+                    (raidMode.endsWith("dmax") && gamestatus.timer >= 300)) {
                     gamestatus.enrageCurrentMessage = {
                         message: "The Max Battle Boss' attacks are getting stronger!",
                         duration: 0,
