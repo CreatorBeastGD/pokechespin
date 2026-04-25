@@ -74,6 +74,13 @@ export default function Home() {
 
   const [loaded, setLoaded] = useState<boolean>(false);
 
+  const [simpleMode, setSimpleMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!localStorage) return;
+    setSimpleMode(localStorage.getItem("simplifyCalculationText") === "true");
+  }, []);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.set("num_members", numMembers.toString());
@@ -830,9 +837,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
                 shroomBonus={previewShroom ? 2 : 1}
                 bladeBoost={previewAdvEffect === "blade"}
+                simplifyCalculationText={simpleMode}
               />
             </CardContent>
             <CardContent>
@@ -847,9 +855,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusAttacker={[weather, false, false, previewFriendship]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
                 shroomBonus={previewShroom ? 2 : 1}
                 bladeBoost={previewAdvEffect === "blade"}
+                simplifyCalculationText={simpleMode}
               />
             </CardContent>
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
@@ -866,10 +875,11 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
                 maxLevel={maxMoves[selectedMember-1][selectedPokemonSlot-1][0]}
-                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper) * (previewAdvEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
                 shroomBonus={previewShroom ? 2 : 1}
                 dynamaxCannonBonus={previewAdvEffect === "cannon"}
                 bladeBoost={previewAdvEffect === "blade"}
+                simplifyCalculationText={simpleMode}
               />
             </CardContent>
             )}

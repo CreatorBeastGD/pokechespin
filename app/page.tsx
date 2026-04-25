@@ -64,6 +64,13 @@ export default function Home() {
   
   const [selectedPokemonSlot, setSelectedPokemonSlot] = useState<number>(searchParams.get("slot") ? parseInt(searchParams.get("slot") as string) : 1);
 
+  const [simpleMode, setSimpleMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!localStorage) return;
+    setSimpleMode(localStorage.getItem("simplifyCalculationText") === "true");
+  }, []);
+
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
       setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
@@ -745,8 +752,9 @@ export default function Home() {
                 bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
+                additionalBonus={megaBoost}
                 bladeBoost={advEffect === "blade"}
+                simplifyCalculationText={simpleMode}
                 />
             </CardContent>
             <CardContent>
@@ -761,8 +769,9 @@ export default function Home() {
                 bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 raidMode={raidMode}
-                additionalBonus={megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1)}
+                additionalBonus={megaBoost}
                 bladeBoost={advEffect === "blade"}
+                simplifyCalculationText={simpleMode}
               />
             </CardContent>
             <CardContent>

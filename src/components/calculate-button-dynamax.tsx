@@ -20,6 +20,7 @@ export default function CalculateButtonDynamax({
   shroomBonus = 1,
   dynamaxCannonBonus = false,
   bladeBoost = false,
+  simplifyCalculationText = false,
 }: {
   attacker: any;
   defender: any;
@@ -35,6 +36,7 @@ export default function CalculateButtonDynamax({
   shroomBonus?: number;
   dynamaxCannonBonus?: boolean;
   bladeBoost?: boolean;
+  simplifyCalculationText?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -78,7 +80,17 @@ export default function CalculateButtonDynamax({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""}{dynamaxCannonBonus ? " using Dynamax Cannon Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> (Level {attackerStats[0]}, Attack IV {attackerStats[1]}) 
+          deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} </span> 
+          with {PoGoAPI.formatMoveName(move?.moveId) + " "}
+          {!simplifyCalculationText && <span>
+            under {PoGoAPI.formatWeatherName(bonusAttacker[0])} weather, 
+          {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
+           
+          with Friendship Level {bonusAttacker[3]} (x{Calculator.getFriendshipBonus(bonusAttacker[3])})
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)} (x{additionalBonus}){shroomBonus ? " and using Max Mushroom. " : " "}</span>}
+          </span>}
+           ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           </p>
           <p>
           

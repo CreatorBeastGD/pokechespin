@@ -19,6 +19,7 @@ export default function CalculateButton({
   additionalBonus = 1,
   shroomBonus = 1,
   bladeBoost = false,
+  simplifyCalculationText = false,
 }: {
   attacker: any;
   defender: any;
@@ -29,9 +30,10 @@ export default function CalculateButton({
   bonusDefender: any;
   raidMode: string;
   allEnglishText: any;
-  additionalBonus?: any;
+  additionalBonus?: number;
   shroomBonus?: number;
   bladeBoost?: boolean;
+  simplifyCalculationText?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
@@ -47,7 +49,7 @@ export default function CalculateButton({
   useEffect(() => {
     setDamage(0);
     setHealth(0);
-  }, [attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
+  }, [bladeBoost, simplifyCalculationText, attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
@@ -60,7 +62,7 @@ export default function CalculateButton({
     }
     
     const types = await PoGoAPI.getTypes();
-    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus, shroomBonus);
+    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1), shroomBonus);
     const effStamina = 
       raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0]) : 
       (raidMode === "raid-custom-dmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
@@ -78,7 +80,18 @@ export default function CalculateButton({
       {damage !== 0 && attacker && defender && move && (
         <div className="mt-4 space-y-4">
           <p>
-          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> with {PoGoAPI.formatMoveName(move.moveId)}{bladeBoost ? " using Behemoth Blade Adventure Effect" : ""} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%){(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode, defender.pokemonId)} energy</span>}
+          <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> (Level {attackerStats[0]}, Attack IV {attackerStats[1]}) 
+          deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} </span> 
+          with {PoGoAPI.formatMoveName(move?.moveId)}
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span className="font-bold"> gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode, defender.pokemonId)} Max Energy </span> : " "}
+          {!simplifyCalculationText && <span>
+            under {PoGoAPI.formatWeatherName(bonusAttacker[0])} weather, 
+          {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
+           
+          with Friendship Level {bonusAttacker[3]} (x{Calculator.getFriendshipBonus(bonusAttacker[3])})
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)}  (x{additionalBonus}){shroomBonus ? " and using Max Mushroom." : "."}</span> : <span>{additionalBonus > 1 ? " and using " + (additionalBonus == 1.1 ? "Non-Same Type" : "Same Type") + " Mega Boost (x" + additionalBonus + ")" : ""}</span>}
+            </span>} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
+          
           </p>
           <p>
           

@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.36.6";
+        return "1.36.7";
     }
 
     static async getAllPokemon() {
@@ -2465,6 +2465,45 @@ export class PoGoAPI {
         return randomIndex;
     }
 
+    static getRevertedHelperBonusDamage(hb: number) {
+        switch (hb) {
+            case 1:
+                return 0;
+            case 1.1:
+                return 1;
+            case 1.15:
+                return 2;
+            case 1.17:
+                return 3;
+            case 1.18:
+                return 4;
+            case 1.187:
+                return 5;
+            case 1.191:
+                return 6;
+            case 1.192:
+                return 7;
+            case 1.193:
+                return 8;
+            case 1.194:
+                return 9;
+            case 1.195:
+                return 10;
+            case 1.196:
+                return 11;
+            case 1.197:
+                return 12;
+            case 1.198:
+                return 13;
+            case 1.199:
+                return 14;
+            case 1.2:
+                return 15;
+            default:
+                return 0;
+        }
+    }
+
     static getHelperBonusDamage(hb: number) {
         // Source: https://github.com/MocTalox/Max-Battle-Tests/tree/main/tests/help
         switch (hb) {
@@ -4905,5 +4944,11 @@ export class PoGoAPI {
         if (!typeName) return "???";
         const formattedType = typeName.replace("POKEMON_TYPE_", "").toLowerCase();
         return formattedType.charAt(0).toUpperCase() + formattedType.slice(1);
+      }
+
+    static formatWeatherName(weatherName: string) {
+        if (!weatherName) return "???";
+        const formattedWeather = weatherName.replace("_", " ").toLowerCase();
+        return formattedWeather.charAt(0).toUpperCase() + formattedWeather.slice(1);
       }
 }

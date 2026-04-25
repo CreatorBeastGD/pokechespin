@@ -17,11 +17,18 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.36.7",
+        desc: "+ Calculation text are now more complete, showing more details about the calculation, such as the weather, friendship level, mega boost and helper bonus used on the calculation.\n"+
+                "+ Added a new 'Simplify Calculation Text' config to PokéChespin!\n"+
+                ">>>>>> Now you can choose to simplify the calculation text, showing only the most important information about the calculation, making it easier to read and understand! (This config is OFF by default)\n",
+        date: "2026-04-25"
+    },
+    {
         title: "v1.36.6",
         desc: "+ Added level 55 for megaevolutions.\n"+
                 ">>>>>> If you select a megaevolution as an attacker on Raids, you can level it up to level 55, similar to the bonuses received during Go Tour: Kalos.\n"+
                 "+ You can now select Shadow forms as defenders on Raids and the bonus will apply.",
-        date: "2026-04-16",
+        date: "2026-04-22",
     },
     {
         title: "v1.36.5.1",

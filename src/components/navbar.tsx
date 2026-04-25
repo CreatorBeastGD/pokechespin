@@ -36,6 +36,7 @@ const Navbar = () => {
     let [freezeRejoin, setFreezeRejoin] = useState(true);
     let [showIDs, setShowIDs] = useState(false);
     let [addAllGmaxesToGeneralRankings, setAddAllGmaxesToGeneralRankings] = useState(false);
+    let [simplifyCalculationText, setSimplifyCalculationText] = useState(false);
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -55,6 +56,7 @@ const Navbar = () => {
         const freezeRejoinStorage = localStorage.getItem("freezeRejoin");
         const showIDsStorage = localStorage.getItem("showIDs");
         const addAllGmaxesToGeneralRankingsStorage = localStorage.getItem("addAllGmaxesToGeneralRankings");
+        const simplifyCalculationTextStorage = localStorage.getItem("simplifyCalculationText");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -134,6 +136,12 @@ const Navbar = () => {
             localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
         }
 
+        if (simplifyCalculationTextStorage) {
+            setSimplifyCalculationText(simplifyCalculationTextStorage === "true");
+        } else {
+            localStorage.setItem("simplifyCalculationText", "false");
+        }
+
         async function fetchAllPokemon() {
             const response = await PoGoAPI.getAllPokemonPB();
             setAllPokemon(response);
@@ -187,6 +195,7 @@ const Navbar = () => {
         localStorage.setItem("freezeRejoin", freezeRejoin.toString());
         localStorage.setItem("showIDs", showIDs.toString());
         localStorage.setItem("addAllGmaxesToGeneralRankings", addAllGmaxesToGeneralRankings.toString());
+        localStorage.setItem("simplifyCalculationText", simplifyCalculationText.toString());
         // reload page
         window.location.reload();
     }
@@ -221,6 +230,7 @@ const Navbar = () => {
         localStorage.removeItem("customMoveOverrides");
         localStorage.removeItem("newMoveOverrides");
         localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
+        localStorage.setItem("simplifyCalculationText", "false");
         // reload page
         window.location.reload();
     }
@@ -422,6 +432,15 @@ const Navbar = () => {
                                     <input checked={showIDs} onChange={(e) => setShowIDs(e.target.checked)} type="checkbox" id="showIDs" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Shows the IDs of Pokémon and moves on Pokémon options.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Simplify Calculation Text</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={simplifyCalculationText} onChange={(e) => setSimplifyCalculationText(e.target.checked)} type="checkbox" id="simplifyCalculationText" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Simplifies the calculation text shown in the app, only showing the damage values and energy gain.
                                     </p>
                                 </div>
                             </div>
