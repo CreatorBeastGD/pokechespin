@@ -3182,9 +3182,9 @@ export class PoGoAPI {
                     if (attackerDamageStart[i] == -1 && activePokemon[i] < 3 ) {
                         // Attacker of member i may cast a move
                         const projectedDamageQuick = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersQuickMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
-                        const maxEnergyQuickAttack = Calculator.getMaxEnergyGain(projectedDamageQuick, defenderHealth, raidMode);
+                        const maxEnergyQuickAttack = Calculator.getMaxEnergyGain(projectedDamageQuick, defenderHealth, raidMode, defender.pokemonId);
                         const projectedDamageCinematic = Math.floor(this.getDamage(attackers[i][activePokemon[i]], defender, attackersCinematicMove[i][activePokemon[i]], types, attackersStats[i][activePokemon[i]], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1,  this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1)));
-                        const maxEnergyCinematicAttack = Calculator.getMaxEnergyGain(projectedDamageCinematic, defenderHealth, raidMode);
+                        const maxEnergyCinematicAttack = Calculator.getMaxEnergyGain(projectedDamageCinematic, defenderHealth, raidMode, defender.pokemonId);
                         if ((attackerEnergy[i][activePokemon[i]] >= -attackersCinematicMove[i][activePokemon[i]].energyDelta) 
                             && (!prioritiseEnergy ||
                                 (prioritiseEnergy && (maxEnergyCinematicAttack * (attackersQuickMove[i][activePokemon[i]].durationMs / attackersCinematicMove[i][activePokemon[i]].durationMs) >= maxEnergyQuickAttack))
@@ -3216,7 +3216,7 @@ export class PoGoAPI {
                     tdo[i] += projectedDamage;
                     attackerDamage[i][activePokemon[i]] += projectedDamage;
                     //console.log("Attacker " + i + " deals " + projectedDamage + " damage with move: " + attackerMove[i].moveId + " at time " + time);
-                    maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth, raidMode);
+                    maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth, raidMode, defender.pokemonId);
                     if (maxEnergy > 100) {
                         maxEnergy = 100;
                     }
@@ -4509,7 +4509,7 @@ export class PoGoAPI {
                         this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1)
                     ));
                     gamestatus.enemyPokemonDamage += projectedDamage;
-                    gamestatus.maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth, raidMode);
+                    gamestatus.maxEnergy += Calculator.getMaxEnergyGain(projectedDamage, defenderHealth, raidMode, defender.pokemonId);
                     if (gamestatus.maxEnergy >= 100) {
                         gamestatus.maxEnergy = 100;
                         gamestatus.maxPhaseCounter = 4;

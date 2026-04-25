@@ -443,11 +443,29 @@ export class Calculator {
       }
 
       // Source: NFL Research Team
-      static getMaxEnergyGain(damage: number, bossHP: number, raidMode: string = "normal") {
+      static getMaxEnergyGain(damage: number, bossHP: number, raidMode: string = "normal", bossId: string = "") {
         let multiplier = raidMode === "normal" ? 1 : raidMode === "raid-t5-dmax" ? 4 : raidMode === "raid-t6-gmax" ? 15 : 1;
         let decimals = raidMode === "normal" ? 0 : raidMode === "raid-t5-dmax" ? 2 : raidMode === "raid-t6-gmax" ? 2 : 0;
         
+        if (raidMode === "raid-t6-gmax") {
+          switch (bossId) {
+            case "PIKACHU_GIGANTAMAX":
+              multiplier = 15;
+              break;
+            case "MEOWTH_GIGANTAMAX":
+              multiplier = 15;
+              break;
+            case "GENGAR_GIGANTAMAX":
+              multiplier = 18;
+              break;
+            default:
+              multiplier = 15;
+              break;
+          }
+        }
+
         let max_energy_gain = damage / bossHP * 200 * multiplier;
+        // console.log("Raw value: " + max_energy_gain.toPrecision(2));
         max_energy_gain = Math.floor(max_energy_gain * Math.pow(10, decimals)) / Math.pow(10, decimals);
         max_energy_gain = Math.max(1, max_energy_gain);
         return max_energy_gain;
