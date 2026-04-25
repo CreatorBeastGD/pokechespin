@@ -86,7 +86,7 @@ export default function CalculateButtonDynamax({
           {!simplifyCalculationText && <span>
             under {PoGoAPI.formatWeatherName(bonusAttacker[0])} weather, 
           {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
-           
+          {dynamaxCannonBonus ? " using Dynamax Cannon Adventure Effect " : " "} 
           with Friendship Level {bonusAttacker[3]} (x{Calculator.getFriendshipBonus(bonusAttacker[3])})
           {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)} (x{additionalBonus}){shroomBonus == 2 ? " and using Max Mushroom. " : " "}</span>}
           </span>}
