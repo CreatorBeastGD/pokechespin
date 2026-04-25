@@ -456,7 +456,7 @@ export class Calculator {
               multiplier = 15;
               break;
             case "GENGAR_GIGANTAMAX":
-              multiplier = 18;
+              multiplier = 15;
               break;
             default:
               multiplier = 15;
