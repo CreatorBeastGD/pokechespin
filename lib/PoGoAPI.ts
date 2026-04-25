@@ -2350,7 +2350,7 @@ export class PoGoAPI {
             if (actualDefender) {
                 if (actualDefender === "TOXTRICITY_AMPED_GIGANTAMAX" || actualDefender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || actualDefender === "TOXTRICITY_GIGANTAMAX") {
                     return 1.2 * (desperate ? 6 : 1);
-                } else if (actualDefender === "MEOWTH_GIGANTAMAX" || actualDefender === "PIKACHU_GIGANTAMAX") {
+                } else if (actualDefender === "MEOWTH_GIGANTAMAX" || actualDefender === "PIKACHU_GIGANTAMAX" || actualDefender === "VENUSAUR_GIGANTAMAX" || actualDefender === "CHARIZARD_GIGANTAMAX" || actualDefender === "BLASTOISE_GIGANTAMAX" || actualDefender === "GENGAR_GIGANTAMAX") {
                     return 1 * (desperate ? 6 : 1);
                 } else {
                     return 0.9 * (desperate ? 6 : 1);
