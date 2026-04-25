@@ -89,7 +89,7 @@ export default function CalculateButton({
           {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
            
           with Friendship Level {bonusAttacker[3]} (x{Calculator.getFriendshipBonus(bonusAttacker[3])})
-          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)}  (x{additionalBonus}){shroomBonus ? " and using Max Mushroom." : "."}</span> : <span>{additionalBonus > 1 ? " and using " + (additionalBonus == 1.1 ? "Non-Same Type" : "Same Type") + " Mega Boost (x" + additionalBonus + ")" : ""}</span>}
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)}  (x{additionalBonus}){shroomBonus == 2 ? " and using Max Mushroom." : "."}</span> : <span>{additionalBonus > 1 ? " and using " + (additionalBonus == 1.1 ? "Non-Same Type" : "Same Type") + " Mega Boost (x" + additionalBonus + ")" : ""}</span>}
             </span>} ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           
           </p>

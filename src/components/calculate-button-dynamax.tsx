@@ -88,7 +88,7 @@ export default function CalculateButtonDynamax({
           {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
            
           with Friendship Level {bonusAttacker[3]} (x{Calculator.getFriendshipBonus(bonusAttacker[3])})
-          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)} (x{additionalBonus}){shroomBonus ? " and using Max Mushroom. " : " "}</span>}
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) && <span>, Helper Bonus Level {PoGoAPI.getRevertedHelperBonusDamage(additionalBonus)} (x{additionalBonus}){shroomBonus == 2 ? " and using Max Mushroom. " : " "}</span>}
           </span>}
            ({(((damage ?? 0) / (effStamina??0)) * 100).toFixed(2)}%)
           </p>
