@@ -5,6 +5,8 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
 
+// Simbolo de flechita: →
+
 const novedades = [
     {
         title: "🎂 One Year of PokéChespin 🎂",
@@ -15,6 +17,14 @@ const novedades = [
                 "Thank you so much, and happy one year anniversary to PokéChespin (and new year 2026)! 🎉🎂",
 
         date: "🎂 2025-12-31",
+    },
+    {
+        title: "v1.36.7.1",
+        desc: "+ Changed some stats on Tier 6 Max Battles \n"+
+                ">>>>>> Gigantamax Venusaur, Gigantamax Charizard, Gigantamax Blastoise, Gigantamax Gengar \n"+
+                ">>>>>> ~ Attack Multiplier: x0.9 → x1 \n"+
+                " ~ Minor text changes.",
+        date: "2026-04-28",
     },
     {
         title: "v1.36.7",

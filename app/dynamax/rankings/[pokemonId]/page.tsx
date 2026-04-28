@@ -546,7 +546,7 @@ export default function rankingsPage() {
                                     <h3 className="text-xl font-bold text-black">Large Move:</h3>
                                     <Card key={largeMove} className={`mb-4`}>
                                         <CardHeader>
-                                            <CardTitle>{PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(largeMove) ? " *" : ""}</CardTitle>
+                                            <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).moveId)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(largeMove) ? " *" : ""}</CardTitle>
                                         </CardHeader>
                                         <CardContent>
                                             <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).type)} /></CardDescription>
@@ -573,7 +573,7 @@ export default function rankingsPage() {
                                     <h3 className="text-xl font-bold text-black">Targeted Move:</h3>
                                     <Card key={targetedMove} className={`mb-4`}>
                                         <CardHeader>
-                                            <CardTitle>{PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(targetedMove) ? " *" : ""}</CardTitle>
+                                            <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).moveId)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(targetedMove) ? " *" : ""}</CardTitle>
                                         </CardHeader>
                                         <CardContent>
                                             <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(targetedMove?.moveId, allMoves)).type)} /></CardDescription>
