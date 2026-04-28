@@ -243,6 +243,29 @@ export class PoGoAPI {
                 case "TINKATON":
                     pokemon[0].cinematicMoves = ["FLASH_CANNON", "PLAY_ROUGH", "BULLDOZE", "HEAVY_SLAM", "GIGATON_HAMMER"];
                     pokemon[0].eliteCinematicMove = ["GIGATON_HAMMER"];
+                    break;
+                case "MEWTWO_MEGA_X":
+                    pokemon[0].stats.baseAttack = 399;
+                    pokemon[0].stats.baseDefense = 215;
+                    pokemon[0].stats.baseStamina = 228;
+                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
+                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
+                    break;
+                case "MEWTWO_MEGA_Y":
+                    pokemon[0].stats.baseAttack = 413;
+                    pokemon[0].stats.baseDefense = 223;
+                    pokemon[0].stats.baseStamina = 228;
+                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
+                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
+                    break;
+                case "MEWTWO":
+                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
+                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
+                    break;
+                case "MEWTWO_SHADOW_FORM":
+                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
+                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
+                    break;
                 default:
                     break;
             }
