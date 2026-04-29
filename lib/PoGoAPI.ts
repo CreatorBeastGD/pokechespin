@@ -3688,6 +3688,8 @@ export class PoGoAPI {
                 color: "#ff0000"
             }
         }
+
+        defenderBonuses[0] = attackersBonuses[0][0];
         
         if (order === "init") {
             gamestatus.allyPokemonMaxHealth = [];
