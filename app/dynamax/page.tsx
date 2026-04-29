@@ -32,7 +32,7 @@ export default function Home() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [numMembers, setNumMembers] = useState<number>(searchParams.get("num_members") ? parseInt(searchParams.get("num_members") as string) : 4);
+  const [numMembers, setNumMembers] = useState<number>(searchParams.get("num_members") ? parseInt(searchParams.get("num_members") as string) : 1);
   const [attackingPokemon, setAttackingPokemon] = useState<any>(Array(numMembers).fill(Array(3).fill(null)));
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
