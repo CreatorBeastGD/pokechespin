@@ -3559,6 +3559,8 @@ export class PoGoAPI {
             // Defender has finished casting its move
             if (simGoing && dealtDamage && defenderMove !== null && time >= defenderDamageStart + defenderMove.durationMs) {
                 // Defender can select its charged move
+                let afterCooldown = this.getDynamaxDelayAfterMove(raidMode, defender.pokemonId)[targeted ? 1 : 0];
+                defenderDamageStart = -afterCooldown;
                 if (Math.random() > defenderTargetAttack.power / (defenderLargeAttack.power + defenderTargetAttack.power)) {
                     defenderMove = defenderTargetAttack;
                     targeted = true;
@@ -3566,7 +3568,7 @@ export class PoGoAPI {
                     defenderMove = defenderLargeAttack;
                     targeted = false;
                 }
-                defenderDamageStart = -dynamaxDelays[targeted ? 1 : 0];
+                defenderDamageStart += -dynamaxDelays[targeted ? 1 : 0];
                 target = 33;
                 dealtDamage = false;
                 // console.log(!targeted ? "Spread":"Target" + " move: " + defenderMove.moveId + " with power: " + defenderMove.power + " and damage window: " + defenderMove.damageWindowStartMs + "ms to " + activePokemon[target] + " of attacker " + target);
