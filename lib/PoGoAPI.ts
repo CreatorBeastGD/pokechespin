@@ -1352,6 +1352,14 @@ export class PoGoAPI {
         }
     }
 
+    static getDynamaxDelayAfterMove (raidMode: any, defenderId?: any) {
+        if (raidMode === "raid-t5-dmax") {
+            return [0, 500];
+        } else {
+            return [0, 0];
+        }
+    }
+
     static getDynamaxRaidDelays (raidMode: any, defenderId?: any) {
         if (raidMode === "raid-t1-dmax") {
             return [9500, 10000]
@@ -1362,14 +1370,14 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t4-dmax") {
             return [9500, 10000]
         } else if (raidMode === "raid-t5-dmax") {
-            return [6500, 7500]
+            return [6500, 7000]
         } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
             return [2500, 5000]
         } else if (raidMode === "raid-custom-dmax") {
             if (defenderId === "ETERNATUS_ETERNAMAX_FORM" || defenderId.endsWith("_GIGANTAMAX")) {
                 return [2500, 5000]
             } else {
-                return [6500, 7500]
+                return [6500, 7000]
             }
         } else {
             return [9500, 10000]
@@ -4368,7 +4376,6 @@ export class PoGoAPI {
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
                     
-                    
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
                         if (gamestatus.activeAllyIndex == 1) {
@@ -4791,6 +4798,9 @@ export class PoGoAPI {
         const largeCooldown = this.getDynamaxRaidDelays(raidMode, defender.pokemonId)[0];
         const targetCooldown = this.getDynamaxRaidDelays(raidMode, defender.pokemonId)[1];
 
+        const largeAfterCooldown = this.getDynamaxDelayAfterMove(raidMode, defender.pokemonId)[0];
+        const targetAfterCooldown = this.getDynamaxDelayAfterMove(raidMode, defender.pokemonId)[1];
+
         if (gamestatus.maxPhaseCounter == 4) {
             gamestatus.enemyCooldown = 0;
             gamestatus.enemyActiveMove = null;
@@ -4866,6 +4876,8 @@ export class PoGoAPI {
                         proDamageReal -= gamestatus.allyPokemonShields[gamestatus.activeAllyIndex];
                         gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = 0;
                     }
+
+                    gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove?.isTarget ? targetAfterCooldown : largeAfterCooldown) * 2 / 1000) / 2;
                     
                     gamestatus.allyDodgeTurn = 0;
 
