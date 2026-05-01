@@ -73,11 +73,13 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   const [customBossCPM, setCustomBossCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
   const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
   const [customBossHP, setCustomBossHP] = useState<number>((Number)(searchParams.get("custom_hp") || 10000));
-  
+  const [customEnergyGainMult, setCustomEnergyGainMult] = useState<number>((Number)(searchParams.get("custom_energy_gain_mult") || 1));
+
   useEffect(() => {
     setCustomBossCPM((Number)(searchParams.get("custom_cpm") || 1));
     setCustomBossAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
     setCustomBossHP((Number)(searchParams.get("custom_hp") || 10000));
+    setCustomEnergyGainMult((Number)(searchParams.get("custom_energy_gain_mult") || 1));
   }, [searchParams]);
   //console.log(customBossHP, customBossCPM, customBossAtkMult);
 
@@ -139,7 +141,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, strategy, shroom, friendship, prioritiseEnergy, advEffect]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, strategy, shroom, friendship, prioritiseEnergy, advEffect, customEnergyGainMult]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
@@ -155,7 +157,9 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     } else if (raidMode === "raid-t6-gmax" || raidMode === "raid-t6-gmax-standard") {
         return "Gigantamax";
     } else if (raidMode === "raid-custom-dmax") {
-      return "Custom Max Battle";
+      return "Custom Dynamax Battle";
+    } else if (raidMode === "raid-custom-gmax") {
+      return "Custom Gigantamax Battle";
     } else {
       return "Normal";
     }
@@ -177,7 +181,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setLoading(true);
     // Both should have the same weather boost.
     const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = 
-    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? (customBossHP) : 10000, customBossCPM ? (customBossCPM) : 1, customBossAtkMult ? (customBossAtkMult) : 1);
+    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? (customBossHP) : 10000, customBossCPM ? (customBossCPM) : 1, customBossAtkMult ? (customBossAtkMult) : 1, customEnergyGainMult);
     setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);
@@ -331,7 +335,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
           </p>)}
 
           {win == false && (
-            <p> The defender Pokémon has {(raidMode === "raid-custom-dmax" ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))) - sumAllDamage()}/{(raidMode === "raid-custom-dmax" ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))))} HP left.</p>
+            <p> The defender Pokémon has {((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))) - sumAllDamage()}/{(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? (customBossHP) : (Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)))} HP left.</p>
           )}
           
           <p className="text-sm text-slate-700 italic">

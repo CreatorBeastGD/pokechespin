@@ -69,13 +69,15 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   const [customBossCPM, setCustomBossCPM] = useState<number>((Number)(searchParams.get("custom_cpm") || 1));
   const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
   const [customBossHP, setCustomBossHP] = useState<number>((Number)(searchParams.get("custom_hp") || 10000));
-  
+  const [customEnergyGainMult, setCustomEnergyGainMult] = useState<number>((Number)(searchParams.get("custom_energy_gain_mult") || 1));
+
   const [showHP, setShowHP] = useState<boolean>(false);
 
   useEffect(() => {
     setCustomBossCPM((Number)(searchParams.get("custom_cpm") || 1));
     setCustomBossAtkMult((Number)(searchParams.get("custom_atk_mult") || 1));
     setCustomBossHP((Number)(searchParams.get("custom_hp") || 10000));
+    setCustomEnergyGainMult((Number)(searchParams.get("custom_energy_gain_mult") || 1));
   }, [searchParams]);
   //console.log(customBossHP, customBossCPM, customBossAtkMult);
 
@@ -146,6 +148,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         customBossHP,
         customBossCPM,
         customBossAtkMult,
+        customEnergyGainMult,
         "init",
         null,
         types,
@@ -177,6 +180,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         customBossHP,
         customBossCPM,
         customBossAtkMult,
+        customEnergyGainMult,
         message,
         gameStatus,
         types,

@@ -175,9 +175,9 @@ const BreakpointsPage = () => {
         const defenderBonus = [weather, bonusDefender[1] === "true", bonusDefender[2] === "true", parseInt(bonusDefender[3])];
         const altMove = move;
         let defenderStatsModified = [...defenderStatsLoad];
-        if (raidMode === "raid-custom-dmax") {
+        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
             defenderStatsModified[0] = customCPM;
-        }
+        } 
 
         if (moveType === 3 && adventureEffect === "cannon" && (attackingPokemon.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && attackingPokemon.pokemonId !== "ZACIAN_CROWNED_SWORD_FORM")) {
             altMove.power = altMove.power + (attackerMaxMove[0] === 3 ? 100 : 50)
@@ -249,7 +249,9 @@ const BreakpointsPage = () => {
         } else if (raidMode === "raid-t6-gmax-standard") {
           return "Standard Gigantamax Battle";
         } else if (raidMode === "raid-custom-dmax") {
-          return "Custom Max Battle";
+          return "Custom Dynamax Battle";
+        } else if (raidMode === "raid-custom-gmax") {
+          return "Custom Gigantamax Battle";
         } else {
           return "Gym Battle";
         }

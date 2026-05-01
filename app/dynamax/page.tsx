@@ -71,6 +71,7 @@ export default function Home() {
   const [customHP, setCustomHP] = useState<number>(searchParams.get("custom_hp") ? parseInt(searchParams.get("custom_hp") as string) : 100000);
   const [customCPM, setCustomCPM] = useState<number>(searchParams.get("custom_cpm") ? parseFloat(searchParams.get("custom_cpm") as string) : 0.85);
   const [customAtkMult, setCustomAtkMult] = useState<number>(searchParams.get("custom_atk_mult") ? parseFloat(searchParams.get("custom_atk_mult") as string) : 0.9);
+  const [customEnergyGainMult, setCustomEnergyGainMult] = useState<number>(searchParams.get("custom_energy_gain_mult") ? parseFloat(searchParams.get("custom_energy_gain_mult") as string) : 1);
 
   const [loaded, setLoaded] = useState<boolean>(false);
 
@@ -87,7 +88,7 @@ export default function Home() {
     searchParams.set("custom_hp", customHP.toString());
     searchParams.set("custom_cpm", customCPM.toString());
     searchParams.set("custom_atk_mult", customAtkMult.toString());
-
+    searchParams.set("custom_energy_gain_mult", customEnergyGainMult.toString());
     setTimeout(() => {
       for (let j = numMembers + 1; j <= 4 ; j++) {
         for (let i = 1; i <= 3; i++) {
@@ -397,7 +398,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     }
   };
 
-  const setCustomMaxBattleValues = (HP: number, CPM: number, atkMult: number) => {
+  const setCustomMaxBattleValues = (HP: number, CPM: number, atkMult: number, energyGainMult: number) => {
     if (HP < 1) {
       HP = 1;
     }
@@ -416,14 +417,21 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     if (atkMult > 10) {
       atkMult = 10;
     }
+    if (energyGainMult < 1) {
+      energyGainMult = 1;
+    } if (energyGainMult > 50) {
+      energyGainMult = 50;
+    }
     setCustomHP(HP);
     setCustomCPM(CPM);
     setCustomAtkMult(atkMult);
+    setCustomEnergyGainMult(energyGainMult);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("custom_hp", HP.toString());
     newSearchParams.set("custom_cpm", CPM.toString());
     newSearchParams.set("custom_atk_mult", atkMult.toString());
+    newSearchParams.set("custom_energy_gain_mult", energyGainMult.toString());
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
 
   }
@@ -536,7 +544,9 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     } else if (raidMode === "raid-t6-gmax-standard") {
       return "Gigantamax Battle (Standard)";
     } else if (raidMode === "raid-custom-dmax") {
-      return "Custom Max Battle";
+      return "Custom Dynamax Battle";
+    } else if (raidMode === "raid-custom-gmax") {
+      return "Custom Gigantamax Battle";
     }
   }
 
@@ -718,7 +728,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"FOG"} value={"FOG"}>Fog</option>
               </select>
             
-            <p className="italic text-slate-700 text-sm">Raid difficulty: </p>
+            <p className="italic text-slate-700 text-sm">Max Battle difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 
                 <option key={"raid-t1-dmax"} value={"raid-t1-dmax"}>Tier-1 Max Battle (1700HP) </option>
@@ -728,28 +738,41 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"raid-t5-dmax"} value={"raid-t5-dmax"}>Tier-5 Max Battle (Varying) </option>
                 <option key={"raid-t6-gmax"} value={"raid-t6-gmax"}>Gigantamax Battle (Varying) </option>
                 <option key={"raid-custom-dmax"} value={"raid-custom-dmax"}>Custom Dynamax Battle</option>
+                <option key={"raid-custom-gmax"} value={"raid-custom-gmax"}>Custom Gigantamax Battle</option>
               </select>
 
               {
-              (raidMode === "raid-custom-dmax") && (
+              (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") && (
                 <Card className="w-full mt-4 mb-4 p-4">
                   <CardTitle className="italic text-slate-700 text-sm mt-2">
                     Custom Max Battle Parameters
                   </CardTitle>
-                  <div className="flex flex-col mt-2 mb-4 w-full space-y-2">
-                    <label>Custom Boss HP: </label>
-                  <input type="number" min={1000} max={10000000} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customHP}
-                  onChange={(e) => setCustomMaxBattleValues(Number(e.target.value), customCPM, customAtkMult)}
-                  />
+                  <div className="flex flex-col mt-2 mb-4 w-full space-y-1">
                   
-                  <label>Custom CPM: </label>
-                  <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customCPM} 
-                  onChange={(e) => setCustomMaxBattleValues(customHP, Number(e.target.value), customAtkMult)}/>
+                    <label>Custom Boss HP: </label>
+                    <input type="number" min={1000} max={10000000} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customHP}
+                    onChange={(e) => setCustomMaxBattleValues(Number(e.target.value), customCPM, customAtkMult, customEnergyGainMult)}
+                    />
+                    
+                    <label>Custom CPM: </label>
+                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customCPM} 
+                    onChange={(e) => setCustomMaxBattleValues(customHP, Number(e.target.value), customAtkMult, customEnergyGainMult)}/>
 
-                  <label>Custom Attack Multiplier</label>
-                  <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customAtkMult} 
-                  onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, Number(e.target.value))}/>
+                    <label>Custom Attack Multiplier</label>
+                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customAtkMult} 
+                    onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, Number(e.target.value), customEnergyGainMult)}/>
 
+                    <label>Custom Energy Gain Multiplier</label>
+                    <input type="number" step="1" min={1} max={50} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customEnergyGainMult}
+                    onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, customAtkMult, Number(e.target.value))}/>
+
+                    <p className="italic text-slate-700 text-sm mt-2 pt-3">Custom Max Battles allow you to set a custom HP, CPM, Attack Multiplier, and Energy Gain Multiplier for the boss. This is useful for simulating hypothetical scenarios or future raid bosses.</p>
+                    {raidMode === "raid-custom-dmax" ? (
+                      <p className="italic text-slate-700 text-sm mt-2">Custom Dynamax Battles will have the same attack patterns as T5 Max Battles. (6.5s for Large, 7s for Target)</p>
+                    ) : (
+                      <p className="italic text-slate-700 text-sm mt-2">Custom Gigantamax Battles will have the same attack patterns as Gigantamax Battles. (2.5s for Large, 5s for Target)</p>
+                    )}
+                    <p className="italic text-slate-700 text-sm mt-2">For reference, T5 Max Battles usually have x4 Energy Gain Multiplier, while Gigantamax Battles usually have x15.</p>
                   </div>
                 </Card>
               )

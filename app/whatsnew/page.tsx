@@ -19,6 +19,20 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.37 (Better Custom Max Battles!)",
+        desc: "+ Improved Custom Max Battles on PokéChespin for Max Battles!\n"+
+                ">>>>>> Now there are 2 different Max Battle difficulties for custom battles: Custom Dynamax and Custom Gigantamax.\n"+
+                ">>>>>> The difference between these two difficulties is the attack pattern of the boss, where Custom Dynamax will have the same pattern as T5 MAx Battles, and Custom Gigantamax will have the same pattern as Gigantamax Battles.\n"+
+                ">>>>>> Also, you can now set a custom Energy Gain Multiplier for Custom Max Battles.\n"+
+                "~ Multiple bug-fixes and improvements, such as... \n"+
+                ">>>>>> Fixed a bug where Weather Boost was not applied correctly to the boss on the Solo Raid Simulator.\n"+
+                ">>>>>> Fixed a bug where some move names were not showing correctly on Max Rankings.\n"+
+                ">>>>>> Applied the 'Delay After Move' of 0.5s for T5 Max Battles after a Target move is used by the boss.\n"+
+                ">>>>>> Max Battles site' default members amount are now 1 instead of 4.\n",
+        date: "2026-05-01",
+
+    },
+    {
         title: "v1.36.7.1",
         desc: "+ Changed some stats on Tier 6 Max Battles \n"+
                 ">>>>>> Gigantamax Venusaur, Gigantamax Charizard, Gigantamax Blastoise, Gigantamax Gengar \n"+

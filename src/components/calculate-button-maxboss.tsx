@@ -58,7 +58,7 @@ export default function CalculateButtonMaxBoss({
     const bonusAttacking = bonusAttacker;
     const bonusDefending = bonusDefender;
 
-    if (raidMode === "raid-custom-dmax") {
+    if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
       attackingStats[0] = customCPM;
     }
 
@@ -73,8 +73,8 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
-      raidMode === "raid-custom-dmax" ? true : false
+      (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
+      raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? true : false
     );
     setTargetAllValues(PoGoAPI.getAllDamageValuesFromTargetMove(
       attackingPoke, 
@@ -87,8 +87,8 @@ export default function CalculateButtonMaxBoss({
       bonusDefending, 
       "normal", 
       0, 
-      (raidMode === "raid-custom-dmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
-      raidMode === "raid-custom-dmax" ? true : false,
+      (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, false, false, attackingPoke.pokemonId)) * (bashBoost ? (1/Calculator.BashBoost(raidMode)) : 1) * (isLarge ? 1 : 2),
+      raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? true : false,
       raidMode
     ))
     const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);

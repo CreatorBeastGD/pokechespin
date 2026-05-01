@@ -229,15 +229,15 @@ export default function SearchBarDefenderDynamax({
 
   raidModeLevelMultiplier = (selectedPokemon ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, selectedPokemon.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
   
-  if (raidMode === "raid-custom-dmax") {
+  if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
       searchParams.get("custom_hp");
       searchParams.get("custom_cpm");
       searchParams.get("custom_atk_mult");
   }
 
-  const effAttack =  Calculator.getEffectiveAttackRawCPM(selectedPokemon?.stats?.baseAttack, stats[1], (Number)(raidMode === "raid-custom-dmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
-  const effDefense = Calculator.getEffectiveDefenseRawCPM(selectedPokemon?.stats?.baseDefense, stats[2], (Number)(raidMode === "raid-custom-dmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
-  const effStamina = Calculator.getEffectiveStaminaRawCPM(selectedPokemon?.stats?.baseStamina, stats[3], (Number)(raidMode === "raid-custom-dmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
+  const effAttack =  Calculator.getEffectiveAttackRawCPM(selectedPokemon?.stats?.baseAttack, stats[1], (Number)(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
+  const effDefense = Calculator.getEffectiveDefenseRawCPM(selectedPokemon?.stats?.baseDefense, stats[2], (Number)(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
+  const effStamina = Calculator.getEffectiveStaminaRawCPM(selectedPokemon?.stats?.baseStamina, stats[3], (Number)(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)));
 
   const raidmode = raidMode ? raidMode : "normal";
 
@@ -250,7 +250,7 @@ export default function SearchBarDefenderDynamax({
   const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA_COMPLETE", "").replace("_MEGA_C", "").replace("_MEGA", "").replace("_X", "").replace("_Y", "").replace("_Z", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
-  const damageMultiplier = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
+  const damageMultiplier = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
 
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
   
@@ -307,7 +307,7 @@ export default function SearchBarDefenderDynamax({
             ))}
           </select>
           
-          <p>Stats (CP {raidMode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, (Number)(raidMode === "raid-custom-dmax" ? searchParams.get("custom_hp") : Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId)) )}) </p>
+          <p>Stats (CP {raidMode == "normal" ? Calculator.getPCs(effAttack, effDefense, effStamina) : Calculator.getRawPCs(selectedPokemon?.stats?.baseAttack, selectedPokemon?.stats?.baseDefense, (Number)(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_hp") : Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId)) )}) </p>
           
           <div className="flex flex-row items-center space-x-2">  
             <p>Attack: {selectedPokemon.stats?.baseAttack} <span className="text-xs">(Effective Attack: {( effAttack * damageMultiplier).toFixed(3)})</span></p>
@@ -316,7 +316,7 @@ export default function SearchBarDefenderDynamax({
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + (raidMode === "raid-custom-dmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)) + " x " + damageMultiplier + " = " + (effAttack * damageMultiplier).toFixed(3)}</p>
+                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)) + " x " + damageMultiplier + " = " + (effAttack * damageMultiplier).toFixed(3)}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -329,13 +329,13 @@ export default function SearchBarDefenderDynamax({
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + (raidMode === "raid-custom-dmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)) + " = " + (effDefense)}</p>
+                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_cpm") : Calculator.getCPM(raidModeLevelMultiplier)) + " = " + (effDefense)}</p>
               </PopoverContent>
             </Popover>
           </div>
           <Progress color={"bg-green-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseDefense / 505) * 100}/>
 
-          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina) + " (" + (raidMode === "raid-custom-dmax" ? searchParams.get("custom_hp") : Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId, PoGoAPI.hasDoubleWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes))) + ")"})</span></p>
+          <p>Stamina: {selectedPokemon.stats?.baseStamina} <span className="text-xs">(Effective Stamina: {Math.floor(effStamina) + " (" + (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? searchParams.get("custom_hp") : Calculator.getEffectiveDMAXHP(raidmode, selectedPokemon?.pokemonId, PoGoAPI.hasDoubleWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes))) + ")"})</span></p>
           <Progress color={"bg-yellow-600"} className="w-[60%]" value={(selectedPokemon.stats?.baseStamina / 505) * 100}/>
           
             <Image

@@ -253,7 +253,7 @@ export default function rankingsPage() {
     }, [pokemonInfo, allEnglishText]);
 
     const getStars = (raidMode: string) => {
-        return raidMode === "normal" ? 5 : raidMode === "raid-custom-dmax" ? "Custom" : (parseInt(raidMode.split("-")[1][1]) + " Stars");
+        return raidMode === "normal" ? 5 : (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? "Custom" : (parseInt(raidMode.split("-")[1][1]) + " Stars");
     }
 
     const copyLinkToClipboard = () => {
@@ -598,7 +598,7 @@ export default function rankingsPage() {
                                 </div>
                             </div>
                         )}
-                        {raidMode === "raid-custom-dmax" && (
+                        {(raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") && (
                             <div className="mt-4 mb-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
                                 <h3 className="text-lg font-bold mb-2">Custom Boss Settings</h3>
                                 <p>Attack Multiplier: {customBossAtkMult}</p>

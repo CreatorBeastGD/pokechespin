@@ -42,9 +42,10 @@ export default function CalculateButton({
 
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
-  const customHP = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_hp") || 10000) : 10000;
-  const customCPM = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_cpm") || 1) : null;
-  const customAtkMult = raidMode === "raid-custom-dmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : null;
+  const customHP = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_hp") || 10000) : 10000;
+  const customCPM = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_cpm") || 1) : null;
+  const customAtkMult = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : null;
+  const customEnergyGainMult = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_energy_gain_mult") || 1) : 1;
 
   useEffect(() => {
     setDamage(0);
@@ -57,7 +58,7 @@ export default function CalculateButton({
 
     let defenderStatsModified = [...defenderStats];
 
-    if (raidMode === "raid-custom-dmax") {
+    if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
       defenderStatsModified[0] = customCPM;
     }
     
@@ -65,7 +66,7 @@ export default function CalculateButton({
     const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1), shroomBonus);
     const effStamina = 
       raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0]) : 
-      (raidMode === "raid-custom-dmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
+      (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setHealth(remainingStamina);
@@ -83,7 +84,7 @@ export default function CalculateButton({
           <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> (Level {attackerStats[0]}, Attack IV {attackerStats[1]}) 
           deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} </span> 
           with {PoGoAPI.formatMoveName(move?.moveId)}
-          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span className="font-bold"> gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode, defender.pokemonId)} Max Energy </span> : " "}
+          {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span className="font-bold"> gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode, defender.pokemonId, customEnergyGainMult)} Max Energy </span> : " "}
           {!simplifyCalculationText && <span>
             under {PoGoAPI.formatWeatherName(bonusAttacker[0])} weather, 
           {bladeBoost ? " using Behemoth Blade Adventure Effect (x" + Calculator.BladeBoost(raidMode) + ") " : " "} 
