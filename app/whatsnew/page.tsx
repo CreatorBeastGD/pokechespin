@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.37.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Cottonee, Whimsicott\n",
+        date: "2026-05-04",
+    },
+    {
         title: "v1.37.1",
         desc: "+ Added Charged Move information to the Max Rankings!\n"+
                 ">>>>>> Now, on the Max Rankings pages, you can see the best Charged Move for each Pokémon as an attacker and as a defender, showing if it provides a higher Energy Per Turn (EPT) than only using Fast Moves, and if it requires a Mushroom to be effective!\n",
