@@ -114,6 +114,7 @@ export default function Home() {
     useEffect(() => {
       const searchParams = new URLSearchParams(window.location.search);
       searchParams.set("num_pokemon", numMembers.toString());
+      searchParams.delete("slot");
 
       setTimeout(() => {
         for (let j = numMembers + 1; j <= 6 ; j++) {

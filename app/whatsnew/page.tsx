@@ -19,6 +19,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.37.2",
+        desc: "+ Updated Breakpoints on Raids to be able to display Boss' moves, showing defensive breakpoints of your pokemon.",
+        date: "2026-05-07",
+    },
+    {
         title: "v1.37.1.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Cottonee, Whimsicott\n",

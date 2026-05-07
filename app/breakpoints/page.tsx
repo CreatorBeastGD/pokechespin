@@ -15,6 +15,8 @@ const BreakpointsPage = () => {
     const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
     const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(null);
     const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(null);
+    const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
+    const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
     const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(null);
     const [raidMode, setRaidMode] = useState<any>("normal");
     const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
@@ -31,10 +33,18 @@ const BreakpointsPage = () => {
     const [allBreakpointsCinematic, setAllBreakpointsCinematic] = useState<any>(null);
     const [calculatedBreakpoints, setCalculatedBreakpoints] = useState<any>(null);
     const [calculatedBreakpointsCinematic, setCalculatedBreakpointsCinematic] = useState<any>(null);
+    const [allBreakpointsFromEnemyFast, setAllBreakpointsFromEnemyFast] = useState<any>(null);
+    const [allBreakpointsFromEnemyCinematic, setAllBreakpointsFromEnemyCinematic] = useState<any>(null);
+    const [calculatedBreakpointsFromEnemyFast, setCalculatedBreakpointsFromEnemyFast] = useState<any>(null);
+    const [calculatedBreakpointsFromEnemyCinematic, setCalculatedBreakpointsFromEnemyCinematic] = useState<any>(null);
     const [min, setMin] = useState<any>(null);
     const [max, setMax] = useState<any>(null);
     const [minCinematic, setMinCinematic] = useState<any>(null);
     const [maxCinematic, setMaxCinematic] = useState<any>(null);
+    const [minFromEnemyFast, setMinFromEnemyFast] = useState<any>(null);
+    const [maxFromEnemyFast, setMaxFromEnemyFast] = useState<any>(null);
+    const [minFromEnemyCinematic, setMinFromEnemyCinematic] = useState<any>(null);
+    const [maxFromEnemyCinematic, setMaxFromEnemyCinematic] = useState<any>(null);
     const [defenderStatsLoad, setDefenderStatsLoad] = useState<any>(null);
     const [megaBoost, setMegaBoost] = useState<number>(1);
     const [advEffect, setAdvEffect] = useState<string>("none");
@@ -73,6 +83,8 @@ const BreakpointsPage = () => {
             const defender = urlParams.get('defender');
             const attackerFastAttack = urlParams.get('attacker_fast_attack'+slot);
             const attackerCinematicAttack = urlParams.get('attacker_cinematic_attack'+slot);
+            const defenderFastAttack = urlParams.get('defender_fast_attack');
+            const defenderCinematicAttack = urlParams.get('defender_cinematic_attack');
             const raidmode = urlParams.get('raid_mode') || 'normal';
             const attackerBonuses = urlParams.get('attacker_bonuses'+slot) || 'EXTREME,false,false,0';
             const defenderBonuses = urlParams.get('defender_bonuses') || 'EXTREME,false,false,0';
@@ -86,6 +98,9 @@ const BreakpointsPage = () => {
             if (defender) {setDefendingPokemon(PoGoAPI.getPokemonPBByID(defender, pokemonList)[0])};
             if (attackerFastAttack) {setSelectedQuickMoveAttacker(PoGoAPI.getMovePBByID(attackerFastAttack, allMoves))};
             if (attackerCinematicAttack) {setSelectedChargedMoveAttacker(PoGoAPI.getMovePBByID(attackerCinematicAttack, allMoves))};
+            if (defenderFastAttack) {setSelectedQuickMoveDefender(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves))};
+            if (defenderCinematicAttack) {setSelectedChargedMoveDefender(PoGoAPI.getMovePBByID(defenderCinematicAttack, allMoves))};
+
             setRaidMode(raidmode);
             setBonusAttacker(attackerBonuses.split(','));
             setBonusDefender(defenderBonuses.split(','));
@@ -102,7 +117,6 @@ const BreakpointsPage = () => {
                 setParamsLoaded(true);
             }
 
-            urlParams.delete('slot');
             window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
             
         }
@@ -113,6 +127,24 @@ const BreakpointsPage = () => {
             
             const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker);
             const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker);
+            if (selectedQuickMoveDefender) {
+                const breakpointsFromEnemyFast = calculateDefenderBreakpoints(selectedQuickMoveDefender);
+                setAllBreakpointsFromEnemyFast(breakpointsFromEnemyFast);
+                setCalculatedBreakpointsFromEnemyFast(true);
+
+                const { min: minFromEnemyFast, max: maxFromEnemyFast } = getMinMax(breakpointsFromEnemyFast);
+                setMinFromEnemyFast(minFromEnemyFast);
+                setMaxFromEnemyFast(maxFromEnemyFast);
+            }
+            if (selectedChargedMoveDefender) {
+                const breakpointsFromEnemyCinematic = calculateDefenderBreakpoints(selectedChargedMoveDefender);
+                setAllBreakpointsFromEnemyCinematic(breakpointsFromEnemyCinematic);
+                setCalculatedBreakpointsFromEnemyCinematic(true);
+
+                const { min: minFromEnemyCinematic, max: maxFromEnemyCinematic } = getMinMax(breakpointsFromEnemyCinematic);
+                setMinFromEnemyCinematic(minFromEnemyCinematic);
+                setMaxFromEnemyCinematic(maxFromEnemyCinematic);
+            }
             setAllBreakpoints(breakpoints);
             setCalculatedBreakpoints(true);
             setAllBreakpointsCinematic(breakpointsCinematic);
@@ -150,11 +182,39 @@ const BreakpointsPage = () => {
         return table;
     }
 
+    const calculateDefenderBreakpoints = (enemyMove: any) => {
+        const rows = 32*2 - 1; // Example value for rows
+        const cols = 16; // Example value for cols
+        const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
+        const attackerBonus = [weather, bonusAttacker[1] === "true", bonusAttacker[2] === "true", (friendship)];
+        const defenderBonus = [weather, bonusDefender[1] === "true", false, 0];
+        //console.log(attackerBonus);
+        // Breakpoints will be calculated from level 20 to level 50
+        for (let i = 20; i <= 51; i+=0.5) {
+            // Attacker attack stat will go from 0 to 15
+            for (let j = 0; j <= 15; j++) {
+                const attackerStats = [i, 15, j, 15];
+                const defenderStats = PoGoAPI.convertStats([50,15,15,15], raidMode, null);
+                const damage = PoGoAPI.getDamage(defendingPokemon, attackingPokemon, enemyMove, types, defenderStats, attackerStats, defenderBonus, attackerBonus, "normal", false, (advEffect === "bash" ? Calculator.BashBoost(raidMode) : 1));
+                //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
+                table[2*(i-20)][j] = damage;
+
+            }
+        }
+        return table;
+    }
+
     const getColor = (value: number, min: number, max: number) => {
         const ratio = (value - min) / (max - min);
         const colorValue = Math.floor(255 - ratio * 255);
         return `rgb(${0}, ${0.6*(255-colorValue)}, ${0})`;
-      };
+    };
+    
+    const getDefenderColor = (value: number, min: number, max: number) => {
+        const ratio = (value - min) / (max - min);
+        const colorValue = Math.floor(255 - ratio * 255);
+        return `rgb(${0.6*(255-colorValue)}, ${0}, ${0})`;
+    };
     
       const getMinMax = (data: number[][]) => {
         let min = Infinity;
@@ -200,23 +260,6 @@ const BreakpointsPage = () => {
         alert("URL copied to clipboard!");
       }
 
-      const downloadAsPNG = () => {
-        const element = document.getElementById('breakpoints-container');
-        if (element) {
-          element.style.height = 'auto';
-          element.style.width = '100%';
-          element.style.overflow = 'visible';
-          const scale = window.devicePixelRatio || 2;
-
-          html2canvas(element, {backgroundColor: null, scale: scale}).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'breakpoints.png';
-            link.href = canvas.toDataURL();
-            link.click();
-          });
-        }
-      }
-
     return (
         <>
         {paramsLoaded && allDataLoaded && !error && calculatedBreakpoints ? (
@@ -237,9 +280,6 @@ const BreakpointsPage = () => {
                             </a>
                             <button className='w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4' onClick={copyURL}>
                                 Copy URL
-                            </button>
-                            <button className='w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4' onClick={/*downloadAsPNG*/() => alert("This feature is currently unavailable.")}>
-                                Download as a PNG (Currently unavailable)
                             </button>
                         </div>
                     
@@ -302,7 +342,75 @@ const BreakpointsPage = () => {
                         </tr>
                     ))}
                     </tbody>
-                </table></div>
+                </table>
+
+                {selectedQuickMoveDefender && calculatedBreakpointsFromEnemyFast && (
+                <>
+                    <h2>Breakpoints from Boss' {PoGoAPI.getMoveNamePB(selectedQuickMoveDefender.moveId, allEnglishText)}</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>IVs/Level</th>
+                        {allBreakpointsFromEnemyFast.map((_: any, index: any) => (
+                        <th className="text-xs" key={index} style={{ padding: '0 5px' }}> {(index / 2) + 20}</th>
+                        ))}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {allBreakpointsFromEnemyFast[0]?.map((_: any, ivIndex: any) => (
+                        <tr key={ivIndex}>
+                        <td>{ivIndex} IVs</td>
+                        {allBreakpointsFromEnemyFast.map((level: any, levelIndex: any) => (
+                            <td key={levelIndex} style={{ 
+                                textAlign: 'center',
+                                backgroundColor: getDefenderColor(level[ivIndex], minFromEnemyFast, maxFromEnemyFast), 
+                                borderBottom: (level[ivIndex] !== level[ivIndex + 1] ? '1px solid #000' : 'none'),
+                                borderRight: levelIndex < allBreakpointsFromEnemyFast.length - 1 && allBreakpointsFromEnemyFast[levelIndex][ivIndex] !== allBreakpointsFromEnemyFast[levelIndex + 1][ivIndex] ? '1px solid #000' : 'none'
+                                }}>
+                            {level[ivIndex]}
+                            </td>
+                        ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                </>    
+                )}
+
+                {selectedChargedMoveDefender && calculatedBreakpointsFromEnemyCinematic && (
+                <>
+                    <h2>Breakpoints from Boss' {PoGoAPI.getMoveNamePB(selectedChargedMoveDefender.moveId, allEnglishText)}</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>IVs/Level</th>
+                        {allBreakpointsFromEnemyCinematic.map((_: any, index: any) => (
+                        <th className="text-xs" key={index} style={{ padding: '0 5px' }}> {(index / 2) + 20}</th>
+                        ))}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {allBreakpointsFromEnemyCinematic[0]?.map((_: any, ivIndex: any) => (
+                        <tr key={ivIndex}>
+                        <td>{ivIndex} IVs</td>
+                        {allBreakpointsFromEnemyCinematic.map((level: any, levelIndex: any) => (
+                            <td key={levelIndex} style={{
+                                textAlign: 'center',
+                                backgroundColor: getDefenderColor(level[ivIndex], minFromEnemyCinematic, maxFromEnemyCinematic),
+                                borderBottom: (level[ivIndex] !== level[ivIndex + 1] ? '1px solid #000' : 'none'),
+                                borderRight: levelIndex < allBreakpointsFromEnemyCinematic.length - 1 && allBreakpointsFromEnemyCinematic[levelIndex][ivIndex] !== allBreakpointsFromEnemyCinematic[levelIndex + 1][ivIndex] ? '1px solid #000' : 'none'
+                                }}>
+                            {level[ivIndex]}
+                            </td>
+                        ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                </>
+                 )}
+                
+                </div>
                 
             </div>
 
