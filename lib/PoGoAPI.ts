@@ -1190,7 +1190,7 @@ export class PoGoAPI {
         bonusAttacker?: any, 
         bonusDefender?: any, 
         raidMode?: any,
-        shroomBonus?: any,
+        outsideBonus?: any,
         damageMultiplier?: any,
         isDynamaxBoss = false
     ) {
@@ -1211,7 +1211,7 @@ export class PoGoAPI {
             damageMultiplier ? damageMultiplier : 1,
             bonusAttacker,
             bonusDefender,
-            shroomBonus ? shroomBonus : 1
+            outsideBonus ? outsideBonus : 1
         );
     }
 
@@ -2358,42 +2358,56 @@ export class PoGoAPI {
         return attackerFaints.every((team) => team.every((pokemon) => pokemon === true));
     }
 
-    static getDamageMultiplier(raidMode: any, enraged?: boolean, desperate?: boolean, defender?: any) {
-        let damageMultiplier = 1;
+    static getEnrageMultiplier(raidMode: any, isEnraged: any) {
+        if (!isEnraged) return 1;
+        switch (raidMode) {
+            case "raid-t5-dmax":
+                return 3;
+            case "raid-t6-gmax":
+                return 6;
+            case "raid-t4-dmax":
+                return 9;
+            case "raid-t3-dmax":
+                return 9;
+            case "raid-t2-dmax":
+                return 3;
+            case "raid-t1-dmax":
+                return 3;
+            case "raid-custom-dmax":
+                return 3;
+            case "raid-custom-gmax":
+                return 6;
+            default:
+                return 1;
+        }
+    }
+
+    static getDamageMultiplier(raidMode: any, defender?: any) {
         let actualDefender = defender;
         if (raidMode === "raid-custom-dmax") {
-            if (desperate) {
-                return 3;
-            } else {
-                return 1;
-            }
+            return 1;
         } if (raidMode === "raid-custom-gmax") {
-            if (desperate) {
-                return 6;
-            } else {
-                return 1;
-            }
+            return 1;
         }
         if (raidMode === "raid-t5-dmax") {
-          damageMultiplier = 2 * (desperate ? 3 : 1);
+          return 2;
         } else if (raidMode === "raid-t6-gmax") {
             if (actualDefender) {
                 if (actualDefender === "TOXTRICITY_AMPED_GIGANTAMAX" || actualDefender === "TOXTRICITY_LOW_KEY_GIGANTAMAX" || actualDefender === "TOXTRICITY_GIGANTAMAX") {
-                    return 1.2 * (desperate ? 6 : 1);
+                    return 1.2;
                 } else if (actualDefender === "MEOWTH_GIGANTAMAX" || actualDefender === "PIKACHU_GIGANTAMAX" || actualDefender === "VENUSAUR_GIGANTAMAX" || actualDefender === "CHARIZARD_GIGANTAMAX" || actualDefender === "BLASTOISE_GIGANTAMAX" || actualDefender === "GENGAR_GIGANTAMAX") {
-                    return 1 * (desperate ? 6 : 1);
+                    return 1;
                 } else {
-                    return 0.9 * (desperate ? 6 : 1);
+                    return 0.9;
                 }
             } else {
-                return 0.9 * (desperate ? 6 : 1);
+                return 0.9;
             }
         } else if (raidMode === "raid-t4-dmax" || raidMode === "raid-t3-dmax") {
-            damageMultiplier = 1 * (desperate ? 9 : 1);
+            return 1;
         } else {
-            damageMultiplier = 1 * (desperate ? 3 : 1);
+            return 1;
         }
-        return damageMultiplier;
     }
 
     static getDefenseMultiplier(raidMode: any) {
@@ -2668,13 +2682,13 @@ export class PoGoAPI {
                     const move = bossMoves[i];
                     //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                     //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
-                    percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterLarge*i)) / (i+1);
+                    percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, boss)) + (percentAfterLarge*i)) / (i+1);
                     //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                     //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
-                    percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
+                    percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
                     //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                     //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
-                    percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
+                    percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
                 }
                 const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2));
                 counter++;
@@ -2790,13 +2804,13 @@ export class PoGoAPI {
                 const move = bossMoves[i];
                 //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
-                percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterLarge*i)) / (i+1);
+                percentAfterLarge = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode, boss)) + (percentAfterLarge*i)) / (i+1);
                 //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
-                percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetBestCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * this.getDamageMultiplier(raidMode, boss)) + (percentAfterTargetBestCase*i)) / (i+1);
                 //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
-                percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode,false, false, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (this.getDamage(bossData, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * this.getDamageMultiplier(raidMode, boss)) + (percentAfterTargetWorstCase*i)) / (i+1);
             }
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2));
             versusBossList.push({
@@ -2915,13 +2929,13 @@ export class PoGoAPI {
                 const move = bossMoves[i];
                 //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
-                percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterLarge*i)) / (i+1);
+                percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterLarge*i)) / (i+1);
                 //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
-                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetBestCase*i)) / (i+1);
                 //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
                 //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
-                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId  )), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetWorstCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetWorstCase*i)) / (i+1);
             }
             const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
@@ -2979,16 +2993,16 @@ export class PoGoAPI {
             //const percentAfterLarge = Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
             //    - Math.max(0, (this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
             const percentAfterLarge = 
-                this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+                this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
 
             //const percentAfterTargetBestCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
             //    - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
             const percentAfterTargetBestCase = 
-                this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.3 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+                this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.3 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
             //const percentAfterTargetWorstCase = (((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
             //    - Math.max(0, (this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))
             const percentAfterTargetWorstCase = 
-                this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,false, false, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+                this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0,(percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
@@ -3194,9 +3208,9 @@ export class PoGoAPI {
                 // Percentage of health remaining after one targeted and one large attack
                 tankScore[i][j] = ((
                     ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                    - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack,  types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, friendship[i]], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                    - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack,  types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, friendship[i]], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,defender.pokemonId)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                     + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                    - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, friendship[i]], "normal", 0,  (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                    - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, friendship[i]], "normal", 0,  (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,defender.pokemonId)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                   )  / 2) * (1 + shieldHPMAX[i][j] / 60);
                   
                 // Highest HP
@@ -3266,7 +3280,7 @@ export class PoGoAPI {
                 // Actions of each attacker
                 // There is a targeted move coming from the defender to i, will try to dodge it
                 if (defenderDamageStart != -1 && !attackerEvades[i] && defenderMove != null && time < defenderDamageStart + defenderMove.damageWindowStartMs && activePokemon[i] < 3 && target === i && targeted && !firstDmgReduction[i]) {
-                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender)) * (advEffects[i] === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1), isCustomDmax);
+                    const projectedDamageDefender = this.getDamage(defender, attackers[i][activePokemon[i]], defenderMove, types, defenderStats, attackersStats[i][activePokemon[i]], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customBossAtkMult : this.getDamageMultiplier(raidMode,defender.pokemonId)), isCustomDmax);
                     //console.log("Attacker " + i + " projected damage from defender's targeted move: " + projectedDamageDefender + " vs current HP: " + attackerHealth[i][activePokemon[i]]);
                     if (projectedDamageDefender < attackerHealth[i][activePokemon[i]] ) {
                         // Attacker i evades the move
@@ -3468,9 +3482,9 @@ export class PoGoAPI {
                     for (let j = 0 ; j < 3 ; j++) {
                         tankScore[i][j] = (
                             ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderLargeAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                             + ((Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
-                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode,false, false, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
+                            - Math.max(0, - shieldHP[i][j] + (this.getDamage(defender, attackers[i][j], defenderTargetAttack, types, defenderStats, attackersStats[i][j], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, ((raidMode === "raid-custom-dmax" ? customBossAtkMult : this.getDamageMultiplier(raidMode, defender.pokemonId)) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1)), isCustomDmax))))) / Calculator.getEffectiveStamina(attackers[i][j].stats.baseStamina, attackersStats[i][j][3], attackersStats[i][j][0])
                           ) / 2
                     }
                 }
@@ -3528,8 +3542,8 @@ export class PoGoAPI {
                             [weather, false, false, 0], 
                             [weather, false, false, 0], 
                             "normal", 
-                            0, 
-                            (attackerEvades[target] ? 1 : 2) * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) * (advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
+                            this.getEnrageMultiplier(raidMode, desperate), 
+                            (attackerEvades[target] ? 1 : 2) * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, defender.pokemonId)) : this.getDamageMultiplier(raidMode, defender.pokemonId)) * (advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
                             isCustomDmax
                         );
                         const finalDamage = Math.floor(projectedDamageDefender);
@@ -3561,8 +3575,8 @@ export class PoGoAPI {
                                 [weather, false, false, 0], 
                                 [weather, false, false, 0], 
                                 "normal", 
-                                0, 
-                                ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId)) : this.getDamageMultiplier(raidMode, enraged, desperate, defender.pokemonId  )) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
+                                this.getEnrageMultiplier(raidMode, desperate),
+                                ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? ((advEffects[target] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1 ) * customBossAtkMult * this.getDamageMultiplier(raidMode, defender.pokemonId)) : this.getDamageMultiplier(raidMode, defender.pokemonId  )) * (advEffects[i] === "bash" ? (1/ Calculator.BashBoost(raidMode)) : 1),
                                 isCustomDmax
                             );
                             const finalDamage = Math.floor(projectedDamageDefender);
@@ -4957,8 +4971,8 @@ export class PoGoAPI {
                         [weather, false, false, 0], 
                         [weather, false, false, 0] , 
                         "normal", 
-                        1, 
-                        (gamestatus.damageReduction * (gamestatus.enemyActiveMove?.isTarget ? 2 : 1)) * this.getDamageMultiplier(raidMode, false, gamestatus.enrage, defender.pokemonId) * ((raidMode == "raid-custom-dmax" || raidMode == "raid-custom-gmax") ? customBossAtkMult : 1) * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1),
+                        this.getEnrageMultiplier(raidMode, gamestatus.enrage),
+                        (gamestatus.damageReduction * (gamestatus.enemyActiveMove?.isTarget ? 2 : 1)) * this.getDamageMultiplier(raidMode, defender.pokemonId) * ((raidMode == "raid-custom-dmax" || raidMode == "raid-custom-gmax") ? customBossAtkMult : 1) * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1),
                         isCustomDmax
                     ));
                     let proDamageReal = projectedDamage;

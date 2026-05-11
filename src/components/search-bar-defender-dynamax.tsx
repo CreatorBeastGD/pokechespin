@@ -250,7 +250,7 @@ export default function SearchBarDefenderDynamax({
   const preferredMoves = suffixes.some(suffix => selectedPokemon?.pokemonId?.endsWith(suffix)) ? PoGoAPI.getPreferredMovesPB((selectedPokemon?.pokemonId)?.replace("_MEGA_COMPLETE", "").replace("_MEGA_C", "").replace("_MEGA", "").replace("_X", "").replace("_Y", "").replace("_Z", ""), selectedPokemon?.pokemonId, pokemonList) : { preferredMovesQuick: selectedPokemon?.quickMoves, preferredMovesCharged: selectedPokemon?.cinematicMoves };
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
-  const damageMultiplier = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, false ,false ,selectedPokemon?.pokemonId);
+  const damageMultiplier = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : PoGoAPI.getDamageMultiplier(raidMode, selectedPokemon?.pokemonId);
 
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
   
