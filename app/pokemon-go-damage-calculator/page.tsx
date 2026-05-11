@@ -110,6 +110,11 @@ export default function Page() {
                   Check PokéChespin Max General Rankings
                 </button>
             </a>
+            <a href={"/dynamax/rankings/types"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                <button className="w-full ">
+                  Check PokéChespin Max Rankings By Type
+                </button>
+            </a>
             <a href={"/whatsnew"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
                   See what's new!

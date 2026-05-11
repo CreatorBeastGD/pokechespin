@@ -743,7 +743,7 @@ export default function Home() {
               </button>
               </div>
 
-              <CardDescription> Damage dealt per fast attack</CardDescription>
+              <CardDescription> Damage dealt per Fast Attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
                 attacker={attackingPokemon[selectedPokemonSlot-1]} 
@@ -760,7 +760,7 @@ export default function Home() {
                 />
             </CardContent>
             <CardContent>
-              <CardDescription> Damage dealt per charged attack</CardDescription>
+              <CardDescription> Damage dealt per Charged Attack</CardDescription>
               <CalculateButton 
                 allEnglishText={allEnglishText}
                 attacker={attackingPokemon[selectedPokemonSlot-1]} 

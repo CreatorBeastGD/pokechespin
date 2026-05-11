@@ -19,6 +19,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38 (Max Rankings by Type!)",
+        desc: "+ Added Max Rankings by Type!\n"+
+                ">>>>>> You can now see the best Pokémon for each type in Max Battles! This includes best counters, best attackers, and best tanks against a type.\n"+
+                ">>>>>> To access this new ranking, just click on the 'Max Rankings by Types' button on the navbar, or go to pokechespin.net/dynamax/rankings/types.\n"+
+                ">>>>>> Removed General Rankings from the navbar to make room for this new ranking, but you can still access it by going to pokechespin.net/dynamax/rankings/general or selecting the button on the main menu.\n",
+        date: "2026-05-12",
+    },
+    {
         title: "v1.37.3",
         desc: "+ Added 2 new buttons for Raids, showing the damage dealt by the boss' Fast Moves and Charged Moves to your Pokémon.\n"+
                 "~ Fixed an issue with Enrage multiplier not being applied correctly.\n",

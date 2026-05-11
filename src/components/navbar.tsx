@@ -255,7 +255,7 @@ const Navbar = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
                     <NavigationMenuLink asChild>
-                        <Link href="/dynamax/rankings/general" className="text-xs">Max General Rankings</Link>
+                        <Link href="/dynamax/rankings/types" className="text-xs">Max Ranking By Types</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
