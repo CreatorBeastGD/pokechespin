@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.37.3",
+        desc: "+ Added 2 new buttons for Raids, showing the damage dealt by the boss' Fast Moves and Charged Moves to your Pokémon.\n"+
+                "~ Fixed an issue with Enrage multiplier not being applied correctly.\n",
+        date: "2026-05-11",
+    },
+    {
         title: "v1.37.2",
         desc: "+ Updated Breakpoints on Raids to be able to display Boss' moves, showing defensive breakpoints of your pokemon.",
         date: "2026-05-07",

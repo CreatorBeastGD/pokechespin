@@ -23,6 +23,7 @@ import { Tabs, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
 import { Slider } from "@/components/ui/slider";
 import CalculateButtonSimulateTurnBased from "@/components/calculate-button-turn-based";
+import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -774,6 +775,36 @@ export default function Home() {
                 bladeBoost={advEffect === "blade"}
                 simplifyCalculationText={simpleMode}
               />
+            </CardContent>
+            <CardContent>
+              <CardDescription> Damage received from Fast Attack</CardDescription>
+              <CalculateButtonMaxBoss
+                allEnglishText={allEnglishText}
+                attacker={defendingPokemon} 
+                defender={attackingPokemon[selectedPokemonSlot-1]} 
+                move={selectedQuickMoveDefender}
+                attackerStats={defenderStats}
+                defenderStats={attackerStats[selectedPokemonSlot-1]}
+                bonusAttacker={bonusDefender}
+                bonusDefender={bonusAttacker[selectedPokemonSlot-1]}
+                raidMode={raidMode} 
+                isLarge={true}
+                bashBoost={advEffect === "bash"}/>
+            </CardContent>
+            <CardContent>
+              <CardDescription> Damage received from Charged Attack</CardDescription>
+              <CalculateButtonMaxBoss
+                allEnglishText={allEnglishText}
+                attacker={defendingPokemon} 
+                defender={attackingPokemon[selectedPokemonSlot-1]} 
+                move={selectedChargedMoveDefender}
+                attackerStats={defenderStats}
+                defenderStats={attackerStats[selectedPokemonSlot-1]}
+                bonusAttacker={bonusDefender}
+                bonusDefender={bonusAttacker[selectedPokemonSlot-1]}
+                raidMode={raidMode} 
+                isLarge={true}
+                bashBoost={advEffect === "bash"}/>
             </CardContent>
             <CardContent>
               <CardDescription> Time to defeat using fast and charged attacks</CardDescription>
