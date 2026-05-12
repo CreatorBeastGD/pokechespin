@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38";
+        return "1.38.1";
     }
 
     static async getAllPokemon() {
@@ -3014,7 +3014,7 @@ export class PoGoAPI {
         let defenderStatModified = [...defenderStat];
         
         const bossLargeAttackData = dummyMove;
-        let graphic: { pokemon: any; large:number; tankScore: number; fastMove: any; chargedMove: any | null; }[] = [];
+        let graphic: { pokemon: any; large:number; tankScore: number; fastMove: any; chargedMove: any | null; bulk: number }[] = [];
         
         let allMaxPoke = Calculator.DynamaxPokemon;
         if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
@@ -3040,7 +3040,8 @@ export class PoGoAPI {
             const tankScore = ((Math.max(0, percentAfterLarge)))
             const fastMove = this.getFastestQuickMove(pokemonData, boss, types, "raid-t5-dmax", allMoves, defenderStatModified, 0, 0);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, "raid-t5-dmax", 0, allMoves, 0, defenderStatModified, fastMove)});
+            const bulk = this.GetBulk(pokemonData, [40,15,15,15], types, objType, 0);
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, "raid-t5-dmax", 0, allMoves, 0, defenderStatModified, fastMove), bulk: bulk});
         })
         //console.log(graphic)
         return graphic.sort((a, b) => {

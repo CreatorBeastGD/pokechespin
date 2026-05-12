@@ -214,11 +214,6 @@ export default function rankingsPage() {
         setShowBestDefenders(!showBestDefenders);
     }
 
-    const TankScorePenalization = (defender: any): number => {
-        return ((playersInTeam * 2) / (((playersInTeam * 2) - 2) + (1000 / defender.fastMove.durationMs)));
-    }
-    
-    
     const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
         return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + currentExtraHPForPokemon(pokemonId))) * 100;
     }
@@ -227,14 +222,10 @@ export default function rankingsPage() {
         return extraHP + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0) + (dCannon ? (pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && pokemonId !== "ZACIAN_CROWNED_SWORD_FORM") ? 60 : 0 : 0);
     }
 
-    const getAverageTankScore = (hpdmg: number, hpper: number) => {
-        return (hpdmg + hpper) / 2;
-    }   
-
     const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
 
     defenderList?.sort((a: any, b: any) => {
-        return (getHPPercent(a.tankScore, a.pokemon.stats.baseStamina, a.pokemon.pokemonId) - getHPPercent(b.tankScore, b.pokemon.stats.baseStamina, b.pokemon.pokemonId));    
+        return (-PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId))) + (PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId)));    
     });
 
     useEffect(() => {
@@ -268,25 +259,29 @@ export default function rankingsPage() {
 
     const handleSwitch = (checked: boolean, handle: any, linkSection: string) => {
         handle(checked);
-        defenderList?.sort((a: any, b: any) => {
-            if (checked) {
-                if (TankScorePenalization(a) * a.tankScore > TankScorePenalization(b) * b.tankScore) return 1;
-                if (TankScorePenalization(a) * a.tankScore < TankScorePenalization(b) * b.tankScore) return -1;
-                return 0;
-            } else {
-                return a.tankScore - b.tankScore;
-            }
-        });
+        
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, checked.toString());
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+        setTimeout(() => {
+            defenderList?.sort((a: any, b: any) => {
+            if (checked) {
+                if (PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId)) > PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId))) return 1;
+                if (PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId)) < PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId))) return -1;
+                return 0;
+            } else {
+                return PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId)) - PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId));
+            }
+        });
+        }, 3000);
     }
 
     const handleSlider = (value: number, handle: any, linkSection: string) => {
         handle(value);
         defenderList?.sort((a: any, b: any) => {
-                return a.tankScore - b.tankScore;
+                return PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId)) - PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId));
         });
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, value.toString());
@@ -341,17 +336,17 @@ export default function rankingsPage() {
     }
 
     const GetColorForDefender = (defender: any) => {
-            return (GetValueToShow(defendersToShow[0], defender)) === 1 * GetValueToShow(defendersToShow[0], defendersToShow[0]) ? "violet" :
-            (GetValueToShow(defendersToShow[0], defender)) > 0.75 * GetValueToShow(defendersToShow[0], defendersToShow[0]) ? "green" :
-            (GetValueToShow(defendersToShow[0], defender)) > 0.6 * GetValueToShow(defendersToShow[0], defendersToShow[0]) ? "yellow" :
-            (GetValueToShow(defendersToShow[0], defender)) > 0.5 * GetValueToShow(defendersToShow[0], defendersToShow[0]) ? "orange" : "red";
+            return (GetValueToShow(defender)) >= 100 ? "violet" :
+            (GetValueToShow(defender)) > 75 ? "green" :
+            (GetValueToShow(defender)) > 60 ? "yellow" :
+            (GetValueToShow(defender)) > 50 ? "orange" : "red";
 
     }
 
 
-    function GetValueToShow(bestDefender: any, defender: any): number {
+    function GetValueToShow(defender: any): number {
         return 100 * (PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)) /
-            PoGoAPI.GetBulk(bestDefender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(bestDefender.pokemon.pokemonId)));
+            PoGoAPI.GetBulk(defendersToShow[0].pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defendersToShow[0].pokemon.pokemonId)));
     }
 
     return (
@@ -413,7 +408,7 @@ export default function rankingsPage() {
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
                             <p>"Damage Received" is how much damage would a dummy move deal to a Pokémon, in percentage of HP.</p>
                             <p>"Hits to Faint" is the number of times a dummy move would need to hit a Pokémon to defeat it.</p>
-                            <p>"Bulk" represents the overall durability of a Pokémon against the dummy move. It's a calculation consisting of Defense * (Stamina + Shields) * Effectiveness</p>
+                            <p>"Bulk" represents the overall durability of a Pokémon against the dummy move. It's a calculation consisting of Defense * (Stamina + Shields) * Effectiveness. The best tanks are ordered by their bulk value.</p>
                             <p>"Use Dynamax Cannon Adventure Effect" adds one extra shield to all compatible Pokémon and will increase 100 power to all compatible attacker moves.</p>
                             
                         </CardDescription>
@@ -581,7 +576,7 @@ export default function rankingsPage() {
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defendersToShow[0],defender)}/>
+                                                        <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
                                                     </div>
                                                 </div>
                                             </div>

@@ -19,6 +19,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.1",
+        desc: "~ Defenders on Max Rankings by Type are now ordered by their Bulk instead of their Damage Received, showing more accurately which Pokémon are better tanks purely by their stats against a type.\n",
+        date: "2026-05-12",
+    },
+    {
         title: "v1.38 (Max Rankings by Type!)",
         desc: "+ Added Max Rankings by Type!\n"+
                 ">>>>>> You can now see the best Pokémon for each type in Max Battles! This includes best counters, best attackers, and best tanks against a type.\n"+
