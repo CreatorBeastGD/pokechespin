@@ -75,7 +75,7 @@ export default function Home() {
   useEffect(() => {
     const fetchAllPokemonPB = async () => {
       setDefenderBonusBug(searchParams.get("defender_bonuses") ?? "EXTREME,false,false,0");
-      console.log("DsB", searchParams.get("defender_stats"));
+      //console.log("DsB", searchParams.get("defender_stats"));
       setDefenderStatsBug(searchParams.get("defender_stats") ? searchParams.get("defender_stats")! : "50,15,15,15");
       
       const pokemonlist = await PoGoAPI.getAllPokemonPB();
@@ -253,7 +253,7 @@ export default function Home() {
 
         const defender = searchParams.get("defender");
         const defenderStats = defenderStatsBug; // Man, I FUCKING love React
-        console.log("DS", defenderStatsBug);
+        //console.log("DS", defenderStatsBug);
         const bonusDefender = searchParams.get("defender_bonuses");
         const defenderFastAttack = searchParams.get("defender_fast_attack");
         const defenderChargedAttack = searchParams.get("defender_cinematic_attack");

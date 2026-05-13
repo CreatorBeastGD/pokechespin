@@ -17,7 +17,7 @@ export const connectDB = async () => {
     }
 
     if (!global.mongooseConn) {
-        console.log("Connecting to MongoDB... " + uri);
+        //console.log("Connecting to MongoDB... " + uri);
         global.mongooseConn = mongoose.connect(uri);
     }
 

@@ -2666,7 +2666,7 @@ export class PoGoAPI {
                 bestMove = moveData;
                 bestEPT = ept;
                 bestEPTShroom = epts;
-                console.log("New best charged move for " + pokemon.pokemonId + ": " + moveData.moveId + " with EPT: " + ept + " and EPT with mushroom: " + bestEPTShroom);
+                //console.log("New best charged move for " + pokemon.pokemonId + ": " + moveData.moveId + " with EPT: " + ept + " and EPT with mushroom: " + bestEPTShroom);
             }
         });
         return { move: bestMove, ept: bestEPT, needsMushroom: (bestEPTShroom >= 1 && bestEPT < 1) };
@@ -2949,7 +2949,7 @@ export class PoGoAPI {
         // ignore dupes
         allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index);
 
-        console.log(customBossHP)
+        //console.log(customBossHP)
         
         allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
@@ -3008,7 +3008,7 @@ export class PoGoAPI {
             durationMs: 1000,
             energyDelta: -100,
         }
-        console.log("Dummy created with type " + objType);
+        //console.log("Dummy created with type " + objType);
         let attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], "raid-t5-dmax", "REGICE");
         let defenderStatModified = [...defenderStat];
@@ -3070,7 +3070,7 @@ export class PoGoAPI {
         const level = stats[0];
 
         const effectiveness = (PoGoAPI.getTypeComboWeaknesses(types, this.formatTypeName(type1), this.formatTypeName(type2)))
-        console.log(effectiveness)
+        //console.log(effectiveness)
         const bulk = (Calculator.getEffectiveStamina(stamina, stats[3], level) + additionalHP) * Calculator.getEffectiveDefense(defense, stats[2], level) * (1/effectiveness[this.formatTypeName(objType)] || 1);
         return bulk;
     }
@@ -3186,7 +3186,7 @@ export class PoGoAPI {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, "raid-t5-dmax", allMoves, modDefenderStats, 0, 0) : this.getQuickMoveMatchingType(pokemonData, boss, types, "raid-t5-dmax", allMoves, modDefenderStats, objType);
             const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, "raid-t5-dmax", 0, allMoves, 0, modDefenderStats, quickMove);
-            console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             if (maxMove.type == objType) {
                 if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
@@ -3221,7 +3221,7 @@ export class PoGoAPI {
                 baseStamina: 180,
             }
         }
-        console.log("Dummy created with type " + objType);
+        //console.log("Dummy created with type " + objType);
         const attackerStat = [40,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], "raid-t5-dmax", "REGICE");
 
@@ -3244,7 +3244,7 @@ export class PoGoAPI {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, "raid-t5-dmax", allMoves, modDefenderStats, 0, 0) : this.getBestQuickMove(pokemonData, boss, types, "raid-t5-dmax", allMoves, modDefenderStats);
             const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, "raid-t5-dmax", 0, allMoves, 0, modDefenderStats, quickMove);
-            console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
                 maxMove.power = maxMove.power === 350 ? 450 : 550;
@@ -3298,7 +3298,7 @@ export class PoGoAPI {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats, customBossHP, customEGM) : this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats);
             const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove);
-            console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
                 maxMove.power = maxMove.power === 350 ? 450 : 550;
