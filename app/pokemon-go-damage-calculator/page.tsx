@@ -163,7 +163,7 @@ export default function Page() {
                 <p className="italic p-4">Thanks <a className="link" href="https://www.reddit.com/user/soraliink/">u/soraliink</a>, Gerkenator, Someone, Jeff L Perritt and Matthew Bauman for you donations! ♥️</p>
             </div>
             <div>
-                <p className="italic p-4">The development of this website couldn't have been possible without the help of PoGoRaids, r/TheSilphRoad and the NFL Research Group. Thanks for all your help during all this time! ♥️</p>
+                <p className="italic p-4">The development of this website wouldn't have been possible without the help of PoGoRaids, r/TheSilphRoad and the NFL Research Group. Thanks for all your help during all this time! ♥️</p>
             </div>
             <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Avatar className="mb-4">
