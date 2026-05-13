@@ -49,6 +49,8 @@ export class RaidStatus {
     nextEnergyGainTurn: number | null = null;
     nextEnergyGainAmount: number = 0;
 
+    chargedMoveCooldown: number = 0;
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);

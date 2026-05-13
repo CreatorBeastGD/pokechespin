@@ -245,7 +245,9 @@ export default function CalculateButtonSimulateTurnBased({
               <>
                 <Separator className="my-4"/>
                 <Button onClick={() => SendMessage("fast")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(quickMove[gameStatus!.activeAllyIndex]?.type).toLowerCase()}>{PoGoAPI.formatMoveName(quickMove[gameStatus!.activeAllyIndex]?.moveId)}</Button>
-                <Button onClick={() => SendMessage("charged")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type).toLowerCase()}>{PoGoAPI.formatMoveName(chargedMove[gameStatus!.activeAllyIndex]?.moveId)}</Button>
+                {gameStatus?.chargedMoveCooldown === 0 ? (
+                  <Button onClick={() => SendMessage("charged")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type).toLowerCase()}>{PoGoAPI.formatMoveName(chargedMove[gameStatus!.activeAllyIndex]?.moveId)}</Button>
+                ) : <Button onClick={() => {}} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex]?.type).toLowerCase()}>On Cooldown!</Button>}
                 <Separator className="my-4"/>
                 <div className="flex flex-row justify-center items-center space-x-2">
                   <Button onClick={() => SendMessage("dodge")} className="w-full py-2 text-white bg-primary rounded-lg">{"Dodge"}</Button>
