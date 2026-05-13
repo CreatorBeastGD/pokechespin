@@ -756,7 +756,7 @@ export default function rankingsPage() {
                                                     height={50}
                                                     style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                                 />
-                                                <div className="space-y-1">
+                                                <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
                                                             <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
