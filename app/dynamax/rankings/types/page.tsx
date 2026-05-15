@@ -444,7 +444,11 @@ export default function rankingsPage() {
                         <CardHeader className="text-xl font-bold">Best {PoGoAPI.formatTypeName(currentType)} Type {showingCounters ? "Counters" : "Attackers"}</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
-                                <p>These are the best attackers to use against {PoGoAPI.formatTypeName(currentType)} Type Pokémon in a Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
+                                {showingCounters ? (
+                                    <p>These are the best counters to use against {PoGoAPI.formatTypeName(currentType)} Type Pokémon in a Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
+                                ) : (
+                                    <p>These are the best {PoGoAPI.formatTypeName(currentType)} Type Attackers to use in a Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
+                                )}
                                 <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level 40 with perfect IVs.</p>
                             </CardDescription>
                             
