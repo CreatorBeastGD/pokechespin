@@ -51,6 +51,16 @@ export class RaidStatus {
 
     chargedMoveCooldown: number = 0;
 
+    // Index 0 is fast, index 1 is charged.
+    allyDamageValues: number[][] = [];
+    enemyDamageValues: number[][] = [];
+    enemyDamageValuesReduced: number[][] = [];
+
+    allyTDO: number[] = [];
+    allyActiveTurns: number[] = [];
+
+    chargedMoveEnd: boolean = true;
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);
@@ -74,5 +84,24 @@ export class RaidStatus {
         this.targetDodgeWindow = false;
         this.relobbyTimer = relobbyTimer;
         this.nextEnergyGainTurn = null;
+        this.allyTDO = new Array(pokemonCount).fill(0);
+        this.allyActiveTurns = new Array(pokemonCount).fill(0);
+    }
+
+    NeedsRelobby = () => {
+        return this.isRelobby == 2;
+    }
+
+    CanCastChargedMove = (chargedMove: any) => {
+        if (!chargedMove) return false;
+        return this.allyEnergy[this.activeAllyIndex] >= -chargedMove[this.activeAllyIndex].energyDelta
+    }
+
+    TimedOut = () => {
+        return this.timeout;
+    }
+
+    EnemyDefeated = () => {
+        return this.enemyPokemonDamage >= this.enemyPokemonMaxHealth;
     }
 }

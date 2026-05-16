@@ -1970,13 +1970,14 @@ export class PoGoAPI {
         bonusAttacker: any, 
         bonusDefender: any, 
         teamCount: any,
+        allTypes: any,
         avoids?: any,
         relobbyTime?: any,
         enraged: boolean = raidMode.endsWith("shadow"),
         peopleCount?: any,
         partyPower?: any,
         boost: string = "none",
-        energyResolveBug: boolean = true
+        energyResolveBug: boolean = true,
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
@@ -2026,7 +2027,7 @@ export class PoGoAPI {
 
         let firstDmgReduction = false;
 
-        const types = await this.getTypes();
+        const types = allTypes;
 
         let hasEnraged = false;
         let isEnraged = false;
@@ -3488,6 +3489,29 @@ export class PoGoAPI {
 
         let hasParticle = [false, false, false, false];
 
+        const GetBestChargerNotDead = (i: number) => {
+            let bestCharger = 3;
+            let bestChargerDamage = -1;
+            for (let j = 0; j < 3; j++) {
+                if (!pokemonCanParticipate[i][j]) {
+                    continue;
+                } else {
+                    const damageQuickMove = this.getDamage(attackers[i][j], defender, attackersQuickMove[i][j], types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1));
+                    const damageChargedMove = this.getDamage(attackers[i][j], defender, attackersCinematicMove[i][j], types, attackersStats[i][j], defenderStats, [weather, false, false, friendship[i]], [weather, false, false, 0] , raidMode, shrooms[i] === true ? 2 : 1, this.getDefenseMultiplier(raidMode) * this.getHelperBonusDamage(helperBonus) * (advEffects[i] === "blade" ? Calculator.BladeBoost(raidMode) : 1));
+                    const maxEnergyGainQuick = Calculator.getMaxEnergyGain(damageQuickMove, defenderHealth, raidMode, defender.pokemonId, customEnergyGainMult);
+                    const maxEnergyGainCharged = Calculator.getMaxEnergyGain(damageChargedMove, defenderHealth, raidMode, defender.pokemonId, customEnergyGainMult);
+                    const TotalEnergyInCycle = maxEnergyGainQuick * (Math.ceil(-attackersCinematicMove[i][j].energyDelta / attackersQuickMove[i][j].energyDelta)) + maxEnergyGainCharged;
+                    const TotalTurnsInCycle = (attackersQuickMove[i][j].durationMs / 500) * Math.ceil(-attackersCinematicMove[i][j].energyDelta / attackersQuickMove[i][j].energyDelta) + attackersCinematicMove[i][j].durationMs / 500;
+                    const EnergyPerTurn = TotalEnergyInCycle / TotalTurnsInCycle;
+                    if (EnergyPerTurn > bestChargerDamage) {
+                        bestChargerDamage = EnergyPerTurn;
+                        bestCharger = j;
+                    }
+                }
+            }
+            return bestCharger;
+        }
+
         //console.log("Defender health: " + defenderHealth);
 
         while (this.sumAllElements(attackerDamage) <= defenderHealth) {            
@@ -3626,7 +3650,7 @@ export class PoGoAPI {
                     } else if (strategy[i] === "tank") {
                         activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
                         // If a tank role has full shield in its best Tank, will swap to its DPS
-                        if (activePokemon[i] < 3 && shieldHP[i][activePokemon[i]] >= ((shieldHPMAX[i][activePokemon[i]]) - (20 * attackerMaxMoves[i][activePokemon[i]][1]))) {
+                        if (activePokemon[i] < 3 && shieldHP[i][activePokemon[i]] >= ((shieldHPMAX[i][activePokemon[i]]) - (50 * attackerMaxMoves[i][activePokemon[i]][1]))) {
                             activePokemon[i] = this.getHigherElementIndexNotDead(dmgScore[i], attackerFaints[i]);
                             activeDPS[i] = true;
                         }
@@ -3726,15 +3750,12 @@ export class PoGoAPI {
                     }
                 }
 
-                // Attackers swap their pokemon back to their best tank
+                // Attackers swap their pokemon back to their best charger
                 for (let i = 0 ; i < attackers.length ; i++) {
-                    if (strategy[i] === "dmg") {
-                        activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
-                    } else if (strategy[i] === "tank") {
-                        activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
-                    } else if (strategy[i] === "heal") {
-                        activePokemon[i] = this.getHigherElementIndexNotDead(tankScore[i], attackerFaints[i]);
-                    }
+                    // Cambia al mejor cargador
+                        activePokemon[i] = GetBestChargerNotDead(i);
+                        attackerMove[i] = null;
+                        attackerDamageStart[i] = -1;
                 }
             }
 
@@ -3850,6 +3871,11 @@ export class PoGoAPI {
                         //console.log(attackerFaints)
                         //console.log("Attacker " + i + " fainted at time " + time);
                         //console.log(activePokemon)
+                    } else {
+                        // Cambia al mejor cargador
+                        activePokemon[i] = GetBestChargerNotDead(i);
+                        attackerMove[i] = null;
+                        attackerDamageStart[i] = -1;
                     }
                 }
                 dealtDamage = true;
@@ -3964,6 +3990,108 @@ export class PoGoAPI {
         return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases};
     }
 
+    static async RaidSimulatorSTATUS(
+        attackers: any, 
+        defender: any,
+        attackersQuickMove: any, 
+        attackersCinematicMove: any, 
+        defenderQuickMove: any, 
+        defenderCinematicMove: any, 
+        attackersStats: any, 
+        defenderStats: any,
+        raidMode: any, 
+        attackersBonuses: any, 
+        defenderBonuses: any, 
+        teamCount: any,
+        allTypes: any,
+        avoids?: any,
+        relobbyTime?: any,
+        enraged: boolean = raidMode.endsWith("shadow"),
+        peopleCount?: any,
+        partyPower?: any,
+        advEffects: string = "none",
+        enableEnergyResolveBug: boolean = true,
+        allMoves?: any
+    ) {
+        let gamestatus: RaidStatus | null = null;
+
+        const ExecuteAction = (action: string) => {
+            //console.log("Executing action: " + action);
+            gamestatus = this.TurnBasedSimulatorAllyTurnRaid(
+                attackers,
+                defender,
+                attackersQuickMove,
+                attackersCinematicMove,
+                defenderQuickMove,
+                defenderCinematicMove,
+                attackersStats,
+                attackersBonuses,
+                defenderBonuses,
+                raidMode,
+                attackersBonuses[0][0],
+                advEffects,
+                action,
+                gamestatus,
+                allTypes,
+                allMoves,
+                relobbyTime,
+                enableEnergyResolveBug
+            )
+        }
+        
+        //Se inicializa el GS
+        ExecuteAction("init");
+
+        while ((gamestatus!.enemyPokemonDamage < gamestatus!.enemyPokemonMaxHealth) && !gamestatus!.timeout) {
+            
+            if (gamestatus!.allyCooldown == 0) {
+                if (gamestatus!.chargedMoveEnd == true) {
+                    if ((gamestatus!.allyPokemonMaxHealth[gamestatus!.activeAllyIndex] - gamestatus!.allyPokemonDamage[gamestatus!.activeAllyIndex]) <= (avoids ? (gamestatus!.enemyDamageValuesReduced[gamestatus!.activeAllyIndex][1]) : (gamestatus!.enemyDamageValues[gamestatus!.activeAllyIndex][1]))) {
+                        if (gamestatus!.activeAllyIndex < attackers.length - 1) {
+                            ExecuteAction("switch"+(gamestatus!.activeAllyIndex+1));
+                            continue;
+                        } else {
+                            ExecuteAction("relobby");
+                            continue;
+                        }
+                    }
+                }
+                // Lógica para esquivar
+                if (avoids == true) {
+                    if ((gamestatus!.allyPokemonMaxHealth[gamestatus!.activeAllyIndex] - gamestatus!.allyPokemonDamage[gamestatus!.activeAllyIndex]) > gamestatus!.enemyDamageValuesReduced[gamestatus!.activeAllyIndex][1] && gamestatus!.enemyActiveMove?.isCharged && gamestatus!.damageReduction == 1) {
+                        ExecuteAction("dodge");
+                        continue;
+                    }
+                }
+                
+                if (gamestatus!.isRelobby === 2) 
+                {    
+                    ExecuteAction("relobby");
+                    continue;
+                }
+                else if (gamestatus!.allyEnergy[gamestatus!.activeAllyIndex] >= -attackersCinematicMove[gamestatus!.activeAllyIndex].energyDelta) 
+                {
+                    ExecuteAction("charged");
+                    continue;
+                } 
+                else 
+                {
+                    ExecuteAction("fast");
+                    continue;
+                }
+            } else {
+                ExecuteAction("next");
+                continue;
+            }
+        }
+
+        if (!gamestatus!.timeout) {
+            return { success: true , totalTDO: gamestatus!.allyTDO, turns: gamestatus!.allyActiveTurns};
+        } else {
+            return { success: false , totalTDO: gamestatus!.allyTDO, turns: gamestatus!.allyActiveTurns};
+        }
+    }
+
     static TurnBasedSimulatorAllyTurnRaid(
         attackers: any[], 
         defender: any, 
@@ -4013,18 +4141,105 @@ export class PoGoAPI {
             }
         }
 
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+
         defenderBonuses[0] = attackersBonuses[0][0];
         
         if (order === "init") {
             gamestatus.allyPokemonMaxHealth = [];
             for (let i = 0 ; i < attackers.length ; i++) {
                 gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
+                
+                gamestatus.allyDamageValues.push([
+                    Math.floor(this.getDamage(
+                        attackers[i], 
+                        defender, 
+                        attackersQuickMove[i], 
+                        types, 
+                        attackersStats[i], 
+                        defenderStats, 
+                        attackersBonuses[i], 
+                        defenderBonuses, 
+                        raidMode, 1, 
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type)
+                    )),
+                    Math.floor(this.getDamage(
+                        attackers[i], 
+                        defender,
+                        attackersCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        attackersBonuses[i],
+                        defenderBonuses,
+                        raidMode, 1,
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersCinematicMove[i].type)
+                    ))
+                ])
+
+                gamestatus.enemyDamageValues.push([
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i], 
+                        defenderQuickMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        1, 
+                        (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )), 
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i], 
+                        defenderCinematicMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        1, 
+                        (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+                gamestatus.enemyDamageValuesReduced.push([
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i], 
+                        defenderQuickMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        1, 
+                        (gamestatus.enrage ? 1.8 : 1) * (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )), 
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i], 
+                        defenderCinematicMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        1, 
+                        (gamestatus.enrage ? 1.8 : 1) * (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
             }
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
             //console.log(gamestatus.enemyPokemonMaxHealth);
         }
         
-        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+        
         
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
         
@@ -4037,6 +4252,8 @@ export class PoGoAPI {
             }
         }
 
+        gamestatus.chargedMoveEnd = false;
+
         // ally can cast a move
         if (gamestatus.allyCooldown == 0 || order === "relobby") {
             switch (order) {
@@ -4045,9 +4262,6 @@ export class PoGoAPI {
                     return {...gamestatus} as RaidStatus;
                 // Fast Move
                 case "fast":
-
-                    
-
                     gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
                     gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
                     gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
@@ -4254,18 +4468,11 @@ export class PoGoAPI {
 
                 if (gamestatus.allyActiveMove != null) {
                     // ally deals damage
-                    const projectedDamage = Math.floor(this.getDamage(
-                        attackers[gamestatus.activeAllyIndex], 
-                        defender, 
-                        gamestatus.allyActiveMove.move, 
-                        types, 
-                        attackersStats[gamestatus.activeAllyIndex], 
-                        defenderStats, 
-                        attackersBonuses[gamestatus.activeAllyIndex], 
-                        defenderBonuses, 
-                        raidMode, 1, 
-                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, gamestatus.activeAllyIndex, gamestatus.allyActiveMove.move.type)
-                    ));
+                    const projectedDamage = gamestatus.allyDamageValues[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? 1 : 0];
+                    
+                    gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
+                    gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
+
                     gamestatus.enemyPokemonDamage += projectedDamage;
 
                     gamestatus.enemyEnergy += Math.ceil(projectedDamage / 2);
@@ -4354,6 +4561,7 @@ export class PoGoAPI {
         );
 
         gamestatus.timer += 0.5;
+        gamestatus.allyActiveTurns[gamestatus.activeAllyIndex] += 0.5;
 
         if (gamestatus.timer >= (gamestatus.lastHitTime > PoGoAPI.getRaidTime(raidMode) ? gamestatus.lastHitTime : PoGoAPI.getRaidTime(raidMode))) {
             gamestatus.globalCurrentMessage = {
@@ -4438,19 +4646,7 @@ export class PoGoAPI {
                 } else {
                     // Enemy deals damage
                     //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
-                    let projectedDamage = Math.floor(this.getDamage(
-                        defender,
-                        attackers[gamestatus.activeAllyIndex], 
-                        gamestatus.enemyActiveMove?.move, 
-                        types,
-                        defenderStats,  
-                        attackersStats[gamestatus.activeAllyIndex], 
-                        defenderBonuses,
-                        [weather, this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId), false, 0],
-                        "normal", 
-                        1, 
-                        (gamestatus.enrage ? 1.8 : 1) * (gamestatus.damageReduction * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
-                    ));
+                    let projectedDamage = gamestatus.damageReduction == 1 ? gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
                     let proDamageReal = projectedDamage;
                     
                     gamestatus.allyDodgeTurn = 0;

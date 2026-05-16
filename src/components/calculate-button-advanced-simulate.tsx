@@ -24,7 +24,8 @@ export default function CalculateButtonSimulateAdvanced({
   bonusAttacker,
   bonusDefender,
   allEnglishText,
-  boost = "none"
+  boost = "none",
+  allTypes
 }: {
   attacker: any;
   defender: any;
@@ -39,6 +40,7 @@ export default function CalculateButtonSimulateAdvanced({
   bonusDefender: any;
   allEnglishText: any;
   boost: string;
+  allTypes: any;
 }) {
   
   const searchParams = useSearchParams();
@@ -157,7 +159,7 @@ export default function CalculateButtonSimulateAdvanced({
     // Both should have the same weather boost.
     const defenderBonusesMod = [bonusAttacker[0][0], bonusDefender[1], raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
     const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
-      await PoGoAPI.advancedSimulationMultiTeam(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, teamCount, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost, energyResolveBug);
+      await PoGoAPI.advancedSimulationMultiTeam(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, teamCount, allTypes, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost, energyResolveBug);
     setLoading(false);
     setVisibleEntries(50);
     setTime(time);

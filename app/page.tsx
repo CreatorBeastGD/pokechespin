@@ -24,6 +24,7 @@ import { TabsList } from "@radix-ui/react-tabs";
 import { Slider } from "@/components/ui/slider";
 import CalculateButtonSimulateTurnBased from "@/components/calculate-button-turn-based";
 import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
+import CalculateButtonMultiSimulateAdvanced from "@/components/calculate-button-advanced-multisim";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -838,8 +839,10 @@ export default function Home() {
                 bonusAttacker={bonusAttacker}
                 bonusDefender={bonusDefender}
                 boost={advEffect}
+                allTypes={types}
                 />
             </CardContent>
+            
             <CardContent>
               <CardDescription> Play Raid simulation (one player only)</CardDescription>
               <CalculateButtonSimulateTurnBased
