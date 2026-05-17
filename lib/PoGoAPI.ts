@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.1";
+        return "1.38.1.1";
     }
 
     static async getAllPokemon() {
@@ -1279,7 +1279,7 @@ export class PoGoAPI {
             HO_OH: [8005144, 15, 15, 25000],
             REGICE: [8005243, 15, 15, 20000],
             REGIROCK: [8005243, 15, 15, 20000],
-            REGISTEEL: [8005243, 15, 15, 20000],
+            REGISTEEL: [8005245, 15, 15, 18000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

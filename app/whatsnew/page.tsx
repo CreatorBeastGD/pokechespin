@@ -19,6 +19,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.1.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Registeel.\n"+
+                "+ Changed some stats on Tier 5 Max Battles \n"+
+                ">>>>>> Registeel\n >>>>>> ~ HP: 20000 -> 18000 \n >>>>>> ~ CPM: 0.8 -> 0.9 \n",
+        date: "2026-05-17",
+    },
+    {
         title: "v1.38.1",
         desc: "~ Defenders on Max Rankings by Type are now ordered by their Bulk instead of their Damage Received, showing more accurately which Pokémon are better tanks purely by their stats against a type.\n",
         date: "2026-05-12",
