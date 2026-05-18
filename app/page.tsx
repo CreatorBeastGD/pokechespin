@@ -786,7 +786,7 @@ export default function Home() {
                 move={selectedQuickMoveDefender}
                 attackerStats={defenderStats}
                 defenderStats={attackerStats[selectedPokemonSlot-1]}
-                bonusAttacker={bonusDefender}
+                bonusAttacker={[bonusAttacker[0][0], bonusDefender[1], bonusDefender[2], bonusDefender[3]]}
                 bonusDefender={bonusAttacker[selectedPokemonSlot-1]}
                 raidMode={raidMode} 
                 isLarge={true}
@@ -801,7 +801,7 @@ export default function Home() {
                 move={selectedChargedMoveDefender}
                 attackerStats={defenderStats}
                 defenderStats={attackerStats[selectedPokemonSlot-1]}
-                bonusAttacker={bonusDefender}
+                bonusAttacker={[bonusAttacker[0][0], bonusDefender[1], bonusDefender[2], bonusDefender[3]]}
                 bonusDefender={bonusAttacker[selectedPokemonSlot-1]}
                 raidMode={raidMode} 
                 isLarge={true}
