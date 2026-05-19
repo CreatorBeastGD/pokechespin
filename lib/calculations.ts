@@ -247,6 +247,7 @@ export class Calculator {
       "REGIROCK",
       "COTTONEE",
       "WHIMSICOTT",
+      "REGISTEEL",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
