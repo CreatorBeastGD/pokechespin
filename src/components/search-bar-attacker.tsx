@@ -196,8 +196,12 @@ export default function SearchBarAttacker({
       console.log(response)
       setPokemonData(response);
       onSelect(response, memberSlot);
-      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
-      
+      let allForms = [];
+      if (!response) {
+        allForms = [];
+      } else {
+      allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+      }
 
 
       setAvailableForms(allForms);// Construir nueva URL
