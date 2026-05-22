@@ -146,10 +146,8 @@ export default function SearchBarDefenderDynamax({
       setPokemonData(response);
       onSelect(response, member, number);
       let allForms = [];
-      if (!response) {
-        allForms = [];
-      } else {
-        allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+      if (response) {
+        allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM") && !p.pokemonId.endsWith("_S_FORM")));
       }
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
