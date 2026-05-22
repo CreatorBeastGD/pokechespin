@@ -310,11 +310,21 @@ export default function CalculateButtonMultiSimulateAdvanced({
             </p>
             {allyStats.tdo.map((tdo, index) => (
               <div key={index} className="p-4 border rounded-lg">
-                <h3 className="text-lg font-semibold">Ally {index + 1}</h3>
-                <p>Average TDO: {allyStats.tdo[index].toFixed(2)}</p>
-                <p>Average DPS: {(allyStats.tdo[index] / allyStats.turns[index]).toFixed(2)}</p>
-                <p>Best DPS: {bestDPS[index].toFixed(2)}</p>
-                <p>Worst DPS: {worstDPS[index].toFixed(2)}</p>
+                <h3 className="text-lg font-semibold">{PoGoAPI.getPokemonNamePB(attacker[index]?.pokemonId, allEnglishText)}</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-row w-full items-justify-between space-x-2">
+                    <p>Average TDO: </p>
+                    <Badge>{tdo.toFixed(2)}</Badge>
+                  </div>
+                  <div className="flex flex-row items-center space-x-2">
+                    <p>Average DPS: </p>
+                    <Badge>{(tdo / allyStats.turns[index]).toFixed(2)}</Badge>
+                  </div>
+                  <div className="flex flex-row items-center space-x-2">
+                    <p>Average Damage Contribution: </p>
+                    <Badge>{(Math.min(100, (tdo / PoGoAPI.getRaidHealth(raidMode)) * 100)).toFixed(2)}%</Badge> 
+                  </div>
+                </div>
               </div>
             ))}
           </>

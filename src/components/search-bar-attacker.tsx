@@ -150,7 +150,7 @@ export default function SearchBarAttacker({
       //console.log();
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
       
-      setAvailableForms(allForms);// Construir nueva URL
+      setAvailableForms(allForms);
       setSelectedForm(pokemonD.pokemonId);
       
       if (write) {
@@ -193,9 +193,13 @@ export default function SearchBarAttacker({
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
+      console.log(response)
       setPokemonData(response);
       onSelect(response, memberSlot);
-      const allForms = PoGoAPI.getPokemonPBByName(pokemon.toUpperCase(), pokemonList).filter((p: any) => p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX");
+      const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+      
+
+
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
