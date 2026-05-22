@@ -1520,6 +1520,12 @@ export class PoGoAPI {
                 return 8;
             case "DRAGONITE_MEGA":
                 return 10;
+            case "MEWTWO_MEGA_X":
+                return 12;
+            case "MEWTWO_MEGA_Y":
+                return 12;
+            case "FALINKS_MEGA":
+                return 8;
             default:
                 return 8;
         }
