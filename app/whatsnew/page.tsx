@@ -19,6 +19,17 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.2",
+        desc: "+ Added a new Config, called 'Custom Charged Move Chance', to PokéChespin!\n"+
+                ">>>>>> This new config allows you to set a custom chance for the boss to use its Charged Move on the Solo Raid Simulator, allowing you to test different scenarios and see how they affect your performance on the raid! (This config is OFF by default)\n"+
+                ">>>>>> If you have this config enabled, you will be able to adjust the Charged Move Chance on the Solo Raid Simulator on any turn.\n"+
+                "~ Fixed several bugs.\n"+
+                ">>>>>> Some forms wouldn't show up correctly, like Shadow Porygon-Z.\n"+
+                ">>>>>> Weather was not correctly applied on Calculate buttons on Raids, specifically the ones from the Defender to your Pokémon.\n"+
+                ">>>>>> Fixed some typos.",
+        date: "2026-05-22",
+    },
+    {
         title: "v1.38.1.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Registeel.\n"+

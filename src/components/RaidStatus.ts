@@ -61,6 +61,8 @@ export class RaidStatus {
 
     chargedMoveEnd: boolean = true;
 
+    chargedMoveChance = 0.3;
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);

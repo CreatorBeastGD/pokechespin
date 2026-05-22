@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.1.1";
+        return "1.38.2";
     }
 
     static async getAllPokemon() {
@@ -4612,7 +4612,7 @@ export class PoGoAPI {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
-                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() > 0.7) {
+                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() < gamestatus.chargedMoveChance) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
                 } else {

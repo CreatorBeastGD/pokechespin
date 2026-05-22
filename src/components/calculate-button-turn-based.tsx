@@ -58,6 +58,7 @@ export default function CalculateButtonSimulateTurnBased({
   const [gameStatus, setGameStatus] = useState<RaidStatus | null>(null);
   const [showDPS, setShowDPS] = useState<boolean>(false);
   const [showHP, setShowHP] = useState<boolean>(false);
+  const [customChargedMoveChance, setCustomChargedMoveChance] = useState<boolean>(false);
 
   const [energyResolveBug, setEnergyResolveBug] = useState<boolean>(searchParams.get("energy_resolve_bug") === "true");
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
@@ -78,6 +79,7 @@ export default function CalculateButtonSimulateTurnBased({
     if (typeof window === "undefined") return;
     setShowDPS(window.localStorage.getItem("showDPSOnSoloRaid") === "true");
     setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
+    setCustomChargedMoveChance(window.localStorage.getItem("customChargedMoveChance") === "true");
   }, []);
 
   const getHealthBarColor = (healthPercent: number) => {
@@ -182,6 +184,7 @@ export default function CalculateButtonSimulateTurnBased({
     newSearchParams.set("relobby_time", value.toString());
     window.history.replaceState(null, "", "?" + newSearchParams.toString());
   }
+
   
   return (
     <>
@@ -193,8 +196,14 @@ export default function CalculateButtonSimulateTurnBased({
       </p>
       <p className="text-sm italic text-muted-foreground my-2">Set custom relobby time ({relobbyTime} seconds):</p>
         <Slider onValueChange={(value) => handleRelobbyTime(value[0])} value={[relobbyTime]} max={10} step={1} min={1} className="w-[60%] mb-1" color="bg-blue-700"/>
-      <div className="w-full">
+       {customChargedMoveChance && startedSim && (
+        <>
+          <p className="text-sm italic text-muted-foreground my-2">Charged Move Chance: {(gameStatus!.chargedMoveChance * 100).toFixed(0)}% (Default of 30%)</p>
+          <Slider onValueChange={(value) => setGameStatus(gameStatus ? {...gameStatus, chargedMoveChance: value[0]} : null)} value={[gameStatus?.chargedMoveChance ?? 0]} max={1} step={0.05} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+          </>
+        )}
         
+      <div className="w-full">
       {startedSim &&
         <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">

@@ -37,6 +37,7 @@ const Navbar = () => {
     let [showIDs, setShowIDs] = useState(false);
     let [addAllGmaxesToGeneralRankings, setAddAllGmaxesToGeneralRankings] = useState(false);
     let [simplifyCalculationText, setSimplifyCalculationText] = useState(false);
+    let [customChargedMoveChance, setCustomChargedMoveChance] = useState(false);
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -57,6 +58,7 @@ const Navbar = () => {
         const showIDsStorage = localStorage.getItem("showIDs");
         const addAllGmaxesToGeneralRankingsStorage = localStorage.getItem("addAllGmaxesToGeneralRankings");
         const simplifyCalculationTextStorage = localStorage.getItem("simplifyCalculationText");
+        const customChargedMoveChanceStorage = localStorage.getItem("customChargedMoveChance");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -142,6 +144,12 @@ const Navbar = () => {
             localStorage.setItem("simplifyCalculationText", "false");
         }
 
+        if (customChargedMoveChanceStorage) {
+            setCustomChargedMoveChance(customChargedMoveChanceStorage === "true");
+        } else {
+            localStorage.setItem("customChargedMoveChance", "false");
+        }
+
         async function fetchAllPokemon() {
             const response = await PoGoAPI.getAllPokemonPB();
             setAllPokemon(response);
@@ -186,6 +194,7 @@ const Navbar = () => {
         localStorage.setItem("customBladeBoostAmount", customBladeBoostAmount.toString());
         localStorage.setItem("showAllPokemonAsShiny", showAllPokemonAsShiny.toString());
         localStorage.setItem("showAllGmax", showAllGmax.toString());
+        localStorage.setItem("customChargedMoveChance", customChargedMoveChance.toString());
         localStorage.setItem("customPokemonToRankings", customPokemonToRankings);
         localStorage.setItem("showCustomPokemonOnRankings", showCustomPokemonOnRankings.toString());
         localStorage.setItem("showOnlyCustomPokemonOnRankings", showOnlyCustomPokemonOnRankings.toString());
@@ -214,6 +223,8 @@ const Navbar = () => {
         setFreezeRejoin(true);
         setShowIDs(false);
         setAddAllGmaxesToGeneralRankings(false);
+        setSimplifyCalculationText(false);
+        setCustomChargedMoveChance(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -226,6 +237,7 @@ const Navbar = () => {
         localStorage.setItem("showHPOnSoloRaid", "false");
         localStorage.setItem("freezeRejoin", "true");
         localStorage.setItem("showIDs", "false");
+        localStorage.setItem("customChargedMoveChance", "false");
         localStorage.removeItem("moveOverrides");
         localStorage.removeItem("customMoveOverrides");
         localStorage.removeItem("newMoveOverrides");
@@ -393,6 +405,15 @@ const Navbar = () => {
                                     <input checked={freezeRejoin} onChange={(e) => setFreezeRejoin(e.target.checked)} type="checkbox" id="freezeRejoin" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Enables the 'Rejoin freeze' bug, which makes your Pokémon freeze when rejoining if the boss is casting a move, making you take that damage from the boss. This config is ON by default.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Customize Charged Move Chance on Solo Raid Simulator</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={customChargedMoveChance} onChange={(e) => setCustomChargedMoveChance(e.target.checked)} type="checkbox" id="customChargedMoveChance" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Enables the 'Charged Move Chance' option, which allows you to set a custom chance for the Defender to cast a Charged Move. This config is intended to use under some specific scenarios. Remember the Defender will always roll for a chance of using a Charged Move if it has energy to use it.
                                     </p>
                                 </div>
                             </div>
