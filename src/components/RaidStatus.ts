@@ -53,8 +53,11 @@ export class RaidStatus {
 
     // Index 0 is fast, index 1 is charged.
     allyDamageValues: number[][] = [];
+    allyDamageValuesEnraged: number[][] = [];
     enemyDamageValues: number[][] = [];
     enemyDamageValuesReduced: number[][] = [];
+    enemyDamageValuesEnraged: number[][] = [];
+    enemyDamageValuesEnragedReduced: number[][] = [];
 
     allyTDO: number[] = [];
     allyActiveTurns: number[] = [];

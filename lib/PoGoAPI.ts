@@ -1220,7 +1220,7 @@ export class PoGoAPI {
         );
     }
 
-    static getDamageEnraged(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, attackEnraged?: boolean, damageMultiplier?: any) {
+    static getDamageEnraged(attacker: any, defender: any, move: any, types: any, attackerStats: any, defenderStats: any, bonusAttacker?: any, bonusDefender?: any, raidMode?: any, attackEnraged?: boolean, damageMultiplier?: any, defMultFactor: any = 2.2) {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
@@ -1228,10 +1228,14 @@ export class PoGoAPI {
         }
         //console.log(types);
         const effectiveness = this.getEfectiveness(defender, move, types);
+
+        const EnragedBaseAttack = Math.floor(Calculator.getEffectiveAttack(attacker.stats.baseAttack, attackerStats[1] , attackerStats[0]) * 0.8) + Calculator.getEffectiveAttack(attacker.stats.baseAttack, attackerStats[1] , attackerStats[0]); 
+        const EnragedBaseDefense = Math.floor(Calculator.getEffectiveDefense(defender.stats.baseDefense, defenderStats[2], defenderStats[0]) * defMultFactor) + Calculator.getEffectiveDefense(defender.stats.baseDefense, defenderStats[2], defenderStats[0]);
+
         return Calculator.calculateDamage(
             move.power, 
-            Calculator.getEffectiveAttack((attacker.stats.baseAttack * (attackEnraged ? 1.80 : 1)) , attackerStats[1] , attackerStats[0]), 
-            Calculator.getEffectiveDefense((defender.stats.baseDefense * (attackEnraged ? 1 : 3)), defenderStats[2], defenderStats[0]),
+            attackEnraged ? EnragedBaseAttack : Calculator.getEffectiveAttack((attacker.stats.baseAttack) , attackerStats[1] , attackerStats[0]), 
+            attackEnraged ? Calculator.getEffectiveDefense((defender.stats.baseDefense), defenderStats[2], defenderStats[0]) : EnragedBaseDefense,
             attacker.type == move.type || attacker?.type2 == move.type ? 1.2 : 1, 
             effectiveness,
             move.type,
@@ -4183,6 +4187,33 @@ export class PoGoAPI {
                     ))
                 ])
 
+                gamestatus.allyDamageValuesEnraged.push([
+                    Math.floor(this.getDamageEnraged(
+                        attackers[i], 
+                        defender, 
+                        attackersQuickMove[i], 
+                        types, 
+                        attackersStats[i], 
+                        defenderStats, 
+                        attackersBonuses[i], 
+                        defenderBonuses, 
+                        raidMode, false, 
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                    )),
+                    Math.floor(this.getDamageEnraged(
+                        attackers[i], 
+                        defender,
+                        attackersCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        attackersBonuses[i],
+                        defenderBonuses,
+                        raidMode, false,
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                    ))
+                ])
+
                 gamestatus.enemyDamageValues.push([
                     Math.floor(this.getDamage(
                         defender,
@@ -4224,7 +4255,7 @@ export class PoGoAPI {
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
                         "normal", 
                         1, 
-                        (gamestatus.enrage ? 1.8 : 1) * (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     )), 
                     Math.floor(this.getDamage(
                         defender,
@@ -4237,9 +4268,68 @@ export class PoGoAPI {
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
                         "normal", 
                         1, 
-                        (gamestatus.enrage ? 1.8 : 1) * (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ))
                 ])
+
+                gamestatus.enemyDamageValuesEnraged.push([
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i], 
+                        defenderQuickMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )), 
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i], 
+                        defenderCinematicMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        true, 
+                        ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+                gamestatus.enemyDamageValuesEnragedReduced.push([
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i], 
+                        defenderQuickMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )), 
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i], 
+                        defenderCinematicMove, 
+                        types,
+                        defenderStats,  
+                        attackersStats[i], 
+                        defenderBonuses,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal", 
+                        true, 
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
             }
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
             //console.log(gamestatus.enemyPokemonMaxHealth);
@@ -4474,7 +4564,7 @@ export class PoGoAPI {
 
                 if (gamestatus.allyActiveMove != null) {
                     // ally deals damage
-                    const projectedDamage = gamestatus.allyDamageValues[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? 1 : 0];
+                    const projectedDamage = gamestatus.enrage ? gamestatus.allyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? 1 : 0] : gamestatus.allyDamageValues[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? 1 : 0];
                     
                     gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
                     gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
@@ -4652,7 +4742,9 @@ export class PoGoAPI {
                 } else {
                     // Enemy deals damage
                     //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
-                    let projectedDamage = gamestatus.damageReduction == 1 ? gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
+                    let projectedDamage = gamestatus.damageReduction == 1 ? 
+                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : 
+                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnragedReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
                     let proDamageReal = projectedDamage;
                     
                     gamestatus.allyDodgeTurn = 0;
