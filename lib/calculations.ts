@@ -32,6 +32,7 @@ export class Calculator {
       "PIKACHU": "raid-t1-dmax",
       "TRAPINCH": "raid-t1-dmax",
       "COTTONEE": "raid-t1-dmax",
+      "COMBEE": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -248,6 +249,8 @@ export class Calculator {
       "COTTONEE",
       "WHIMSICOTT",
       "REGISTEEL",
+      "COMBEE",
+      "VESPIQUEN",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
