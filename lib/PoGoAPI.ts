@@ -138,12 +138,19 @@ export class PoGoAPI {
     }
 
     static getMoveNamePB(moveId: string, textList: any) {
+        // console.log(moveId);
         if (moveId === "MAX_DYNAMAX_CANNON") {
             return "Dynamax Cannon";
         } if (moveId === "MIND_BLOWN") {
             return "Mind Blown";
         } if (moveId === "GIGATON_HAMMER") {
             return "Gigaton Hammer";
+        } if (moveId === "GMAX_RAPID_FLOW") {
+            return "Rapid Flow";
+        } if (moveId === "GMAX_RAPID_FLOW2") {
+            return "Rapid Flow 2";
+        } if (moveId === "GMAX_RAPID_FLOW3") {
+            return "Rapid Flow MAX";
         }
         const storage = localStorage.getItem("newMoveOverrides");
         const customMove = storage ? JSON.parse(storage)[moveId] : null;
