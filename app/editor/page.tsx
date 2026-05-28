@@ -124,55 +124,6 @@ export default function Home() {
     }
   }
 
-  function allPokemonSelected() {
-    for (let i = 0; i < numMembers; i++) {
-      if (!attackingPokemon[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  const raidSurname = (raidMode: string) => {
-    if (raidMode === "raid-t1") {
-      return "Tier 1";
-    } else if (raidMode === "raid-t3") {
-      return "Tier 3";
-    } else if (raidMode === "raid-t4") {
-      return "Tier 4";
-    } else if (raidMode === "raid-mega") {
-      return "Mega";
-    } else if (raidMode === "raid-t5") {
-      return "Tier 5";
-    } else if (raidMode === "raid-elite") {
-      return "Elite";
-    } else if (raidMode === "raid-primal") {
-      return "Primal";
-    } else if (raidMode === "raid-mega-leg") {
-      return "Mega Legendary";
-    } else if (raidMode === "raid-t7-supermega") {
-      return "Super Mega";
-    } else if (raidMode === "raid-t1-shadow") {
-      return "Tier 1 Shadow";
-    } else if (raidMode === "raid-t3-shadow") {
-      return "Tier 3 Shadow";
-    } else if (raidMode === "raid-t5-shadow") {
-      return "Tier 5 Shadow";
-    } else {
-      return "Normal";
-    }
-  }
-
-  const copyLinkToClipboard = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      alert("Link copied to clipboard!");
-    }).catch((err) => {
-      console.error("Failed to copy: ", err);
-    });
-  };
-
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
       <div className="flex flex-row items-center justify-center space-x-4">
@@ -262,7 +213,7 @@ export default function Home() {
                 />
               </div> 
               <div className="flex flex-col w-[50%]">
-                <p>Move Kind: </p>
+                <p>Move Kind </p>
                 <Button onClick={() => setNewMoveIsFast(!newMoveIsFast)} className={newMoveIsFast ? "bg-green-500 text-white" : "bg-red-500 text-white"}>
                   {newMoveIsFast ? "Fast Move" : "Charged Move"}
                 </Button>

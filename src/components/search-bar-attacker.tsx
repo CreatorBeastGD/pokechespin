@@ -200,10 +200,8 @@ export default function SearchBarAttacker({
       if (!response) {
         allForms = [];
       } else {
-      allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
+        allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response!.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX"));
       }
-
-
       setAvailableForms(allForms);// Construir nueva URL
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
