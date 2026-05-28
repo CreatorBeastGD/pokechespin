@@ -197,47 +197,10 @@ export class PoGoAPI {
         
         if (pokemon.length > 0) {
             switch (pokemon[0].pokemonId) {
-                case "TOUCANNON": 
-                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "DRILL_PECK", "ROCK_BLAST", "RETURN", "BEAK_BLAST"];
-                    break;
-                case "TOUCANNON_SHADOW_FORM": 
-                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "DRILL_PECK", "ROCK_BLAST", "FRUSTRATION", "BEAK_BLAST"];
-                    break;
-                case "PIKACHU":
-                    pokemon[0].cinematicMoves = ["WILD_CHARGE","DISCHARGE","THUNDERBOLT", "THUNDER", "SURF"];
-                    pokemon[0].eliteCinematicMove = ["SURF", "THUNDER"];
-                    break;
-                case "PIKACHU_GIGANTAMAX":
-                    pokemon[0].cinematicMoves = ["WILD_CHARGE","DISCHARGE","THUNDERBOLT", "THUNDER", "SURF"];
-                    pokemon[0].eliteCinematicMove = ["SURF", "THUNDER"];
-                    break;
-                case "ETERNATUS":
-                    pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
-                    pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "DRAGON_PULSE", "FLAMETHROWER", "DYNAMAX_CANNON"];
-                    pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
-                    break;
                 case "ETERNATUS_ETERNAMAX_FORM":
                     pokemon[0].quickMoves = ["DRAGON_TAIL_FAST", "POISON_JAB_FAST"];
                     pokemon[0].cinematicMoves = ["SLUDGE_BOMB", "FLAMETHROWER", "HYPER_BEAM", "DYNAMAX_CANNON"];
                     pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
-                    break;
-                case "CLEFABLE_MEGA":
-                    pokemon[0].type2 = "POKEMON_TYPE_FLYING";
-                    break;
-                case "MEGANIUM_MEGA":
-                    pokemon[0].type2 = "POKEMON_TYPE_FAIRY";
-                    break;
-                case "FERALIGATR_MEGA":
-                    pokemon[0].type2 = "POKEMON_TYPE_DRAGON";
-                    break;
-                case "STARAPTOR_MEGA":
-                    pokemon[0].type = "POKEMON_TYPE_FIGHTING";
-                    break;
-                case "BARBARACLE_MEGA":
-                    pokemon[0].type2 = "POKEMON_TYPE_FIGHTING";
-                    break;
-                case "GOLISOPOD_MEGA":
-                    pokemon[0].type2 = "POKEMON_TYPE_STEEL";
                     break;
                 case "CINDERACE_GIGANTAMAX":
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
@@ -247,38 +210,10 @@ export class PoGoAPI {
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
                     break;
-                case "TINKATON":
-                    pokemon[0].cinematicMoves = ["FLASH_CANNON", "PLAY_ROUGH", "BULLDOZE", "HEAVY_SLAM", "GIGATON_HAMMER"];
-                    pokemon[0].eliteCinematicMove = ["GIGATON_HAMMER"];
-                    break;
-                case "MEWTWO_MEGA_X":
-                    pokemon[0].stats.baseAttack = 399;
-                    pokemon[0].stats.baseDefense = 215;
-                    pokemon[0].stats.baseStamina = 228;
-                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
-                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
-                    break;
-                case "MEWTWO_MEGA_Y":
-                    pokemon[0].stats.baseAttack = 413;
-                    pokemon[0].stats.baseDefense = 223;
-                    pokemon[0].stats.baseStamina = 228;
-                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
-                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
-                    break;
-                case "MEWTWO":
-                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
-                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
-                    break;
-                case "MEWTWO_SHADOW_FORM":
-                    pokemon[0].quickMoves = ["CONFUSION_FAST", "PSYCHO_CUT_FAST", "COUNTER_FAST"];
-                    pokemon[0].eliteQuickMove = ["COUNTER_FAST"];
-                    break;
                 default:
                     break;
             }
         }
-
-        
 
         if (pokemon.length !== 0) {
             // Overrides from config
