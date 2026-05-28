@@ -49,7 +49,7 @@ export default function RootLayout({
           <p className="text-white text-lg">Loading Pokémon GO Damage Calculator...</p>
         </div>
         }>
-          <p className="text-red-600 text-center text-sm mt-4">Pokebattler is having issues loading data. In consequence, PokéChespin may not work as expected.</p>
+          
           {children}
         </Suspense>
         <div className="flex flex-col items-center justify-center space-y-3 mt-4 mb-4">
@@ -84,4 +84,4 @@ export default function RootLayout({
 }
 
 
-// <Analytics /> disabled due to limitations
+// <p className="text-red-600 text-center text-sm mt-4">Pokebattler is having issues loading data. In consequence, PokéChespin may not work as expected.</p>
