@@ -5,10 +5,7 @@ import { Calculator } from "./calculations";
 import { GameStatus } from "../src/components/GameStatus";
 import { RaidStatus } from "@/components/RaidStatus";
 
-// @ts-ignore
 const API = nextConfig.API_URL;
-
-// @ts-ignore
 const API_PB = nextConfig.API_PB_URL;
 
 export class PoGoAPI {

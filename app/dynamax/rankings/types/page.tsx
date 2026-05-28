@@ -464,9 +464,6 @@ export default function rankingsPage() {
                                             {showingCounters ? "Show Attackers" : "Show Counters"}
                                         </button>
                                     </div>
-                                    {attackersToShow?.length === 0 && (
-                                        <p className="text-sm italic text-gray-500">No attackers found! Check your configurations!</p>
-                                    )}
                                     {attackersToShow?.map((attacker: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div className="flex flex-row items-center justify-between space-x-4 w-full p-4">
@@ -534,9 +531,6 @@ export default function rankingsPage() {
                                         <button onClick={toggleShowAllDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
                                             {showBestDefenders ? "Show Top 5 only" : "Show All"}
                                         </button>
-                                    {defendersToShow?.length === 0 && (
-                                        <p className="text-sm italic text-gray-500">No defenders found! Check your configurations!</p>
-                                    )}
                                     {defendersToShow?.map((defender: any, index: number) => (
                                         
                                         <Card className="w-full" key={index}>

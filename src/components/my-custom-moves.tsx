@@ -18,7 +18,6 @@ import WeaknessResistanceTable from "./WeaknessResistanceTable";
 import { set } from "mongoose";
 import { Select } from "./ui/select";
 import { SelectItem } from "@radix-ui/react-select";
-import { Separator } from "./ui/separator";
 
 
 interface MyCustomMovesProps {
@@ -66,7 +65,6 @@ export default function MyCustomMoves({
 
   return (
     <>
-      <Separator className="my-4"/>
       <p>My custom fast moves</p>
       {customList.filter((move: any) => move.energyDelta > 0).map((move: any) => (
         <div key={move.moveId} className="relative border p-2 mb-2 rounded bg-gray-100">
@@ -80,11 +78,6 @@ export default function MyCustomMoves({
           }}>Delete</button> 
         </div>
       ))}
-      {customList.filter((move: any) => move.energyDelta > 0).length === 0 && (
-        <p className="text-sm text-muted-foreground">No custom fast moves added yet.</p>
-      )}
-      
-      <Separator className="my-4"/>
 
       <p>My custom charged moves</p>
       {customList.filter((move: any) => move.energyDelta <= 0).map((move: any) => (
@@ -101,9 +94,6 @@ export default function MyCustomMoves({
         </button> 
         </div>
       ))}
-      {customList.filter((move: any) => move.energyDelta <= 0).length === 0 && (
-        <p className="text-sm text-muted-foreground">No custom charged moves added yet.</p>
-      )}
     </>
   );
 }

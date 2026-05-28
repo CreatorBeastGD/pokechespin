@@ -381,9 +381,6 @@ export default function rankingsPage() {
                                             {showBestAttackers ? "Show Top 5 only" : "Show All"}
                                         </button>
                                     </div>
-                                    {attackersToShow?.length === 0 && (
-                                        <p className="text-sm italic text-gray-500">No attackers found! Check your configurations!</p>
-                                    )}
                                     {attackersToShow?.map((attacker: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
@@ -486,9 +483,6 @@ export default function rankingsPage() {
                                             {showBestDefenders ? "Show Top 5 only" : "Show All"}
                                         </button>
                                     </div>
-                                    {defendersToShow?.length === 0 && (
-                                        <p className="text-sm italic text-gray-500">No tanks found! Check your configurations!</p>
-                                    )}
                                     {defendersToShow?.map((defender: any, index: number) => (
                                         <Card key={index} className="w-full">
                                             <div  className="flex flex-row  items-center justify-between space-x-4 w-full p-4">
