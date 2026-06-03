@@ -38,6 +38,7 @@ const Navbar = () => {
     let [addAllGmaxesToGeneralRankings, setAddAllGmaxesToGeneralRankings] = useState(false);
     let [simplifyCalculationText, setSimplifyCalculationText] = useState(false);
     let [customChargedMoveChance, setCustomChargedMoveChance] = useState(false);
+    let [gemless, setGemless] = useState(false);
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -59,6 +60,7 @@ const Navbar = () => {
         const addAllGmaxesToGeneralRankingsStorage = localStorage.getItem("addAllGmaxesToGeneralRankings");
         const simplifyCalculationTextStorage = localStorage.getItem("simplifyCalculationText");
         const customChargedMoveChanceStorage = localStorage.getItem("customChargedMoveChance");
+        const gemlessStorage = localStorage.getItem("gemless");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -150,6 +152,12 @@ const Navbar = () => {
             localStorage.setItem("customChargedMoveChance", "false");
         }
 
+        if (gemlessStorage) {
+            setGemless(gemlessStorage === "true");
+        } else {
+            localStorage.setItem("gemless", "false");
+        }
+
         async function fetchAllPokemon() {
             const response = await PoGoAPI.getAllPokemonPB();
             setAllPokemon(response);
@@ -196,6 +204,7 @@ const Navbar = () => {
         localStorage.setItem("showAllGmax", showAllGmax.toString());
         localStorage.setItem("customChargedMoveChance", customChargedMoveChance.toString());
         localStorage.setItem("customPokemonToRankings", customPokemonToRankings);
+        localStorage.setItem("gemless", gemless.toString());
         localStorage.setItem("showCustomPokemonOnRankings", showCustomPokemonOnRankings.toString());
         localStorage.setItem("showOnlyCustomPokemonOnRankings", showOnlyCustomPokemonOnRankings.toString());
         localStorage.setItem("selfMegaBoost", selfMegaBoost.toString());
@@ -217,6 +226,7 @@ const Navbar = () => {
         setCustomPokemonToRankings("");
         setShowCustomPokemonOnRankings(false);
         setShowOnlyCustomPokemonOnRankings(false);
+        setGemless(false);
         setSelfMegaBoost(false);
         setShowDPSOnSoloRaid(false);
         setShowHPOnSoloRaid(false);
@@ -243,6 +253,7 @@ const Navbar = () => {
         localStorage.removeItem("newMoveOverrides");
         localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
         localStorage.setItem("simplifyCalculationText", "false");
+        localStorage.setItem("gemless", "false");
         // reload page
         window.location.reload();
     }
@@ -414,6 +425,15 @@ const Navbar = () => {
                                     <input checked={customChargedMoveChance} onChange={(e) => setCustomChargedMoveChance(e.target.checked)} type="checkbox" id="customChargedMoveChance" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Enables the 'Charged Move Chance' option, which allows you to set a custom chance for the Defender to cast a Charged Move. This config is intended to use under some specific scenarios. Remember the Defender will always roll for a chance of using a Charged Move if it has energy to use it.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Avoid using Purified Gems against Shadow Bosses on Raid simulations.</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={gemless} onChange={(e) => setGemless(e.target.checked)} type="checkbox" id="gemless" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Prevents the use of Purified Gems against Shadow Bosses during Raid simulations.
                                     </p>
                                 </div>
                             </div>

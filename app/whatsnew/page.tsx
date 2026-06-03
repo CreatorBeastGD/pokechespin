@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.3",
+        desc: "+ Added a new Config, called 'Avoid using Purified Gems against Shadow Bosses on Raid simulations', to PokéChespin!\n"+
+                ">>>>>> This new config prevents the use of Purified Gems against Shadow Bosses during Raid simulations.\n"+
+                ">>>>>> This config is OFF by default.\n",
+        date: "2026-06-03",
+    },
+    {
         title: "v1.38.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Combee, Vespiquen.\n"+

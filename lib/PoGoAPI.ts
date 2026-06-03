@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.2.1";
+        return "1.38.3";
     }
 
     static async getAllPokemon() {
@@ -1929,7 +1929,7 @@ export class PoGoAPI {
         peopleCount?: any,
         partyPower?: any,
         boost: string = "none",
-        energyResolveBug: boolean = true,
+        energyResolveBug: boolean = true
     ) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
@@ -2009,6 +2009,7 @@ export class PoGoAPI {
         let energyResolveCooldown = new Array(2).fill(0);
         let indexAlternator = 0;
 
+        const gemless = localStorage.getItem("gemless") === "true";
 
         while (attackerDamage <= defenderHealth) {
             // Attacker can cast a move
@@ -2064,7 +2065,7 @@ export class PoGoAPI {
                     }
 
                     // Attacker has a purified gem and can use it
-                    if (enraged && (purifiedGemsCount < purifiedGemsLimit) && isEnraged && purifiedGemCooldown == -1) {
+                    if (enraged && !gemless && (purifiedGemsCount < purifiedGemsLimit) && isEnraged && purifiedGemCooldown == -1) {
                         for (let i = 0 ; i < peopleCount ; i++) {
                             purifiedGemsCount++;
                             battleLog.push({"turn": time, "attacker": "attacker", "purifiedgem": true});
