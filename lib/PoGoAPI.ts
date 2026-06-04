@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.3";
+        return "1.38.4";
     }
 
     static async getAllPokemon() {
@@ -28,7 +28,65 @@ export class PoGoAPI {
 
     static async getAllPokemonPB() {
         const response = await fetch(API_PB + "pokemon");
-        return (await response.json()).pokemon;
+        return (await response.json()).pokemon.concat([
+            {
+                "pokemonId": "BAXCALIBUR_SHADOW_FORM",
+                "type": "POKEMON_TYPE_DRAGON",
+                "type2": "POKEMON_TYPE_ICE",
+                "stats": {
+                    "baseStamina": 229,
+                    "baseAttack": 254,
+                    "baseDefense": 168
+                },
+                "quickMoves": [
+                    "DRAGON_BREATH_FAST",
+                    "ICE_FANG_FAST"
+                ],
+                "cinematicMoves": [
+                    "BLIZZARD",
+                    "DRAGON_CLAW",
+                    "ICY_WIND",
+                    "AVALANCHE",
+                    "OUTRAGE",
+                    "GLAIVE_RUSH"
+                ],
+                "eliteCinematicMove": ["GLAIVE_RUSH"],
+                "parentPokemonId": "ARCTIBAX",
+                "familyId": "FAMILY_FRIGIBAX",
+                "pokedex": {
+                    "pokemonId": "BAXCALIBUR",
+                    "pokemonNum": 998
+                },
+            },{
+                "pokemonId": "BAXCALIBUR_3_PERCENT_MEGA",
+                "type": "POKEMON_TYPE_DRAGON",
+                "type2": "POKEMON_TYPE_ICE",
+                "stats": {
+                    "baseStamina": 243,
+                    "baseAttack": 331,
+                    "baseDefense": 221
+                },
+                "quickMoves": [
+                    "DRAGON_BREATH_FAST",
+                    "ICE_FANG_FAST"
+                ],
+                "cinematicMoves": [
+                    "BLIZZARD",
+                    "DRAGON_CLAW",
+                    "ICY_WIND",
+                    "AVALANCHE",
+                    "OUTRAGE",
+                    "GLAIVE_RUSH"
+                ],
+                "eliteCinematicMove": ["GLAIVE_RUSH"],
+                "parentPokemonId": "ARCTIBAX",
+                "familyId": "FAMILY_FRIGIBAX",
+                "pokedex": {
+                    "pokemonId": "BAXCALIBUR",
+                    "pokemonNum": 998
+                },
+            }]
+        );
     }
 
     static getAllPokemonPB_ID(pokemonList: any, onlyBaseForms: boolean = true) {
@@ -130,9 +188,14 @@ export class PoGoAPI {
     static getPokemonNamePB(pokemonId: string, textList: any) {
         if (pokemonId === "GEM") {
             return "Purified Gem";
-        }
-        if (pokemonId == "PIKACHU_WCS_2025_FORM") {
+        } if (pokemonId == "PIKACHU_WCS_2025_FORM") {
             return "Pikachu - WCS 2025";
+        } if (pokemonId == "BAXCALIBUR_SHADOW_FORM") {
+            return "Shadow Baxcalibur";
+        } if (pokemonId == "BAXCALIBUR_MEGA") {
+            return "Mega Baxcalibur (9%)";
+        } if (pokemonId == "BAXCALIBUR_3_PERCENT_MEGA") {
+            return "Mega Baxcalibur (3%)";
         }
         return pokemonId ? this.formatPokemonText(textList.pokemon[pokemonId], textList) : "???";
     }
@@ -159,17 +222,22 @@ export class PoGoAPI {
 
     static getPokemonImageByID(pokemonId: string, pokemonList: any, shiny: boolean = false) {
         const today = Date.now();
+        let objImage = pokemonId;
 
         // April fools!
         if (today > new Date("2026-4-1").getTime() && today < new Date("2026-4-2").getTime()) {
-            return (Math.random() < 1/4096) ? pokemonList["CHESPIN"].shiny : pokemonList["CHESPIN"].base;
+            objImage = "CHESPIN";
+        }
+
+        if (pokemonId === "BAXCALIBUR_SHADOW_FORM" || pokemonId === "BAXCALIBUR_3_PERCENT_MEGA") {
+            objImage = "BAXCALIBUR";
         }
 
         if (localStorage.getItem("showAllPokemonAsShiny") === "true") {
-            return pokemonList[pokemonId].shiny;
+            return pokemonList[objImage].shiny;
         }
 
-        return (Math.random() < 1/4096) ? (pokemonList[pokemonId] ? pokemonList[pokemonId].shiny : pokemonList["UNOWN_A_FORM"].shiny) : (pokemonList[pokemonId] ? pokemonList[pokemonId].base : pokemonList["UNOWN_A_FORM"].base);
+        return (Math.random() < 1/4096) ? (pokemonList[objImage] ? pokemonList[objImage].shiny : pokemonList["UNOWN_" + objImage.charAt(0) + "_FORM"].shiny) : (pokemonList[objImage] ? pokemonList[objImage].base : pokemonList["UNOWN_" + objImage.charAt(0) + "_FORM"].base);
     }
 
     static filterUniqueById(list: any[]) {
@@ -210,6 +278,12 @@ export class PoGoAPI {
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
                     break;
+                case "BAXCALIBUR":
+                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
+                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                case "BAXCALIBUR_MEGA":
+                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
+                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
                 default:
                     break;
             }
@@ -434,8 +508,18 @@ export class PoGoAPI {
                     damageWindowEndMs: 3000,
                     animationId: "GIGATON_HAMMER",
                 };
+            } if (moveId === "GLAIVE_RUSH") {
+                return {
+                    moveId: "GLAIVE_RUSH",
+                    power: 105,
+                    durationMs: 2000,
+                    energyDelta: -50,
+                    type: "POKEMON_TYPE_DRAGON",
+                    damageWindowStartMs: 1998,
+                    damageWindowEndMs: 2000,
+                    animationId: "GLAIVE_RUSH",
+                };
             }
-            
             return null;
         }
         if (moveId === "BEHEMOTH_BLADE") {
@@ -1456,6 +1540,12 @@ export class PoGoAPI {
             return false;
         }
         return pokemonId.endsWith("_MEGA") || pokemonId.endsWith("_MEGA_X") || pokemonId.endsWith("_MEGA_Y") || pokemonId.endsWith("_MEGA_Z") || pokemonId.endsWith("_MEGA_COMPLETE") || pokemonId.endsWith("_MEGA_C") || pokemonId.endsWith("_MEGA_ETERNAL");
+    }
+    static IsPrimal(pokemonId: string) {
+        if (!pokemonId) {
+            return false;
+        }
+        return pokemonId.endsWith("_PRIMAL");
     }
 
     static MegaShields(pokemonId: string) {

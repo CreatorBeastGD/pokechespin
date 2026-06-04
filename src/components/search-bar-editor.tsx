@@ -609,7 +609,7 @@ export default function SearchBarEditor({
           
             <Image
               unoptimized
-                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + ((selectedBonuses[1] === true && (slot === 1 || (slot === 2 && raidMode === "normal"))) ? "bg-gradient-to-t from-purple-900 to-violet-100" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
+                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : PoGoAPI.IsMega(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-red-200 via-green-200 to-blue-200" : PoGoAPI.IsPrimal(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-blue-500 via-black-500 to-red-500" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
                 alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
