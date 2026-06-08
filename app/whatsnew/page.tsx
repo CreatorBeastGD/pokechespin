@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.4.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Electabuzz, Electivire.\n",
+        date: "2026-06-08",
+    },
+    {
         title: "v1.38.4",
         desc: "+ Added Shadow Baxcalibur, Glaive Rush (according to recently datamined stats) and Mega Baxcalibur with a 3% nerf instead of a 9% nerf. No one asked for this, but someone will probably like it\n"+
                 "+ Added a background for Megas and Primals on the Pokémon selection screen.\n",
