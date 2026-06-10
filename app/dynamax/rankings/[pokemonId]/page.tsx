@@ -57,6 +57,8 @@ export default function rankingsPage() {
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
+    const [level, setLevel] = useState<string>("40");
+
 
     const [customBossAtkMult, setCustomBossAtkMult] = useState<number>(1);
     const [customBossCPM, setCustomBossCPM] = useState<number>(1);
@@ -190,6 +192,11 @@ export default function rankingsPage() {
                     setWeather(weatherBoost);
                 }
 
+                const cLevel = urlSP.get("level") ? urlSP.get("level") : "40";
+                if (cLevel) {
+                    setLevel(cLevel);
+                }
+
                 const general = urlSP.get("general") ? urlSP.get("general") === "true" : false;
                 if (general) {
                     setShowGeneralBestDefenders(general);
@@ -216,11 +223,11 @@ export default function rankingsPage() {
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"));
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
                     setBestAttackers(bestAttackers);
-                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, parseFloat(urlSP.get("custom_cpm") ?? "1"), parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"));
+                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, parseFloat(urlSP.get("custom_cpm") ?? "1"), parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
                     setBestDefenders(bestDefenders);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"));
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
                     setGeneralBestDefenders(bestGeneralDefenders);
                     urlSP.delete("member");
                     urlSP.delete("slot");
@@ -228,9 +235,9 @@ export default function rankingsPage() {
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"));
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
                     setBestAttackers(bestAttackers);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"));
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
                     setGeneralBestDefenders(bestGeneralDefenders);
                     setGeneralMode(true);
                     setShowGeneralBestDefenders(true);
@@ -247,7 +254,7 @@ export default function rankingsPage() {
                 setEverythingLoaded(true);
             }
         }
-    }, [allDataLoaded]);
+    }, [allDataLoaded, level]);
 
     useEffect(() => {
         if (pokemonInfo && allEnglishText) {
@@ -309,7 +316,7 @@ export default function rankingsPage() {
     
     
     const getHPPercent = (tankScore: number, baseStamina: number, pokemonId: string) => {
-        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0) + extraHP + (dCannon ? (pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && pokemonId !== "ZACIAN_CROWNED_SWORD_FORM") ? 60 : 0 : 0))) * 100;
+        return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, parseInt(level)) + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0) + extraHP + (dCannon ? (pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && pokemonId !== "ZACIAN_CROWNED_SWORD_FORM") ? 60 : 0 : 0))) * 100;
     }
 
     const getAverageTankScore = (hpdmg: number, hpper: number) => {
@@ -396,6 +403,15 @@ export default function rankingsPage() {
         });
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, value.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
+    function handleLevelChange(value: string): void {
+        setLevel(value);
+
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("level", value);
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
@@ -651,6 +667,13 @@ export default function rankingsPage() {
                         <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         
+                        <p className="italic text-slate-700 text-sm ">Pokémon Level</p>
+                        <select onChange={(e) => handleLevelChange(e.target.value)} value={level} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                            <option key={"20"} value={"20"}>Level 20</option>
+                            <option key={"30"} value={"30"}>Level 30</option>
+                            <option key={"40"} value={"40"}>Level 40</option>
+                            <option key={"50"} value={"50"}>Level 50</option>
+                        </select>
                         
                         </CardContent>
                     </Card>
@@ -659,7 +682,7 @@ export default function rankingsPage() {
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best attackers to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
-                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level 40 with perfect IVs.</p>
+                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level {level} with perfect IVs.</p>
                             </CardDescription>
                             
                             <div className="flex flex-row items-center justify-center ">

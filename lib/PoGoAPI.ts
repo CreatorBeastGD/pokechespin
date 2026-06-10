@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.4.1";
+        return "1.38.5";
     }
 
     static async getAllPokemon() {
@@ -2687,7 +2687,7 @@ export class PoGoAPI {
         return bestMove;
     }
 
-    static getBestChargedMove(pokemon: any, boss: any, types: any, raidMode: string, customBossHP: number = 1, allMoves?: any, customEGM: number = 4, defenderStats: any = [40,15,15,15], fastMove?: any): {move: any, ept: number, needsMushroom: boolean} {
+    static getBestChargedMove(pokemon: any, boss: any, types: any, raidMode: string, customBossHP: number = 1, allMoves?: any, customEGM: number = 4, defenderStats: any = [40,15,15,15], fastMove?: any, level: number = 40): {move: any, ept: number, needsMushroom: boolean} {
         let bestMove = null;
         let bestEPT = 0;
         let bestEPTShroom = 0;
@@ -2696,7 +2696,7 @@ export class PoGoAPI {
         });
         movesToCheck.forEach((move: any) => {
             let moveData = this.getMovePBByID(move, allMoves);
-            const damage = this.getDamage(pokemon, boss, moveData, types, [40,15,15,15], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1);
+            const damage = this.getDamage(pokemon, boss, moveData, types, [level,15,15,15], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1);
             const energyGain = Calculator.getMaxEnergyGain(damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
             const energyGainShroom = Calculator.getMaxEnergyGain(2*damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
             
@@ -2973,9 +2973,10 @@ export class PoGoAPI {
         customCPM: number,
         customBossHP: number,
         customEGM: number,
+        level: number = 40,
     ) {
-        let attackerStat = [40,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+        let attackerStat = [level,15,15,15]
+        const defenderStat = this.convertStats([level,15,15,15], raidMode, boss.pokemonId);
         let defenderStatModified = [...defenderStat];
         if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
             defenderStatModified[0] = customCPM;
@@ -3014,7 +3015,7 @@ export class PoGoAPI {
             }
             const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove)});
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, level)});
         })
         return graphic.sort((a, b) => {
             if (a.tankScore > b.tankScore) {
@@ -3134,9 +3135,10 @@ export class PoGoAPI {
         customAtkMult: number,
         customBossHP: number,
         customEGM: number,
+        level: number = 40,
     ) {
-        let attackerStat = [40,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+        let attackerStat = [level,15,15,15]
+        const defenderStat = this.convertStats([level,15,15,15], raidMode, boss.pokemonId);
         let defenderStatModified = [...defenderStat];
         if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
             defenderStatModified[0] = customCPM;
@@ -3174,7 +3176,7 @@ export class PoGoAPI {
             const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0,(percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
             const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Tank Score: " + tankScore);
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove)});
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, level)});
         })
         //console.log(graphic)
         return graphic.sort((a, b) => {
@@ -3315,9 +3317,10 @@ export class PoGoAPI {
         customBossCPM: number = 1,
         isDCannon: boolean = false,
         customBossHP: number = 1,
-        customEGM: number = 4
+        customEGM: number = 4,
+        level: number = 40,
     ) {
-        const attackerStat = [40,15,15,15]
+        const attackerStat = [level,15,15,15]
         const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
 
         const modDefenderStats = [...defenderStat];
@@ -3341,7 +3344,7 @@ export class PoGoAPI {
         allMaxPoke.forEach((attacker: string) => {
             const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
             const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats, customBossHP, customEGM) : this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats);
-            const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove);
+            const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove, level);
             //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
             const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
             if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {

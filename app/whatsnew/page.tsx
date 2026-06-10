@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.5",
+        desc: "+ Added a new option to select certain levels for the ranked Pokémon on Max Rankings, right now available for Rankings against one Pokémon.\n"+
+                ">>>>>> You can select between level 20, 30, 40 and 50 for the ranked Pokémon, allowing you to see how the rankings, and charged move availability, change with different levels! (This option is currently only available for rankings against one Pokémon, and it defaults to level 40)\n",
+        date: "2026-06-10",
+    },
+    {
         title: "v1.38.4.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Electabuzz, Electivire.\n",
