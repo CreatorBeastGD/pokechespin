@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.5.1",
+        desc: "+ Added a new Config called 'Slower Swaps on Solo Raid Player' to PokéChespin!\n"+
+                ">>>>>> This new config makes your swaps on the Solo Raid Player last for 1s instead of 0.5s, trying to replicate the slight lag that can happen during an in-game raid. (This config is OFF by default)\n",
+        date: "2026-06-11",
+    },
+    {
         title: "v1.38.5",
         desc: "+ Added a new option to select certain levels for the ranked Pokémon on Max Rankings, right now available for Rankings against one Pokémon.\n"+
                 ">>>>>> You can select between level 20, 30, 40 and 50 for the ranked Pokémon, allowing you to see how the rankings, and charged move availability, change with different levels! (This option is currently only available for rankings against one Pokémon, and it defaults to level 40)\n",

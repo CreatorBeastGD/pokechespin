@@ -39,6 +39,7 @@ const Navbar = () => {
     let [simplifyCalculationText, setSimplifyCalculationText] = useState(false);
     let [customChargedMoveChance, setCustomChargedMoveChance] = useState(false);
     let [gemless, setGemless] = useState(false);
+    let [slowerSwaps, setSlowerSwaps] = useState(false);
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -61,6 +62,7 @@ const Navbar = () => {
         const simplifyCalculationTextStorage = localStorage.getItem("simplifyCalculationText");
         const customChargedMoveChanceStorage = localStorage.getItem("customChargedMoveChance");
         const gemlessStorage = localStorage.getItem("gemless");
+        const slowerSwapsStorage = localStorage.getItem("slowerSwaps");
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -158,6 +160,12 @@ const Navbar = () => {
             localStorage.setItem("gemless", "false");
         }
 
+        if (slowerSwapsStorage) {
+            setSlowerSwaps(slowerSwapsStorage === "true");
+        } else {
+            localStorage.setItem("slowerSwaps", "false");
+        }
+
         async function fetchAllPokemon() {
             const response = await PoGoAPI.getAllPokemonPB();
             setAllPokemon(response);
@@ -208,6 +216,7 @@ const Navbar = () => {
         localStorage.setItem("showCustomPokemonOnRankings", showCustomPokemonOnRankings.toString());
         localStorage.setItem("showOnlyCustomPokemonOnRankings", showOnlyCustomPokemonOnRankings.toString());
         localStorage.setItem("selfMegaBoost", selfMegaBoost.toString());
+        localStorage.setItem("slowerSwaps", slowerSwaps.toString());
         localStorage.setItem("showDPSOnSoloRaid", showDPSOnSoloRaid.toString());
         localStorage.setItem("showHPOnSoloRaid", showHPOnSoloRaid.toString());
         localStorage.setItem("freezeRejoin", freezeRejoin.toString());
@@ -235,6 +244,7 @@ const Navbar = () => {
         setAddAllGmaxesToGeneralRankings(false);
         setSimplifyCalculationText(false);
         setCustomChargedMoveChance(false);
+        setSlowerSwaps(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -254,6 +264,7 @@ const Navbar = () => {
         localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
         localStorage.setItem("simplifyCalculationText", "false");
         localStorage.setItem("gemless", "false");
+        localStorage.setItem("slowerSwaps", "false");
         // reload page
         window.location.reload();
     }
@@ -434,6 +445,15 @@ const Navbar = () => {
                                     <input checked={gemless} onChange={(e) => setGemless(e.target.checked)} type="checkbox" id="gemless" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
                                     <p className="text-xs text-muted-foreground">
                                         Prevents the use of Purified Gems against Shadow Bosses during Raid simulations.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Slower Swaps on Solo Raid Player</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={slowerSwaps} onChange={(e) => setSlowerSwaps(e.target.checked)} type="checkbox" id="slowerSwaps" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Swapping your Pokémon lasts for 1s instead of 0.5s. This option tries to replicate slight lag that can happen during an in-game raid.
                                     </p>
                                 </div>
                             </div>

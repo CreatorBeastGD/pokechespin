@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.5";
+        return "1.38.5.1";
     }
 
     static async getAllPokemon() {
@@ -4459,7 +4459,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 0
                 case "switch0":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                     if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
                         gamestatus.activeAllyIndex = 0;
@@ -4477,7 +4477,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 1
                 case "switch1":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                     if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
                         gamestatus.activeAllyIndex = 1;
@@ -4495,7 +4495,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 2
                 case "switch2":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                     if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
                         gamestatus.activeAllyIndex = 2;
@@ -4512,7 +4512,7 @@ export class PoGoAPI {
                 
                 case "switch3":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                         if (gamestatus.activeAllyIndex != 3 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[3] < gamestatus.allyPokemonMaxHealth[3]) {
                             gamestatus.activeAllyIndex = 3;
@@ -4528,7 +4528,7 @@ export class PoGoAPI {
                 
                 case "switch4":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                         if (gamestatus.activeAllyIndex != 4 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[4] < gamestatus.allyPokemonMaxHealth[4]) {
                             gamestatus.activeAllyIndex = 4;
@@ -4546,7 +4546,7 @@ export class PoGoAPI {
                     
                 case "switch5":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 0.5;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     gamestatus.chargedMoveCooldown = 1;
                         if (gamestatus.activeAllyIndex != 5 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[5] < gamestatus.allyPokemonMaxHealth[5]) {
                             gamestatus.activeAllyIndex = 5;
@@ -5009,7 +5009,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 0
                 case "switch0":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5
                     
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
@@ -5035,7 +5035,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 1
                 case "switch1":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     
                     if (gamestatus.maxPhaseCounter == 4) {
                         gamestatus.maxPhaseCounter = 3;
@@ -5060,7 +5060,7 @@ export class PoGoAPI {
                 // Switch to pokémon slot 2
                 case "switch2":
                     gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : 0.5;
+                    gamestatus.allyCooldown = (gamestatus.maxPhaseCounter == 4) ? 0 : localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
                     
 
                     if (gamestatus.maxPhaseCounter == 4) {
