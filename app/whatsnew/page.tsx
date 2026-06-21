@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.5.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Hoothoot, Noctowl.\n"+
+                "~ Tweaked when the 'On Cooldown!' message shows up on the Solo Raid Simulator. If you could buffer a move given your conditions in-game, it will let you use your charged move after swapping, not needing to wait for a cooldown.\n",
+        date: "2026-06-12",
+    },
+    {
         title: "v1.38.5.1",
         desc: "+ Added a new Config called 'Slower Swaps on Solo Raid Player' to PokéChespin!\n"+
                 ">>>>>> This new config makes your swaps on the Solo Raid Player last for 1s instead of 0.5s, trying to replicate the slight lag that can happen during an in-game raid. (This config is OFF by default)\n",

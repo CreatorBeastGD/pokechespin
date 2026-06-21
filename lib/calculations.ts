@@ -33,6 +33,7 @@ export class Calculator {
       "TRAPINCH": "raid-t1-dmax",
       "COTTONEE": "raid-t1-dmax",
       "COMBEE": "raid-t1-dmax",
+      "HOOTHOOT": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -254,6 +255,8 @@ export class Calculator {
       "VESPIQUEN",
       "ELECTABUZZ",
       "ELECTIVIRE",
+      "HOOTHOOT",
+      "NOCTOWL",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
