@@ -597,6 +597,12 @@ export class PoGoAPI {
     }
 
     static getKey(name?: string, list?: any): string {
+        if (name?.toUpperCase() == "BAXCALIBUR") {
+            return "BAXCALIBUR";
+        }
+        if (name?.toUpperCase() == "BASCULEGION") {
+            return "BASCULEGION";
+        }
         if (name && list) {
             if (list.find((item: any) => (item.name).toLowerCase() === name.toLowerCase())) {
                 return list.find((item: any) => (item.name).toLowerCase() === name.toLowerCase()).id;
