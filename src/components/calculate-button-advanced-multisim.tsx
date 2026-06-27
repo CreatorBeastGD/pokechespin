@@ -129,6 +129,8 @@ export default function CalculateButtonMultiSimulateAdvanced({
         if (!chargedMove[i]) {
           return;
         }
+      } else {
+        return;
       }
     }
 

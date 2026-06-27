@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.5.2.1",
+        desc: "+ Information about relobby times in random simulator for raids came back."+
+                "+ Mega Skarmory' Super Mega Raid shields set to 7.",
+        date: "2026-06-13",
+    },
+    {
         title: "v1.38.5.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Hoothoot, Noctowl.\n"+

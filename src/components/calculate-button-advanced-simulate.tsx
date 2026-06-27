@@ -48,6 +48,7 @@ export default function CalculateButtonSimulateAdvanced({
   const router = useRouter();
 
   const [time, setTime] = useState<number>(0);
+  const [relobby, setRelobby] = useState<number>(0);
   const [qau, setQau] = useState<any | null>({ attackerQuickAttackUses: 0, defenderQuickAttackUses: 0 });
   const [cau, setCau] = useState<any | null>({ attackerChargedAttackUses: 0, defenderChargedAttackUses: 0 });
   const [graphic, setGraphic] = useState<any | null>(null);
@@ -104,6 +105,7 @@ export default function CalculateButtonSimulateAdvanced({
 
   useEffect(() => {
     setTime(0);
+    setRelobby(0);
     setQau(0);
     setCau(0);
     setGraphic(null);
@@ -153,15 +155,18 @@ export default function CalculateButtonSimulateAdvanced({
         if (!chargedMove[i]) {
           return;
         }
+      } else {
+        return 
       }
     }
     setLoading(true);
     // Both should have the same weather boost.
     const defenderBonusesMod = [bonusAttacker[0][0], bonusDefender[1], raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
-    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage} = 
+    const {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage, neededRelobbies} = 
       await PoGoAPI.advancedSimulationMultiTeam(attacker, defender, quickMove, chargedMove, quickMoveDefender, chargedMoveDefender, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, teamCount, allTypes, avoidCharged, relobbyTime, raidMode.endsWith("shadow"), peopleCount, partyPower, boost, energyResolveBug);
     setLoading(false);
     setVisibleEntries(50);
+    setRelobby(neededRelobbies);
     setTime(time);
     setQau({attackerQuickAttackUses, defenderQuickAttackUses});
     setCau({attackerChargedAttackUses, defenderChargedAttackUses});
@@ -197,10 +202,12 @@ export default function CalculateButtonSimulateAdvanced({
     setCau(0);
     setGraphic(null);
     setAttackerDamage(0);
+    setRelobby(0);
   }, [teamCount, relobbyTime, avoidCharged, peopleCount, partyPower, energyResolveBug]);
 
   useEffect(() => {
     setTime(0);
+    setRelobby(0);
     setQau(0);
     setCau(0);
     setGraphic(null);
@@ -256,6 +263,10 @@ export default function CalculateButtonSimulateAdvanced({
           
           <p>
             This team deals an average TDO (Total Damage Output) of {((attackerDamage / (faints === 0 ? 1 : faints+1))/peopleCount).toFixed(2)} damage to the Raid Boss and an average DPS of {((attackerDamage / ((time ? time : 0) / 1000))/peopleCount).toFixed(2)}.
+          </p>
+
+          <p>
+            This team will need to relobby {relobby} time{relobby === 1 ? "" : "s"}.
           </p>
           {raidMode == "normal" ? (
             <></>

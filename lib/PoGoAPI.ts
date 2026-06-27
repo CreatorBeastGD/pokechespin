@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.5.2";
+        return "1.38.5.2.1";
     }
 
     static async getAllPokemon() {
@@ -1568,6 +1568,8 @@ export class PoGoAPI {
                 return 12;
             case "FALINKS_MEGA":
                 return 8;
+            case "SKARMORY_MEGA":
+                return 7;
             default:
                 return 8;
         }
@@ -2105,6 +2107,8 @@ export class PoGoAPI {
         let energyResolveCooldown = new Array(2).fill(0);
         let indexAlternator = 0;
 
+        let neededRelobbies = 0;
+
         const gemless = localStorage.getItem("gemless") === "true";
 
         while (attackerDamage <= defenderHealth) {
@@ -2332,6 +2336,7 @@ export class PoGoAPI {
                     // If the attacker faints teamCount times, the attacker will have a 10 second delay before the next attacker is sent.
                     if ((!attackerFaint.includes(false))) {
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": true, "tdo": tdo, "currentAttackerIndex": currentAttackerIndex});
+                        neededRelobbies++;
                         //console.log("Attacker has a 8 second delay before the next attacker is sent.");
                         attackerDamageStart = (relobbyTime * -1000) - 1;
                         attackerFaint = Array(teamCount).fill(false);
@@ -2382,7 +2387,7 @@ export class PoGoAPI {
 
         console.log("sim done")
 
-        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage};
+        return {time, attackerQuickAttackUses, attackerChargedAttackUses, defenderQuickAttackUses, defenderChargedAttackUses, battleLog, attackerFaints, attackerDamage, neededRelobbies};
         
 
         // In a raid battle, the defender is the raid boss
