@@ -705,7 +705,7 @@ export default function Home() {
                 <option key={"raid-mega"} value={"raid-mega"}>Mega Raid (9000HP) </option>
                 <option key={"raid-mega-leg"} value={"raid-mega-leg"}>Mega Legendary Raid (22500HP) </option>
                 <option key={"raid-t7-supermega"} value={"raid-t7-supermega"}>Super Mega Raid (25000HP) </option>
-                <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (22500HP) </option>
+                <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
                 <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
                 <option key={"raid-t1-shadow"} value={"raid-t1-shadow"}>Tier-1 Shadow Raid (600HP) </option>
                 <option key={"raid-t3-shadow"} value={"raid-t3-shadow"}>Tier-3 Shadow Raid (3600HP) </option>
