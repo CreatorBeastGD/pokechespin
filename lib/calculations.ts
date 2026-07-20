@@ -436,7 +436,7 @@ export class Calculator {
         "raid-mega": 9000,
         "raid-mega-leg": 22500,
         "raid-t7-supermega": 25000,
-        "raid-elite": 22500,
+        "raid-elite": 20000,
         "raid-primal": 22500,
         "raid-t1-dmax": 1700,
         "raid-t2-dmax": 5000,

@@ -1288,7 +1288,7 @@ export class PoGoAPI {
             "raid-t4": [5005, 15, 15, 9000],
             "raid-mega": [5005, 15, 15, 9000],
             "raid-t5": [5005, 15, 15, 15000],
-            "raid-elite": [100, 15, 15, 22500],
+            "raid-elite": [100, 15, 15, 20000],
             "raid-primal": [5005, 15, 15, 22500],
             "raid-mega-leg": [5005, 15, 15, 22500],
             "raid-t7-supermega": [5005, 15, 15, 25000],
@@ -1383,7 +1383,7 @@ export class PoGoAPI {
         } else if (raidMode === "raid-t5" || raidMode === "raid-t5-shadow") {
             return 15000;
         } else if (raidMode === "raid-elite") {
-            return 22500;
+            return 20000;
         } else if (raidMode === "raid-t7-supermega") {
             return 25000;
         } else if (raidMode === "raid-primal" || raidMode === "raid-mega-leg") {

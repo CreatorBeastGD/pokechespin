@@ -23,7 +23,8 @@ const novedades = [
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Deino, Zweilous, Hydreigon.\n"+
                 "+ 'Calculate Damage' buttons on Raids now show info of Enraged damage if the boss is a Super Mega Raid or a Shadow Raid boss.\n"+
-                "+ Updated shield requirements for both Mega Raichu (7) and both Mega Mewtwo (10).",
+                "+ Updated shield requirements for both Mega Raichu (7) and both Mega Mewtwo (10).\n"+
+                "~ Elite Raids HP reverted back to 20000HP.\n",
         date: "2026-07-20",
     },
     {
