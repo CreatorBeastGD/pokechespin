@@ -19,8 +19,16 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.6",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Deino, Zweilous, Hydreigon.\n"+
+                "+ 'Calculate Damage' buttons on Raids now show info of Enraged damage if the boss is a Super Mega Raid or a Shadow Raid boss.\n"+
+                "+ Updated shield requirements for both Mega Raichu (7) and both Mega Mewtwo (10).",
+        date: "2026-07-20",
+    },
+    {
         title: "v1.38.5.2.1",
-        desc: "+ Information about relobby times in random simulator for raids came back."+
+        desc: "+ Information about relobby times in random simulator for raids came back.\n"+
                 "+ Mega Skarmory' Super Mega Raid shields set to 7.",
         date: "2026-06-13",
     },

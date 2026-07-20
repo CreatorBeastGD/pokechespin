@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.5.2.1";
+        return "1.38.6";
     }
 
     static async getAllPokemon() {
@@ -1563,15 +1563,19 @@ export class PoGoAPI {
             case "DRAGONITE_MEGA":
                 return 10;
             case "MEWTWO_MEGA_X":
-                return 12;
+                return 10;
             case "MEWTWO_MEGA_Y":
-                return 12;
+                return 10;
             case "FALINKS_MEGA":
                 return 8;
             case "SKARMORY_MEGA":
                 return 7;
+            case "RAICHU_MEGA_X":
+                return 7;
+            case "RAICHU_MEGA_Y":
+                return 7;
             default:
-                return 8;
+                return 7;
         }
     }
 

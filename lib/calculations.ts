@@ -52,6 +52,7 @@ export class Calculator {
       "HITMONCHAN": "raid-t3-dmax",
       "DRAMPA": "raid-t3-dmax",
       "ELECTABUZZ": "raid-t3-dmax",
+      "DEINO": "raid-t3-dmax",
 
       "TOXTRICITY": "raid-t4-dmax",
       "DURALUDON": "raid-t4-dmax",
@@ -257,6 +258,9 @@ export class Calculator {
       "ELECTIVIRE",
       "HOOTHOOT",
       "NOCTOWL",
+      "DEINO",
+      "ZWEILOUS",
+      "HYDREIGON",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",

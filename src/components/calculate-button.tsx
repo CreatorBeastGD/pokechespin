@@ -36,6 +36,7 @@ export default function CalculateButton({
   simplifyCalculationText?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
+  const [damageEnraged, setDamageEnraged] = useState<number | null>(0);
   const [health , setHealth] = useState<number | null>(0);
   const [effStamina, setEffStamina] = useState<number>(0);
   
@@ -49,6 +50,7 @@ export default function CalculateButton({
 
   useEffect(() => {
     setDamage(0);
+    setDamageEnraged(0);
     setHealth(0);
   }, [bladeBoost, simplifyCalculationText, attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
 
@@ -64,6 +66,19 @@ export default function CalculateButton({
     
     const types = await PoGoAPI.getTypes();
     const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1), shroomBonus);
+    const damageEnraged = await PoGoAPI.getDamageEnraged(
+      attacker, 
+      defender, 
+      move,
+      types, 
+      attackerStats, 
+      defenderStatsModified, 
+      bonusAttacker, 
+      bonusDefender, 
+      raidMode, false, 
+      additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1),
+      raidMode.endsWith("supermega") ? 3.0 : 2.2
+    );
     const effStamina = 
       raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0]) : 
       (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
@@ -71,6 +86,13 @@ export default function CalculateButton({
     setDamage(damage);
     setHealth(remainingStamina);
     setEffStamina(effStamina);
+    
+    console.log("Damage: " + damage + ", Damage Enraged: " + damageEnraged + ", Effective Stamina: " + effStamina + ", Remaining Stamina: " + remainingStamina);
+    if (raidMode === "raid-t7-supermega" || raidMode.endsWith("shadow")) {
+      setDamageEnraged(damageEnraged);
+    } else {
+      setDamageEnraged(0);
+    }
   };
 
   return (
@@ -82,7 +104,7 @@ export default function CalculateButton({
         <div className="mt-4 space-y-4">
           <p>
           <span className="font-bold">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, allEnglishText)}</span> (Level {attackerStats[0]}, Attack IV {attackerStats[1]}) 
-          deals {damage} damage to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} </span> 
+          deals {damage} damage {damageEnraged && damageEnraged > 0 ? `(${damageEnraged} if boss is enraged)` : ""} to <span className="font-bold">{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} </span> 
           with {PoGoAPI.formatMoveName(move?.moveId)}
           {(raidMode.endsWith("dmax") || raidMode.endsWith("gmax")) ? <span className="font-bold"> gaining {Calculator.getMaxEnergyGain((damage??0), effStamina, raidMode, defender.pokemonId, customEnergyGainMult)} Max Energy </span> : " "}
           {!simplifyCalculationText && <span>
