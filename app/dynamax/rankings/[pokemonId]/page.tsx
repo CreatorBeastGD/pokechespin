@@ -182,7 +182,7 @@ export default function rankingsPage() {
                 const extraHPAtt = urlSP.get("extra_shields") ? parseInt(urlSP.get("extra_shields") ?? "0") : 0;
                 setExtraHP(extraHPAtt);
 
-                const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_PERCENT";
+                const rankingDisplay = "HP_PERCENT";
                 if (rankingDisplay) {
                     setRankingDisplay(rankingDisplay);
                 }
@@ -417,6 +417,7 @@ export default function rankingsPage() {
     }
 
     function handleRankingConfig(value: string): void {
+        value = "HP_PERCENT";
         setRankingDisplay(value);
         
         defenderList?.sort((a: any, b: any) => {
@@ -440,7 +441,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return (defender.large* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
+            return (100 / getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
             return (getAverageTankScore(defender.large, getHPPercent(defender.large, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId))* (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
@@ -451,7 +452,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return (defender.targetBest * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
+            return (100 / getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
             return (getAverageTankScore(defender.targetBest, getHPPercent(defender.targetBest, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
@@ -462,7 +463,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return (defender.targetWorst * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
+            return (100 / getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
             return (getAverageTankScore(defender.targetWorst, getHPPercent(defender.targetWorst, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
@@ -473,7 +474,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return ((defender.targetAvg * (prioritiseFast ? TankScorePenalization(defender) : 1))).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
+            return (100 / getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
             return (getAverageTankScore(defender.targetAvg, getHPPercent(defender.targetAvg, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
@@ -483,7 +484,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return (defender.tankScore * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "HP_PERCENT") {
-            return (getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
+            return (100 / getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         } else if (rankingDisplay === "AVG") {
             return (getAverageTankScore(defender.tankScore, getHPPercent(defender.tankScore, defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)) * (prioritiseFast ? TankScorePenalization(defender) : 1)).toFixed(2);
         }
@@ -629,13 +630,13 @@ export default function rankingsPage() {
                         <h3 className="text-xl font-bold text-black">{getStars(raidMode)} Max Battle</h3>
                         <Separator className="mt-4"/>
                         <CardDescription className="space-y-3 mb-4 mt-4">
-                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost has been added, and will affect both best Attackers and best Tanks</p>
+                            <p>This calculations don't take in account Friendship Bonus and Helper Bonus. Weather Boost affects both best Attackers and best Tanks</p>
                             {!generalMode && (<p>{PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)}'s best Tanks with {PoGoAPI.getMoveNamePB(largeMove?.moveId, allEnglishText)} as a Large Move and {PoGoAPI.getMoveNamePB(targetedMove?.moveId, allEnglishText)} as a Targeted Move are the shown here. These tanks can vary depending on the Boss' moveset.</p>)}
                             <p>Damage shown in each Pokémon is the damage dealt with their Max Move.</p>
                             <p>"Percent to Best" represents how close one attacker is to the best one.</p>
-                            <p>Large Tankiness is the tankiness of the Pokémon with their Large Move. This number represents the Damage taken from one Large Attack.</p>
-                            <p>Target Tankiness is the average tankiness of the Pokémon against the best attackers. This number represents the Damage taken from one Targeted Move when dodged, averaging between best (x0.3 reduction) and worst (x0.6 reduction) case scenario.</p>
-                            <p>Tank Score is the average of Large Tankiness and Target Tankiness. Lower scores are better.</p>
+                            <p>"Large Hits to Faint" is the tankiness of the Pokémon with their Large Move. This number represents how many times a Pokémon can be hit before fainting. (Ex. 5.2 means 5 hits and the next hit will cause it to faint)</p>
+                            <p>"Target Hits to Faint" is the average tankiness of the Pokémon against their Target Move. This number represents how many times a Pokémon can be hit before fainting from one Targeted Move when dodged, averaging between best (x0.3 reduction) and worst (x0.6 reduction) case scenario.</p>
+                            <p>"Tank Score" is the average of Large Hits to Faint and Target Hits to Faint. Higher scores are better.</p>
                             <p>"Players in the Team" assumes every other player is using a 0.5s fast attack for max meter charging. The higher the players in a team, the less having a slow tank affects the group's performance. This setting is applied if "Prioritise Fast Attacks for Tanks" is checked.</p>
                             <p>"Use Dynamax Cannon Adventure Effect" adds one extra shield to all compatible Pokémon and will increase 100 power to all compatible attacker moves.</p>
                             
@@ -646,12 +647,6 @@ export default function rankingsPage() {
 
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
 
-                        <p className="italic text-slate-700 text-sm ">Tank Ranking shown</p>
-                        <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-                            <option key={"HP_PERCENT"} value={"HP_PERCENT"}>HP% taken from an Attack</option>
-                            <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
-                            <option key={"AVG"} value={"AVG"}>Average</option>
-                        </select>
 
                         {(rankingDisplay === "HP_PERCENT" || rankingDisplay === "AVG") && (
                             <>
@@ -753,7 +748,7 @@ export default function rankingsPage() {
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best tanks to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
-                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level 40 with perfect IVs.</p>
+                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level {level} with perfect IVs.</p>
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
@@ -789,11 +784,11 @@ export default function rankingsPage() {
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Large Tankiness</h3>
+                                                        <h3 className="text-sm font-bold text-black">Large Hits to Faint</h3>
                                                         <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetLargeTankiness(defender)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Target Tankiness</h3>
+                                                        <h3 className="text-sm font-bold text-black">Target HtF</h3>
                                                         <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className={"text-xs"}>(avg. {GetTargetAverageTankiness(defender)})</span></p>
                                                     </div>
                                                     <Separator/>

@@ -19,6 +19,14 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.7",
+        desc: "+ Changed 'Tank Score' on Max Rankings to 'Hits to Faint', which is basically HtF = 100 / TS.\n"+
+                ">>>>>> This change was made to make it easier to understand how many hits a Pokémon can take from an attack, instead of showing a score that is not very intuitive such as showing how much HP% a hit would do.\n"+
+              "- Removed the option to change the Ranking Display on Max Rankings, now it will always show Hits to Faint.\n"+
+                "+ Added a new 'Collaborating Projects' section to the main page of PokéChespin!\n",
+        date: "2026-07-24",
+    },
+    {
         title: "v1.38.6",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Deino, Zweilous, Hydreigon.\n"+

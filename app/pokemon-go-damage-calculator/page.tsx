@@ -5,7 +5,7 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { set } from "mongoose";
+import { Separator } from "@/components/ui/separator";
 
 async function getRankings(func: (data: any) => void) {
     try {
@@ -118,6 +118,16 @@ export default function Page() {
             <a href={"/whatsnew"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
                   See what's new!
+                </button>
+            </a>
+
+            <Separator className="w-[50%]"/>
+            <p className="text-white text-sm px-4">Collaborating projects</p>
+            <a href={"https://soloraidarchive.github.io/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
+                <button className="w-full ">
+                  <Image unoptimized src="https://soloraidarchive.github.io/assets/icons/favicon-32.png" alt="Solo Raid Archive" className="inline-block mr-2" width={32} height={32} />
+                    Solo Raid Archive
+                    <p className="text-white text-sm px-4 mt-2">Made by SpiritedBloom. A community-driven project for storing all solo raids and sharing strategies.</p>
                 </button>
             </a>
 

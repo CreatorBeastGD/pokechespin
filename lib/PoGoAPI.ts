@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.6";
+        return "1.38.7";
     }
 
     static async getAllPokemon() {
