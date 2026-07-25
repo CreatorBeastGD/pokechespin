@@ -513,7 +513,7 @@ export default function rankingsPage() {
         if (rankingDisplay === "HP_DMG") {
             return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
         } else if (rankingDisplay === "HP_PERCENT") {
-            return 100 - parseFloat(GetTankScore(defender));
+            return parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0])) * 100 ;
         } else if (rankingDisplay === "AVG") {
             return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
         } else {

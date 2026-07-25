@@ -15,6 +15,9 @@ const BreakpointsPage = () => {
     const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
     const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(null);
     const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(null);
+
+    const [selectedLargeMoveDefender, setSelectedLargeMoveDefender] = useState<any | null>(null);
+
     const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(null);
     const [raidMode, setRaidMode] = useState<any>("normal");
     const [bonusAttacker, setBonusAttacker] = useState<any[]>(["EXTREME", false, false, 0]);
@@ -30,6 +33,9 @@ const BreakpointsPage = () => {
     const [allBreakpoints, setAllBreakpoints] = useState<any>(null);
     const [allBreakpointsCinematic, setAllBreakpointsCinematic] = useState<any>(null);
     const [allBreakpointsMax, setAllBreakpointsMax] = useState<any>(null);
+
+    const [allBreakpointsEnemyLarge, setAllBreakpointsEnemyLarge] = useState<any>(null);
+
     const [calculatedBreakpoints, setCalculatedBreakpoints] = useState<any>(null);
     const [calculatedBreakpointsCinematic, setCalculatedBreakpointsCinematic] = useState<any>(null);
     const [calculatedBreakpointsMax, setCalculatedBreakpointsMax] = useState<any>(null);
@@ -39,6 +45,8 @@ const BreakpointsPage = () => {
     const [maxCinematic, setMaxCinematic] = useState<any>(null);
     const [minMax, setMinMax] = useState<any>(null);
     const [maxMax, setMaxMax] = useState<any>(null);
+    const [minLarge, setMinLarge] = useState<any>(null);
+    const [maxLarge, setMaxLarge] = useState<any>(null);
     const [defenderStatsLoad, setDefenderStatsLoad] = useState<any>(null);
     const [attackerMaxMove, setAttackerMaxMove] = useState<any>(null);
 
@@ -48,6 +56,7 @@ const BreakpointsPage = () => {
     const [usesShroom, setUsesShroom] = useState<boolean>(false);
     
     const [customCPM, setCustomCPM] = useState<number>(1);
+    const [customAtkMult, setCustomAtkMult] = useState<number>(1);
     
 
       useEffect(() => {
@@ -83,6 +92,7 @@ const BreakpointsPage = () => {
             const defender = urlParams.get('defender');
             const attackerFastAttack = urlParams.get('attacker_fast_attack'+member+""+slot);
             const attackerCinematicAttack = urlParams.get('attacker_cinematic_attack'+member+""+slot);
+            const defenderLargeMove = urlParams.get('defender_fast_attack');
             const attackerMaxMove = urlParams.get('attacker_max_moves'+member+""+slot) || '1,0,0';
             const raidmode = urlParams.get('raid_mode') || 'normal';
             const weather = urlParams.get('weather') || 'EXTREME';
@@ -91,6 +101,11 @@ const BreakpointsPage = () => {
             const cpmCustom = urlParams.get('custom_cpm');
             if (cpmCustom) {
                 setCustomCPM(parseFloat(cpmCustom));
+            }
+            
+            const atkMultCustom = urlParams.get('custom_atk_mult');
+            if (atkMultCustom) {
+                setCustomAtkMult(parseFloat(atkMultCustom));
             }
 
             // helper=10&advEffect=none&friendship=0&shroom=false
@@ -110,7 +125,13 @@ const BreakpointsPage = () => {
               const maxAttack = PoGoAPI.getDynamaxAttack(attacker, fastAttack.type, allMoves, attackerMM[0], fastAttack);
               setSelectedMaxMoveAttacker(maxAttack)
             };
+            
             if (attackerCinematicAttack) {setSelectedChargedMoveAttacker(PoGoAPI.getMovePBByID(attackerCinematicAttack, allMoves))};
+            
+            if (defenderLargeMove) {
+                const largeMove = PoGoAPI.getMovePBByID(defenderLargeMove, allMoves);
+                setSelectedLargeMoveDefender(largeMove);
+            }
             setRaidMode(raidmode);
             setWeather(weather);
             setDefenderStatsLoad(defenderStats.split(',').map((stat: string) => parseInt(stat)));
@@ -146,12 +167,20 @@ const BreakpointsPage = () => {
             const breakpoints = calculateBreakpoints(selectedQuickMoveAttacker, 1, customCPM);
             const breakpointsCinematic = calculateBreakpoints(selectedChargedMoveAttacker, 2, customCPM);
             const breakpointsMax = calculateBreakpoints(selectedMaxMoveAttacker, 3, customCPM);
+            let breakpointsEnemyLarge = null;
+            if (selectedLargeMoveDefender) {
+                breakpointsEnemyLarge = calculateBreakpointsEnemy(selectedLargeMoveDefender, 4, customCPM);
+                setAllBreakpointsEnemyLarge(breakpointsEnemyLarge);
+            }
+
             setAllBreakpoints(breakpoints);
             setCalculatedBreakpoints(true);
             setAllBreakpointsCinematic(breakpointsCinematic);
             setCalculatedBreakpointsCinematic(true);
             setAllBreakpointsMax(breakpointsMax);
             setCalculatedBreakpointsMax(true);
+
+            
             
             const { min, max } = getMinMax(breakpoints);
             setMin(min);
@@ -164,8 +193,54 @@ const BreakpointsPage = () => {
             const { min: minMax, max: maxMax } = getMinMax(breakpointsMax);
             setMinMax(minMax);
             setMaxMax(maxMax);
+
+            if (breakpointsEnemyLarge) {
+                const { min: minLarge, max: maxLarge } = getMinMax(breakpointsEnemyLarge);
+                setMinLarge(minLarge);
+                setMaxLarge(maxLarge);
+            }
         }
       }, [paramsLoaded]);
+
+      const calculateBreakpointsEnemy = (move: any, moveType: number, customCPM: number) => {
+        const rows = 32*2 - 1; // Example value for rows
+        const cols = 16; // Example value for cols
+        const table: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
+        const attackerBonus = [weather, false, false, 0];
+        const defenderBonus = [weather, false, false, 0];
+        const altMove = move;
+        let defenderStatsModified = PoGoAPI.convertStats([50,15,15,15], raidMode, defendingPokemon.pokemonId);
+        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
+            defenderStatsModified[0] = customCPM;
+        } 
+        //console.log(attackerBonus);
+        // Breakpoints will be calculated from level 20 to level 50
+        for (let i = 20; i <= 51; i+=0.5) {
+            // Attacker attack stat will go from 0 to 15
+            for (let j = 0; j <= 15; j++) {
+                const attackerStats = [i, 15, j, 15];
+                const defenderStats = defenderStatsModified;
+                const damage = PoGoAPI.getDamage(
+                  defendingPokemon, 
+                  attackingPokemon, 
+                  altMove, 
+                  types, 
+                  defenderStats, 
+                  attackerStats, 
+                  defenderBonus, 
+                  attackerBonus, 
+                  "normal",
+                  0, 
+                  (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customAtkMult : PoGoAPI.getDamageMultiplier(raidMode, attackingPokemon.pokemonId)) * (adventureEffect === "bash" ? (1/Calculator.BashBoost(raidMode)) : 1),
+                  raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? true : false
+                );
+                //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
+                table[2*(i-20)][j] = damage;
+
+            }
+        }
+        return table;
+    }
 
       const calculateBreakpoints = (move: any, moveType: number, customCPM: number) => {
         const rows = 32*2 - 1; // Example value for rows
@@ -210,10 +285,10 @@ const BreakpointsPage = () => {
         return table;
     }
 
-    const getColor = (value: number, min: number, max: number) => {
+    const getColor = (value: number, min: number, max: number, isGreen: boolean = true) => {
         const ratio = (value - min) / (max - min);
         const colorValue = Math.floor(255 - ratio * 255);
-        return `rgb(${0}, ${0.6*(255-colorValue)}, ${0})`;
+        return isGreen ? `rgb(${0}, ${0.6*(255-colorValue)}, ${0})` : `rgb(${0.6*(255-colorValue)}, ${0}, ${0})`;
       };
     
       const getMinMax = (data: number[][]) => {
@@ -398,6 +473,39 @@ const BreakpointsPage = () => {
                     ))}
                   </tbody>
                 </table>
+
+                {selectedLargeMoveDefender && allBreakpointsEnemyLarge && (
+                    <>
+                    <h2>Breakpoints for {PoGoAPI.getMoveNamePB(selectedLargeMoveDefender.moveId, allEnglishText)}</h2>
+                    <table>
+                  <thead>
+                    <tr>
+                      <th>IVs/Level</th>
+                      {allBreakpointsEnemyLarge.map((_: any, index: any) => (
+                        <th className="text-xs" key={index} style={{ padding: '0 5px' }}> {(index / 2) + 20}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allBreakpointsEnemyLarge[0]?.map((_: any, ivIndex: any) => (
+                      <tr key={ivIndex}>
+                        <td>{ivIndex} IVs</td>
+                        {allBreakpointsEnemyLarge.map((level: any, levelIndex: any) => (
+                          <td key={levelIndex} style={{ 
+                            textAlign: 'center',
+                            backgroundColor: getColor(level[ivIndex], minLarge, maxLarge, false), 
+                            borderBottom: (level[ivIndex] !== level[ivIndex + 1] ? '1px solid #000' : 'none'),
+                            borderRight: levelIndex < allBreakpointsEnemyLarge.length - 1 && allBreakpointsEnemyLarge[levelIndex][ivIndex] !== allBreakpointsEnemyLarge[levelIndex + 1][ivIndex] ? '1px solid #000' : 'none'
+                            }}>
+                            {level[ivIndex]}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                </>
+                )}
 
               </div>  
             </div>
