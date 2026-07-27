@@ -40,6 +40,7 @@ export class Calculator {
       "WAILMER": "raid-t2-dmax",
       "SHUCKLE": "raid-t2-dmax",
       "EEVEE": "raid-t2-dmax",
+      "FEEBAS": "raid-t2-dmax",
 
       "BELDUM": "raid-t3-dmax",
       "FALINKS": "raid-t3-dmax",
