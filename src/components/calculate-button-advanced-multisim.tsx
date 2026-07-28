@@ -305,27 +305,34 @@ export default function CalculateButtonMultiSimulateAdvanced({
           {simAmount > 0 ? (
           <>
             <p>
-              {simHasWon.toFixed(2)}% of simulations resulted in your team winning the raid. {simAmount} simulations were done in the process.
+              {simHasWon.toFixed(2)}% of simulations resulted in your team winning the raid. {winAmount} out of {simAmount} simulations were won in the process.
             </p>
             <p>
               These are the stats of your Pokémon on average:
             </p>
             {allyStats.tdo.map((tdo, index) => (
               <div key={index} className="p-4 border rounded-lg">
-                <h3 className="text-lg font-semibold">{PoGoAPI.getPokemonNamePB(attacker[index]?.pokemonId, allEnglishText)}</h3>
+                <div className="flex flex-row items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold">{PoGoAPI.getPokemonNamePB(attacker[index]?.pokemonId, allEnglishText)}</h3>                  
+                  
+                </div> 
+                
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-row w-full items-justify-between space-x-2">
-                    <p>Average TDO: </p>
-                    <Badge>{tdo.toFixed(2)}</Badge>
-                  </div>
                   <div className="flex flex-row items-center space-x-2">
-                    <p>Average DPS: </p>
-                    <Badge>{(tdo / allyStats.turns[index]).toFixed(2)}</Badge>
-                  </div>
-                  <div className="flex flex-row items-center space-x-2">
-                    <p>Average Damage Contribution: </p>
+                    <p className="text-xs">Average Damage Contribution: </p>
                     <Badge>{(Math.min(100, (tdo / PoGoAPI.getRaidHealth(raidMode)) * 100)).toFixed(2)}%</Badge> 
                   </div>
+                  <div className="space-y-2">
+                    <div className="flex flex-row w-full items-justify-between space-x-2">
+                      <p className="text-xs">Average TDO: </p>
+                      <Badge>{tdo.toFixed(2)}</Badge>
+                    </div>
+                    <div className="flex flex-row items-center space-x-2">
+                      <p className="text-xs">Average DPS: </p>
+                      <Badge>{(tdo / allyStats.turns[index]).toFixed(2)}</Badge>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             ))}

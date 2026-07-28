@@ -510,12 +510,12 @@ export default function rankingsPage() {
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
                                                         <p className={"font-bold " + ((prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black")}>
-                                                            {((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[0]}
-                                                            <span className="text-xs align-top">.{((parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100).toFixed(2).split('.')[1]}</span>%
+                                                            {((parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={(parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) === 1 ? "violet" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.75 ? "green" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.6 ? "yellow" : (parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) > 0.5 ? "orange" : "red"} value={(parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender))) * 100}/>
+                                                        <Progress color={(parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) === 1 ? "violet" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.75 ? "green" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.6 ? "yellow" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.5 ? "orange" : "red"} value={(parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100}/>
                                                     </div>
                                                     
                                                 <div className="flex flex-row items-center justify-between mx-4">

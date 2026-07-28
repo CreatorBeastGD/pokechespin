@@ -262,6 +262,8 @@ export class Calculator {
       "DEINO",
       "ZWEILOUS",
       "HYDREIGON",
+      "FEEBAS",
+      "MILOTIC",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
