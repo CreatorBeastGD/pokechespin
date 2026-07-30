@@ -182,7 +182,7 @@ export default function rankingsPage() {
                 const extraHPAtt = urlSP.get("extra_shields") ? parseInt(urlSP.get("extra_shields") ?? "0") : 0;
                 setExtraHP(extraHPAtt);
 
-                const rankingDisplay = "HP_PERCENT";
+                const rankingDisplay = urlSP.get("ranking_display") ? urlSP.get("ranking_display") : "HP_PERCENT";
                 if (rankingDisplay) {
                     setRankingDisplay(rankingDisplay);
                 }
@@ -417,7 +417,6 @@ export default function rankingsPage() {
     }
 
     function handleRankingConfig(value: string): void {
-        value = "HP_PERCENT";
         setRankingDisplay(value);
         
         defenderList?.sort((a: any, b: any) => {
@@ -646,7 +645,12 @@ export default function rankingsPage() {
                         </button>
 
                         <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
-
+                        
+                        <p className="italic text-slate-700 text-sm ">Tank Ranking shown</p>
+                        <select onChange={(e) => handleRankingConfig(e.target.value)} value={rankingDisplay} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                            <option key={"HP_PERCENT"} value={"HP_PERCENT"}>Hits to Faint from an Attack</option>
+                            <option key={"HP_DMG"} value={"HP_DMG"}>HP taken from an Attack</option>
+                        </select>
 
                         {(rankingDisplay === "HP_PERCENT" || rankingDisplay === "AVG") && (
                             <>
@@ -784,11 +788,11 @@ export default function rankingsPage() {
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Large Hits to Faint</h3>
+                                                        <h3 className="text-sm font-bold text-black">Large {rankingDisplay === "HP_PERCENT" ? "Hits to Faint" : "HP"}</h3>
                                                         <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetLargeTankiness(defender)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Target HtF</h3>
+                                                        <h3 className="text-sm font-bold text-black">Target {rankingDisplay === "HP_PERCENT" ? "HtF" : "HP"}</h3>
                                                         <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className={"text-xs"}>(avg. {GetTargetAverageTankiness(defender)})</span></p>
                                                     </div>
                                                     <Separator/>

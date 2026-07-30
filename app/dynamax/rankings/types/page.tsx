@@ -218,6 +218,10 @@ export default function rankingsPage() {
         return (tankScore / (Calculator.getEffectiveStamina(baseStamina, 15, 40) + currentExtraHPForPokemon(pokemonId))) * 100;
     }
 
+    const getHPDamage = (baseStamina: number, pokemonId: string) => {
+        return (Math.floor(Calculator.getEffectiveStamina(baseStamina, 15, 40)) + currentExtraHPForPokemon(pokemonId));
+    }
+
     const currentExtraHPForPokemon = (pokemonId: string) => {
         return extraHP + (pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM" && zamaExtraShield ? 60 : 0) + (dCannon ? (pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM" && pokemonId !== "ZACIAN_CROWNED_SWORD_FORM") ? 60 : 0 : 0);
     }
@@ -555,7 +559,7 @@ export default function rankingsPage() {
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Damage Received</h3>
-                                                        <p >{GetLargeTankiness(defender)}%</p>
+                                                        <p >{(defender.large)}/<span className="text-xs">{getHPDamage(defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)}</span></p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Hits to Faint</h3>

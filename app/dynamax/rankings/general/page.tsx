@@ -101,7 +101,7 @@ export default function rankingsPage() {
         let load = false;
         if (allDataLoaded) {
             urlSP.get("dmax_difficulty") ? handleDmaxDifficulty(urlSP.get("dmax_difficulty")!) : handleDmaxDifficulty("raid-t6-gmax");
-            handleRankingConfig("HP_PERCENT");
+            urlSP.get("ranking_display") ? handleRankingConfig(urlSP.get("ranking_display")!) : handleRankingConfig("HP_PERCENT");
             urlSP.get("prioritise_fast_attack") ? setPrioritiseFast(urlSP.get("prioritise_fast_attack") === "true") : setPrioritiseFast(false);
             urlSP.get("zamazenta_extra_shield") ? setZamaExtraShield(urlSP.get("zamazenta_extra_shield") === "true") : setZamaExtraShield(false);
             urlSP.get("players_in_team") ? setPlayersInTeam(parseInt(urlSP.get("players_in_team")!)) : setPlayersInTeam(1);
@@ -328,6 +328,18 @@ export default function rankingsPage() {
         return null;
     }
 
+    function GetValueToShow(defender: any): number {
+        if (rankingDisplay === "HP_DMG") {
+            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+        } else if (rankingDisplay === "HP_PERCENT") {
+            return parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0])) * 100 ;
+        } else if (rankingDisplay === "AVG") {
+            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+        } else {
+            return 100;
+        }
+    }
+
     const attackersToShow = showBestAttackers ? bestAttackers : bestAttackers?.slice(0, 5);
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
@@ -460,6 +472,8 @@ export default function rankingsPage() {
                                 <option value="raid-t5-dmax">Tier 5 Max Battles</option>
                                 <option value="raid-t6-gmax">Gigantamax Battles</option>
                             </select>
+
+                            
                         
                         
                         <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
@@ -468,6 +482,14 @@ export default function rankingsPage() {
                         <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         
+                        <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
+                                value={rankingDisplay}
+                                onChange={(e) => handleRankingConfig(e.target.value)}
+                            >
+                                <option value="HP_DMG">HP Damage on Average</option>
+                                <option value="HP_PERCENT">HP% on Average</option>
+                            </select>
+
                         <Separator className="mt-4"/>
                             <div className="flex flex-column items-center justify-center space-x-4 w-full">
                                 <div className="flex flex-col items-center justify-center space-y-4">
@@ -510,12 +532,12 @@ export default function rankingsPage() {
                                                         
                                                         <h3 className="text-xl font-bold text-black">Percent to Best</h3>
                                                         <p className={"font-bold " + ((prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black")}>
-                                                            {((parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100).toFixed(2).split('.')[0]}
-                                                            <span className="text-xs align-top">.{((parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100).toFixed(2).split('.')[1]}</span>%
+                                                            {((GetValueToShow(defender)/100) * 100).toFixed(2).split('.')[0]}
+                                                            <span className="text-xs align-top">.{((GetValueToShow(defender)/100) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={(parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) === 1 ? "violet" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.75 ? "green" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.6 ? "yellow" : (parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) > 0.5 ? "orange" : "red"} value={(parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0]))) * 100}/>
+                                                        <Progress color={(GetValueToShow(defender)/100) === 1 ? "violet" : (GetValueToShow(defender)/100) > 0.75 ? "green" : (GetValueToShow(defender)/100) > 0.6 ? "yellow" : (GetValueToShow(defender)/100) > 0.5 ? "orange" : "red"} value={(GetValueToShow(defender)/100) * 100}/>
                                                     </div>
                                                     
                                                 <div className="flex flex-row items-center justify-between mx-4">
