@@ -3926,6 +3926,7 @@ export class PoGoAPI {
                         attackerEnergy[i][activePokemon[i]] = 0;
                         attackerFaints[i][activePokemon[i]] = true;
                         defenderDamage[i][activePokemon[i]] = 0;
+                        pokemonCanParticipate[i][activePokemon[i]] = false;
                         totalfaints++;
                         attackerFaint[i] = true;
                         battleLog.push({"turn": time, "attacker": "attacker", "relobby": false, "tdo": tdo[i]});
@@ -3935,6 +3936,13 @@ export class PoGoAPI {
                         //console.log(attackerFaints)
                         //console.log("Attacker " + i + " fainted at time " + time);
                         //console.log(activePokemon)
+                        console.log(totalfaints + " fainted (pokemon from team " + i + " fainted)");
+                        if (activePokemon[0] == 3 && activePokemon[1] == 3 && activePokemon[2] == 3 && activePokemon[3] == 3) {
+                            simGoing = false;
+                            battleLog.push({"turn": time, "lost": true});
+                            win = false;
+                            break;
+                        }
                     } else {
                         // Cambia al mejor cargador
                         activePokemon[i] = GetBestChargerNotDead(i);
