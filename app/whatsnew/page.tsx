@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.38.7.3",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Magmar, Magmortar.\n",
+        date: "2026-08-03",
+    },
+    {
         title: "v1.38.7.2",
         desc: "+ Changed the Attack Multiplier of Gigantamax Battles, set to 1 for every Gigantamax.\n",
         date: "2026-08-01",

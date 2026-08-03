@@ -54,6 +54,7 @@ export class Calculator {
       "DRAMPA": "raid-t3-dmax",
       "ELECTABUZZ": "raid-t3-dmax",
       "DEINO": "raid-t3-dmax",
+      "MAGMAR": "raid-t3-dmax",
 
       "TOXTRICITY": "raid-t4-dmax",
       "DURALUDON": "raid-t4-dmax",
@@ -264,6 +265,8 @@ export class Calculator {
       "HYDREIGON",
       "FEEBAS",
       "MILOTIC",
+      "MAGMAR",
+      "MAGMORTAR",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
