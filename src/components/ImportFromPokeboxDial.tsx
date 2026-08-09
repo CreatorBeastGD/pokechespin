@@ -115,7 +115,7 @@ export function PokeboxButton({
                     onChange={(e) => setFilter(e.target.value)}
                     className="bg-gray-800 text-white rounded px-2 py-1 w-full mt-2 "
                 />
-              <ScrollArea className="w-full h-[300px] rounded-lg border border-gray-200 bg-black px-4">
+              <ScrollArea className="w-full h-[225px] rounded-lg border border-gray-200 bg-black px-4">
                 <div className="flex flex-row flex-wrap gap-x-4 justify-center">
                     {passedPokeboxData.filter((pokemon) => 
                         pokemon.customName.toLowerCase().includes(filter.toLowerCase()) ||
