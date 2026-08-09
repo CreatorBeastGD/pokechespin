@@ -225,6 +225,7 @@ body {
   @apply text-blue-500 underline;
 }
 
+
 .linktext {
   @apply mb-5;
 }

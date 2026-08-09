@@ -7,9 +7,6 @@ export default {
 		"./src/**/*.{js,ts,jsx,tsx,mdx}",
 	  ],
   theme: {
-	text: {
-		tiny: '0.625rem',
-	},
 	screens: {
 		sm: '640px',
 		md: '768px',
@@ -17,6 +14,11 @@ export default {
 		xl: '1280px',
 	  },
   	extend: {
+		fontSize: {
+			xxs: '0.5rem',
+			tiny: '0.625rem',
+			xxxs: '0.35rem',
+		},
   		colors: {
 			normal: "#919aa1",
 			fighting: "#d5425f",

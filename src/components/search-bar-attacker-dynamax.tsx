@@ -14,6 +14,8 @@ import { clear } from "console";
 import TypeBadge from "./TypeBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import WeaknessResistanceTable from "./WeaknessResistanceTable";
+import { PokeboxButton } from "./ImportFromPokeboxDial";
+import { PBPokemonData } from "./PokemonData";
 
 
 interface SearchBarAttackerProps {
@@ -81,6 +83,7 @@ export default function SearchBarAttackerDynamax({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const initialLoad = useRef(false);
+  const importingFromPokebox = useRef(false);
 
 
 
@@ -96,58 +99,67 @@ export default function SearchBarAttackerDynamax({
     } 
   }, []); // Agrega `initialValues` como dependencia
 
-  const handleMaxMovesSelect = (maxMoves: any) => {
+  const handleMaxMovesSelect = (maxMoves: any, write: boolean = true) => {
     setMaxMoves(maxMoves);
     onChangedMaxMoveStats(maxMoves, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   }
 
-  const handleQuickMoveSelect = (moveId: string, move: any) => {
+  const handleQuickMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, member, number);
-    setTimeout(() => {
-      if (moveId !== "") {
-        //console.log("attacker_fast_attack"+member+""+number);
-        const newSearchParams = new URLSearchParams(searchParams.toString());
-        newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-      } else {
-        const newSearchParams = new URLSearchParams(searchParams.toString());
-        newSearchParams.delete("attacker_fast_attack"+member+""+number);
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-      }
-    }, 1);
+    if (write) {
+      setTimeout(() => {
+        if (moveId !== "") {
+          //console.log("attacker_fast_attack"+member+""+number);
+          const newSearchParams = new URLSearchParams(searchParams.toString());
+          newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
+          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        } else {
+          const newSearchParams = new URLSearchParams(searchParams.toString());
+          newSearchParams.delete("attacker_fast_attack"+member+""+number);
+          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        }
+      }, 1);
+    }
   };
 
-  const handleChargedMoveSelect = (moveId: string, move: any) => {
+  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
-    //console.log(moveId);
-    setTimeout(() => {
-      if (moveId !== "") {
-        //console.log("attacker_cinematic_attack"+member+""+number);
-        const newSearchParams = new URLSearchParams(searchParams.toString());
-        newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-      } else {
-        const newSearchParams = new URLSearchParams(searchParams.toString());
-        newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-      }
-    }, 1);
+    if (write) {
+      //console.log(moveId);
+      setTimeout(() => {
+        if (moveId !== "") {
+          //console.log("attacker_cinematic_attack"+member+""+number);
+          const newSearchParams = new URLSearchParams(searchParams.toString());
+          newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
+          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        } else {
+          const newSearchParams = new URLSearchParams(searchParams.toString());
+          newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
+          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        }
+      }, 1);
+    }
   }
 
-  const handleStatsSelect = (stats: any) => {
+  const handleStatsSelect = (stats: any, write: boolean = true) => {
     setStats(stats);
     onChangedStats(stats, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (write) {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
   }
   
   useEffect(() => {
+    if (importingFromPokebox.current) return;
     onChangedMaxMoveStats(maxMoves, member, number);
     
     const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -156,7 +168,7 @@ export default function SearchBarAttackerDynamax({
   }, [maxMoves]);
 
   useEffect(() => {
-    
+    if (importingFromPokebox.current) return;
     onChangedStats(stats, member, number);
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -349,6 +361,45 @@ export default function SearchBarAttackerDynamax({
     URL.revokeObjectURL(url);
   }
 
+  const importPokemonFromPokebox = async (pokemonData: PBPokemonData) => { 
+      setIsImporting(true);
+      setError(null);
+
+      try {
+        const importedPokemon = PoGoAPI.getPokemonPBByID(pokemonData.pokemonId, pokemonList)[0];
+        if (!importedPokemon) {
+            setError("The selected Pokémon is not available in the current Pokémon list.");
+            return;
+        }
+
+        const importedStats = [
+          pokemonData.stats.level,
+          pokemonData.stats.atk,
+          pokemonData.stats.def,
+          pokemonData.stats.hp,
+        ];
+        const importedMaxMoves = [pokemonData.max.attack, pokemonData.max.guard, pokemonData.max.spirit];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefix = `attacker`;
+
+        urlParams.set(`${prefix}${member}${number}`, importedPokemon.pokemonId);
+        urlParams.set(`${prefix}_stats${member}${number}`, importedStats.join(","));
+        urlParams.set(`${prefix}_max_moves${member}${number}`, importedMaxMoves.join(","));
+        urlParams.set(`${prefix}_fast_attack${member}${number}`, pokemonData.fastAttackId);
+        urlParams.set(`${prefix}_cinematic_attack${member}${number}`, pokemonData.chargedAttackId);
+
+        const newUrl = `${pathname}?${urlParams.toString()}`;
+        window.history.replaceState({}, "", newUrl);
+
+        setTimeout(() => {
+          onClickedImportButton();
+        }, 100);
+      } finally {
+        setIsImporting(false);
+      }
+  }
+
 const importPokemon = async () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -494,9 +545,10 @@ const importPokemon = async () => {
         </ul>
       )}
       <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-      <Button onClick={exportPokemon} className="mt-4 mb-2 mr-2">Export</Button>
-      <Button onClick={importPokemon} className="mt-4 mb-2 mr-2" disabled={isImporting}>Import</Button>
-      <Button onClick={() => clearButton()} className="mt-4 mb-2 mr-2">Clear</Button>
+      <Button onClick={exportPokemon} className=" mb-2 mr-2">Export</Button>
+      <Button onClick={importPokemon} className=" mb-2 mr-2" disabled={isImporting}>Import</Button>
+      <Button onClick={() => clearButton()} className=" mb-2 mr-2">Clear</Button>
+      <PokeboxButton imageLinks={assets} englishText={allEnglishText} allMoves={allMoves} onSelectPokemon={importPokemonFromPokebox} />
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />

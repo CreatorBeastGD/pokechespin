@@ -29,6 +29,7 @@ const Navbar = () => {
     let [showAllGmax, setShowAllGmax] = useState(false);
     let [customPokemonToRankings, setCustomPokemonToRankings] = useState("");
     let [showCustomPokemonOnRankings, setShowCustomPokemonOnRankings] = useState(false);
+    let [pokeboxID, setPokeboxID] = useState<string>("");
     let [showOnlyCustomPokemonOnRankings, setShowOnlyCustomPokemonOnRankings] = useState(false);
     let [selfMegaBoost, setSelfMegaBoost] = useState(false);
     let [showDPSOnSoloRaid, setShowDPSOnSoloRaid] = useState(false);
@@ -63,6 +64,11 @@ const Navbar = () => {
         const customChargedMoveChanceStorage = localStorage.getItem("customChargedMoveChance");
         const gemlessStorage = localStorage.getItem("gemless");
         const slowerSwapsStorage = localStorage.getItem("slowerSwaps");
+        const pokeboxIDStorage = localStorage.getItem("pokeboxId");
+
+        if (pokeboxIDStorage) {
+            setPokeboxID(pokeboxIDStorage);
+        } 
 
         if (showCustomPokemonOnRankingsStorage) {
             setShowCustomPokemonOnRankings(showCustomPokemonOnRankingsStorage === "true");
@@ -223,6 +229,8 @@ const Navbar = () => {
         localStorage.setItem("showIDs", showIDs.toString());
         localStorage.setItem("addAllGmaxesToGeneralRankings", addAllGmaxesToGeneralRankings.toString());
         localStorage.setItem("simplifyCalculationText", simplifyCalculationText.toString());
+        localStorage.setItem("pokeboxId", pokeboxID);
+        
         // reload page
         window.location.reload();
     }
@@ -245,6 +253,7 @@ const Navbar = () => {
         setSimplifyCalculationText(false);
         setCustomChargedMoveChance(false);
         setSlowerSwaps(false);
+        setPokeboxID("");
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -265,6 +274,7 @@ const Navbar = () => {
         localStorage.setItem("simplifyCalculationText", "false");
         localStorage.setItem("gemless", "false");
         localStorage.setItem("slowerSwaps", "false");
+        localStorage.setItem("pokeboxId", "");
         // reload page
         window.location.reload();
     }
@@ -319,7 +329,22 @@ const Navbar = () => {
                             <SheetFooter>
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-green-500 rounded-lg" onClick={ApplyChanges}>Apply Changes</SheetClose>
                                 <SheetClose className="mt-4 w-full py-2 text-white bg-red-500 rounded-lg" onClick={DefaultChanges}>Set to Default</SheetClose>
+                                <SheetClose className="mt-4 w-full py-2 text-white bg-gray-500 rounded-lg" >Close</SheetClose>
                             </SheetFooter>
+                            <Separator className="bg-white bg-opacity-10" />
+                            <SheetTitle>Pokebox</SheetTitle>
+                            <div className="flex flex-col w-full">
+                                <label className="text-sm mb-2">Set up Pokebox</label>
+                                <div className="flex items-center space-x-2">
+                                    <input type="text" value={pokeboxID || ""} onChange={(e) => setPokeboxID(e.target.value)} id="pokeboxId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="Pokebattler ID or Username" />
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    Allows you to import your Pokémon data directly from Pokebattler' Pokebox. Be sure to input your Pokebattler ID or username to be able to use this feature.
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                    You can also <a href="https://pokebattler.com/user/subscription?promo=POKECHESPIN20" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">subscribe to Pokebattler</a> to unlock additional Pokebox slots and support the development of PokéChespin with a 20% discount on your first month!
+                                </p>
+                            </div>
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Multipliers</SheetTitle>
                             <div className="flex flex-col w-full">
@@ -388,7 +413,7 @@ const Navbar = () => {
                                 <div className="flex items-center space-x-2">
                                     <textarea value={customPokemonToRankings} onChange={(e) => ChangeCustomPokemonToRankings(e.target.value)} id="customPokemonToRankings" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="BULBASAUR IVYSAUR VENUSAUR_GIGANTAMAX RAYQUAZA_MEGA KYUREM_BLACK_FORM" />
                                 </div>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground mt-2">
                                     Write any Pokémon ID separated by spaces to add them to the Max Rankings. If an ID is invalid, it will be ignored.
                                 </p>
                             </div>

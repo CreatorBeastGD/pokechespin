@@ -332,7 +332,7 @@ export default function Home() {
         } return move;
       });
       setSelectedQuickMoveAttacker(newQuickMoveList);
-      newSearchParams.delete(`attacker_quick_move${slot}`);
+      newSearchParams.delete(`attacker_fast_attack${slot}`);
 
       const newChargedMoveList = selectedChargedMoveAttacker.map((move, index) => {
         if (index === slot - 1) {
@@ -340,7 +340,7 @@ export default function Home() {
         } return move;
       });
       setSelectedChargedMoveAttacker(newChargedMoveList);
-      newSearchParams.delete(`attacker_charged_move${slot}`);
+      newSearchParams.delete(`attacker_cinematic_attack${slot}`);
 
       const newAttackerStatsList = attackerStats.map((stats, index) => {
         if (index === slot - 1) {
@@ -391,33 +391,53 @@ export default function Home() {
   };
 
   const handleQuickMoveSelectAttacker = (moveId: string, move: any, slot: any) => {
-    if (move !== undefined) {
-      const newSelectedQuickMoveAttacker = selectedQuickMoveAttacker.map((m, index) => {
-        if (index === slot - 1) {
-          return move;
-        } return m;
-      });
-      setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
+    const normalizedMove = move ?? null;
+    setSelectedQuickMoveAttacker((prev) => prev.map((m, index) => (index === slot - 1 ? normalizedMove : m)));
+
+    const newSearchParams = new URLSearchParams(window.location.search);
+    if (moveId && moveId !== "") {
+      newSearchParams.set(`attacker_fast_attack${slot}`, moveId);
+    } else {
+      newSearchParams.delete(`attacker_fast_attack${slot}`);
     }
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleChargedMoveSelectAttacker = (moveId: string, move: any, slot: any) => {
-    if (move !== undefined) {
-      const newSelectedChargedMoveAttacker = selectedChargedMoveAttacker.map((m, index) => {
-        if (index === slot - 1) {
-          return move;
-        } return m;
-      });
-      setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    const normalizedMove = move ?? null;
+    setSelectedChargedMoveAttacker((prev) => prev.map((m, index) => (index === slot - 1 ? normalizedMove : m)));
+
+    const newSearchParams = new URLSearchParams(window.location.search);
+    if (moveId && moveId !== "") {
+      newSearchParams.set(`attacker_cinematic_attack${slot}`, moveId);
+    } else {
+      newSearchParams.delete(`attacker_cinematic_attack${slot}`);
     }
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleQuickMoveSelectDefender = (moveId: string, move: any) => {
-    setSelectedQuickMoveDefender(move);
+    setSelectedQuickMoveDefender(move ?? null);
+
+    const newSearchParams = new URLSearchParams(window.location.search);
+    if (moveId && moveId !== "") {
+      newSearchParams.set("defender_fast_attack", moveId);
+    } else {
+      newSearchParams.delete("defender_fast_attack");
+    }
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleChargedMoveSelectDefender = (moveId: string, move: any) => {
-    setSelectedChargedMoveDefender(move);
+    setSelectedChargedMoveDefender(move ?? null);
+
+    const newSearchParams = new URLSearchParams(window.location.search);
+    if (moveId && moveId !== "") {
+      newSearchParams.set("defender_cinematic_attack", moveId);
+    } else {
+      newSearchParams.delete("defender_cinematic_attack");
+    }
+    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
   const handleChangedStatsAttacker = (stats: any, slot: any) => {

@@ -314,8 +314,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
         setMaxMoves(newMaxMoveList);
     }
     setTimeout(() => {
-        setCleared(true);
-    }, 100);
+      setCleared(true);
+    }, 250);
 };
 
   const handleAttackerSelect = (pokemon: any, member: any, slot: any) => {

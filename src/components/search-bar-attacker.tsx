@@ -15,6 +15,8 @@ import TypeBadge from "./TypeBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Type } from "lucide-react";
 import WeaknessResistanceTable from "./WeaknessResistanceTable";
+import { PokeboxButton } from "./ImportFromPokeboxDial";
+import { PBPokemonData } from "./PokemonData";
 
 
 interface SearchBarAttackerProps {
@@ -376,6 +378,71 @@ export default function SearchBarAttacker({
     URL.revokeObjectURL(url);
   }
 
+    const importPokemonFromPokebox = async (pokemonData: PBPokemonData) => {
+        setIsImporting(true);
+        setError(null);
+
+        const waitForImportSync = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        try {
+          const importedPokemon = PoGoAPI.getPokemonPBByID(pokemonData.pokemonId, pokemonList)[0];
+          if (!importedPokemon) {
+            setError("The selected Pokémon is not available in the current Pokémon list.");
+            return;
+          }
+
+          const importedStats = [
+            pokemonData.stats.level,
+            pokemonData.stats.atk,
+            pokemonData.stats.def,
+            pokemonData.stats.hp,
+          ];
+          const importedMaxMoves = [pokemonData.max.attack, pokemonData.max.guard, pokemonData.max.spirit];
+          const importedQuickMove = pokemonData.fastAttackId;
+          const importedChargedMove = pokemonData.chargedAttackId;
+
+          const quickMoveData = PoGoAPI.getMovePBByID(importedQuickMove, allMoves);
+          const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
+
+          if (!importedPokemon.quickMoves.includes(importedQuickMove)) {
+            setError("The selected Quick Move is not available for this Pokémon.");
+            return;
+          }
+
+          if (!importedPokemon.cinematicMoves.includes(importedChargedMove)) {
+            setError("The selected Charged Move is not available for this Pokémon.");
+            return;
+          }
+
+          await searchPokemonInit(importedPokemon, false);
+          await waitForImportSync(80);
+          handleStatsSelect(importedStats, false);
+          await waitForImportSync(80);
+          handleQuickMoveSelect(importedQuickMove, quickMoveData, false);
+          await waitForImportSync(80);
+          handleChargedMoveSelect(importedChargedMove, chargedMoveData, false);
+          setImportMaxMove(importedMaxMoves);
+          await waitForImportSync(120);
+
+          const newSearchParams = new URLSearchParams(window.location.search);
+          const pokemonKey = slot === 1 ? `attacker${memberSlot}` : "defender";
+          const statsKey = slot === 1 ? `attacker_stats${memberSlot}` : "defender_stats";
+          const quickMoveKey = slot === 1 ? `attacker_fast_attack${memberSlot}` : "defender_fast_attack";
+          const chargedMoveKey = slot === 1 ? `attacker_cinematic_attack${memberSlot}` : "defender_cinematic_attack";
+
+          newSearchParams.set(pokemonKey, importedPokemon.pokemonId);
+          newSearchParams.set(statsKey, importedStats.join(","));
+          newSearchParams.set(quickMoveKey, importedQuickMove);
+          newSearchParams.set(chargedMoveKey, importedChargedMove);
+
+          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        } finally {
+          setTimeout(() => {
+            setIsImporting(false);
+          }, 250);
+        }
+    }
+
   const importPokemon = async () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -441,30 +508,30 @@ export default function SearchBarAttacker({
                           }
 
 
-                          // Luego actualizamos todo en orden
-                          await searchPokemonInit(pokemonData, true);
-                          handleStatsSelect(data.stats, true);
-                          handleBonusSelect(data.bonuses, true);
-                          handleQuickMoveSelect(data.quickMove, quickMove, true);
-                          handleChargedMoveSelect(data.chargedMove, chargedMove, true);
+                          const waitForImportSync = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+                          // Luego actualizamos todo en orden con pequeños retrasos para que el estado termine de propagarse
+                          await searchPokemonInit(pokemonData, false);
+                          await waitForImportSync(80);
+                          handleStatsSelect(data.stats, false);
+                          await waitForImportSync(80);
+                          handleBonusSelect(data.bonuses, false);
+                          await waitForImportSync(80);
+                          handleQuickMoveSelect(data.quickMove, quickMove, false);
+                          await waitForImportSync(80);
+                          handleChargedMoveSelect(data.chargedMove, chargedMove, false);
                           setImportMaxMove(data.maxmoves || [1, 0, 0]);
 
-                          console.log("Import successful, importing on link...");
+                          await waitForImportSync(120);
 
-                          // Pequeño delay para asegurar que el pokémon se cargó completamente
-                          setTimeout(() => {
-                              
-                              // Actualizamos la URL una sola vez al final
-                              const newSearchParams = new URLSearchParams(searchParams.toString());
-                              newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", pokemonData.pokemonId);
-                              newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", data.stats.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
-                              newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
-                              newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
-                              
-                              window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-                          }, 300);
+                          const newSearchParams = new URLSearchParams(window.location.search);
+                          newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", pokemonData.pokemonId);
+                          newSearchParams.set(slot === 1 ? "attacker_stats"+memberSlot : "defender_stats", data.stats.join(","));
+                          newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
+                          newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
+                          newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
+                          
+                          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
                       } finally {
                           setTimeout(() => {
                             setIsImporting(false);
@@ -532,8 +599,9 @@ export default function SearchBarAttacker({
       )}
       <div>
         <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-        {slot === 1 && (<Button onClick={exportPokemon} className="mt-4 mb-2 mr-2">Export</Button>)}
-        {slot === 1 && (<Button onClick={importPokemon} className="mt-4 mb-2">Import</Button>)}
+        {slot === 1 && (<Button onClick={exportPokemon} className="mb-2 mr-2">Export</Button>)}
+        {slot === 1 && (<Button onClick={importPokemon} className=" mb-2">Import</Button>)}
+        {slot === 1 && (<PokeboxButton imageLinks={assets} englishText={allEnglishText} allMoves={allMoves} onSelectPokemon={importPokemonFromPokebox} />)}
       </div>
       {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">

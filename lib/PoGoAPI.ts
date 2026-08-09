@@ -5,14 +5,14 @@ import { Calculator } from "./calculations";
 import { GameStatus } from "../src/components/GameStatus";
 import { RaidStatus } from "@/components/RaidStatus";
 
-const API = nextConfig.API_URL;
-const API_PB = nextConfig.API_PB_URL;
+const API = (nextConfig as any).API_URL;
+const API_PB = (nextConfig as any).API_PB_URL;
 
 export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.38.7.3";
+        return "1.39";
     }
 
     static async getAllPokemon() {
@@ -25,6 +25,23 @@ export class PoGoAPI {
         const response = await fetch(API + "types.json");
         return await response.json();
     }
+
+    static async getAllPokemonFromPokeboxPB(id: string) {
+        const numberID = parseInt(id);
+        if (isNaN(numberID)) { 
+            const response = (await fetch(API_PB + "profiles?search=" + id)).json();
+            if ((await response).trainers.length === 0) { return []; }
+            else {
+                const profileResponse = await fetch(API_PB + "profiles/" + (await response).trainers[0].userId);
+                return (await profileResponse.json()).pokemon;
+            }
+        }
+        else {
+            const response = await fetch(API_PB + "profiles/" + id);
+            return (await response.json()).pokemon;
+        }
+    }
+    
 
     static async getAllPokemonPB() {
         const response = await fetch(API_PB + "pokemon");
@@ -224,6 +241,7 @@ export class PoGoAPI {
         const today = Date.now();
         let objImage = pokemonId;
 
+
         // April fools!
         if (today > new Date("2026-4-1").getTime() && today < new Date("2026-4-2").getTime()) {
             objImage = "CHESPIN";
@@ -233,11 +251,18 @@ export class PoGoAPI {
             objImage = "BAXCALIBUR";
         }
 
-        if (localStorage.getItem("showAllPokemonAsShiny") === "true") {
-            return pokemonList[objImage].shiny;
+        const storage = typeof window !== "undefined" ? window.localStorage : null;
+        const pokemonImage = pokemonList?.[objImage] ?? pokemonList?.["UNOWN_" + objImage.charAt(0) + "_FORM"];
+
+        if (!pokemonImage) {
+            return "";
         }
 
-        return (Math.random() < 1/4096) ? (pokemonList[objImage] ? pokemonList[objImage].shiny : pokemonList["UNOWN_" + objImage.charAt(0) + "_FORM"].shiny) : (pokemonList[objImage] ? pokemonList[objImage].base : pokemonList["UNOWN_" + objImage.charAt(0) + "_FORM"].base);
+        if (storage?.getItem("showAllPokemonAsShiny") === "true" || shiny) {
+            return pokemonImage.shiny;
+        }
+
+        return (Math.random() < 1/4096) ? pokemonImage.shiny : pokemonImage.base;
     }
 
     static filterUniqueById(list: any[]) {
@@ -271,11 +296,11 @@ export class PoGoAPI {
                     pokemon[0].eliteCinematicMove = ["DYNAMAX_CANNON"];
                     break;
                 case "CINDERACE_GIGANTAMAX":
-                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
+                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYROBALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
                     break;
                 case "CINDERACE":
-                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYRO_BALL"];
+                    pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYROBALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
                     break;
                 case "BAXCALIBUR":
@@ -284,6 +309,14 @@ export class PoGoAPI {
                 case "BAXCALIBUR_MEGA":
                     pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
                     pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                case "INTELEON":
+                    pokemon[0].cinematicMoves = ["SHADOW_BALL", "WATER_PULSE", "SURF", "HYDRO_CANNON", "SNIPE_SHOT"];
+                    pokemon[0].eliteCinematicMove = ["HYDRO_CANNON"];
+                    break;
+                case "INTELEON_GIGANTAMAX":
+                    pokemon[0].cinematicMoves = ["SHADOW_BALL", "WATER_PULSE", "SURF", "HYDRO_CANNON", "SNIPE_SHOT"];
+                    pokemon[0].eliteCinematicMove = ["HYDRO_CANNON"];
+                    break;
                 default:
                     break;
             }
@@ -486,18 +519,19 @@ export class PoGoAPI {
                     animationId: "MIND_BLOWN",
                 };
             }
-            if (moveId === "PYRO_BALL") {
+            if (moveId === "SNIPE_SHOT") {
                 return {
-                    moveId: "PYRO_BALL",
-                    power: 150,
-                    durationMs: 2000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_FIRE",
-                    damageWindowStartMs: 1998,
-                    damageWindowEndMs: 2000,
-                    animationId: "PYRO_BALL",
+                    moveId: "SNIPE_SHOT",
+                    power: 100,
+                    durationMs: 3500,
+                    energyDelta: -33,
+                    type: "POKEMON_TYPE_WATER",
+                    damageWindowStartMs: 3498,
+                    damageWindowEndMs: 3500,
+                    animationId: "SNIPE_SHOT",
                 };
-            } if (moveId === "GIGATON_HAMMER") {
+            }
+            if (moveId === "GIGATON_HAMMER") {
                 return {
                     moveId: "GIGATON_HAMMER",
                     power: 300,
@@ -1552,6 +1586,21 @@ export class PoGoAPI {
             return false;
         }
         return pokemonId.endsWith("_PRIMAL");
+    }
+    static IsShadow(pokemonId: string) {
+        if (!pokemonId) {
+            return false;
+        } if (pokemonId.endsWith("_SHADOW_FORM") || pokemonId.endsWith("_S_FORM")) {
+            return true;
+        }
+    }
+    static IsGigantamax(pokemonId: string) {
+        if (!pokemonId) {
+            return false;
+        } if (pokemonId.includes("_GIGANTAMAX")) {
+            return true;
+        }
+        return false;
     }
 
     static MegaShields(pokemonId: string) {
