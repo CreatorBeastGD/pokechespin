@@ -372,6 +372,21 @@ export default function SearchBarAttackerDynamax({
             return;
         }
 
+          const importedQuickMove = pokemonData.fastAttackId;
+          const importedChargedMove = pokemonData.chargedAttackId;
+
+          const availableQuickMoves = importedPokemon.quickMoves.concat(importedPokemon.eliteQuickMove);
+          const availableChargedMoves = importedPokemon.cinematicMoves.concat(importedPokemon.eliteCinematicMove);
+        
+          if (!availableQuickMoves.includes(importedQuickMove)) {
+            setError("The selected Quick Move is not available for this Pokémon.");
+            return;
+          }
+          if (!availableChargedMoves.includes(importedChargedMove)) {
+            setError("The selected Charged Move is not available for this Pokémon.");
+            return;
+          }
+
         const importedStats = [
           pokemonData.stats.level,
           pokemonData.stats.atk,

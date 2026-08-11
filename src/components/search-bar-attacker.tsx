@@ -404,12 +404,14 @@ export default function SearchBarAttacker({
           const quickMoveData = PoGoAPI.getMovePBByID(importedQuickMove, allMoves);
           const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
 
-          if (!importedPokemon.quickMoves.includes(importedQuickMove)) {
+          const availableQuickMoves = importedPokemon.quickMoves.concat(importedPokemon.eliteQuickMove);
+          const availableChargedMoves = importedPokemon.cinematicMoves.concat(importedPokemon.eliteCinematicMove);
+
+          if (!availableQuickMoves.includes(importedQuickMove)) {
             setError("The selected Quick Move is not available for this Pokémon.");
             return;
           }
-
-          if (!importedPokemon.cinematicMoves.includes(importedChargedMove)) {
+          if (!availableChargedMoves.includes(importedChargedMove)) {
             setError("The selected Charged Move is not available for this Pokémon.");
             return;
           }
