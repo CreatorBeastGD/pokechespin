@@ -107,7 +107,7 @@ export default function CalculateButtonMaxBoss({
       raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? true : false,
       raidMode
     ))
-    const effStamina = Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]);
+    const effStamina = Math.floor(Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStats[3], defenderStats[0]));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setEffStamina(effStamina);

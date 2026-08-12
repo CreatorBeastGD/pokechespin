@@ -80,8 +80,8 @@ export default function CalculateButton({
       raidMode.endsWith("supermega") ? 3.0 : 2.2
     );
     const effStamina = 
-      raidMode === "normal" ? Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0]) : 
-      (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customHP : Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types)));
+      raidMode === "normal" ? Math.floor(Calculator.getEffectiveStamina(defender.stats.baseStamina, defenderStatsModified[3], defenderStatsModified[0])) : 
+      (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? customHP : Math.floor(Calculator.getEffectiveDMAXHP(raidMode, defender.pokemonId, PoGoAPI.hasDoubleWeaknesses(defender.type, defender.type2, types))));
     const remainingStamina = effStamina - damage;
     setDamage(damage);
     setHealth(remainingStamina);
