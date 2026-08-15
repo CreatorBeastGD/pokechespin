@@ -306,9 +306,11 @@ export class PoGoAPI {
                 case "BAXCALIBUR":
                     pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
                     pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                    break;
                 case "BAXCALIBUR_MEGA":
                     pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
                     pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                    break;
                 case "INTELEON":
                     pokemon[0].cinematicMoves = ["SHADOW_BALL", "WATER_PULSE", "SURF", "HYDRO_CANNON", "SNIPE_SHOT"];
                     pokemon[0].eliteCinematicMove = ["HYDRO_CANNON"];
