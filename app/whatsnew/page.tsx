@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.39.0.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Magikarp, Gyarados.\n",
+        date: "2026-08-16",
+    },
+    {
         title: "v1.39 (Pokebox Integration)",
         desc: "+ Added a new feature to import your Pokémon directly from Pokebattler's Pokebox!\n"+
             ">>>>>> Now you can import your Pokémon directly from Pokebattler's Pokebox to PokéChespin, making it easier to use your Pokémon on the damage calculator! This functionallity is currently used to select the Pokémon for your teams, but I have more features planned with this!\n",

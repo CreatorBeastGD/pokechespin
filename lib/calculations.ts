@@ -34,6 +34,7 @@ export class Calculator {
       "COTTONEE": "raid-t1-dmax",
       "COMBEE": "raid-t1-dmax",
       "HOOTHOOT": "raid-t1-dmax",
+      "MAGIKARP": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -267,6 +268,8 @@ export class Calculator {
       "MILOTIC",
       "MAGMAR",
       "MAGMORTAR",
+      "MAGIKARP",
+      "GYARADOS",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
