@@ -366,7 +366,7 @@ export class PoGoAPI {
 
     static getRaidTime(raidMode: string) {
         let raidTime = 0;
-        if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4") {
+        if (raidMode === "raid-t1" || raidMode === "raid-t3" || raidMode === "raid-t4" || raidMode === "raid-t1-shadow" || raidMode === "raid-t3-shadow") {
             raidTime = 180;
         } else {
             raidTime = 300;
