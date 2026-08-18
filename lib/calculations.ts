@@ -455,7 +455,7 @@ export class Calculator {
         "raid-t6-gmax": 100000,
         "raid-t6-gmax-standard": 100000,
         "raid-t1-shadow": 600,
-        "raid-t3-shadow": 3600,
+        "raid-t3-shadow": 4000,
         "raid-t5-shadow": 15000,
       }
 

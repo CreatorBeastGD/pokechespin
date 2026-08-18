@@ -19,6 +19,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.39.0.2",
+        desc: "~ Changed the HP of Shadow Tier 3 Raids to 4000HP, instead of 3600HP.\n",
+        date: "2026-08-18",
+    },
+    {
         title: "v1.39.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Magikarp, Gyarados.\n",

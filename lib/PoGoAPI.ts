@@ -12,7 +12,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.39.0.1";
+        return "1.39.0.2";
     }
 
     static async getAllPokemon() {
@@ -1334,7 +1334,7 @@ export class PoGoAPI {
             "raid-t4-dmax": [8004, 15, 15, 20000],
             "raid-t6-gmax-standard": [8006, 15, 15, 115000],
             "raid-t1-shadow": [6001, 15, 15, 600],
-            "raid-t3-shadow": [6003, 15, 15, 3600],
+            "raid-t3-shadow": [6003, 15, 15, 4000],
             "raid-t5-shadow": [6005, 15, 15, 15000],
         };
 
@@ -1413,7 +1413,7 @@ export class PoGoAPI {
         if (raidMode === "raid-t1" || raidMode === "raid-t1-shadow") {
             return 600;
         } else if (raidMode === "raid-t3" || raidMode === "raid-t3-shadow") {
-            return 3600;
+            return 4000;
         } else if (raidMode === "raid-t4" || raidMode === "raid-mega") {
             return 9000;
         } else if (raidMode === "raid-t5" || raidMode === "raid-t5-shadow") {

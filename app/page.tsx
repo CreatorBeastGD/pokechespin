@@ -728,7 +728,7 @@ export default function Home() {
                 <option key={"raid-elite"} value={"raid-elite"}>Elite Raid (20000HP) </option>
                 <option key={"raid-primal"} value={"raid-primal"}>Primal Raid (22500HP) </option>
                 <option key={"raid-t1-shadow"} value={"raid-t1-shadow"}>Tier-1 Shadow Raid (600HP) </option>
-                <option key={"raid-t3-shadow"} value={"raid-t3-shadow"}>Tier-3 Shadow Raid (3600HP) </option>
+                <option key={"raid-t3-shadow"} value={"raid-t3-shadow"}>Tier-3 Shadow Raid (4000HP) </option>
                 <option key={"raid-t5-shadow"} value={"raid-t5-shadow"}>Tier-5 Shadow Raid (15000HP) </option>
               </select>
 
