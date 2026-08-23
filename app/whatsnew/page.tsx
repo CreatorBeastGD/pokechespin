@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.39.1",
+        desc: "+ Added a new option to send your configs to a database in case you are experiencing issues with your settings, helping the debug of issues and the fix of these.\n"+
+            "+ Added new Pokémon to Max Rankings\n"+
+            ">>>>>> Hitmontop.\n",
+        date: "2026-08-23",
+    },
+    {
         title: "v1.39.0.2",
         desc: "~ Changed the HP of Shadow Tier 3 Raids to 4000HP, instead of 3600HP.\n",
         date: "2026-08-18",

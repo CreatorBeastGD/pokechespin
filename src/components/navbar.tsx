@@ -278,6 +278,60 @@ const Navbar = () => {
         // reload page
         window.location.reload();
     }
+
+    let PostBugData = async() => {
+
+    }
+
+    let SendBugReport = async () => {
+        try {
+            const res = await fetch("/api/bugreport", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    doubleFriendshipBonus,
+                    customBladeBoostAmount,
+                    showAllPokemonAsShiny,
+                    showAllGmax,
+                    customPokemonToRankings,
+                    showCustomPokemonOnRankings,
+                    showOnlyCustomPokemonOnRankings,
+                    selfMegaBoost,
+                    showDPSOnSoloRaid,
+                    showHPOnSoloRaid,
+                    freezeRejoin,
+                    showIDs,
+                    customChargedMoveChance,
+                    moveOverrides: localStorage.getItem("moveOverrides") || {},
+                    customMoveOverrides: localStorage.getItem("customMoveOverrides") || {},
+                    newMoveOverrides: localStorage.getItem("newMoveOverrides") || {},
+                    addAllGmaxesToGeneralRankings,
+                    simplifyCalculationText,
+                    gemless,
+                    slowerSwaps,
+                    pokeboxId: pokeboxID
+                })
+
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                console.error("Error sending bug report:", errorData);
+                alert("Error sending bug report: " + (errorData.error || "Unknown error"));
+                return;
+            }
+
+            const data = await res.json();
+            console.log("Bug report sent successfully:", data);
+            alert("Bug report sent successfully! Thank you for your feedback. Please, set your configuration to default after sending the bug report to avoid getting more errors or sending the same config in the future!");
+        } catch (error) {
+            console.error("Error sending bug report:", error);
+            alert("Error sending bug report: " + (error instanceof Error ? error.message : "Unknown error"));
+        }
+
+    }
    
     return (
         <NavigationMenu>
@@ -538,6 +592,17 @@ const Navbar = () => {
                                     </p>
                                     <div className="flex items-center space-x-2 mx-2">
                                         <SheetClose className="w-full mx-2 text-xs bg-green-500 p-2 rounded-lg" onClick={() => window.location.href = "/editor"}>Go to Editor</SheetClose>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Send bug report</label>
+                                <div className="space-x-2">
+                                    <p className="text-xs text-muted-foreground mb-2">
+                                        Are you having any issues related to configurations? This option will send your current configurations to a database, so we can analyze and fix any issues you may be having. This option will not send any personal information, only your current configurations. This option won't clear your local storage after sending the report. If you want to clear your local storage, please use the "Set to Default" option after sending the report.
+                                    </p>
+                                    <div className="flex items-center space-x-2 mx-2">
+                                        <SheetClose className="w-full mx-2 text-xs bg-green-500 p-2 rounded-lg" onClick={SendBugReport}>Send Bug Report</SheetClose>
                                     </div>
                                 </div>
                             </div>      
