@@ -68,6 +68,8 @@ const BreakpointsPage = () => {
           const moves = await PoGoAPI.getAllMovesPB();
           setAllMoves(moves);
           //console.log("Fetched all moves from PokeBattler API");
+
+          PoGoAPI.customMoveFixer(pokemonlist, moves);
     
           const text = await PoGoAPI.getAllEnglishNamesPB();
           setAllEnglishText(text);

@@ -109,6 +109,8 @@ export default function rankingsPage() {
           const moves = await PoGoAPI.getAllMovesPB();
           setAllMoves(moves);
           //console.log("Fetched all moves from PokeBattler API");
+
+          PoGoAPI.customMoveFixer(pokemonlist, moves);
     
           const images = await PoGoAPI.getAllPokemonImagesPB();
           setImageLinks(images);

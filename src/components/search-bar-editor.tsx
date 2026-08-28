@@ -478,6 +478,11 @@ export default function SearchBarEditor({
   };
   
   function handleAddCustomMove(moveType: string): void {
+    const move = PoGoAPI.getMovePBByID(moveType === "fast" ? customFastMove : customChargedMove, allMoves);
+    if (!move) {
+      alert("Invalid move. Please select a valid move from the suggestions.");
+      return;
+    }
     if (moveType === "fast") {
       let newList = [...customFMList];
       newList.push(customFastMove);

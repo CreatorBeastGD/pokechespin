@@ -275,6 +275,36 @@ export class PoGoAPI {
         });
     }
 
+    static customMoveFixer(pokemonList: any, moveList: any) {
+        // This function can be used to fix or update custom moves for each Pokémon
+        let overrides = JSON.parse(localStorage.getItem("moveOverrides") || "{}");
+        Object.entries(overrides).forEach(([pokemonId, override]: [string, any]) => {
+            const validFastMoves = (override.fast || []).filter((moveId: string) => {
+                const move = PoGoAPI.getMovePBByID(moveId, moveList);
+                if (move == null) {
+                    console.warn(`Custom fast move ${moveId} for Pokémon ${pokemonId} does not exist in the move list.`);
+                    return false;
+                }
+                return true;
+            });
+
+            const validChargedMoves = (override.charged || []).filter((moveId: string) => {
+                const move = PoGoAPI.getMovePBByID(moveId, moveList);
+                if (move == null) {
+                    console.warn(`Custom charged move ${moveId} for Pokémon ${pokemonId} does not exist in the move list.`);
+                    return false;
+                }
+                return true;
+            });
+
+            override.fast = validFastMoves;
+            override.charged = validChargedMoves;
+        });
+
+        // Guardamos una sola vez al final, ya con todo actualizado
+        localStorage.setItem("moveOverrides", JSON.stringify(overrides));
+    }
+
     static getPokemonPBByID(pokemonId: string, pokemonList: any) {
         if (pokemonId === "HO_OH" || pokemonId === "HO-OH") {
             pokemonId = "HO_OH";
@@ -494,9 +524,12 @@ export class PoGoAPI {
 
 
     static getMovePBByID(moveId: string, moveList: any[]) {
-        const myOverrides = this.getAllCustomMoves();
-        const move = (myOverrides.find((move: any) => move.moveId === moveId)) ? myOverrides.find((move: any) => move.moveId === moveId) : moveList.find((move: any) => move.moveId === moveId);
-        
+        const myOverrides = this.getAllCustomMoves() || [];
+        moveList = moveList || [];
+        const move = myOverrides.find((move: any) => move.moveId === moveId) 
+            ?? moveList.find((move: any) => move.moveId === moveId) 
+            ?? null;
+
         if (!move) {
             if (moveId === "DYNAMAX_CANNON") {
                 return {
