@@ -2810,11 +2810,11 @@ export class PoGoAPI {
             const epts = (fastMoveUsesForCharged + (energyGainShroom * (100 / -moveData.energyDelta))) / ((moveData.durationMs * (100 / -moveData.energyDelta) + fastMoveUsesForCharged * 500) / 500);
 
             //console.log("Charged Move: " + moveData.moveId + " Damage: " + damage + " Energy Gain: " + energyGain + " EPT: " + ept);
-            if (ept >= bestEPT || epts > bestEPTShroom) {
+            if (epts > bestEPTShroom) {
                 bestMove = moveData;
                 bestEPT = ept;
                 bestEPTShroom = epts;
-                //console.log("New best charged move for " + pokemon.pokemonId + ": " + moveData.moveId + " with EPT: " + ept + " and EPT with mushroom: " + bestEPTShroom);
+                console.log("New best charged move for " + pokemon.pokemonId + ": " + moveData.moveId + " with EPT: " + ept + " and EPT with mushroom: " + bestEPTShroom);
             }
         });
         return { move: bestMove, ept: bestEPT, needsMushroom: (bestEPTShroom >= 1 && bestEPT < 1) };
