@@ -88,6 +88,7 @@ export async function POST(
             gemless: Boolean(payload.gemless),
             slowerSwaps: Boolean(payload.slowerSwaps),
             pokeboxId: typeof payload.pokeboxId === "string" ? payload.pokeboxId : "",
+            bugMessage: typeof payload.bugMessage === "string" ? payload.bugMessage : "",
         };
 
         const bugReport = await BugData.create(safePayload);

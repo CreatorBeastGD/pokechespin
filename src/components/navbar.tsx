@@ -47,6 +47,8 @@ const Navbar = () => {
 
     let [usePokeboxOnRankings, setUsePokeboxOnRankings] = useState(false);
 
+    let [bugMessage, setBugMessage] = useState("");
+
 
     useEffect(() => {
         const doubleFriendshipBonusStorage = localStorage.getItem("doubleFriendshipBonus");
@@ -323,7 +325,8 @@ const Navbar = () => {
                     simplifyCalculationText,
                     gemless,
                     slowerSwaps,
-                    pokeboxId: pokeboxID
+                    pokeboxId: pokeboxID,
+                    bugMessage: bugMessage,
                 })
 
             });
@@ -337,7 +340,9 @@ const Navbar = () => {
 
             const data = await res.json();
             console.log("Bug report sent successfully:", data);
+            setBugMessage("");
             alert("Bug report sent successfully! Thank you for your feedback. Please, set your configuration to default after sending the bug report to avoid getting more errors or sending the same config in the future!");
+            
         } catch (error) {
             console.error("Error sending bug report:", error);
             alert("Error sending bug report: " + (error instanceof Error ? error.message : "Unknown error"));
@@ -622,7 +627,10 @@ const Navbar = () => {
                                     <p className="text-xs text-muted-foreground mb-2">
                                         Are you having any issues related to configurations? This option will send your current configurations to a database, so we can analyze and fix any issues you may be having. This option will not send any personal information, only your current configurations. This option won't clear your local storage after sending the report. If you want to clear your local storage, please use the "Set to Default" option after sending the report.
                                     </p>
-                                    <div className="flex items-center space-x-2 mx-2">
+                                    <div className="flex items-center my-2">
+                                        <input type="text" value={bugMessage} onChange={(e) => setBugMessage(e.target.value)} id="bugMessage" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5" placeholder="Describe your issue here." />
+                                    </div>
+                                    <div className="flex items-center space-x-2">
                                         <SheetClose className="w-full mx-2 text-xs bg-green-500 p-2 rounded-lg" onClick={SendBugReport}>Send Bug Report</SheetClose>
                                     </div>
                                 </div>

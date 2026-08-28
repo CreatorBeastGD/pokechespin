@@ -105,7 +105,12 @@ const BugDataSchema = new mongoose.Schema(
             type: String,
             required: false,
             default: "",
-        }
+        },
+        bugMessage: {
+            type: String,
+            required: false,
+            default: "",
+        },
     },
     {
         versionKey: false,
