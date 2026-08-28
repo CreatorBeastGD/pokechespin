@@ -52,30 +52,8 @@ export function PokeboxButton({
                     return;
                 }
                 const data = await PoGoAPI.getAllPokemonFromPokeboxPB(pokeboxId!);
-
-                const convertedPokeboxData: PBPokemonData[] = data.map((pokemon: any) => {
-                return new PBPokemonData(
-                    pokemon.name,
-                    pokemon.pokemonId,
-                    {
-                        level: pokemon.level,
-                        atk: pokemon.individualAttack,
-                        def: pokemon.individualDefense,
-                        hp: pokemon.individualStamina
-                    },
-                    pokemon.quickMove,
-                    pokemon.cinematicMove,
-                    pokemon.shiny,
-                    pokemon.dynamax,
-                    {
-                        attack: Math.min(Math.max(pokemon.maxPowerLevel, 1), 3),
-                        guard: Math.min(Math.max(pokemon.maxShieldLevel, 0), 3),
-                        spirit: Math.min(Math.max(pokemon.maxHealLevel, 0), 3)
-                    }
-                );
-                });
-
-                setPassedPokeboxData(convertedPokeboxData);
+                
+                setPassedPokeboxData(PoGoAPI.convertPokeboxData(data));
             } catch (error) {
                 console.error("Error fetching Pokebox data:", error);
             }

@@ -45,6 +45,8 @@ const Navbar = () => {
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
 
+    let [usePokeboxOnRankings, setUsePokeboxOnRankings] = useState(false);
+
 
     useEffect(() => {
         const doubleFriendshipBonusStorage = localStorage.getItem("doubleFriendshipBonus");
@@ -65,6 +67,13 @@ const Navbar = () => {
         const gemlessStorage = localStorage.getItem("gemless");
         const slowerSwapsStorage = localStorage.getItem("slowerSwaps");
         const pokeboxIDStorage = localStorage.getItem("pokeboxId");
+        const usePokeboxOnRankingsStorage = localStorage.getItem("usePokeboxOnRankings");
+
+        if (usePokeboxOnRankingsStorage) {
+            setUsePokeboxOnRankings(usePokeboxOnRankingsStorage === "true");
+        } else {
+            localStorage.setItem("usePokeboxOnRankings", "false");
+        }
 
         if (pokeboxIDStorage) {
             setPokeboxID(pokeboxIDStorage);
@@ -230,6 +239,7 @@ const Navbar = () => {
         localStorage.setItem("addAllGmaxesToGeneralRankings", addAllGmaxesToGeneralRankings.toString());
         localStorage.setItem("simplifyCalculationText", simplifyCalculationText.toString());
         localStorage.setItem("pokeboxId", pokeboxID);
+        localStorage.setItem("usePokeboxOnRankings", usePokeboxOnRankings.toString());
         
         // reload page
         window.location.reload();
@@ -254,6 +264,7 @@ const Navbar = () => {
         setCustomChargedMoveChance(false);
         setSlowerSwaps(false);
         setPokeboxID("");
+        setUsePokeboxOnRankings(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -275,6 +286,7 @@ const Navbar = () => {
         localStorage.setItem("gemless", "false");
         localStorage.setItem("slowerSwaps", "false");
         localStorage.setItem("pokeboxId", "");
+        localStorage.setItem("usePokeboxOnRankings", "false");
         // reload page
         window.location.reload();
     }
@@ -398,6 +410,15 @@ const Navbar = () => {
                                 <p className="text-xs text-muted-foreground mt-2">
                                     You can also <a href="https://pokebattler.com/user/subscription?promo=POKECHESPIN20" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">subscribe to Pokebattler</a> to unlock additional Pokebox slots and support the development of PokéChespin with a 20% discount on your first month!
                                 </p>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label className="text-sm">Exclusively show Pokebox on Rankings</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={usePokeboxOnRankings} onChange={(e) => setUsePokeboxOnRankings(e.target.checked)} type="checkbox" id="usePokeboxOnRankings" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Only displays your Pokebox on all Rankings pages. This will override any custom Pokémon added through the textarea below.
+                                    </p>
+                                </div>
                             </div>
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Multipliers</SheetTitle>

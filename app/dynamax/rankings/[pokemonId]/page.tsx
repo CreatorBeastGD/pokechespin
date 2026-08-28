@@ -38,6 +38,8 @@ export default function rankingsPage() {
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
     const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
 
+    const [pokebox, setPokebox] = useState<any>(null);
+
     const [bestAttackers, setBestAttackers] = useState<any>(null);
     const [bestAttackerReference, setBestAttackerReference] = useState<any>(null);
     const [bestDefenders, setBestDefenders] = useState<any>(null);
@@ -64,6 +66,8 @@ export default function rankingsPage() {
     const [customBossCPM, setCustomBossCPM] = useState<number>(1);
     const [customBossHP, setCustomBossHP] = useState<number>(10000);
     const [customEGM, setCustomEGM] = useState<number>(4);
+
+    const [pokeboxReadyAndShowing, setPokeboxReadyAndShowing] = useState<boolean>(false);
 
     const router = useRouter();
     const sp = useParams();
@@ -120,6 +124,13 @@ export default function rankingsPage() {
 
           const types = await PoGoAPI.getTypes();
           setTypes(types);
+
+          const pokeboxID = localStorage.getItem("pokeboxId");
+          if (pokeboxID) {
+            const pokeboxPokemon = await PoGoAPI.getAllPokemonFromPokeboxPB(pokeboxID);
+            const convertedPokeboxData = PoGoAPI.convertPokeboxData(pokeboxPokemon);
+            setPokebox(convertedPokeboxData);
+          }
           
           setAllDataLoaded(true);
 
@@ -223,27 +234,31 @@ export default function rankingsPage() {
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
                     setBestAttackers(bestAttackers);
-                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, parseFloat(urlSP.get("custom_cpm") ?? "1"), parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
+                    const bestDefenders = PoGoAPI.getBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, defenderFastAttack, defenderChargedAttack, weatherBoost, parseFloat(urlSP.get("custom_cpm") ?? "1"), parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
                     setBestDefenders(bestDefenders);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
                     setGeneralBestDefenders(bestGeneralDefenders);
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
+                    setPokeboxReadyAndShowing(showingBox);
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
-                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
+                    const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
                     setBestAttackers(bestAttackers);
-                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"));
+                    const bestGeneralDefenders = PoGoAPI.getGeneralBestDefendersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, parseFloat(urlSP.get("custom_atk_mult") ?? "1"), parseFloat(urlSP.get("custom_cpm") ?? "1"), parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
                     setGeneralBestDefenders(bestGeneralDefenders);
                     setGeneralMode(true);
                     setShowGeneralBestDefenders(true);
                     urlSP.delete("member");
                     urlSP.delete("slot");
                     window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
+                    setPokeboxReadyAndShowing(showingBox);
                     load=true;
                 } else {
                     const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
@@ -354,13 +369,13 @@ export default function rankingsPage() {
     useEffect(() => {
         if (pokemonInfo && allDataLoaded) {
             let bestAttackerRef = null;
-            const bestAttackersNonDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, false, customBossHP, customEGM);
+            const bestAttackersNonDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, false, customBossHP, customEGM, parseInt(level) ,pokebox);
             if (dCannon && !bestAttackerReference) {
                 bestAttackerRef = bestAttackersNonDCannon ? bestAttackersNonDCannon[0] : null;
             } else if (!dCannon) {
                 bestAttackerRef = null;
             }
-            const bestAttackersDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, dCannon, customBossHP, customEGM);
+            const bestAttackersDCannon = PoGoAPI.GetBestAttackersDynamax(pokemonInfo, pokemonList, dmaxPokemon, raidMode, allMoves, types, weather, false, customBossCPM, dCannon, customBossHP, customEGM, parseInt(level) ,pokebox);
              
             setBestAttackers(bestAttackersDCannon);
 
@@ -666,13 +681,19 @@ export default function rankingsPage() {
                         <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         
-                        <p className="italic text-slate-700 text-sm ">Pokémon Level</p>
-                        <select onChange={(e) => handleLevelChange(e.target.value)} value={level} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
-                            <option key={"20"} value={"20"}>Level 20</option>
-                            <option key={"30"} value={"30"}>Level 30</option>
-                            <option key={"40"} value={"40"}>Level 40</option>
-                            <option key={"50"} value={"50"}>Level 50</option>
-                        </select>
+                        {!pokeboxReadyAndShowing && 
+                            (
+                                <>
+                                <p className="italic text-slate-700 text-sm ">Pokémon Level</p>
+                                <select onChange={(e) => handleLevelChange(e.target.value)} value={level} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+                                    <option key={"20"} value={"20"}>Level 20</option>
+                                    <option key={"30"} value={"30"}>Level 30</option>
+                                    <option key={"40"} value={"40"}>Level 40</option>
+                                    <option key={"50"} value={"50"}>Level 50</option>
+                                </select>
+                                </>
+                            )                            
+                        }
                         
                         </CardContent>
                     </Card>
@@ -681,7 +702,7 @@ export default function rankingsPage() {
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best attackers to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
-                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level {level} with perfect IVs.</p>
+                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. {!pokeboxReadyAndShowing && <span>This list considers all Pokémon are at Level {level} with perfect IVs.</span>}</p>
                             </CardDescription>
                             
                             <div className="flex flex-row items-center justify-center ">
@@ -699,7 +720,7 @@ export default function rankingsPage() {
                                                 <Image
                                                     unoptimized
                                                     className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
-                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks)}
+                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks, (attacker.pbID ? PoGoAPI.FromID(pokebox, attacker.pbID).isShiny : false))}
                                                     alt={attacker?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                                                     width={80}
                                                     height={80}
@@ -709,7 +730,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {attacker.pbID ? PoGoAPI.FromID(pokebox, attacker.pbID).customName ? PoGoAPI.FromID(pokebox, attacker.pbID).customName : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{attacker.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, attacker.pbID).stats.level + ")" : ""}</span></h3>
                                                             <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         
@@ -752,7 +773,7 @@ export default function rankingsPage() {
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best tanks to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
-                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level {level} with perfect IVs.</p>
+                                <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. {!pokeboxReadyAndShowing && <span>This list considers all Pokémon are at Level {level} with perfect IVs.</span>}</p>
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
@@ -772,7 +793,7 @@ export default function rankingsPage() {
                                                 <Image
                                                     unoptimized
                                                     className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200  bg-white"}
-                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(defender?.pokemon.pokemonId, imageLinks )}
+                                                    src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(defender?.pokemon.pokemonId, imageLinks, (defender.pbID ? PoGoAPI.FromID(pokebox, defender.pbID).isShiny : false))}
                                                     alt={defender?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                                                     width={50}
                                                     height={50}
@@ -781,7 +802,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {defender.pbID ? PoGoAPI.FromID(pokebox, defender.pbID).customName ? PoGoAPI.FromID(pokebox, defender.pbID).customName : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{defender.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, defender.pbID).stats.level + ")" : ""}</span></h3>
                                                             <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>

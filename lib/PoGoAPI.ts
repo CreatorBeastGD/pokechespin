@@ -4,6 +4,7 @@ import nextConfig from "../next.config";
 import { Calculator } from "./calculations";
 import { GameStatus } from "../src/components/GameStatus";
 import { RaidStatus } from "@/components/RaidStatus";
+import { PBPokemonData } from "@/components/PokemonData";
 
 const API = (nextConfig as any).API_URL;
 const API_PB = (nextConfig as any).API_PB_URL;
@@ -12,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.39.1";
+        return "1.40";
     }
 
     static async getAllPokemon() {
@@ -2756,7 +2757,7 @@ export class PoGoAPI {
         return bestMove;
     }
 
-    static getBestChargedMove(pokemon: any, boss: any, types: any, raidMode: string, customBossHP: number = 1, allMoves?: any, customEGM: number = 4, defenderStats: any = [40,15,15,15], fastMove?: any, level: number = 40): {move: any, ept: number, needsMushroom: boolean} {
+    static getBestChargedMove(pokemon: any, boss: any, types: any, raidMode: string, customBossHP: number = 1, allMoves?: any, customEGM: number = 4, defenderStats: any = [40,15,15,15], fastMove?: any, level: number = 40, attack: number = 15): {move: any, ept: number, needsMushroom: boolean} {
         let bestMove = null;
         let bestEPT = 0;
         let bestEPTShroom = 0;
@@ -2765,17 +2766,18 @@ export class PoGoAPI {
         });
         movesToCheck.forEach((move: any) => {
             let moveData = this.getMovePBByID(move, allMoves);
-            const damage = this.getDamage(pokemon, boss, moveData, types, [level,15,15,15], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1);
+            const damage = this.getDamage(pokemon, boss, moveData, types, [level,attack,15,15], defenderStats, ["EXTREME", false, false, 0], ["EXTREME", false, false, 0], raidMode, 0, 1);
             const energyGain = Calculator.getMaxEnergyGain(damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
+            
             const energyGainShroom = Calculator.getMaxEnergyGain(2*damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
             
-            const fastMoveUsesForCharged = fastMove ? Math.ceil(-moveData.energyDelta / fastMove.energyDelta) : 0;
+            const fastMoveUsesForCharged = fastMove ? Math.ceil(100 / fastMove.energyDelta) : 0;
             
-            const ept = (fastMoveUsesForCharged + energyGain) / ((moveData.durationMs + fastMoveUsesForCharged * 500) / 500);
-            const epts = (fastMoveUsesForCharged + energyGainShroom) / ((moveData.durationMs + fastMoveUsesForCharged * 500) / 500);
+            const ept = (fastMoveUsesForCharged + (energyGain * (100 / -moveData.energyDelta))) / ((moveData.durationMs * (100 / -moveData.energyDelta) + fastMoveUsesForCharged * 500) / 500);
+            const epts = (fastMoveUsesForCharged + (energyGainShroom * (100 / -moveData.energyDelta))) / ((moveData.durationMs * (100 / -moveData.energyDelta) + fastMoveUsesForCharged * 500) / 500);
 
             //console.log("Charged Move: " + moveData.moveId + " Damage: " + damage + " Energy Gain: " + energyGain + " EPT: " + ept);
-            if (ept > bestEPT && epts > bestEPTShroom) {
+            if (ept >= bestEPT || epts > bestEPTShroom) {
                 bestMove = moveData;
                 bestEPT = ept;
                 bestEPTShroom = epts;
@@ -3030,72 +3032,6 @@ export class PoGoAPI {
         return bestMove;
     }
 
-    static getGeneralBestDefendersDynamax(
-        boss: any,
-        pokemonList: any,
-        availableDmaxPoke: any,
-        raidMode: string,
-        allMoves: any,
-        types: any,
-        weather: string,
-        customAtkMult: number,
-        customCPM: number,
-        customBossHP: number,
-        customEGM: number,
-        level: number = 40,
-    ) {
-        let attackerStat = [level,15,15,15]
-        const defenderStat = this.convertStats([level,15,15,15], raidMode, boss.pokemonId);
-        let defenderStatModified = [...defenderStat];
-        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
-            defenderStatModified[0] = customCPM;
-        }
-        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any; chargedMove: any | null;}[] = [];
-        const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
-        bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
-        
-        let allMaxPoke = Calculator.DynamaxPokemon;
-        if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
-            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
-        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
-            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
-        } 
-        // ignore dupes
-        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index);
-
-        //console.log(customBossHP)
-        
-        allMaxPoke.forEach((defender: string) => {
-            const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
-            let percentAfterLarge = 0;
-            let percentAfterTargetBestCase = 0;
-            let percentAfterTargetWorstCase = 0;
-            for (let i = 0; i < bossMoves.length; i++) {
-                const move = bossMoves[i];
-                //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
-                percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterLarge*i)) / (i+1);
-                //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
-                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetBestCase*i)) / (i+1);
-                //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
-                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
-                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetWorstCase*i)) / (i+1);
-            }
-            const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
-            const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
-            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, level)});
-        })
-        return graphic.sort((a, b) => {
-            if (a.tankScore > b.tankScore) {
-                return 1;
-            } else if (a.tankScore < b.tankScore) {
-                return -1;
-            } else {
-                return b.targetBest - a.targetBest;
-            }
-        })
-    }
 
     static getBestDefendersDynamaxType(
         objType: string,
@@ -3189,6 +3125,111 @@ export class PoGoAPI {
         return bulk;
     }
 
+    static getGeneralBestDefendersDynamax(
+        boss: any,
+        pokemonList: any,
+        availableDmaxPoke: any,
+        raidMode: string,
+        allMoves: any,
+        types: any,
+        weather: string,
+        customAtkMult: number,
+        customCPM: number,
+        customBossHP: number,
+        customEGM: number,
+        level: number = 40,
+        pokebox: PBPokemonData[] = []
+    ) {
+        let attackerStat = [level,15,15,15]
+        const defenderStat = this.convertStats([level,15,15,15], raidMode, boss.pokemonId);
+        let defenderStatModified = [...defenderStat];
+        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
+            defenderStatModified[0] = customCPM;
+        }
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any; chargedMove: any | null; pbID?: number}[] = [];
+        const bossMoves = boss.cinematicMoves.map((move: any) => this.getMovePBByID(move, allMoves));
+        bossMoves.filter((move: any) => move.moveId !== "RETURN" && move.moveId !== "FRUSTRATION" && move.moveId !== "AEROBLAST_PLUS_PLUS" && move.moveId !== "SACRED_FIRE_PLUS_PLUS");
+        
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index);
+
+        //console.log(customBossHP)
+        if (localStorage.getItem("usePokeboxOnRankings") === "true") {
+            const pokeboxID = localStorage.getItem("pokeboxId");
+
+            if (pokeboxID) {
+                const myPokemon = pokebox.filter((pokemon: PBPokemonData) => pokemon.isDynamax);
+
+                console.log("Using pokebox for rankings with " + myPokemon.length + " pokemon.");
+
+                myPokemon.forEach((pokemon: PBPokemonData) => {
+                    const pokemonData = this.getPokemonPBByID(pokemon.pokemonId, pokemonList)[0];
+                    let percentAfterLarge = 0;
+                    let percentAfterTargetBestCase = 0;
+                    let percentAfterTargetWorstCase = 0;
+
+                    for (let i = 0; i < bossMoves.length; i++) {
+                        const move = bossMoves[i];
+                        percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterLarge*i)) / (i+1);
+                        percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetBestCase*i)) / (i+1);
+                        percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode,boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetWorstCase*i)) / (i+1);
+                    }
+                    
+                    const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0,(percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
+                    const fastMove = this.getMovePBByID(pokemon.fastAttackId, allMoves);
+                    graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, pokemon.stats.level, pokemon.stats.atk), pbID: pokemon.id})
+                });
+
+                //console.log(graphic)
+                return graphic.sort((a, b) => {
+                    if (a.tankScore > b.tankScore) {
+                        return 1;
+                    } else if (a.tankScore < b.tankScore) {
+                        return -1;
+                    } else {
+                        return b.targetBest - a.targetBest;
+                    }
+                });
+            }
+        }
+        
+        allMaxPoke.forEach((defender: string) => {
+            const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
+            let percentAfterLarge = 0;
+            let percentAfterTargetBestCase = 0;
+            let percentAfterTargetWorstCase = 0;
+            for (let i = 0; i < bossMoves.length; i++) {
+                const move = bossMoves[i];
+                //percentAfterLarge = (Math.max(0, ((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])) + (percentAfterLarge*i)) / (i+1);
+                percentAfterLarge = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterLarge*i)) / (i+1);
+                //percentAfterTargetBestCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.4 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetBestCase*i)) / (i+1);
+                percentAfterTargetBestCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.29 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetBestCase*i)) / (i+1);
+                //percentAfterTargetWorstCase = (((((Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0])
+                //    - Math.max(0, (this.getDamage(boss, pokemonData, move, types, defenderStat, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.7 * this.getDamageMultiplier(raidMode,false, false, boss)))))) / Calculator.getEffectiveStamina(pokemonData.stats.baseStamina, attackerStat[3], attackerStat[0]))) + (percentAfterTargetWorstCase*i)) / (i+1);
+                percentAfterTargetWorstCase = (this.getDamage(boss, pokemonData, move, types, defenderStatModified, attackerStat, [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax")) + (percentAfterTargetWorstCase*i)) / (i+1);
+            }
+            const fastMove = this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, defenderStatModified, customBossHP, customEGM);
+            const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
+            graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, level)});
+        })
+        return graphic.sort((a, b) => {
+            if (a.tankScore > b.tankScore) {
+                return 1;
+            } else if (a.tankScore < b.tankScore) {
+                return -1;
+            } else {
+                return b.targetBest - a.targetBest;
+            }
+        })
+    }
     
     static getBestDefendersDynamax(
         boss: any,
@@ -3205,6 +3246,7 @@ export class PoGoAPI {
         customBossHP: number,
         customEGM: number,
         level: number = 40,
+        pokebox: PBPokemonData[] = []
     ) {
         let attackerStat = [level,15,15,15]
         const defenderStat = this.convertStats([level,15,15,15], raidMode, boss.pokemonId);
@@ -3214,7 +3256,7 @@ export class PoGoAPI {
         }
         const bossLargeAttackData = this.getMovePBByID(bossLargeAttack, allMoves);
         const bossTargetAttackData = this.getMovePBByID(bossTargetAttack, allMoves);
-        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any; chargedMove: any | null;}[] = [];
+        let graphic: { pokemon: any; large:number; targetBest:number; targetWorst:number; targetAvg: number; tankScore: number; fastMove: any; chargedMove: any | null; pbID?: number}[] = [];
         
         let allMaxPoke = Calculator.DynamaxPokemon;
         if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
@@ -3224,6 +3266,42 @@ export class PoGoAPI {
         }
         // ignore dupes
         allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
+
+        if (localStorage.getItem("usePokeboxOnRankings") === "true") {
+            const pokeboxID = localStorage.getItem("pokeboxId");
+
+            if (pokeboxID) {
+                const myPokemon = pokebox.filter((pokemon: PBPokemonData) => pokemon.isDynamax);
+
+                myPokemon.forEach((pokemon: PBPokemonData) => {
+                    const pokemonData = this.getPokemonPBByID(pokemon.pokemonId, pokemonList)[0];
+
+                    const percentAfterLarge = 
+                        this.getDamage(boss, pokemonData, bossLargeAttackData, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+                    
+                    const percentAfterTargetBestCase = 
+                        this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.3 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+
+                    const percentAfterTargetWorstCase = 
+                        this.getDamage(boss, pokemonData, bossTargetAttackData, types, defenderStatModified, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], [weather, false, false, 0], [weather, false, false, 0], "normal", 0, 2 * 0.6 * ((raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") ? customAtkMult : this.getDamageMultiplier(raidMode, boss.pokemonId)), (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax"))
+                    
+                    const tankScore = ((Math.max(0, percentAfterLarge + (Math.max(0,(percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  / 2))
+                    const fastMove = this.getMovePBByID(pokemon.fastAttackId, allMoves);
+                    graphic.push({pokemon: pokemonData, large: percentAfterLarge, targetBest: Math.max(0, percentAfterTargetBestCase), targetWorst: Math.max(0, percentAfterTargetWorstCase), targetAvg: ((Math.max(0, (percentAfterTargetBestCase + percentAfterTargetWorstCase)))/2)  ,tankScore: tankScore, fastMove: fastMove, chargedMove: this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, defenderStatModified, fastMove, pokemon.stats.level, pokemon.stats.atk), pbID: pokemon.id})
+                });
+
+                //console.log(graphic)
+                return graphic.sort((a, b) => {
+                    if (a.tankScore > b.tankScore) {
+                        return 1;
+                    } else if (a.tankScore < b.tankScore) {
+                        return -1;
+                    } else {
+                        return b.targetBest - a.targetBest;
+                    }
+                });
+            }
+        }
         
         allMaxPoke.forEach((defender: string) => {
             const pokemonData = this.getPokemonPBByID(defender, pokemonList)[0];
@@ -3259,6 +3337,94 @@ export class PoGoAPI {
         }
             
         );
+    }
+
+    
+    static GetBestAttackersDynamax(
+        boss: any,
+        pokemonList: any,
+        availableDmaxPoke: any,
+        raidMode: string,
+        allMoves: any,
+        types: any,
+        weather: string,
+        showAllGmax: boolean = false,
+        customBossCPM: number = 1,
+        isDCannon: boolean = false,
+        customBossHP: number = 1,
+        customEGM: number = 4,
+        level: number = 40,
+        pokebox: PBPokemonData[] = []
+    ) {
+        const attackerStat = [level,15,15,15]
+        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+
+        const modDefenderStats = [...defenderStat];
+        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
+            modDefenderStats[0] = customBossCPM;
+        }
+
+        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any, chargedMove: any | null; pbID?: number }[] = [];
+        
+        let allMaxPoke = Calculator.DynamaxPokemon;
+        if (localStorage.getItem("showAllGmax") === "true" || showAllGmax) {
+            allMaxPoke = [...allMaxPoke, ...Calculator.UpcomingGMaxPokemon];
+        } if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
+            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
+        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
+            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
+        } 
+        // ignore dupes
+        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index);
+
+        if (localStorage.getItem("usePokeboxOnRankings") === "true") {
+            const pokeboxID = localStorage.getItem("pokeboxId");
+
+            if (pokeboxID) {
+                const myPokemon = pokebox.filter((pokemon: PBPokemonData) => pokemon.isDynamax);
+
+                myPokemon.forEach((pokemon: PBPokemonData) => {
+                    const pokemonData = this.getPokemonPBByID(pokemon.pokemonId, pokemonList)[0];
+                    const quickMove = this.getMovePBByID(pokemon.fastAttackId, allMoves);
+                    const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove, pokemon.stats.level, pokemon.stats.atk);
+                    const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, pokemon.max.attack, quickMove);
+                    if (isDCannon && (pokemon.pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && pokemon.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                        if (pokemon.max.attack === 1) maxMove.power = maxMove.power === 250 ? 300 : 400;
+                        if (pokemon.max.attack === 2) maxMove.power = maxMove.power === 300 ? 350 : 450;
+                        if (pokemon.max.attack === 3) maxMove.power = maxMove.power === 350 ? 450 : 550;
+                    }
+                    //console.log(weather)
+                    const damageDone = this.getDamage(pokemonData, boss, maxMove, types, [pokemon.stats.level, pokemon.stats.atk, pokemon.stats.def, pokemon.stats.hp], modDefenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1);
+                    if (isDCannon && (pokemon.pokemonId !== "ZACIAN_CROWNED_SWORD_FORM" && pokemon.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                        if (pokemon.max.attack === 1) maxMove.power = maxMove.power === 300 ? 250 : 300;
+                        if (pokemon.max.attack === 2) maxMove.power = maxMove.power === 350 ? 300 : 350;
+                        if (pokemon.max.attack === 3) maxMove.power = maxMove.power === 450 ? 350 : 450;
+                    }
+                    attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves), chargedMove: chargedMove, pbID: pokemon.id});
+                })
+                
+                return attackersStat.sort((a, b) => b.damage - a.damage);
+            }
+        }
+
+        //console.log(allMaxPoke)
+        allMaxPoke.forEach((attacker: string) => {
+            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
+            const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats, customBossHP, customEGM) : this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats);
+            const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove, level);
+            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
+            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
+            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                maxMove.power = maxMove.power === 350 ? 450 : 550;
+            }
+            //console.log(weather)
+            const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, modDefenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1);
+            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
+                maxMove.power = maxMove.power === 450 ? 350 : 450;
+            }
+            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves), chargedMove: chargedMove});
+        });
+        return attackersStat.sort((a, b) => b.damage - a.damage);
     }
 
     static GetBestAttackersDynamaxTypeSpecific(
@@ -3374,59 +3540,44 @@ export class PoGoAPI {
         return attackersStat.sort((a, b) => b.damage - a.damage);
     }
 
-    static GetBestAttackersDynamax(
-        boss: any,
-        pokemonList: any,
-        availableDmaxPoke: any,
-        raidMode: string,
-        allMoves: any,
-        types: any,
-        weather: string,
-        showAllGmax: boolean = false,
-        customBossCPM: number = 1,
-        isDCannon: boolean = false,
-        customBossHP: number = 1,
-        customEGM: number = 4,
-        level: number = 40,
-    ) {
-        const attackerStat = [level,15,15,15]
-        const defenderStat = this.convertStats([40,15,15,15], raidMode, boss.pokemonId);
+    static convertedPokeboxData: PBPokemonData[] = [];
 
-        const modDefenderStats = [...defenderStat];
-        if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
-            modDefenderStats[0] = customBossCPM;
-        }
-
-        let attackersStat: { pokemon: any; quickMove: any; maxMove: any; damage: number; fastMove: any, chargedMove: any | null;}[] = [];
-        
-        let allMaxPoke = Calculator.DynamaxPokemon;
-        if (localStorage.getItem("showAllGmax") === "true" || showAllGmax) {
-            allMaxPoke = [...allMaxPoke, ...Calculator.UpcomingGMaxPokemon];
-        } if (localStorage.getItem("showCustomPokemonOnRankings") === "true") {
-            allMaxPoke = [...allMaxPoke, ...this.CorrectPokemonFromCustom(pokemonList)];
-        } if (localStorage.getItem("showOnlyCustomPokemonOnRankings") === "true") {
-            allMaxPoke = this.CorrectPokemonFromCustom(pokemonList);
-        } 
-        // ignore dupes
-        allMaxPoke = allMaxPoke.filter((item, index) => allMaxPoke.indexOf(item) === index); 
-        //console.log(allMaxPoke)
-        allMaxPoke.forEach((attacker: string) => {
-            const pokemonData = this.getPokemonPBByID(attacker, pokemonList)[0];
-            const quickMove: any = pokemonData.pokemonId.endsWith("_GIGANTAMAX") ? this.getFastestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats, customBossHP, customEGM) : this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves, modDefenderStats);
-            const chargedMove: any = this.getBestChargedMove(pokemonData, boss, types, raidMode, customBossHP, allMoves, customEGM, modDefenderStats, quickMove, level);
-            //console.log("Pokemon: " + pokemonData.pokemonId + " Quick Move: " + quickMove.moveId + " Type of move: " + quickMove.type);
-            const maxMove = this.getDynamaxAttack(pokemonData.pokemonId, quickMove.type, allMoves, 3, quickMove);
-            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
-                maxMove.power = maxMove.power === 350 ? 450 : 550;
-            }
-            //console.log(weather)
-            const damageDone = this.getDamage(pokemonData, boss, maxMove, types, attackerStat, modDefenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, this.getDefenseMultiplier(raidMode), 1);
-            if (isDCannon && (attacker !== "ZACIAN_CROWNED_SWORD_FORM" && attacker !== "ZAMAZENTA_CROWNED_SHIELD_FORM")) {
-                maxMove.power = maxMove.power === 450 ? 350 : 450;
-            }
-            attackersStat.push({pokemon: pokemonData, quickMove: quickMove, maxMove: maxMove, damage: damageDone, fastMove: this.getBestQuickMove(pokemonData, boss, types, raidMode, allMoves), chargedMove: chargedMove});
+    static convertPokeboxData(data: any[]) {
+        this.convertedPokeboxData = data.map((pokemon: any) => {
+            return new PBPokemonData(
+                pokemon.id,
+                pokemon.name,
+                pokemon.pokemonId,
+                {
+                    level: pokemon.level,
+                    atk: pokemon.individualAttack,
+                    def: pokemon.individualDefense,
+                    hp: pokemon.individualStamina
+                },
+                pokemon.quickMove,
+                pokemon.cinematicMove,
+                pokemon.shiny,
+                pokemon.dynamax,
+                {
+                    attack: Math.min(Math.max(pokemon.maxPowerLevel, 1), 3),
+                    guard: Math.min(Math.max(pokemon.maxShieldLevel, 0), 3),
+                    spirit: Math.min(Math.max(pokemon.maxHealLevel, 0), 3)
+                }
+            );
         });
-        return attackersStat.sort((a, b) => b.damage - a.damage);
+        return this.convertedPokeboxData;
+    }
+
+
+    static FromID(pokeboxList: PBPokemonData[], pbID: number) {
+        let pokemonToReturn: PBPokemonData | null = null;
+        pokeboxList.forEach((pokemon: PBPokemonData) => {
+            const result = (pokemon.id).toString() == pbID.toString();
+            if (result) {
+                pokemonToReturn = pokemon;
+            }
+        })
+        return pokemonToReturn || pokeboxList[0];
     }
 
     static async AdvancedSimulationDynamax(

@@ -19,6 +19,15 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.40 (Pokebox expansion to Rankings)",
+        desc: "+ Added a new config to PokéChespin called 'Exclusively show Pokebox on Rankings'\n"+
+            ">>>>>> This new config allows you to exclusively show Pokémon that are in your Pokebox on the Max Rankings, making it easier to see how your Pokémon perform against a certain boss! (This config is OFF by default)\n"+
+            ">>>>>> This will help you decide on what to bring to the battle with your Pokémon instead of seeing all Pokémon with default stats.\n"+
+            " This option is currently only available for rankings against one Pokémon. Ranking by types and general rankings will be considered in the future.\n"+
+            " Max guard will be default to all pokemon having the same max guard state. This may change in the future.",
+        date: "2026-08-28",
+    },
+    {
         title: "v1.39.1",
         desc: "+ Added a new option to send your configs to a database in case you are experiencing issues with your settings, helping the debug of issues and the fix of these.\n"+
             "+ Added new Pokémon to Max Rankings\n"+
