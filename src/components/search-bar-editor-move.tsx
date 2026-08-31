@@ -303,9 +303,11 @@ export default function SearchBarMoveEditor({
               </select>
               <p>Power</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2">-</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2">-5</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2">-1</Button>
                 <p className="inline-block  ">{customDamage}</p> 
-                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2">+</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 1)} className="mx-2">+1</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2">+5</Button>
               </div>
               <p>Energy Cost</p>
               <div className="w-full flex flex-row justify-between items-center">
