@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.41 (Mega+ Moves!)",
+        desc: "+ Added Mega+ Moves to all elegible Megaevolutions.\n"+
+                ">>>>>> In addition to this, you'll be able to select the Mega Level of your Pokémon. Higher Mega Level will give your Mega+ Move more power.\n"+
+                ">>>>>> You can also see the power of each Mega+ Move based on the selected Mega Level.",
+        date: "2026-08-31",
+    },
+    {
         title: "v1.40.1",
         desc: "+ Dynamic Punch+ adventure effect added!\n"+
                 ">>>>>> This adventure effect gives you an additional 15% attack boost to your Pokémon against mega-evolved Pokémon on Raids, and will also allow one player to break 2 shields at the same time against Super Mega Raid bosses!",
