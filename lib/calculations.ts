@@ -1,6 +1,7 @@
 import { Data } from "./special-data";
 
 export class Calculator {
+    
 
     static FixedBosses: { [pokemon: string]: string } = {
       "SKWOVET": "raid-t1-dmax",
@@ -703,6 +704,10 @@ export class Calculator {
           return customBoost ? 1+(parseFloat(customBoost)) : 1.1;
         }
       }
+
+      static DynamicBoost(raidMode: any): any {
+        return 1.15;
+    }
 
       static GetDuggoAttackBoost() {
         const customBoost = localStorage.getItem("customBladeBoostAmount");

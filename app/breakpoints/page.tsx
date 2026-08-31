@@ -175,7 +175,7 @@ const BreakpointsPage = () => {
             for (let j = 0; j <= 15; j++) {
                 const attackerStats = [i, j, 15, 15];
                 const defenderStats = defenderStatsLoad;
-                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode, false, megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : 1));
+                const damage = PoGoAPI.getDamage(attackingPokemon, defendingPokemon, move, types, attackerStats, defenderStats, attackerBonus, defenderBonus, raidMode, false, megaBoost * (advEffect === "blade" ? Calculator.BladeBoost(raidMode) : (advEffect === "dynamic" && PoGoAPI.IsMega(defendingPokemon.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)));
                 //console.log("Damage: " + damage + " at level " + i + " with " + j + " attack");
                 table[2*(i-20)][j] = damage;
 

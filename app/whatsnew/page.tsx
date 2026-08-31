@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.40.1",
+        desc: "+ Dynamic Punch+ adventure effect added!\n"+
+                ">>>>>> This adventure effect gives you an additional 15% attack boost to your Pokémon against mega-evolved Pokémon on Raids, and will also allow one player to break 2 shields at the same time against Super Mega Raid bosses!",
+        date: "2026-08-31",
+    },
+    {
         title: "v1.40 (Pokebox expansion to Rankings)",
         desc: "+ Added a new config to PokéChespin called 'Exclusively show Pokebox on Rankings'\n"+
             ">>>>>> This new config allows you to exclusively show Pokémon that are in your Pokebox on the Max Rankings, making it easier to see how your Pokémon perform against a certain boss! (This config is OFF by default)\n"+

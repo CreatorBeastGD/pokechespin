@@ -739,6 +739,7 @@ export default function Home() {
               <option value={"none"}>No Adventure Effect</option>
               <option value={"blade"}>Behemoth Blade (++ATK)</option>
               <option value={"bash"}>Behemoth Bash (++DEF)</option>
+              <option value={"dynamic"}>Dynamic Punch+ (x1.15 ATK vs Megas)</option>
             </select>
 
             <p className="italic text-slate-700 text-sm">Mega Boost level on Calculations: </p>
@@ -779,6 +780,7 @@ export default function Home() {
                 raidMode={raidMode}
                 additionalBonus={megaBoost}
                 bladeBoost={advEffect === "blade"}
+                dynamicBoost={advEffect === "dynamic"}
                 simplifyCalculationText={simpleMode}
                 />
             </CardContent>
@@ -796,6 +798,7 @@ export default function Home() {
                 raidMode={raidMode}
                 additionalBonus={megaBoost}
                 bladeBoost={advEffect === "blade"}
+                dynamicBoost={advEffect === "dynamic"}
                 simplifyCalculationText={simpleMode}
               />
             </CardContent>
@@ -843,6 +846,7 @@ export default function Home() {
                 bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
                 bonusDefender={bonusDefender}
                 bladeBoost={advEffect === "blade"}
+                dynamicBoost={advEffect === "dynamic"}
                 />
             </CardContent>
             <CardContent>
@@ -864,7 +868,25 @@ export default function Home() {
                 allTypes={types}
                 />
             </CardContent>
-            
+            <CardContent>
+              <CardDescription> StatusSim</CardDescription>
+              <CalculateButtonMultiSimulateAdvanced 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                quickMove={selectedQuickMoveAttacker} 
+                chargedMove={selectedChargedMoveAttacker}
+                quickMoveDefender={selectedQuickMoveDefender}
+                chargedMoveDefender={selectedChargedMoveDefender}
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                raidMode={raidMode}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                boost={advEffect}
+                allTypes={types}
+                />
+            </CardContent>
             <CardContent>
               <CardDescription> Play Raid simulation (one player only)</CardDescription>
               <CalculateButtonSimulateTurnBased

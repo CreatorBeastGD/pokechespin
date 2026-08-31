@@ -19,6 +19,7 @@ export default function CalculateButton({
   additionalBonus = 1,
   shroomBonus = 1,
   bladeBoost = false,
+  dynamicBoost = false,
   simplifyCalculationText = false,
 }: {
   attacker: any;
@@ -33,6 +34,7 @@ export default function CalculateButton({
   additionalBonus?: number;
   shroomBonus?: number;
   bladeBoost?: boolean;
+  dynamicBoost?: boolean;
   simplifyCalculationText?: boolean;
 }) {
   const [damage, setDamage] = useState<number | null>(0);
@@ -52,7 +54,7 @@ export default function CalculateButton({
     setDamage(0);
     setDamageEnraged(0);
     setHealth(0);
-  }, [bladeBoost, simplifyCalculationText, attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
+  }, [bladeBoost, dynamicBoost, simplifyCalculationText, attacker, defender, move, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, additionalBonus]);
 
   const calculateDamage = async () => {
     if (!attacker || !defender || !move) return;
@@ -65,7 +67,7 @@ export default function CalculateButton({
     }
     
     const types = await PoGoAPI.getTypes();
-    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1), shroomBonus);
+    const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && PoGoAPI.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)), shroomBonus);
     const damageEnraged = await PoGoAPI.getDamageEnraged(
       attacker, 
       defender, 
@@ -76,7 +78,7 @@ export default function CalculateButton({
       bonusAttacker, 
       bonusDefender, 
       raidMode, false, 
-      additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : 1),
+      additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && PoGoAPI.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)),
       raidMode.endsWith("supermega") ? 3.0 : 2.2
     );
     const effStamina = 

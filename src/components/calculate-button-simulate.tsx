@@ -18,6 +18,7 @@ export default function CalculateButtonSimulate({
   bonusDefender,
   allEnglishText,
   bladeBoost = false,
+  dynamicBoost = false,
 }: {
   attacker: any;
   defender: any;
@@ -30,6 +31,7 @@ export default function CalculateButtonSimulate({
   bonusDefender: any;
   allEnglishText: any;
   bladeBoost?: boolean;
+  dynamicBoost?: boolean;
 }) {
   const [time, setTime] = useState<number | null>(0);
   const [qau, setQau] = useState<number | null>(0);
@@ -51,7 +53,7 @@ export default function CalculateButtonSimulate({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bladeBoost]);
+  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, bladeBoost, dynamicBoost]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1") {
@@ -87,7 +89,7 @@ export default function CalculateButtonSimulate({
     if (!attacker || !defender || !quickMove || !chargedMove) return;
     
     const defenderBonusesMod = [bonusAttacker[0], bonusDefender[1], raidMode === "normal" ? bonusDefender[2] : false, raidMode === "normal" ? bonusDefender[3] : 0];
-    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, bladeBoost);
+    const {time, quickAttackUses, chargedAttackUses, graphic} = await PoGoAPI.simulate(attacker, defender, quickMove, chargedMove, attackerStats, defenderStats, raidMode, bonusAttacker, defenderBonusesMod, bladeBoost, dynamicBoost);
     setShownGraphic(false);
     setTime(time);
     setQau(quickAttackUses);
@@ -100,7 +102,7 @@ export default function CalculateButtonSimulate({
     setQau(0);
     setCau(0);
     setGraphic(null);
-  } , [raidMode]);
+  } , [raidMode, dynamicBoost]);
 
   const getRequiredPeople = (raidMode: string) => {
     

@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.40";
+        return "1.40.1";
     }
 
     static async getAllPokemon() {
@@ -1514,7 +1514,7 @@ export class PoGoAPI {
      * @param chargedMove 
      * @returns 
      */
-    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, bladeBoost: boolean = false) {
+    static async simulate(attacker: any, defender: any, quickMove: any, chargedMove: any, attackerStats: any, defenderStats: any, raidMode: any, bonusAttacker: any, bonusDefender: any, bladeBoost: boolean = false, dynamicBoost: boolean = false) {
         if (raidMode !== "normal") {
             defenderStats = this.convertStats(defenderStats, raidMode);
         }
@@ -1531,7 +1531,7 @@ export class PoGoAPI {
             maxHealth = this.getRaidHealth(raidMode);
         }
         while (damage <= maxHealth) {
-            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
+            damage += this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1));
             time += quickMove.durationMs;
             energy += quickMove.energyDelta;
             if (energy > 100) {
@@ -1546,14 +1546,14 @@ export class PoGoAPI {
             
             // WARNING: chargedMove.energy is negative
             if (energy >= -chargedMove.energyDelta) {
-                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
-                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
+                const projectedDamageCharged = this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1));
+                const projectedDamageQuick = this.getDamage(attacker, defender, quickMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1));
                 if ((damage + (projectedDamageQuick * chargedMove.durationMs / quickMove.durationMs) < maxHealth)) {
                     if ((projectedDamageCharged > (projectedDamageQuick * (Math.floor(chargedMove.durationMs / quickMove.durationMs))))) {
                         energy = energy + chargedMove.energyDelta <= 0 ? 0 : energy + chargedMove.energyDelta;
                         time += chargedMove.durationMs;
                         chargedAttackUses++;
-                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : 1);
+                        damage += this.getDamage(attacker, defender, chargedMove, types, attackerStats, defenderStats, bonusAttacker, bonusDefender, raidMode, 1, bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1));
                         turn++;
                         graphic.push({"turn": turn, "type": "charged"});
                     }
@@ -1658,6 +1658,8 @@ export class PoGoAPI {
             case "RAICHU_MEGA_X":
                 return 7;
             case "RAICHU_MEGA_Y":
+                return 7;
+            case "STARMIE_MEGA":
                 return 7;
             default:
                 return 7;
@@ -2290,9 +2292,9 @@ export class PoGoAPI {
                 for (let i = 0; i < peopleCount && simGoing; i++) {
                     
                     const projectedDamage = (isEnraged ? 
-                        this.getDamageEnraged(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, false, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1)) : 
-                        isSuperMegaEnraged ? this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) * (1/4)) : 
-                            this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : 1) )
+                        this.getDamageEnraged(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, false, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : (boost === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1))) : 
+                        isSuperMegaEnraged ? this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : (boost === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * (1/4)) : 
+                            this.getDamage(attacker[currentAttackerIndex], defender, attackerMove, types, attackerStats[currentAttackerIndex], defenderStats, bonusAttacker[currentAttackerIndex], bonusDefender, raidMode, 0, multiplier * this.MegaBoostToApply(attacker, peopleCount, types, currentAttackerIndex, attackerMove.type) * (boost === "blade" ? Calculator.BladeBoost(raidMode) : (boost === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) )
                     )
                     tdo += projectedDamage / peopleCount;
                     
@@ -2308,6 +2310,7 @@ export class PoGoAPI {
                     if (superMegaMode && isSuperMegaEnraged && attackerMove.energyDelta < 0 && this.IsMega(attacker[currentAttackerIndex].pokemonId) && !chargedAttackFromMegaUsed[i]) {
                         chargedAttackFromMegaUsed[i] = true;
                         smChargedRequired--;
+                        if (boost === "dynamic") smChargedRequired--;
                         if (smChargedRequired <= 0) {
                             isSuperMegaEnraged = false;
                             isSuperMegaSubdued = true;
@@ -4468,7 +4471,7 @@ export class PoGoAPI {
                         attackersBonuses[i], 
                         defenderBonuses, 
                         raidMode, 1, 
-                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type)
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type)
                     )),
                     Math.floor(this.getDamage(
                         attackers[i], 
@@ -4480,7 +4483,7 @@ export class PoGoAPI {
                         attackersBonuses[i],
                         defenderBonuses,
                         raidMode, 1,
-                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersCinematicMove[i].type)
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersCinematicMove[i].type)
                     ))
                 ])
 
@@ -4495,7 +4498,7 @@ export class PoGoAPI {
                         attackersBonuses[i], 
                         defenderBonuses, 
                         raidMode, false, 
-                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
                     )),
                     Math.floor(this.getDamageEnraged(
                         attackers[i], 
@@ -4507,7 +4510,7 @@ export class PoGoAPI {
                         attackersBonuses[i],
                         defenderBonuses,
                         raidMode, false,
-                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : 1) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
                     ))
                 ])
 
