@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.40.1";
+        return "1.41";
     }
 
     static async getAllPokemon() {
@@ -560,6 +560,152 @@ export class PoGoAPI {
         const move = myOverrides.find((move: any) => move.moveId === moveId) 
             ?? moveList.find((move: any) => move.moveId === moveId) 
             ?? null;
+        
+        // Mega moves
+        if (moveId.startsWith("ACID_SPRAY_PLUS")) {
+            return {
+                moveId: "ACID_SPRAY_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_POISON",
+                damageWindowStartMs: 2998,
+                damageWindowEndMs: 3000,
+                animationId: "ACID_SPRAY",
+            };
+        } if (moveId.startsWith("LIQUIDATION_PLUS")) {
+            return {
+                moveId: "LIQUIDATION_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(180 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_WATER",
+                damageWindowStartMs: 2998,
+                damageWindowEndMs: 3000,
+                animationId: "LIQUIDATION",
+            };
+        } if (moveId.startsWith("OUTRAGE_PLUS")) {
+            return {
+                moveId: "OUTRAGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(185 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 4000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_DRAGON",
+                damageWindowStartMs: 3998,
+                damageWindowEndMs: 4000,
+                animationId: "OUTRAGE",
+            };
+        } if (moveId.startsWith("DRILL_PECK_PLUS")) {
+            return {
+                moveId: "DRILL_PECK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_FLYING",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "DRILL_PECK",
+            };
+        } if (moveId.startsWith("SEED_BOMB_PLUS")) {
+            return {
+                moveId: "SEED_BOMB_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_GRASS",
+                damageWindowStartMs: 1998,
+                damageWindowEndMs: 2000,
+                animationId: "SEED_BOMB",
+            };
+        } if (moveId.startsWith("MYSTICAL_FIRE_PLUS")) {
+            return {
+                moveId: "MYSTICAL_FIRE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_FIRE",
+                damageWindowStartMs: 1998,
+                damageWindowEndMs: 2000,
+                animationId: "MYSTICAL_FIRE",
+            };
+        } if (moveId.startsWith("SURF_PLUS")) {
+            return {
+                moveId: "SURF_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 1500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_WATER",
+                damageWindowStartMs: 1498,
+                damageWindowEndMs: 1500,
+                animationId: "SURF",
+            };
+        } if (moveId.startsWith("PSYBEAM_PLUS")) {
+            return {
+                moveId: "PSYBEAM_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_PSYCHIC",
+                damageWindowStartMs: 2998,
+                damageWindowEndMs: 3000,
+                animationId: "PSYBEAM",
+            };
+        } if (moveId.startsWith("BRICK_BREAK_PLUS")) {
+            return {
+                moveId: "BRICK_BREAK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 1500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_FIGHTING",
+                damageWindowStartMs: 1498,
+                damageWindowEndMs: 1500,
+                animationId: "BRICK_BREAK",
+            };
+        } if (moveId.startsWith("VOLT_TACKLE_PLUS")) {
+            return {
+                moveId: "VOLT_TACKLE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_ELECTRIC",
+                damageWindowStartMs: 3498,
+                damageWindowEndMs: 3500,
+                animationId: "VOLT_TACKLE",
+            };
+        } if (moveId.startsWith("DYNAMIC_PUNCH_PLUS")) {
+            return {
+                moveId: "DYNAMIC_PUNCH_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_FIGHTING",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "DYNAMIC_PUNCH",
+            };
+        } if (moveId.startsWith("ZAP_CANNON_PLUS")) {
+            return {
+                moveId: "ZAP_CANNON_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_ELECTRIC",
+                damageWindowStartMs: 3498,
+                damageWindowEndMs: 3500,
+                animationId: "ZAP_CANNON",
+            };
+        } if (moveId.startsWith("FUTURE_SIGHT_PLUS")) {
+            return {
+                moveId: "FUTURE_SIGHT_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_PSYCHIC",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "FUTURE_SIGHT",
+            };
+        }
 
         if (!move) {
             if (moveId === "DYNAMAX_CANNON") {
@@ -620,151 +766,7 @@ export class PoGoAPI {
                     damageWindowEndMs: 2000,
                     animationId: "GLAIVE_RUSH",
                 };
-            } if (moveId.startsWith("ACID_SPRAY_PLUS")) {
-
-                return {
-                    moveId: "ACID_SPRAY_PLUS",
-                    power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 3000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_POISON",
-                    damageWindowStartMs: 2998,
-                    damageWindowEndMs: 3000,
-                    animationId: "ACID_SPRAY",
-                };
-            } if (moveId.startsWith("LIQUIDATION_PLUS")) {
-                return {
-                    moveId: "LIQUIDATION_PLUS",
-                    power: Math.floor(180 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 3000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_WATER",
-                    damageWindowStartMs: 2998,
-                    damageWindowEndMs: 3000,
-                    animationId: "LIQUIDATION",
-                };
-            } if (moveId.startsWith("OUTRAGE_PLUS")) {
-                return {
-                    moveId: "OUTRAGE_PLUS",
-                    power: Math.floor(185 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 4000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_DRAGON",
-                    damageWindowStartMs: 3998,
-                    damageWindowEndMs: 4000,
-                    animationId: "OUTRAGE",
-                };
-            } if (moveId.startsWith("DRILL_PECK_PLUS")) {
-                return {
-                    moveId: "DRILL_PECK_PLUS",
-                    power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 2500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_FLYING",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "DRILL_PECK",
-                };
-            } if (moveId.startsWith("SEED_BOMB_PLUS")) {
-                return {
-                    moveId: "SEED_BOMB_PLUS",
-                    power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 2000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_GRASS",
-                    damageWindowStartMs: 1998,
-                    damageWindowEndMs: 2000,
-                    animationId: "SEED_BOMB",
-                };
-            } if (moveId.startsWith("MYSTICAL_FIRE_PLUS")) {
-                return {
-                    moveId: "MYSTICAL_FIRE_PLUS",
-                    power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 2000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_FIRE",
-                    damageWindowStartMs: 1998,
-                    damageWindowEndMs: 2000,
-                    animationId: "MYSTICAL_FIRE",
-                };
-            } if (moveId.startsWith("SURF_PLUS")) {
-                return {
-                    moveId: "SURF_PLUS",
-                    power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 1500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_WATER",
-                    damageWindowStartMs: 1498,
-                    damageWindowEndMs: 1500,
-                    animationId: "SURF",
-                };
-            } if (moveId.startsWith("PSYBEAM_PLUS")) {
-                return {
-                    moveId: "PSYBEAM_PLUS",
-                    power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 3000,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_PSYCHIC",
-                    damageWindowStartMs: 2998,
-                    damageWindowEndMs: 3000,
-                    animationId: "PSYBEAM",
-                };
-            } if (moveId.startsWith("BRICK_BREAK_PLUS")) {
-                return {
-                    moveId: "BRICK_BREAK_PLUS",
-                    power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 1500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_FIGHTING",
-                    damageWindowStartMs: 1498,
-                    damageWindowEndMs: 1500,
-                    animationId: "BRICK_BREAK",
-                };
-            } if (moveId.startsWith("VOLT_TACKLE_PLUS")) {
-                return {
-                    moveId: "VOLT_TACKLE_PLUS",
-                    power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 3500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_ELECTRIC",
-                    damageWindowStartMs: 3498,
-                    damageWindowEndMs: 3500,
-                    animationId: "VOLT_TACKLE",
-                };
-            } if (moveId.startsWith("DYNAMIC_PUNCH_PLUS")) {
-                return {
-                    moveId: "DYNAMIC_PUNCH_PLUS",
-                    power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 2500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_FIGHTING",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "DYNAMIC_PUNCH",
-                };
-            } if (moveId.startsWith("ZAP_CANNON_PLUS")) {
-                return {
-                    moveId: "ZAP_CANNON_PLUS",
-                    power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 3500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_ELECTRIC",
-                    damageWindowStartMs: 3498,
-                    damageWindowEndMs: 3500,
-                    animationId: "ZAP_CANNON",
-                };
-            } if (moveId.startsWith("FUTURE_SIGHT_PLUS")) {
-                return {
-                    moveId: "FUTURE_SIGHT_PLUS",
-                    power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
-                    durationMs: 2500,
-                    energyDelta: -100,
-                    type: "POKEMON_TYPE_PSYCHIC",
-                    damageWindowStartMs: 2498,
-                    damageWindowEndMs: 2500,
-                    animationId: "FUTURE_SIGHT",
-                };
-            }
+            } 
         }
         if (moveId === "BEHEMOTH_BLADE") {
             move.power = Math.round(200 * Calculator.GetDuggoAttackBoost());
