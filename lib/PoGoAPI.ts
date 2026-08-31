@@ -6157,7 +6157,7 @@ export class PoGoAPI {
 
     static formatMoveName(moveName: string) {
         if (!moveName) return "???";
-        return moveName.replace("_FAST", "").replaceAll("_", " ").replaceAll("PLUS", "+").toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ").replace("2", "").replace("3", "");
+        return moveName.replace("_FAST", "").replaceAll("_", " ").replaceAll("PLUS", "+").toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
     }
 
     static formatTypeName(typeName: string) {
