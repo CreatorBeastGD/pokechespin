@@ -774,6 +774,11 @@ export class PoGoAPI {
             move.energyDelta = -50;
         }
 
+        if (moveId === "PSYCHO_BOOST") {
+            move.power = 130;
+            move.energyDelta = -33;
+        }
+
         // Move overrides
         let overridenMove = { ...move };
         const overrides = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
