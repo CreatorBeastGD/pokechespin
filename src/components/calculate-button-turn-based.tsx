@@ -98,7 +98,6 @@ export default function CalculateButtonSimulateTurnBased({
       if (!attacker[i] || !quickMove[i] || !chargedMove[i]) return;
     }
     if (!raidMode || raidMode === "normal" || raidMode === "") return;
-    const adventureEffect = searchParams.get("adv_effect");
     
     setStartedSim(true);
 

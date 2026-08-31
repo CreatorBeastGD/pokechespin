@@ -24,6 +24,7 @@ interface SearchBarAttackerProps {
   onQuickMoveSelect: (moveId: string, move: any, slot: any) => void;
   onChargedMoveSelect: (moveId: string, move: any, slot: any) => void;
   onChangedStats: (stats: any, slot: any) => void;
+  onChangedMegaLevel: (megaLevel: number, slot: any) => void;
   onBonusChange: (bonuses: any, slot: any) => void;
   pokemonList: any;
   searchBarNames: any;
@@ -42,6 +43,7 @@ export default function SearchBarAttacker({
     onSelect, 
     onQuickMoveSelect, 
     onChargedMoveSelect, 
+    onChangedMegaLevel,
     onChangedStats, 
     onBonusChange, 
     raidMode, 
@@ -81,6 +83,10 @@ export default function SearchBarAttacker({
   const pathname = usePathname();
   const initialLoad = useRef(false);
 
+  const [megaChargedMove, setMegaChargedMove] = useState<any>(null);
+
+  const [megaLevel, setMegaLevel] = useState<number>(1);
+
 
   useEffect(() => {
     //console.log(initialValues);
@@ -98,6 +104,15 @@ export default function SearchBarAttacker({
       }
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
+      if (initialValues.megalevel) handleMegaLevelChange(initialValues.megalevel);
+      if (initialValues.attacker) {
+        const megaChargedMove = PoGoAPI.HasMegaChargedMove(initialValues.attacker.pokemonId, initialValues.megalevel);
+        if (megaChargedMove) {
+          setMegaChargedMove(megaChargedMove);
+        } else {
+          setMegaChargedMove(null);
+        }
+      }
       //console.log("Initial values loaded");
     }
   }, [initialValues]); // Agrega `initialValues` como dependencia
@@ -160,8 +175,19 @@ export default function SearchBarAttacker({
         newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
 
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-        
+
       }
+
+      const megaChargedMove = PoGoAPI.HasMegaChargedMove(response?.pokemonId, megaLevel);
+        if (megaChargedMove) {
+          setMegaChargedMove(megaChargedMove);
+        } else {
+          setMegaChargedMove(null);
+        }
+      
+      console.log("mega charged move", megaChargedMove);
+      console.log("currently selected charged move", selectedChargedMove);
+
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -215,6 +241,18 @@ export default function SearchBarAttacker({
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
 
+      const megaChargedMove = PoGoAPI.HasMegaChargedMove(response?.pokemonId, megaLevel);
+      if (megaChargedMove) {
+        setMegaChargedMove(megaChargedMove);
+      } else {
+        setMegaChargedMove(null);
+      }
+
+      
+      console.log("mega charged move", megaChargedMove);
+      console.log("currently selected charged move", selectedChargedMove);
+
+
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -254,7 +292,18 @@ export default function SearchBarAttacker({
       newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack");
       
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
-    
+
+      const megaChargedMove = PoGoAPI.HasMegaChargedMove(response?.pokemonId, megaLevel);
+      if (megaChargedMove) {
+        setMegaChargedMove(megaChargedMove);
+      } else {
+        setMegaChargedMove(null);
+      }
+      
+      console.log("mega charged move", megaChargedMove);
+      console.log("currently selected charged move", selectedChargedMove);
+
+
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
         setTimeout(() => {
@@ -279,7 +328,10 @@ export default function SearchBarAttacker({
 
   const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     if (paramsLoaded) {
-      
+    
+    console.log(moveId);
+    console.log(move)
+
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, memberSlot);
     if (write) {
@@ -330,6 +382,10 @@ export default function SearchBarAttacker({
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   }, [selectedBonuses]);
 
+  useEffect(() => {
+    onChangedMegaLevel(megaLevel, memberSlot);
+  }, [megaLevel]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -350,6 +406,16 @@ export default function SearchBarAttacker({
     setClickedSuggestion(true);
     searchPokemon();
     setSuggestions([]);
+  };
+
+  const handleMegaLevelChange = (value: number) => {
+    setMegaLevel(value);
+    const megaChargedMove = PoGoAPI.HasMegaChargedMove(pokemonData?.pokemonId, value);
+    if (megaChargedMove) {
+      setMegaChargedMove(megaChargedMove);
+    } else {
+      setMegaChargedMove(null);
+    }
   };
 
   const exportPokemon = () => {
@@ -769,6 +835,48 @@ export default function SearchBarAttacker({
                   </CardContent>
                 </Card>)
               ))}
+              {(megaChargedMove) && slot == 1 && (
+                <div className="flex flex-row items-center space-x-2">
+                <Button onClick={() => handleMegaLevelChange(megaLevel === 2 ? 1 : megaLevel === 3 ? 2 : megaLevel === 4 ? 3 : 1)} className="mb-2 mr-2">-</Button>
+                <p className="text-sm">Mega Level: {megaLevel}</p>
+                <Button onClick={() => handleMegaLevelChange(megaLevel === 1 ? 2 : megaLevel === 2 ? 3 : megaLevel === 3 ? 4 : 4)} className="mb-2 mr-2">+</Button>
+                </div>
+
+                
+              )}
+              {(megaChargedMove) && slot == 1 && (
+                <div key={megaChargedMove}>
+                <Card
+                  key={megaChargedMove}
+                  className={`mb-4 ${selectedChargedMove === megaChargedMove ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
+                  onClick={() => handleChargedMoveSelect(megaChargedMove, PoGoAPI.getMovePBByID(megaChargedMove, allMoves))}
+                >
+                  <CardHeader>
+                    <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(megaChargedMove) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(megaChargedMove) ? " +" : "")}</CardTitle>
+                    {showID && <p className="text-xs italic text-gray-500">{megaChargedMove}</p>}
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} /></CardDescription>
+                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).power}</CardDescription>
+                    <CardDescription>Duration: {PoGoAPI.getMovePBByID(megaChargedMove, allMoves).durationMs / 1000}s</CardDescription>
+                    
+                    <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) : 0}</CardDescription>
+                    <div className="w-full flex flex-row justify-between mt-2 space-x-2">
+                      {(-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) <= 100 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} show={false} />
+                      )}
+                      {(-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) <= 50 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} show={false} />
+                      )}
+                      {(-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) <= 33 && (
+                        <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} show={false} />
+                      )}
+                    </div>
+
+                  </CardContent>
+                </Card>
+              </div>
+              )}
             </div>
           </div>
         </div>

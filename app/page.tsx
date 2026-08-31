@@ -25,6 +25,7 @@ import { Slider } from "@/components/ui/slider";
 import CalculateButtonSimulateTurnBased from "@/components/calculate-button-turn-based";
 import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 import CalculateButtonMultiSimulateAdvanced from "@/components/calculate-button-advanced-multisim";
+import { AnyARecord } from "dns";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -56,6 +57,7 @@ export default function Home() {
   const [friendship, setFriendship] = useState<number>(0);
 
   const [types, setTypes] = useState<any>(null);
+  const [megaLevel, setMegaLevel] = useState<any[]>(Array(numMembers).fill(1));
   
 
   const [defenderBonusBug, setDefenderBonusBug] = useState<any>("EXTREME,false,false,0");
@@ -174,6 +176,7 @@ export default function Home() {
       const newAttackerStats = Array.from({ length: numMembers }, (_, i) => attackerStats[i]);
       const newBonusAttacker = Array.from({ length: numMembers }, (_, i) => bonusAttacker[i]);
       const newUrlParams = new URLSearchParams(window.location.search);
+      const newMegaLevel = Array.from({ length: numMembers }, (_, i) => megaLevel[i]);
 
 
       // Old link checker
@@ -229,6 +232,9 @@ export default function Home() {
         const chargedMoveParam = searchParams.get(`attacker_cinematic_attack${i}`);
         const statsParam = searchParams.get(`attacker_stats${i}`);
         const bonusParam = searchParams.get(`attacker_bonuses${i}`);
+        const megaLevelParam = searchParams.get(`attacker_mega_level${i}`);
+
+        console.log("mega level param", megaLevelParam);
 
         if (attackerParam) {
           newAttackingPokemon[i - 1] = PoGoAPI.getPokemonPBByID(attackerParam, pokemonList)[0];
@@ -236,8 +242,13 @@ export default function Home() {
         if (quickMoveParam) {
           newSelectedQuickMoveAttacker[i - 1] = PoGoAPI.getMovePBByID(quickMoveParam, allMoves);
         }
+        if (megaLevelParam) {
+          newMegaLevel[i - 1] = parseInt(megaLevelParam);
+        }
         if (chargedMoveParam) {
-          newSelectedChargedMoveAttacker[i - 1] = PoGoAPI.getMovePBByID(chargedMoveParam, allMoves);
+          let chargedMove = PoGoAPI.getMovePBByID(chargedMoveParam, allMoves);
+          chargedMove.moveId = chargedMoveParam;
+          newSelectedChargedMoveAttacker[i - 1] = chargedMove;
         }
         if (statsParam) {
           newAttackerStats[i - 1] = statsParam.split(",").map((stat: string) => parseFloat(stat));
@@ -246,6 +257,7 @@ export default function Home() {
           const bonus = bonusParam.split(",");
           newBonusAttacker[i - 1] = bonus;
         }
+        
       }
 
       setAttackingPokemon(newAttackingPokemon);
@@ -253,7 +265,7 @@ export default function Home() {
       setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
       setAttackerStats(newAttackerStats);
       setBonusAttacker(newBonusAttacker);
-
+      setMegaLevel(newMegaLevel);
         const defender = searchParams.get("defender");
         const defenderStats = defenderStatsBug; // Man, I FUCKING love React
         //console.log("DS", defenderStatsBug);
@@ -457,6 +469,26 @@ export default function Home() {
     }, 1);
   };
 
+  const handleChangedMegaLevelAttacker = (level: number, slot: any) => {
+    const newMegaLevel = megaLevel.map((m, index) => {
+      if (index === slot - 1) {
+        return level;
+      } return m;
+    });
+
+    setMegaLevel(newMegaLevel);
+
+    setTimeout(() => {
+      const newSearchParams = new URLSearchParams(searchParams.toString());
+      newSearchParams.set(`attacker_mega_level${slot}`, level.toString());
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }, 1);
+  }
+
+  const handleChangedMegaLevelDefender = (megaLevel: number) => {
+    return null;
+  }
+
   const handleChangedStatsDefender = (stats: any) => {
     setDefenderStats(stats);
 
@@ -633,6 +665,7 @@ export default function Home() {
                 onQuickMoveSelect={handleQuickMoveSelectAttacker}
                 onChargedMoveSelect={handleChargedMoveSelectAttacker}
                 onChangedStats={handleChangedStatsAttacker}
+                onChangedMegaLevel={handleChangedMegaLevelAttacker}
                 onBonusChange={handleBonusChangeAttacker}
                 slot={1}
                 initialValues={
@@ -641,7 +674,8 @@ export default function Home() {
                     quickMove: selectedQuickMoveAttacker[slotIndex],
                     chargedMove: selectedChargedMoveAttacker[slotIndex],
                     attackerStats: attackerStats[slotIndex],
-                    bonusAttacker: bonusAttacker[slotIndex]
+                    bonusAttacker: bonusAttacker[slotIndex],
+                    megalevel: megaLevel[slotIndex]
                   }
                 }
                 paramsLoaded={paramsLoaded}
@@ -675,6 +709,7 @@ export default function Home() {
               onQuickMoveSelect={handleQuickMoveSelectDefender}
               onChargedMoveSelect={handleChargedMoveSelectDefender}
               onChangedStats={handleChangedStatsDefender}
+              onChangedMegaLevel={handleChangedMegaLevelDefender}
               onBonusChange={handleBonusChangeDefender}
               raidMode={raidMode}
               slot={2}
