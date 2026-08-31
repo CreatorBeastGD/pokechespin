@@ -409,6 +409,7 @@ export default function SearchBarAttacker({
   };
 
   const handleMegaLevelChange = (value: number) => {
+    console.log("Changing mega level to", value);
     setMegaLevel(value);
     const megaChargedMove = PoGoAPI.HasMegaChargedMove(pokemonData?.pokemonId, value);
     if (megaChargedMove) {
@@ -532,6 +533,8 @@ export default function SearchBarAttacker({
                           const quickMove = PoGoAPI.getMovePBByID(data.quickMove, allMoves);
                           const chargedMove = PoGoAPI.getMovePBByID(data.chargedMove, allMoves);
 
+                          const isValidMegaMove = data.chargedMove === PoGoAPI.HasMegaChargedMove(pokemonData.pokemonId, data.chargedMove.slice(-1));
+
                           if (!(pokemonData.quickMoves).includes(data.quickMove)) 
                         {
                             setError("The selected Quick Move is not available for this Pokémon.");
@@ -539,7 +542,7 @@ export default function SearchBarAttacker({
                             return;
                         }
 
-                          else if (!(pokemonData.cinematicMoves).includes(data.chargedMove)) {
+                          else if (!isValidMegaMove && !(pokemonData.cinematicMoves).includes(data.chargedMove)) {
                               setError("The selected Charged Move is not available for this Pokémon.");
                               setIsImporting(false);
                               return;
@@ -588,6 +591,17 @@ export default function SearchBarAttacker({
                           handleQuickMoveSelect(data.quickMove, quickMove, false);
                           await waitForImportSync(80);
                           handleChargedMoveSelect(data.chargedMove, chargedMove, false);
+                          await waitForImportSync(80);
+                          if (isValidMegaMove) {
+                            handleMegaLevelChange(data.chargedMove.slice(-1));
+                            setMegaLevel(data.chargedMove.slice(-1));
+                            const megaChargedMove = PoGoAPI.HasMegaChargedMove(pokemonData?.pokemonId, data.chargedMove.slice(-1));
+                            if (megaChargedMove) {
+                              setMegaChargedMove(megaChargedMove);
+                            } else {
+                              setMegaChargedMove(null);
+                            }
+                          }
                           setImportMaxMove(data.maxmoves || [1, 0, 0]);
 
                           await waitForImportSync(120);
@@ -598,6 +612,7 @@ export default function SearchBarAttacker({
                           newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
                           newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
                           newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
+
                           
                           window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
                       } finally {
