@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.41";
+        return "1.41.1";
     }
 
     static async getAllPokemon() {
@@ -708,6 +708,39 @@ export class PoGoAPI {
                 damageWindowEndMs: 2500,
                 animationId: "FUTURE_SIGHT",
             };
+        } if (moveId.startsWith("FELL_STINGER_PLUS")) {
+            return {
+                moveId: "FELL_STINGER_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_BUG",
+                damageWindowStartMs: 1998,
+                damageWindowEndMs: 2000,
+                animationId: "FELL_STINGER",
+            };
+        } if (moveId.startsWith("DARK_PULSE_PLUS")) {
+            return {
+                moveId: "DARK_PULSE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_DARK",
+                damageWindowStartMs: 2998,
+                damageWindowEndMs: 3000,
+                animationId: "DARK_PULSE",
+            };
+        } if (moveId.startsWith("BRAVE_BIRD_PLUS")) {
+            return {
+                moveId: "BRAVE_BIRD_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2000,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_FLYING",
+                damageWindowStartMs: 1998,
+                damageWindowEndMs: 2000,
+                animationId: "BRAVE_BIRD",
+            };
         }
 
         if (!move) {
@@ -778,7 +811,6 @@ export class PoGoAPI {
             move.power = 125 * Calculator.GetDuggoAttackBoost();
             move.energyDelta = -50;
         }
-
         if (moveId === "PSYCHO_BOOST") {
             move.power = 130;
             move.energyDelta = -33;
@@ -1836,6 +1868,15 @@ export class PoGoAPI {
                 break;
             case "GRENINJA_MEGA":
                 megaMove =  "SURF_PLUS";
+                break;
+            case "BEEDRILL_MEGA":
+                megaMove =  "FELL_STINGER_PLUS";
+                break;
+            case "HOUNDOOM_MEGA":
+                megaMove =  "DARK_PULSE_PLUS";
+                break;
+            case "STARAPTOR_MEGA":
+                megaMove =  "BRAVE_BIRD_PLUS";
                 break;
         }
         if (!megaMove) {

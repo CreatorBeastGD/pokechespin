@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.41.1",
+        desc: "+ Added Mega+ Moves for Mega Beedrill, Mega Houndoom and Mega Staraptor.\n"+
+                "~ Fixed Mega Starmie' Base Attack stat, which was 303 instead of 276.\n",
+        date: "2026-09-02",
+    },
+    {
         title: "v1.41 (Mega+ Moves!)",
         desc: "+ Added Mega+ Moves to all elegible Megaevolutions.\n"+
                 ">>>>>> In addition to this, you'll be able to select the Mega Level of your Pokémon. Higher Mega Level will give your Mega+ Move more power.\n"+
