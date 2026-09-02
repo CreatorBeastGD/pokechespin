@@ -380,6 +380,9 @@ export class PoGoAPI {
                     pokemon[0].cinematicMoves = ["SHADOW_BALL", "WATER_PULSE", "SURF", "HYDRO_CANNON", "SNIPE_SHOT"];
                     pokemon[0].eliteCinematicMove = ["HYDRO_CANNON"];
                     break;
+                case "STARMIE_MEGA":
+                    pokemon[0].stats.baseAttack = 276;
+                    break;
                 default:
                     break;
             }
