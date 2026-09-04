@@ -466,7 +466,7 @@ export default function SearchBarAttacker({
           ];
           const importedMaxMoves = [pokemonData.max.attack, pokemonData.max.guard, pokemonData.max.spirit];
           const importedQuickMove = pokemonData.fastAttackId;
-          const importedChargedMove = pokemonData.chargedAttackId;
+          let importedChargedMove = pokemonData.chargedAttackId;
 
           const quickMoveData = PoGoAPI.getMovePBByID(importedQuickMove, allMoves);
           const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
@@ -478,9 +478,13 @@ export default function SearchBarAttacker({
             setError("The selected Quick Move is not available for this Pokémon.");
             return;
           }
-          if (!availableChargedMoves.includes(importedChargedMove)) {
+          if (!availableChargedMoves.includes(importedChargedMove) && importedChargedMove+"_1" !== PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1)) {
             setError("The selected Charged Move is not available for this Pokémon.");
             return;
+          }
+
+          if (importedChargedMove+"_1" == PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1)) {
+            importedChargedMove = importedChargedMove+"_1";
           }
 
           await searchPokemonInit(importedPokemon, false);
@@ -489,7 +493,7 @@ export default function SearchBarAttacker({
           await waitForImportSync(80);
           handleQuickMoveSelect(importedQuickMove, quickMoveData, false);
           await waitForImportSync(80);
-          handleChargedMoveSelect(importedChargedMove, chargedMoveData, false);
+          handleChargedMoveSelect(chargedMoveData.moveId, chargedMoveData, false);
           setImportMaxMove(importedMaxMoves);
           await waitForImportSync(120);
 
