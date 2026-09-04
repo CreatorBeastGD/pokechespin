@@ -683,7 +683,7 @@ export default function SearchBarAttacker({
       <div>
         <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
         {slot === 1 && (<Button onClick={exportPokemon} className="mb-2 mr-2">Export</Button>)}
-        {slot === 1 && (<Button onClick={importPokemon} className=" mb-2">Import</Button>)}
+        {slot === 1 && (<Button onClick={importPokemon} className=" mb-2 mr-2">Import</Button>)}
         {slot === 1 && (<PokeboxButton imageLinks={assets} englishText={allEnglishText} allMoves={allMoves} onSelectPokemon={importPokemonFromPokebox} />)}
       </div>
       {loading || isImporting && (

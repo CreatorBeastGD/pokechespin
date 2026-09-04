@@ -16,16 +16,7 @@ export function PokebattlerImage({
     pokemonData,
 }: PokebattlerImageProps)
 {
-    const resolvedPokemonData = pokemonData ?? new PBPokemonData(
-        "Dark",
-        "DARKRAI_SHADOW_FORM",
-        { level: 50, atk: 15, def: 15, hp: 11 },
-        "SNARL_FAST",
-        "SHADOW_BALL",
-        true,
-        false,
-        { attack: 0, guard: 0, spirit: 0 }
-    );
+    const resolvedPokemonData = pokemonData!;
     return (
         <div className="flex flex-col items-center justify-center relative">
             <p className="absolute top-4 left-0 bg-black text-white text-xxs py-1 px-2 rounded-br-lg">

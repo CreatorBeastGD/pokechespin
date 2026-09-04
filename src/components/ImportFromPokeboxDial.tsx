@@ -66,12 +66,14 @@ export function PokeboxButton({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild >
         <Button className="mb-2 mr-2">
-          <Image 
-            unoptimized src={"https://www.pokebattler.com/favicon.ico"} alt="Pokebattler Logo" width={20} height={20}
+          
+        Import from Pokebox
+        <Image 
+            unoptimized src={"https://www.pokebattler.com/favicon.ico"} alt="Pokebattler Logo" width={20} height={20} 
           />
-        Import from Pokebox</Button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="bg-black border-2 border-white rounded-lg w-[80%] ">
         <DialogHeader>
