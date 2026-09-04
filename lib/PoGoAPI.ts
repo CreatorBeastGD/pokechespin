@@ -386,6 +386,10 @@ export class PoGoAPI {
                 default:
                     break;
             }
+            const megaChargedMove = this.HasMegaChargedMove(pokemon[0].pokemonId, 1);
+            if (megaChargedMove) {
+                pokemon[0].cinematicMoves = pokemon[0].cinematicMoves.filter((move: any) => (move + "_1") !== megaChargedMove);
+            }
         }
 
         if (pokemon.length !== 0) {
