@@ -478,13 +478,21 @@ export default function SearchBarAttacker({
             setError("The selected Quick Move is not available for this Pokémon.");
             return;
           }
-          if (!availableChargedMoves.includes(importedChargedMove) && importedChargedMove+"_1" !== PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1)) {
+          
+          const isMegaChargedMove = (PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1) || "").startsWith(importedChargedMove);
+
+          if (!availableChargedMoves.includes(importedChargedMove) && !isMegaChargedMove) {
             setError("The selected Charged Move is not available for this Pokémon.");
             return;
           }
 
-          if (importedChargedMove+"_1" == PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1)) {
-            importedChargedMove = importedChargedMove+"_1";
+          if (isMegaChargedMove) {
+            let endsWithNumber = importedChargedMove.match(/\d+$/);
+            if (endsWithNumber) {
+              importedChargedMove = importedChargedMove;
+            } else {
+              importedChargedMove = importedChargedMove + "_1";
+            }
           }
 
           await searchPokemonInit(importedPokemon, false);

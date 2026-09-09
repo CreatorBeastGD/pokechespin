@@ -75,6 +75,11 @@ export class Calculator {
       "REGICE": "raid-t5-dmax",
       "REGIROCK": "raid-t5-dmax",
       "REGISTEEL": "raid-t5-dmax",
+      "UXIE": "raid-t5-dmax",
+      "MESPRIT": "raid-t5-dmax",
+      "AZELF": "raid-t5-dmax",
+      "DIALGA": "raid-t5-dmax",
+      "PALKIA": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
