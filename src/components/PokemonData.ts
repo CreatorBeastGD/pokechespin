@@ -16,9 +16,10 @@ export class PBPokemonData {
         attack: number;
         guard: number;
         spirit: number;
-    }
+    };
+    megaLevel: number = 0;
 
-    constructor(id: number, customName: string, pokemonId: string, stats: { level: number; atk: number; def: number; hp: number; }, fastAttackId: string, chargedAttackId: string, isShiny: boolean, isDynamax: boolean, max: { attack: number; guard: number; spirit: number; }) {
+    constructor(id: number, customName: string, pokemonId: string, stats: { level: number; atk: number; def: number; hp: number; }, fastAttackId: string, chargedAttackId: string, isShiny: boolean, isDynamax: boolean, max: { attack: number; guard: number; spirit: number; }, megaLevel: number = 0) {
         this.id = id;
         this.customName = customName;
         this.pokemonId = pokemonId;
@@ -28,6 +29,7 @@ export class PBPokemonData {
         this.isShiny = isShiny;
         this.isDynamax = isDynamax;
         this.max = max;
+        this.megaLevel = megaLevel;
     }
 
 }

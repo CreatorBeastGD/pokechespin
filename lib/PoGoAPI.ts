@@ -3858,6 +3858,11 @@ export class PoGoAPI {
 
     static convertPokeboxData(data: any[]) {
         this.convertedPokeboxData = data.map((pokemon: any) => {
+            const megaLevel = pokemon.megaLevel || 0;
+            let cinematicMove = pokemon.cinematicMove;
+            if (megaLevel > 0 && this.HasMegaChargedMove(pokemon.id, 1) == pokemon.cinematicMove + "_1") {
+                cinematicMove = this.HasMegaChargedMove(pokemon.id, megaLevel);
+            }
             return new PBPokemonData(
                 pokemon.id,
                 pokemon.name,
@@ -3869,7 +3874,7 @@ export class PoGoAPI {
                     hp: pokemon.individualStamina
                 },
                 pokemon.quickMove,
-                pokemon.cinematicMove,
+                cinematicMove,
                 pokemon.shiny,
                 pokemon.dynamax,
                 {
