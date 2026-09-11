@@ -469,7 +469,6 @@ export default function SearchBarAttacker({
           let importedChargedMove = pokemonData.chargedAttackId;
 
           const quickMoveData = PoGoAPI.getMovePBByID(importedQuickMove, allMoves);
-          const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
 
           const availableQuickMoves = importedPokemon.quickMoves.concat(importedPokemon.eliteQuickMove);
           const availableChargedMoves = importedPokemon.cinematicMoves.concat(importedPokemon.eliteCinematicMove);
@@ -478,8 +477,8 @@ export default function SearchBarAttacker({
             setError("The selected Quick Move is not available for this Pokémon.");
             return;
           }
-          
-          const isMegaChargedMove = (PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, 1) || "").startsWith(importedChargedMove);
+          const hasMegaChargedMove = PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, pokemonData.megaLevel);
+          const isMegaChargedMove = (hasMegaChargedMove || "").startsWith(importedChargedMove);
 
           if (!availableChargedMoves.includes(importedChargedMove) && !isMegaChargedMove) {
             setError("The selected Charged Move is not available for this Pokémon.");
@@ -491,9 +490,11 @@ export default function SearchBarAttacker({
             if (endsWithNumber) {
               importedChargedMove = importedChargedMove;
             } else {
-              importedChargedMove = importedChargedMove + "_1";
+              importedChargedMove = importedChargedMove + "_" + pokemonData.megaLevel;
             }
           }
+
+          const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
 
           await searchPokemonInit(importedPokemon, false);
           await waitForImportSync(80);
@@ -510,13 +511,21 @@ export default function SearchBarAttacker({
           const statsKey = slot === 1 ? `attacker_stats${memberSlot}` : "defender_stats";
           const quickMoveKey = slot === 1 ? `attacker_fast_attack${memberSlot}` : "defender_fast_attack";
           const chargedMoveKey = slot === 1 ? `attacker_cinematic_attack${memberSlot}` : "defender_cinematic_attack";
-
+          const megaLevelKey = slot === 1 ? `attacker_megalevel${memberSlot}` : "defender_megalevel";
+          
           newSearchParams.set(pokemonKey, importedPokemon.pokemonId);
           newSearchParams.set(statsKey, importedStats.join(","));
           newSearchParams.set(quickMoveKey, importedQuickMove);
           newSearchParams.set(chargedMoveKey, importedChargedMove);
 
           window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+
+          setTimeout(() => {
+            if (hasMegaChargedMove) {
+              setMegaLevel(pokemonData.megaLevel);
+              setMegaChargedMove(hasMegaChargedMove);
+            }
+          }, 100);
         } finally {
           setTimeout(() => {
             setIsImporting(false);

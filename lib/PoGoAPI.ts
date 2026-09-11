@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.41.1";
+        return "1.41.2";
     }
 
     static async getAllPokemon() {
@@ -3860,9 +3860,10 @@ export class PoGoAPI {
         this.convertedPokeboxData = data.map((pokemon: any) => {
             const megaLevel = pokemon.megaLevel || 0;
             let cinematicMove = pokemon.cinematicMove;
-            if (megaLevel > 0 && this.HasMegaChargedMove(pokemon.id, 1) == pokemon.cinematicMove + "_1") {
-                cinematicMove = this.HasMegaChargedMove(pokemon.id, megaLevel);
+            if (megaLevel > 0 && this.HasMegaChargedMove(pokemon.pokemonId, 1) == pokemon.cinematicMove + "_1") {
+                cinematicMove = this.HasMegaChargedMove(pokemon.pokemonId, megaLevel);
             }
+            console.log(cinematicMove)
             return new PBPokemonData(
                 pokemon.id,
                 pokemon.name,
@@ -3881,7 +3882,8 @@ export class PoGoAPI {
                     attack: Math.min(Math.max(pokemon.maxPowerLevel, 1), 3),
                     guard: Math.min(Math.max(pokemon.maxShieldLevel, 0), 3),
                     spirit: Math.min(Math.max(pokemon.maxHealLevel, 0), 3)
-                }
+                },
+                pokemon.megaLevel,
             );
         });
         return this.convertedPokeboxData;

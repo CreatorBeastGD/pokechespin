@@ -19,6 +19,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.41.2",
+        desc: "+ Improved Mega+ Moves sync on Pokebox import, now it will automatically select the correct Mega Level for the Pokémon based on the selected Mega+ Move in your Pokebox.\n",
+        date: "2026-09-11",
+    },
+    {
         title: "v1.41.1",
         desc: "+ Added Mega+ Moves for Mega Beedrill, Mega Houndoom and Mega Staraptor.\n"+
                 "~ Fixed Mega Starmie' Base Attack stat, which was 303 instead of 276.\n",
