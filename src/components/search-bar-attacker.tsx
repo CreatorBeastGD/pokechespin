@@ -185,8 +185,8 @@ export default function SearchBarAttacker({
           setMegaChargedMove(null);
         }
       
-      console.log("mega charged move", megaChargedMove);
-      console.log("currently selected charged move", selectedChargedMove);
+      //console.log("mega charged move", megaChargedMove);
+      //console.log("currently selected charged move", selectedChargedMove);
 
       // Si es un APEX, añadimos el bonus de Shadow
       if (response?.pokemonId.endsWith("_S_FORM") || response?.pokemonId.endsWith("_SHADOW_FORM")) {
@@ -221,7 +221,7 @@ export default function SearchBarAttacker({
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
     try {
       const response = PoGoAPI.getPokemonPBByID(searchParam, pokemonList)[0];
-      console.log(response)
+      //console.log(response)
       setPokemonData(response);
       onSelect(response, memberSlot);
       let allForms = [];
@@ -249,8 +249,8 @@ export default function SearchBarAttacker({
       }
 
       
-      console.log("mega charged move", megaChargedMove);
-      console.log("currently selected charged move", selectedChargedMove);
+      //console.log("mega charged move", megaChargedMove);
+      //console.log("currently selected charged move", selectedChargedMove);
 
 
       // Si es un APEX, añadimos el bonus de Shadow
@@ -300,8 +300,8 @@ export default function SearchBarAttacker({
         setMegaChargedMove(null);
       }
       
-      console.log("mega charged move", megaChargedMove);
-      console.log("currently selected charged move", selectedChargedMove);
+      //console.log("mega charged move", megaChargedMove);
+      //console.log("currently selected charged move", selectedChargedMove);
 
 
       // Si es un APEX, añadimos el bonus de Shadow
@@ -329,8 +329,8 @@ export default function SearchBarAttacker({
   const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
     if (paramsLoaded) {
     
-    console.log(moveId);
-    console.log(move)
+    //console.log(moveId);
+    //console.log(move)
 
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, memberSlot);
@@ -409,7 +409,7 @@ export default function SearchBarAttacker({
   };
 
   const handleMegaLevelChange = (value: number) => {
-    console.log("Changing mega level to", value);
+    //console.log("Changing mega level to", value);
     setMegaLevel(value);
     const megaChargedMove = PoGoAPI.HasMegaChargedMove(pokemonData?.pokemonId, value);
     if (megaChargedMove) {

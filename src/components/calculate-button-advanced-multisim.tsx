@@ -221,7 +221,7 @@ export default function CalculateButtonMultiSimulateAdvanced({
     setSimAmount(0);
     setWinAmount(0);
     setSimHasWon(0);
-    console.log('Simulation cancelled by user or input change');
+    //console.log('Simulation cancelled by user or input change');
   }
 
   const handleSwitch = (checked: boolean, handle: any) => {

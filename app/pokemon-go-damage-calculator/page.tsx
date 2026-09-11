@@ -16,7 +16,7 @@ async function getRankings(func: (data: any) => void) {
             return [];
         }
         const data = await res.json();
-        //console.log("Rankings data:", data);
+        console.log("Rankings data:", data);
         
         // Handle both counts array and potential error responses
         const counts = Array.isArray(data.counts) ? data.counts : [];
@@ -135,7 +135,7 @@ export default function Page() {
 
             {allDataLoaded ? (
                 <div className="py-2 items-center justify-center w-full flex flex-col">
-                    <p className="text-white text-lg px-4 ">Most visited Max Rankings <span className="italic text-xs">(Last 2 weeks, starting from december 29th.)</span></p>
+                    <p className="text-white text-lg px-4 ">Most visited Max Rankings <span className="italic text-xs">(Last 2 weeks.)</span></p>
                     {rankings.length === 0 ? (
                         <>
                             <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
@@ -146,7 +146,7 @@ export default function Page() {
                             {rankings.map((entry) => {
                                 
                                 return (<li key={entry._id} className="flex items-center px-2 ">
-                                    <a href={`/dynamax/rankings/${entry._id}`} className="flex flex-col items-center hover:underline">
+                                    <a href={`/dynamax/rankings/${entry._id}`} className="flex flex-col items-center hover:underline relative">
                                         <Image
                                             unoptimized
                                             className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
@@ -156,6 +156,7 @@ export default function Page() {
                                             height={50}
                                             style={{ objectFit: 'scale-down', width: '80px', height: '80px' }}
                                         />
+                                        <p className="absolute bottom-2 right-0 bg-black text-white text-xs py-1 px-2 rounded">{entry.count}</p>
                                     </a>
                                 </li>);
                             })}

@@ -234,7 +234,7 @@ export default function Home() {
         const bonusParam = searchParams.get(`attacker_bonuses${i}`);
         const megaLevelParam = searchParams.get(`attacker_mega_level${i}`);
 
-        console.log("mega level param", megaLevelParam);
+        //console.log("mega level param", megaLevelParam);
 
         if (attackerParam) {
           newAttackingPokemon[i - 1] = PoGoAPI.getPokemonPBByID(attackerParam, pokemonList)[0];

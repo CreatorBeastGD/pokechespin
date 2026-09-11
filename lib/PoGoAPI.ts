@@ -3480,7 +3480,7 @@ export class PoGoAPI {
             if (pokeboxID) {
                 const myPokemon = pokebox.filter((pokemon: PBPokemonData) => pokemon.isDynamax);
 
-                console.log("Using pokebox for rankings with " + myPokemon.length + " pokemon.");
+                //console.log("Using pokebox for rankings with " + myPokemon.length + " pokemon.");
 
                 myPokemon.forEach((pokemon: PBPokemonData) => {
                     const pokemonData = this.getPokemonPBByID(pokemon.pokemonId, pokemonList)[0];
@@ -3863,7 +3863,7 @@ export class PoGoAPI {
             if (megaLevel > 0 && this.HasMegaChargedMove(pokemon.pokemonId, 1) == pokemon.cinematicMove + "_1") {
                 cinematicMove = this.HasMegaChargedMove(pokemon.pokemonId, megaLevel);
             }
-            console.log(cinematicMove)
+            //console.log(cinematicMove)
             return new PBPokemonData(
                 pokemon.id,
                 pokemon.name,
