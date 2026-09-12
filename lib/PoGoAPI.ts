@@ -1546,7 +1546,7 @@ export class PoGoAPI {
         const raid = raidMode ? raidMode : "normal";
         if (raid !== "normal") {
             defenderStats = this.convertStats(defenderStats, raid);
-            bonusDefender = [bonusDefender[0], false, false, 0];
+            bonusDefender = [bonusDefender[0], bonusDefender[1], false, 0];
         }
         //console.log(types);
         const effectiveness = this.getEfectiveness(defender, move, types);
