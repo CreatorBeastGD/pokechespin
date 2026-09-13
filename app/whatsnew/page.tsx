@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.41.2.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Rhyhorn, Rhydon, Rhyperior.\n",
+        date: "2026-09-13",
+                
+    },
+    {
         title: "v1.41.2",
         desc: "+ Improved Mega+ Moves sync on Pokebox import, now it will automatically select the correct Mega Level for the Pokémon based on the selected Mega+ Move in your Pokebox.\n",
         date: "2026-09-11",
