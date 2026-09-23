@@ -261,6 +261,8 @@ export class PoGoAPI {
                 return "Volt Tackle+";
             case "ZAP_CANNON_PLUS":
                 return "Zap Cannon+";
+            case "DISCHARGE_PLUS":
+                return "Discharge+";
         }
 
         const storage = localStorage.getItem("newMoveOverrides");
@@ -744,6 +746,17 @@ export class PoGoAPI {
                 damageWindowStartMs: 1998,
                 damageWindowEndMs: 2000,
                 animationId: "BRAVE_BIRD",
+            };
+        } if (moveId.startsWith("DISCHARGE_PLUS")) {
+            return {
+                moveId: "DISCHARGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_ELECTRIC",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "DISCHARGE",
             };
         }
 
@@ -1881,6 +1894,9 @@ export class PoGoAPI {
                 break;
             case "STARAPTOR_MEGA":
                 megaMove =  "BRAVE_BIRD_PLUS";
+                break;
+            case "MANECTRIC_MEGA":
+                megaMove =  "DISCHARGE_PLUS";
                 break;
         }
         if (!megaMove) {
