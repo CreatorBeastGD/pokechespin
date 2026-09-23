@@ -20,7 +20,7 @@ export function PokebattlerImage({
     return (
         <div className="flex flex-col items-center justify-center relative">
             <p className="absolute top-4 left-0 bg-black text-white text-xxs py-1 px-2 rounded-br-lg">
-                {PoGoAPI.getPokemonNamePB(resolvedPokemonData.pokemonId, englishText)}
+                {PoGoAPI.getPokemonNamePB((resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm), englishText)}
             </p>
             <p className="absolute top-8 left-0 bg-black text-white text-xxxs py-1 px-2 rounded-br-lg">
                 {resolvedPokemonData.customName}
@@ -38,7 +38,7 @@ export function PokebattlerImage({
             <p className="absolute bottom-5 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.chargedAttackId, allMoves)).moveId)}
             </p>
-            {PoGoAPI.IsGigantamax(resolvedPokemonData.pokemonId) ? (
+            {PoGoAPI.IsGigantamax(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm) ? (
                 <Image
                 unoptimized
                 src={"https://static.pokebattler.com/images/gigantamax_coin.png"}
@@ -61,8 +61,8 @@ export function PokebattlerImage({
             ) : null}
             <Image
             unoptimized
-            className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 " + (PoGoAPI.IsShadow(resolvedPokemonData.pokemonId) ? "bg-gradient-to-t from-purple-900 to-violet-100" : PoGoAPI.IsMega(resolvedPokemonData.pokemonId) ? "bg-gradient-to-br from-red-200 via-green-200 to-blue-200" : PoGoAPI.IsPrimal(resolvedPokemonData.pokemonId) ? "bg-gradient-to-br from-blue-500 via-black-500 to-red-500" : "bg-white")}
-            src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(resolvedPokemonData.pokemonId, imageLinks, resolvedPokemonData.isShiny)}
+            className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 " + (PoGoAPI.IsShadow(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm) ? "bg-gradient-to-t from-purple-900 to-violet-100" : PoGoAPI.IsMega(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm) ? "bg-gradient-to-br from-red-200 via-green-200 to-blue-200" : PoGoAPI.IsPrimal(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm) ? "bg-gradient-to-br from-blue-500 via-black-500 to-red-500" : "bg-white")}
+            src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm, imageLinks, resolvedPokemonData.isShiny)}
             alt={resolvedPokemonData.customName + " | Pokémon GO Damage Calculator"}
             width={100}
             height={100}

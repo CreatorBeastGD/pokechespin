@@ -99,7 +99,7 @@ export function PokeboxButton({
                 <div className="flex flex-row flex-wrap gap-x-4 justify-center">
                     {passedPokeboxData.filter((pokemon) => 
                         pokemon.customName.toLowerCase().includes(filter.toLowerCase()) ||
-                        pokemon.pokemonId.toLowerCase().includes(filter.toLowerCase())
+                        (pokemon.highestMegaForm == "" ? pokemon.pokemonId : pokemon.highestMegaForm).toLowerCase().includes(filter.toLowerCase())
                     ).map((pokemon, index) => (
                     <div key={index} className="flex flex-col items-center gap-2">
                       
@@ -114,7 +114,7 @@ export function PokeboxButton({
                     </div>
                     ))} {passedPokeboxData.filter((pokemon) => 
                         pokemon.customName.toLowerCase().includes(filter.toLowerCase()) ||
-                        pokemon.pokemonId.toLowerCase().includes(filter.toLowerCase())
+                        (pokemon.highestMegaForm == "" ? pokemon.pokemonId : pokemon.highestMegaForm).toLowerCase().includes(filter.toLowerCase())
                     ).length === 0 && (
                         <p className="text-white text-center mt-4">No Pokémon found.</p>
                     )}

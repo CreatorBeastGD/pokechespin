@@ -452,7 +452,7 @@ export default function SearchBarAttacker({
         const waitForImportSync = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
         try {
-          const importedPokemon = PoGoAPI.getPokemonPBByID(pokemonData.pokemonId, pokemonList)[0];
+          const importedPokemon = PoGoAPI.getPokemonPBByID(pokemonData.highestMegaForm == "" ? pokemonData.pokemonId : pokemonData.highestMegaForm, pokemonList)[0];
           if (!importedPokemon) {
             setError("The selected Pokémon is not available in the current Pokémon list.");
             return;

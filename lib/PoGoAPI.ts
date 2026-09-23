@@ -3900,6 +3900,7 @@ export class PoGoAPI {
                     spirit: Math.min(Math.max(pokemon.maxHealLevel, 0), 3)
                 },
                 pokemon.megaLevel,
+                pokemon.highestMegaForm
             );
         });
         return this.convertedPokeboxData;
