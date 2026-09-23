@@ -732,8 +732,8 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {attacker.pbID ? PoGoAPI.FromID(pokebox, attacker.pbID).customName ? PoGoAPI.FromID(pokebox, attacker.pbID).customName : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{attacker.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, attacker.pbID).stats.level + ")" : ""}</span></h3>
-                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className=" font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {attacker.pbID ? PoGoAPI.FromID(pokebox, attacker.pbID).customName ? PoGoAPI.FromID(pokebox, attacker.pbID).customName : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{attacker.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, attacker.pbID).stats.level + ")" : ""}</span></h3>
+                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -742,18 +742,18 @@ export default function rankingsPage() {
                                                     
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <p className="text-sm font-bold">Max Move</p>
-                                                        <p>{(attacker.pokemon.pokemonId).endsWith("GIGANTAMAX") ? "G-Max" : "Max"} {PoGoAPI.getMoveNamePB(attacker.maxMove.moveId, allEnglishText)}</p>
+                                                        <p className="text-sm">{(attacker.pokemon.pokemonId).endsWith("GIGANTAMAX") ? "G-Max" : "Max"} {PoGoAPI.getMoveNamePB(attacker.maxMove.moveId, allEnglishText)}</p>
                                                     </div>
                                                     
                                                     <div className="flex flex-row items-center justify-between space-x-4">
 
                                                         <h3 className="text-sm font-bold text-black">Damage</h3>
-                                                        <p>{attacker.damage}</p>
+                                                        <p className="text-sm">{attacker.damage}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
-                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
+                                                        <h3 className="font-bold text-black">Percent to Best</h3>
                                                         <p className="font-bold text-black">
                                                             {((attacker.damage / (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage)) * 100).toFixed(2).split('.')[0]}
                                                             <span className="text-xs align-top">.{((attacker.damage / (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage)) * 100).toFixed(2).split('.')[1]}</span>%
@@ -804,23 +804,23 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {defender.pbID ? PoGoAPI.FromID(pokebox, defender.pbID).customName ? PoGoAPI.FromID(pokebox, defender.pbID).customName : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{defender.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, defender.pbID).stats.level + ")" : ""}</span></h3>
-                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {defender.pbID ? PoGoAPI.FromID(pokebox, defender.pbID).customName ? PoGoAPI.FromID(pokebox, defender.pbID).customName : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{defender.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, defender.pbID).stats.level + ")" : ""}</span></h3>
+                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Large {rankingDisplay === "HP_PERCENT" ? "Hits to Faint" : "HP"}</h3>
-                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetLargeTankiness(defender)}</p>
+                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600 text-sm" : "text-sm")}>{GetLargeTankiness(defender)}</p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <h3 className="text-sm font-bold text-black">Target {rankingDisplay === "HP_PERCENT" ? "HtF" : "HP"}</h3>
-                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className={"text-xs"}>(avg. {GetTargetAverageTankiness(defender)})</span></p>
+                                                        <p className={(defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600 text-sm" : "text-sm")}>{GetTargetBestTankiness(defender)} / {GetTargetWorstTankiness(defender)} <span className={"text-xs"}>(avg. {GetTargetAverageTankiness(defender)})</span></p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className=" font-bold text-black">Tank Score</h3>
+                                                        <h3 className="font-bold text-black">Tank Score</h3>
                                                         <p className={"font-bold " + (defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>
                                                         {
                                                             (() => {
