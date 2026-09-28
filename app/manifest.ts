@@ -62,6 +62,13 @@ export default function manifest(): MetadataRoute.Manifest {
         url: "/dynamax/rankings/types",
         icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }],
       },
+      {
+        name: "Max General Rankings",
+        short_name: "General Rankings",
+        description: "Overall Max Battles attackers and tanks rankings",
+        url: "/dynamax/rankings/general",
+        icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+      },
     ],
   };
 }
