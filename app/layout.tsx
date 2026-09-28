@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { BuyMeACoffeeIcon, GitHubSponsorIcon } from "@/components/buy-me-a-coffee";
 import CookieBanner from "@/components/cookie-banner";
 import Navbar from "@/components/navbar";
+import ServiceWorkerRegister from "@/components/sw-register";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegister />
         
         <Suspense fallback={
           
