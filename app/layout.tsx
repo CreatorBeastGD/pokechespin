@@ -26,6 +26,7 @@ export const metadata: Metadata = {
   description: "Calculate the damage output of your Pokémon in Pokémon GO! Simulate battles and raids, and find out the best moveset for your Pokémon.",
   icons: {
     icon: "/favicon.ico",
+    apple: "/apple-icon.png",
   }
 };
 
