@@ -19,6 +19,12 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.42 (PWA Support and Solo Raid Graphics!)",
+        desc: "+ Added PWA support to PokéChespin! Now you can install it as an app on your device and use it on your device! Thanks a lot to KoalaMauve for your contribution!\n"+
+                "+ Added a new graphic to the Solo Raid Simulator, showing the raid progress on each turn, and showing basic information about each one.\n",
+        date: "2026-09-29",
+    },
+    {
         title: "v1.41.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Rhyhorn, Rhydon, Rhyperior.\n",

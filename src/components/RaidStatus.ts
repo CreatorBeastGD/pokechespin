@@ -66,6 +66,17 @@ export class RaidStatus {
 
     chargedMoveChance = 0.3;
 
+    simulationLog: {
+        turn: number;
+        activeAllyIndex: number;
+        currentDPS: number;
+        isRelobbying: boolean;
+        allyHP: string;
+        allyEnergy: string;
+        enemyHP: string;
+        hasUsedChargedMove: boolean;
+    }[] = [];
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);

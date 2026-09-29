@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.41.2.1";
+        return "1.42";
     }
 
     static async getAllPokemon() {
@@ -4704,6 +4704,36 @@ export class PoGoAPI {
         }
     }
 
+    static raidSurname = (raidMode: string) => {
+        if (raidMode === "raid-t1") {
+        return "Tier 1";
+        } else if (raidMode === "raid-t3") {
+        return "Tier 3";
+        } else if (raidMode === "raid-t4") {
+        return "Tier 4";
+        } else if (raidMode === "raid-mega") {
+        return "Mega";
+        } else if (raidMode === "raid-t5") {
+        return "Tier 5";
+        } else if (raidMode === "raid-elite") {
+        return "Elite";
+        } else if (raidMode === "raid-primal") {
+        return "Primal";
+        } else if (raidMode === "raid-mega-leg") {
+        return "Mega Legendary";
+        } else if (raidMode === "raid-t7-supermega") {
+        return "Super Mega";
+        } else if (raidMode === "raid-t1-shadow") {
+        return "Tier 1 Shadow";
+        } else if (raidMode === "raid-t3-shadow") {
+        return "Tier 3 Shadow";
+        } else if (raidMode === "raid-t5-shadow") {
+        return "Tier 5 Shadow";
+        } else {
+        return "Normal";
+        }
+    }
+
     static TurnBasedSimulatorAllyTurnRaid(
         attackers: any[], 
         defender: any, 
@@ -5277,6 +5307,17 @@ export class PoGoAPI {
                 color: "#a2fa85"
             }
         }
+
+        gamestatus.simulationLog.push({
+            turn: gamestatus.timer,
+            activeAllyIndex: gamestatus.activeAllyIndex,
+            currentDPS: gamestatus.allyTDO.reduce((a, b) => a + b, 0) / gamestatus.timer,
+            isRelobbying: gamestatus.isRelobby === 1,
+            allyHP: gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex] - gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] + "/" + gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex],
+            allyEnergy: gamestatus.allyEnergy[gamestatus.activeAllyIndex] + "/100",
+            enemyHP: gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage + "/" + gamestatus.enemyPokemonMaxHealth,
+            hasUsedChargedMove: gamestatus.chargedMoveEnd,
+        });
 
 
         const next = {...gamestatus} as RaidStatus;

@@ -14,6 +14,8 @@ import { Switch } from "./ui/switch";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator"
 import { RaidStatus } from "./RaidStatus";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "./ui/chart";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 export default function CalculateButtonSimulateTurnBased({
   attacker,
@@ -64,6 +66,30 @@ export default function CalculateButtonSimulateTurnBased({
   const [relobbyTime, setRelobbyTime] = useState<number>(parseInt(searchParams.get("relobby_time") ?? "8"));
 
   const [relobbyConfirmation, setRelobbyConfirmation] = useState<boolean>(false);
+  const [showCard, setShowCard] = useState<boolean>(true);
+
+  const simulationChartConfig = {
+    currentDPS1: {
+      label: "Current DPS",
+      color: "#2563eb",
+    },currentDPS2: {
+      label: "Current DPS",
+      color: "#43eb25",
+    },currentDPS3: {
+      label: "Current DPS",
+      color: "#d4eb25",
+    },currentDPS4: {
+      label: "Current DPS",
+      color: "#eb2525",
+    },currentDPS5: {
+      label: "Current DPS",
+      color: "#eb25e8",
+    },currentDPS6: {
+      label: "Current DPS",
+      color: "#25e5eb",
+    },
+  } satisfies ChartConfig;
+  const simulationChartColors = Object.values(simulationChartConfig).map(({ color }) => color);
 
   useEffect(() => {
     setStartedSim(false);
@@ -184,6 +210,42 @@ export default function CalculateButtonSimulateTurnBased({
     window.history.replaceState(null, "", "?" + newSearchParams.toString());
   }
 
+  const simulationChartData = gameStatus?.simulationLog.map((logEntry) => ({
+    turn: logEntry.turn,
+    activeAllyIndex: logEntry.activeAllyIndex,
+    activeAllyName: attacker[logEntry.activeAllyIndex]
+      ? PoGoAPI.getPokemonNamePB(attacker[logEntry.activeAllyIndex].pokemonId, allEnglishText)
+      : "Unknown Pokemon",
+    isRelobbying: logEntry.isRelobbying,
+    allyHP: logEntry.allyHP,
+    allyEnergy: logEntry.allyEnergy,
+    enemyHP: logEntry.enemyHP,
+    hasUsedChargedMove: logEntry.hasUsedChargedMove,
+    currentDPS1: logEntry.activeAllyIndex === 0 ? logEntry.currentDPS : null,
+    currentDPS2: logEntry.activeAllyIndex === 1 ? logEntry.currentDPS : null,
+    currentDPS3: logEntry.activeAllyIndex === 2 ? logEntry.currentDPS : null,
+    currentDPS4: logEntry.activeAllyIndex === 3 ? logEntry.currentDPS : null,
+    currentDPS5: logEntry.activeAllyIndex === 4 ? logEntry.currentDPS : null,
+    currentDPS6: logEntry.activeAllyIndex === 5 ? logEntry.currentDPS : null,
+  })) ?? [];
+
+  const renderChargedMoveDot = (props: any) => {
+    const hasValue = props.value !== null && props.value !== undefined;
+
+    return (
+      <circle
+        key={props.key}
+        cx={props.cx}
+        cy={props.cy}
+        r={2}
+        fill="white"
+        stroke={props.stroke}
+        strokeWidth={2}
+        opacity={props.payload?.hasUsedChargedMove && hasValue ? 1 : 0}
+      />
+    );
+  };
+
   
   return (
     <>
@@ -204,7 +266,8 @@ export default function CalculateButtonSimulateTurnBased({
         
       <div className="w-full">
       {startedSim &&
-        <Card className="mt-4 py-4 px-4 mb-2">
+        <div>
+          <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between">
               <label className="font-bold text-xs">Raid ({gameStatus ? (PoGoAPI.getRaidTime(raidMode) - gameStatus.timer > 0 ? PoGoAPI.getRaidTime(raidMode) - gameStatus.timer : 0) : 0}s)</label>
@@ -350,7 +413,72 @@ export default function CalculateButtonSimulateTurnBased({
             }
           </div>
         </Card>
+        <Button
+          onClick={() => setShowCard(!showCard)} className="w-full py-2 text-white bg-primary rounded-lg mt-2"
+        >
+          {showCard ? "Hide" : "Show"} Graphic
+        </Button>
+        {showCard && (<Card className="mt-4 py-4 px-4 mb-2">
+            <CardTitle className="text-sm">Simulation Graphic</CardTitle>
+            <CardDescription className="text-xs">The log of the simulation will be displayed here.</CardDescription>
+          <ChartContainer config={simulationChartConfig} className="min-h-[240px] w-full">
+            <LineChart data={simulationChartData} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="turn" tickLine={false} axisLine={false} tickMargin={8} />
+              <YAxis tickLine={false} axisLine={false} tickMargin={8} width={42} />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(label, payload) => {
+                      const point = payload?.[0]?.payload as typeof simulationChartData[number] | undefined;
+                      return (
+                        <div className="grid gap-1">
+                          <span>Turn {label}</span>
+                          {point?.isRelobbying ? <span className="font-normal text-red-600">Relobbying...</span> : <>
+                            <span className="font-normal">Time: {point?.turn}s</span>
+                            <span className="font-normal">Active: {point?.activeAllyName ?? "Unknown Pokemon"}</span>
+                            <span className="font-normal">Ally HP: {point?.allyHP ?? "Unknown"}</span>
+                            <span className="font-normal">Ally Energy: {point?.allyEnergy ?? "Unknown"}</span>
+                            <span className="font-normal">Enemy HP: {point?.enemyHP ?? "Unknown"}</span>
+                            
+                          </>}
+                        </div>
+                      );
+                    }}
+                    formatter={(value) => (
+                      <span>Current DPS: {Number(value).toFixed(2)}</span>
+                    )}
+                  />
+                }
+              />
+              <Line type="monotone" dataKey="currentDPS1" stroke="var(--color-currentDPS1)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+              <Line type="monotone" dataKey="currentDPS2" stroke="var(--color-currentDPS2)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+              <Line type="monotone" dataKey="currentDPS3" stroke="var(--color-currentDPS3)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+              <Line type="monotone" dataKey="currentDPS4" stroke="var(--color-currentDPS4)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+              <Line type="monotone" dataKey="currentDPS5" stroke="var(--color-currentDPS5)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+              <Line type="monotone" dataKey="currentDPS6" stroke="var(--color-currentDPS6)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
+            </LineChart>
+          </ChartContainer>
+          <div className="flex flex-col space-y-1 my-4 ">
+            {attacker.slice(0, attacker.length).map((pokemon: any, index: number) => (
+              <div key={index} className="flex flex-row items-center space-x-2">
+                <Badge
+                  className="font-bold text-white"
+                  style={{ backgroundColor: simulationChartColors[index] }}
+                >
+                  {index + 1}.
+                </Badge>{" "}
+                <p className="text-sm font-medium">{PoGoAPI.getPokemonNamePB(pokemon.pokemonId, allEnglishText)}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Vs. {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} in a {PoGoAPI.raidSurname(raidMode)} raid with {weather} weather and {advenEffect} adventure effect.
+          </p>
+        </Card>)}
+        </div>
         }
+        
     </div>
     </>);
 }
