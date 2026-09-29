@@ -210,7 +210,13 @@ export default function CalculateButtonSimulateTurnBased({
     window.history.replaceState(null, "", "?" + newSearchParams.toString());
   }
 
-  const simulationChartData = gameStatus?.simulationLog.map((logEntry) => ({
+  const simulationWon = Boolean(
+    gameStatus &&
+    gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth &&
+    !gameStatus.timeout
+  );
+
+  const simulationChartData = gameStatus?.simulationLog.map((logEntry, index, logs) => ({
     turn: logEntry.turn,
     activeAllyIndex: logEntry.activeAllyIndex,
     activeAllyName: attacker[logEntry.activeAllyIndex]
@@ -221,6 +227,7 @@ export default function CalculateButtonSimulateTurnBased({
     allyEnergy: logEntry.allyEnergy,
     enemyHP: logEntry.enemyHP,
     hasUsedChargedMove: logEntry.hasUsedChargedMove,
+    isVictory: simulationWon && index === logs.length - 1,
     currentDPS1: logEntry.activeAllyIndex === 0 ? logEntry.currentDPS : null,
     currentDPS2: logEntry.activeAllyIndex === 1 ? logEntry.currentDPS : null,
     currentDPS3: logEntry.activeAllyIndex === 2 ? logEntry.currentDPS : null,
@@ -231,6 +238,19 @@ export default function CalculateButtonSimulateTurnBased({
 
   const renderChargedMoveDot = (props: any) => {
     const hasValue = props.value !== null && props.value !== undefined;
+
+    if (props.payload?.isVictory && hasValue) {
+      return (
+        <polygon
+          key={props.key}
+          points="0,-7 1.6,-2.2 6.7,-2.2 2.5,0.8 4.1,5.8 0,2.8 -4.1,5.8 -2.5,0.8 -6.7,-2.2 -1.6,-2.2"
+          transform={`translate(${props.cx}, ${props.cy})`}
+          fill="#facc15"
+          stroke="#facc15"
+          strokeWidth={1}
+        />
+      );
+    }
 
     return (
       <circle
