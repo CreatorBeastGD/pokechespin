@@ -15,7 +15,7 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator"
 import { RaidStatus } from "./RaidStatus";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "./ui/chart";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 export default function CalculateButtonSimulateTurnBased({
   attacker,
@@ -215,6 +215,9 @@ export default function CalculateButtonSimulateTurnBased({
     gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth &&
     !gameStatus.timeout
   );
+  const requiredDPS = gameStatus
+    ? gameStatus.enemyPokemonMaxHealth / PoGoAPI.getRaidTime(raidMode)
+    : 0;
 
   const simulationChartData = gameStatus?.simulationLog.map((logEntry, index, logs) => ({
     turn: logEntry.turn,
@@ -446,6 +449,18 @@ export default function CalculateButtonSimulateTurnBased({
               <CartesianGrid vertical={false} />
               <XAxis dataKey="turn" tickLine={false} axisLine={false} tickMargin={8} />
               <YAxis tickLine={false} axisLine={false} tickMargin={8} width={42} />
+              {gameStatus!.timer > 0 &&(<ReferenceLine
+                y={requiredDPS}
+                stroke="#e08e8e"
+                strokeDasharray="6 4"
+                ifOverflow="extendDomain"
+                label={{
+                  value: `Required DPS: ${requiredDPS.toFixed(2)}`,
+                  position: "insideTopRight",
+                  fill: "#e08e8e",
+                  fontSize: 12,
+                }}
+              />)}
               <ChartTooltip
                 content={
                   <ChartTooltipContent
