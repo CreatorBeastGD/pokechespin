@@ -468,7 +468,10 @@ export default function CalculateButtonSimulateTurnBased({
                 >
                   {index + 1}.
                 </Badge>{" "}
-                <p className="text-sm font-medium">{PoGoAPI.getPokemonNamePB(pokemon.pokemonId, allEnglishText)}</p>
+                <div>
+                  <p className="text-sm font-medium">{PoGoAPI.getPokemonNamePB(pokemon.pokemonId, allEnglishText)} <span className="text-xs text-muted-foreground">(Lv. {attackerStats[index][0]} - {attackerStats[index][1]}/{attackerStats[index][2]}/{attackerStats[index][3]})</span></p>
+                  <p className="text-xs text-muted-foreground">{PoGoAPI.formatMoveName(quickMove[index]?.moveId)} | {PoGoAPI.formatMoveName(chargedMove[index]?.moveId)}</p>
+                </div>
               </div>
             ))}
           </div>
