@@ -37,6 +37,7 @@ export class Calculator {
       "HOOTHOOT": "raid-t1-dmax",
       "MAGIKARP": "raid-t1-dmax",
       "RHYHORN": "raid-t1-dmax",
+      "SIZZLIPEDE": "raid-t1-dmax",
 
       "MACHOP": "raid-t2-dmax",
       "DARUMAKA": "raid-t2-dmax",
@@ -282,6 +283,8 @@ export class Calculator {
       "RHYHORN",
       "RHYDON",
       "RHYPERIOR",
+      "SIZZLIPEDE",
+      "CENTISKORCH",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
