@@ -281,6 +281,7 @@ const Navbar = () => {
         localStorage.setItem("showIDs", "false");
         localStorage.setItem("customChargedMoveChance", "false");
         localStorage.removeItem("moveOverrides");
+        localStorage.removeItem("customMegaMoveOverrides");
         localStorage.removeItem("customMoveOverrides");
         localStorage.removeItem("newMoveOverrides");
         localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
@@ -291,10 +292,6 @@ const Navbar = () => {
         localStorage.setItem("usePokeboxOnRankings", "false");
         // reload page
         window.location.reload();
-    }
-
-    let PostBugData = async() => {
-
     }
 
     let SendBugReport = async () => {
@@ -320,6 +317,7 @@ const Navbar = () => {
                     customChargedMoveChance,
                     moveOverrides: localStorage.getItem("moveOverrides") || {},
                     customMoveOverrides: localStorage.getItem("customMoveOverrides") || {},
+                    customMegaMoveOverrides: localStorage.getItem("customMegaMoveOverrides") || {},
                     newMoveOverrides: localStorage.getItem("newMoveOverrides") || {},
                     addAllGmaxesToGeneralRankings,
                     simplifyCalculationText,
@@ -339,7 +337,6 @@ const Navbar = () => {
             }
 
             const data = await res.json();
-            console.log("Bug report sent successfully:", data);
             setBugMessage("");
             alert("Bug report sent successfully! Thank you for your feedback. Please, set your configuration to default after sending the bug report to avoid getting more errors or sending the same config in the future!");
             

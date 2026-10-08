@@ -76,6 +76,11 @@ const BugDataSchema = new mongoose.Schema(
             required: false,
             default: {},
         },
+        customMegaMoveOverrides: {
+            type: Schema.Types.Mixed,
+            required: false,
+            default: {},
+        },
         newMoveOverrides: {
             type: Schema.Types.Mixed,
             required: false,
@@ -143,6 +148,7 @@ export default BugData;
         localStorage.setItem("customChargedMoveChance", "false");
         localStorage.removeItem("moveOverrides");
         localStorage.removeItem("customMoveOverrides");
+        localStorage.removeItem("customMegaMoveOverrides");
         localStorage.removeItem("newMoveOverrides");
         localStorage.setItem("addAllGmaxesToGeneralRankings", "false");
         localStorage.setItem("simplifyCalculationText", "false");

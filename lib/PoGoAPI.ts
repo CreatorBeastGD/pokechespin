@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.42.0.1";
+        return "1.43";
     }
 
     static async getAllPokemon() {
@@ -263,6 +263,135 @@ export class PoGoAPI {
                 return "Zap Cannon+";
             case "DISCHARGE_PLUS":
                 return "Discharge+";
+            case "NIGHT_SHADE_PLUS":
+                return "Night Shade+";
+            case "FRENZY_PLANT_PLUS":
+                return "Frenzy Plant+";
+            case "BLAST_BURN_PLUS":
+                return "Blast Burn+";
+            case "HYDRO_CANNON_PLUS":
+                return "Hydro Cannon+";
+            case "DRAGON_CLAW_PLUS":
+                return "Dragon Claw+";
+            case "HURRICANE_PLUS":
+                return "Hurricane+";
+            case "PSYSHOCK_PLUS":
+                return "Psyshock+";
+            case "SHADOW_BALL_PLUS":
+                return "Shadow Ball+";
+            case "AERIAL_ACE_PLUS":
+                return "Aerial Ace+";
+            case "PAYBACK_PLUS":
+                return "Payback+";
+            case "SOLAR_BEAM_PLUS":
+                return "Solar Beam+";
+            case "BREAKING_SWIPE_PLUS":
+                return "Breaking Swipe+";
+            case "THUNDER_PUNCH_PLUS":
+                return "Thunder Punch+";
+            case "GYRO_BALL_PLUS":
+                return "Gyro Ball+";
+            case "X_SCISSOR_PLUS":
+                return "X-Scissor+";
+            case "LUNGE_PLUS":
+                return "Lunge+";
+            case "STONE_EDGE_PLUS":
+                return "Stone Edge+";
+            case "LEAF_BLADE_PLUS":
+                return "Leaf Blade+";
+            case "BLAZE_KICK_PLUS":
+                return "Blaze Kick+";
+            case "MUDDY_WATER_PLUS":
+                return "Muddy Water+";
+            case "DAZZLING_GLEAM_PLUS":
+                return "Dazzling Gleam+";
+            case "PLAY_ROUGH_PLUS":
+                return "Play Rough+";
+            case "HEAVY_SLAM_PLUS":
+                return "Heavy Slam+";
+            case "HIGH_JUMP_KICK_PLUS":
+                return "High Jump Kick+";
+            case "CRUNCH_PLUS":
+                return "Crunch+";
+            case "HEAT_WAVE_PLUS":
+                return "Heat Wave+";
+            case "DISARMING_VOICE_PLUS":
+                return "Disarming Voice+";
+            case "SHADOW_PUNCH_PLUS":
+                return "Shadow Punch+";
+            case "FLASH_CANNON_PLUS":
+                return "Flash Cannon+";
+            case "NIGHT_SLASH_PLUS":
+                return "Night Slash+";
+            case "SHADOW_SNEAK_PLUS":
+                return "Shadow Sneak+";
+            case "FLY_PLUS":
+                return "Fly+";
+            case "METEOR_MASH_PLUS":
+                return "Meteor Mash+";
+            case "MIST_BALL_PLUS":
+                return "Mist Ball+";
+            case "LUSTER_PURGE_PLUS":
+                return "Luster Purge+";
+            case "DRAGON_ASCENT_PLUS":
+                return "Dragon Ascent+";
+            case "CLOSE_COMBAT_PLUS":
+                return "Close Combat+";
+            case "EARTHQUAKE_PLUS":
+                return "Earthquake+";
+            case "DRACO_METEOR_PLUS":
+                return "Draco Meteor+";
+            case "AURA_SPHERE_PLUS":
+                return "Aura Sphere+";
+            case "FOCUS_BLAST_PLUS":
+                return "Focus Blast+";
+            case "BLIZZARD_PLUS":
+                return "Blizzard+";
+            case "MAGMA_STORM_PLUS":
+                return "Magma Storm+";
+            case "FLAME_CHARGE_PLUS":
+                return "Flame Charge+";
+            case "DRILL_RUN_PLUS":
+                return "Drill Run+";
+            case "DRAINING_KISS_PLUS":
+                return "Draining Kiss+";
+            case "MEGAHORN_PLUS":
+                return "Megahorn+";
+            case "WILD_CHARGE_PLUS":
+                return "Wild Charge+";
+            case "EARTH_POWER_PLUS":
+                return "Earth Power+";
+            case "FIRE_BLAST_PLUS":
+                return "Fire Blast+";
+            case "PSYCHIC_PLUS":
+                return "Psychic+";
+            case "CROSS_CHOP_PLUS":
+                return "Cross Chop+";
+            case "SLUDGE_WAVE_PLUS":
+                return "Sludge Wave+";
+            case "FLYING_PRESS_PLUS":
+            case "FLYNG_PRESS_PLUS":
+                return "Flying Press+";
+            case "POWER_GEM_PLUS":
+                return "Power Gem+";
+            case "DRAIN_PUNCH_PLUS":
+                return "Drain Punch+";
+            case "IRON_HEAD_PLUS":
+                return "Iron Head+";
+            case "PLASMA_FISTS_PLUS":
+                return "Plasma Fists+";
+            case "FLAMETHROWER_PLUS":
+                return "Flamethrower+";
+            case "METEOR_BEAM_PLUS":
+                return "Meteor Beam+";
+            case "DRAGON_PULSE_PLUS":
+                return "Dragon Pulse+";
+            case "ICICLE_SPEAR_PLUS":
+                return "Icicle Spear+";
+            case "OMINOUS_WIND_PLUS":
+                return "Ominous Wind+";
+            default:
+                break;
         }
 
         const storage = localStorage.getItem("newMoveOverrides");
@@ -365,14 +494,6 @@ export class PoGoAPI {
                 case "CINDERACE":
                     pokemon[0].cinematicMoves = ["FLAMETHROWER", "FLAME_CHARGE", "FOCUS_BLAST", "BLAST_BURN", "PYROBALL"];
                     pokemon[0].eliteCinematicMove = ["BLAST_BURN"];
-                    break;
-                case "BAXCALIBUR":
-                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
-                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
-                    break;
-                case "BAXCALIBUR_MEGA":
-                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
-                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
                     break;
                 case "INTELEON":
                     pokemon[0].cinematicMoves = ["SHADOW_BALL", "WATER_PULSE", "SURF", "HYDRO_CANNON", "SNIPE_SHOT"];
@@ -502,10 +623,22 @@ export class PoGoAPI {
         localStorage.setItem("customMoveOverrides", JSON.stringify(customMoves));
     }
 
+    static setCustomMegaMoveValues(customMoveData: { moveId: any; power: number; }) {
+        let customMoves = JSON.parse(localStorage.getItem("customMegaMoveOverrides") || "{}");
+        customMoves[customMoveData.moveId] = customMoveData;
+        localStorage.setItem("customMegaMoveOverrides", JSON.stringify(customMoves));
+    }
+
     static setCustomMoveValuesToDefault(moveId: any) {
         let customMoves = JSON.parse(localStorage.getItem("customMoveOverrides") || "{}");
         delete customMoves[moveId];
         localStorage.setItem("customMoveOverrides", JSON.stringify(customMoves));
+    }
+
+    static setCustomMegaMoveValuesToDefault(moveId: any) {
+        let customMoves = JSON.parse(localStorage.getItem("customMegaMoveOverrides") || "{}");
+        delete customMoves[moveId];
+        localStorage.setItem("customMegaMoveOverrides", JSON.stringify(customMoves));
     }
 
     static createCustomMove(moveName: string, isFast: boolean, moveList: any[]): string {
@@ -561,6 +694,11 @@ export class PoGoAPI {
         return moves;
     }
 
+    static getAllCustomMegaMoveValues(): any[] {
+        let moves = Object.values(JSON.parse(localStorage.getItem("customMegaMoveOverrides") || "{}"));
+        return moves;
+    }
+
 
     static getMovePBByID(moveId: string, moveList: any[]) {
         const myOverrides = this.getAllCustomMoves() || [];
@@ -571,10 +709,14 @@ export class PoGoAPI {
             ?? null;
         
         // Mega moves
+        const megaMoveOverrides = this.getAllCustomMegaMoveValues() || [];
+        const megaMove = megaMoveOverrides.find((move: any) => moveId.startsWith(move.moveId.slice(0, -1)))
+            ?? null;
+
         if (moveId.startsWith("ACID_SPRAY_PLUS")) {
             return {
                 moveId: "ACID_SPRAY_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("ACID_SPRAY_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_POISON",
@@ -585,7 +727,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("LIQUIDATION_PLUS")) {
             return {
                 moveId: "LIQUIDATION_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(180 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("LIQUIDATION_PLUS_") ? megaMove.power : 180) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_WATER",
@@ -596,7 +738,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("OUTRAGE_PLUS")) {
             return {
                 moveId: "OUTRAGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(185 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("OUTRAGE_PLUS_") ? megaMove.power : 185) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 4000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_DRAGON",
@@ -607,7 +749,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DRILL_PECK_PLUS")) {
             return {
                 moveId: "DRILL_PECK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("DRILL_PECK_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FLYING",
@@ -618,7 +760,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("SEED_BOMB_PLUS")) {
             return {
                 moveId: "SEED_BOMB_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("SEED_BOMB_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_GRASS",
@@ -629,7 +771,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("MYSTICAL_FIRE_PLUS")) {
             return {
                 moveId: "MYSTICAL_FIRE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("MYSTICAL_FIRE_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIRE",
@@ -640,7 +782,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("SURF_PLUS")) {
             return {
                 moveId: "SURF_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("SURF_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 1500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_WATER",
@@ -651,7 +793,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("PSYBEAM_PLUS")) {
             return {
                 moveId: "PSYBEAM_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("PSYBEAM_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_PSYCHIC",
@@ -662,7 +804,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("BRICK_BREAK_PLUS")) {
             return {
                 moveId: "BRICK_BREAK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("BRICK_BREAK_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 1500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIGHTING",
@@ -673,7 +815,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("VOLT_TACKLE_PLUS")) {
             return {
                 moveId: "VOLT_TACKLE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(170 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("VOLT_TACKLE_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -684,7 +826,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DYNAMIC_PUNCH_PLUS")) {
             return {
                 moveId: "DYNAMIC_PUNCH_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(130 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("DYNAMIC_PUNCH_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIGHTING",
@@ -695,7 +837,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("ZAP_CANNON_PLUS")) {
             return {
                 moveId: "ZAP_CANNON_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(160 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("ZAP_CANNON_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -706,7 +848,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("FUTURE_SIGHT_PLUS")) {
             return {
                 moveId: "FUTURE_SIGHT_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("FUTURE_SIGHT_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_PSYCHIC",
@@ -717,7 +859,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("FELL_STINGER_PLUS")) {
             return {
                 moveId: "FELL_STINGER_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(140 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("FELL_STINGER_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_BUG",
@@ -728,7 +870,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DARK_PULSE_PLUS")) {
             return {
                 moveId: "DARK_PULSE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("DARK_PULSE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_DARK",
@@ -739,7 +881,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("BRAVE_BIRD_PLUS")) {
             return {
                 moveId: "BRAVE_BIRD_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("BRAVE_BIRD_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FLYING",
@@ -750,7 +892,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DISCHARGE_PLUS")) {
             return {
                 moveId: "DISCHARGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor(150 * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("DISCHARGE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -758,8 +900,50 @@ export class PoGoAPI {
                 damageWindowEndMs: 2500,
                 animationId: "DISCHARGE",
             };
-        }
+        } if (moveId.startsWith("NIGHT_SHADE_PLUS")) {
+            return {
+                moveId: "NIGHT_SHADE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("NIGHT_SHADE_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_GHOST",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "NIGHT_SHADE",
+            };
+        } if (moveId.endsWith("_PLUS_1") || moveId.endsWith("_PLUS_2") || moveId.endsWith("_PLUS_3") || moveId.endsWith("_PLUS_4")) {
+            let baseMove = moveId.replace(/_PLUS_[1-4]$/, "");
+            let baseMoveData: any = this.getMovePBByID(baseMove, moveList);
+            
+            let newPower = 0;
+            let buff = 1;
 
+            if (megaMove && megaMove.moveId.startsWith(baseMove)) {
+                newPower = megaMove.power;
+            } else {
+                let DPEDPT = (baseMoveData.power / (baseMoveData.durationMs / 500)) * (baseMoveData.power / -baseMoveData.energyDelta);
+                
+                if (baseMoveData.energyDelta == -100) {
+                    buff = 1.2;
+                } else {
+                    buff = (DPEDPT > 50 ? 1 : DPEDPT < 17.5 ? 1.7 : 1)
+                }
+                newPower = Math.round(Math.sqrt((Math.pow(baseMoveData.power, 2) * (100)) / -baseMoveData.energyDelta) * buff/10)*10;
+            }
+            
+            
+            return {
+                moveId: moveId,
+                power: Math.floor((newPower) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: baseMoveData.durationMs,
+                energyDelta: -100,
+                type: baseMoveData.type,
+                damageWindowStartMs: baseMoveData.damageWindowStartMs,
+                damageWindowEndMs: baseMoveData.damageWindowEndMs,
+                animationId: baseMoveData.animationId,
+                unreleased: true,
+            };
+        }
         if (!move) {
             if (moveId === "DYNAMAX_CANNON") {
                 return {
@@ -1844,6 +2028,103 @@ export class PoGoAPI {
         return {time, quickAttackUses, chargedAttackUses, graphic};
     }
 
+    static getMegaMoves() {
+        return this.megaMoves;
+    }
+
+    static megaMoves = [
+            "DYNAMIC_PUNCH_PLUS",
+            "FUTURE_SIGHT_PLUS",
+            "ACID_SPRAY_PLUS",
+            "PSYBEAM_PLUS",
+            "OUTRAGE_PLUS",
+            "BRICK_BREAK_PLUS",
+            "DRILL_PECK_PLUS",
+            "VOLT_TACKLE_PLUS",
+            "ZAP_CANNON_PLUS",
+            "LIQUIDATION_PLUS",
+            "SEED_BOMB_PLUS",
+            "MYSTICAL_FIRE_PLUS",
+            "SURF_PLUS",
+            "FELL_STINGER_PLUS",
+            "DARK_PULSE_PLUS",
+            "BRAVE_BIRD_PLUS",
+            "DISCHARGE_PLUS",
+            "NIGHT_SHADE_PLUS",
+            "OMINOUS_WIND_PLUS",
+            "FRENZY_PLANT_PLUS",
+            "DRAGON_CLAW_PLUS",
+            "BLAST_BURN_PLUS",
+            "HYDRO_CANNON_PLUS",
+            "HURRICANE_PLUS",
+            "PSYSHOCK_PLUS",
+            "SHADOW_BALL_PLUS",
+            "AERIAL_ACE_PLUS",
+            "PAYBACK_PLUS",
+            "SOLAR_BEAM_PLUS",
+            "BREAKING_SWIPE_PLUS",
+            "THUNDER_PUNCH_PLUS",
+            "GYRO_BALL_PLUS",
+            "X_SCISSOR_PLUS",
+            "LUNGE_PLUS",
+            "STONE_EDGE_PLUS",
+            "LEAF_BLADE_PLUS",
+            "BLAZE_KICK_PLUS",
+            "MUDDY_WATER_PLUS",
+            "DAZZLING_GLEAM_PLUS",
+            "PLAY_ROUGH_PLUS",
+            "HEAVY_SLAM_PLUS",
+            "HIGH_JUMP_KICK_PLUS",
+            "CRUNCH_PLUS",
+            "HEAT_WAVE_PLUS",
+            "DISARMING_VOICE_PLUS",
+            "SHADOW_PUNCH_PLUS",
+            "FLASH_CANNON_PLUS",
+            "NIGHT_SLASH_PLUS",
+            "SHADOW_SNEAK_PLUS",
+            "FLY_PLUS",
+            "METEOR_MASH_PLUS",
+            "MIST_BALL_PLUS",
+            "LUSTER_PURGE_PLUS",
+            "DRAGON_ASCENT_PLUS",
+            "CLOSE_COMBAT_PLUS",
+            "EARTHQUAKE_PLUS",
+            "DRACO_METEOR_PLUS",
+            "AURA_SPHERE_PLUS",
+            "FOCUS_BLAST_PLUS",
+            "BLIZZARD_PLUS",
+            "MAGMA_STORM_PLUS",
+            "FLAME_CHARGE_PLUS",
+            "DRILL_RUN_PLUS",
+            "DRAINING_KISS_PLUS",
+            "MEGAHORN_PLUS",
+            "WILD_CHARGE_PLUS",
+            "EARTH_POWER_PLUS",
+            "FIRE_BLAST_PLUS",
+            "PSYCHIC_PLUS",
+            "CROSS_CHOP_PLUS",
+            "SLUDGE_WAVE_PLUS",
+            "FLYING_PRESS_PLUS",
+            "POWER_GEM_PLUS",
+            "DRAIN_PUNCH_PLUS",
+            "IRON_HEAD_PLUS",
+            "PLASMA_FISTS_PLUS",
+            "FLAMETHROWER_PLUS",
+            "METEOR_BEAM_PLUS",
+            "DRAGON_PULSE_PLUS",
+            "ICICLE_SPEAR_PLUS",
+        ];
+
+    static IsMegaChargedMove(moveId: string) {
+        if (!moveId) return false;
+        
+        return this.megaMoves.some((megaMove) => {
+            if (moveId.startsWith(megaMove)) {
+                return true;
+            }
+        });
+    }
+
     static HasMegaChargedMove(pokemonId: string, megaLevel: number) {
         let megaMove = null;
         switch (pokemonId) {
@@ -1897,6 +2178,198 @@ export class PoGoAPI {
                 break;
             case "MANECTRIC_MEGA":
                 megaMove =  "DISCHARGE_PLUS";
+                break;
+            case "SABLEYE_MEGA":
+                megaMove = "NIGHT_SHADE_PLUS";
+                break;
+            case "CHANDELURE_MEGA":
+                megaMove = "OMINOUS_WIND_PLUS";
+                break;
+            case "VENUSAUR_MEGA":
+                megaMove = "FRENZY_PLANT_PLUS";
+                break;
+            case "CHARIZARD_MEGA_X":
+                megaMove = "DRAGON_CLAW_PLUS";
+                break;
+            case "CHARIZARD_MEGA_Y":
+                megaMove = "BLAST_BURN_PLUS";
+                break;
+            case "BLASTOISE_MEGA":
+                megaMove = "HYDRO_CANNON_PLUS";
+                break;
+            case "PIDGEOT_MEGA":
+                megaMove = "HURRICANE_PLUS";
+                break;
+            case "ALAKAZAM_MEGA":
+                megaMove = "PSYSHOCK_PLUS";
+                break;
+            case "GENGAR_MEGA":
+                megaMove = "SHADOW_BALL_PLUS";
+                break;
+            case "PINSIR_MEGA":
+                megaMove = "AERIAL_ACE_PLUS";
+                break;
+            case "GYARADOS_MEGA":
+                megaMove = "PAYBACK_PLUS";
+                break;
+            case "MEGANIUM_MEGA":
+                megaMove = "SOLAR_BEAM_PLUS";
+                break;
+            case "FERALIGATR_MEGA":
+                megaMove = "BREAKING_SWIPE_PLUS";
+                break;
+            case "AMPHAROS_MEGA":
+                megaMove = "THUNDER_PUNCH_PLUS";
+                break;
+            case "STEELIX_MEGA":
+                megaMove = "GYRO_BALL_PLUS";
+                break;
+            case "SCIZOR_MEGA":
+                megaMove = "X_SCISSOR_PLUS";
+                break;
+            case "HERACROSS_MEGA":
+                megaMove = "LUNGE_PLUS";
+                break;
+            case "TYRANITAR_MEGA":
+                megaMove = "STONE_EDGE_PLUS";
+                break;
+            case "SCEPTILE_MEGA":
+                megaMove = "LEAF_BLADE_PLUS";
+                break;
+            case "BLAZIKEN_MEGA":
+                megaMove = "BLAZE_KICK_PLUS";
+                break;
+            case "SWAMPERT_MEGA":
+                megaMove = "MUDDY_WATER_PLUS";
+                break;
+            case "GARDEVOIR_MEGA":
+                megaMove = "DAZZLING_GLEAM_PLUS";
+                break;
+            case "MAWILE_MEGA":
+                megaMove = "PLAY_ROUGH_PLUS";
+                break;
+            case "AGGRON_MEGA":
+                megaMove = "HEAVY_SLAM_PLUS";
+                break;
+            case "MEDICHAM_MEGA":
+                megaMove = "HIGH_JUMP_KICK_PLUS";
+                break;
+            case "SHARPEDO_MEGA":
+                megaMove = "CRUNCH_PLUS";
+                break;
+            case "CAMERUPT_MEGA":
+                megaMove = "HEAT_WAVE_PLUS";
+                break;
+            case "ALTARIA_MEGA":
+                megaMove = "DISARMING_VOICE_PLUS";
+                break;
+            case "BANETTE_MEGA":
+                megaMove = "SHADOW_PUNCH_PLUS";
+                break;
+            case "CHIMECHO_MEGA":
+                megaMove = "FLASH_CANNON_PLUS";
+                break;
+            case "ABSOL_MEGA":
+                megaMove = "NIGHT_SLASH_PLUS";
+                break;
+            case "ABSOL_MEGA_Z":
+                megaMove = "SHADOW_SNEAK_PLUS";
+                break;
+            case "SALAMENCE_MEGA":
+                megaMove = "FLY_PLUS";
+                break;
+            case "METAGROSS_MEGA":
+                megaMove = "METEOR_MASH_PLUS";
+                break;
+            case "LATIAS_MEGA":
+                megaMove = "MIST_BALL_PLUS";
+                break;
+            case "LATIOS_MEGA":
+                megaMove = "LUSTER_PURGE_PLUS";
+                break;
+            case "RAYQUAZA_MEGA":
+                megaMove = "DRAGON_ASCENT_PLUS";
+                break;
+            case "LOPUNNY_MEGA":
+                megaMove = "CLOSE_COMBAT_PLUS";
+                break;
+            case "GARCHOMP_MEGA":
+                megaMove = "EARTHQUAKE_PLUS";
+                break;
+            case "GARCHOMP_MEGA_Z":
+                megaMove = "DRACO_METEOR_PLUS";
+                break;
+            case "LUCARIO_MEGA":
+                megaMove = "AURA_SPHERE_PLUS";
+                break;
+            case "LUCARIO_MEGA_Z":
+                megaMove = "FOCUS_BLAST_PLUS";
+                break;
+            case "ABOMASNOW_MEGA":
+                megaMove = "BLIZZARD_PLUS";
+                break;
+            case "HEATRAN_MEGA":
+                megaMove = "MAGMA_STORM_PLUS";
+                break;
+            case "EMBOAR_MEGA":
+                megaMove = "FLAME_CHARGE_PLUS";
+                break;
+            case "EXCADRILL_MEGA":
+                megaMove = "DRILL_RUN_PLUS";
+                break;
+            case "AUDINO_MEGA":
+                megaMove = "DRAINING_KISS_PLUS";
+                break;
+            case "SCOLIPEDE_MEGA":
+                megaMove = "MEGAHORN_PLUS";
+                break;
+            case "EELEKTROSS_MEGA":
+                megaMove = "WILD_CHARGE_PLUS";
+                break;
+            case "GOLURK_MEGA":
+                megaMove = "EARTH_POWER_PLUS";
+                break;
+            case "PYROAR_MEGA":
+                megaMove = "FIRE_BLAST_PLUS";
+                break;
+            case "MEOWSTIC_MEGA":
+                megaMove = "PSYCHIC_PLUS";
+                break;
+            case "BARBARACLE_MEGA":
+                megaMove = "CROSS_CHOP_PLUS";
+                break;
+            case "DRAGALGE_MEGA":
+                megaMove = "SLUDGE_WAVE_PLUS";
+                break;
+            case "HAWLUCHA_MEGA":
+                megaMove = "FLYING_PRESS_PLUS";
+                break;
+            case "DIANCIE_MEGA":
+                megaMove = "POWER_GEM_PLUS";
+                break;
+            case "CRABOMINABLE_MEGA":
+                megaMove = "DRAIN_PUNCH_PLUS";
+                break;
+            case "GOLISOPOD_MEGA":
+                megaMove = "IRON_HEAD_PLUS";
+                break;
+            case "ZERAORA_MEGA":
+                megaMove = "PLASMA_FISTS_PLUS";
+                break;
+            case "SCOVILLAIN_MEGA":
+                megaMove = "FLAMETHROWER_PLUS";
+                break;
+            case "GLIMMORA_MEGA":
+                megaMove = "METEOR_BEAM_PLUS";
+                break;
+            case "TATSUGIRI_MEGA":
+                megaMove = "DRAGON_PULSE_PLUS";
+                break;
+            case "BAXCALIBUR_MEGA":
+                megaMove = "ICICLE_SPEAR_PLUS";
+                break;
+            case "BAXCALIBUR_3_PERCENT_MEGA":
+                megaMove = "ICICLE_SPEAR_PLUS";
                 break;
         }
         if (!megaMove) {

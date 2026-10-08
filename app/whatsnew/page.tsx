@@ -19,6 +19,15 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.43 (ALL Mega Charged Moves and Mega Move Editor!)",
+        desc: "+ Added all Mega Charged Moves recently datamined to the game!\n"+
+                ">>>>>> All available megas will have their respective Mega+ move with a calculated power!\n"+
+                ">>>>>> Best of all, if you want to give the Mega+ Moves a different power value, you now can go to the Editor and change their power! This option is available for all current Mega+ Moves\n"+
+                "+ As previously stated, you can now edit the power of Mega+ Moves on the Editor (pokechespin.net/editor)\n"+
+                ">>>>>> This will allow you to give a Level 1 Mega+ Move a different power of your choice. The rest of the levels are calculated the same way as existing ones.",
+        date: "2026-10-09",
+    },
+    {
         title: "v1.42.0.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Sizzlipede, Centiskorch.\n",

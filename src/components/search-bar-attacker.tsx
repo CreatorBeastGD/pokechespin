@@ -815,8 +815,8 @@ export default function SearchBarAttacker({
             </div>
         </div>
           }
-          <div className="flex flex-row space-x-4">
-            <div>
+          <div className="flex w-full flex-row space-x-4">
+            <div className="min-w-0 flex-1">
               <p>Fast Attacks:</p>
               {preferredMovesQuick.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
@@ -838,7 +838,7 @@ export default function SearchBarAttacker({
               ))}     
             </div>
 
-            <div>
+            <div className="min-w-0 flex-1">
               <p>Charged Attacks:</p>
               {preferredMovesCharged.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
@@ -881,10 +881,10 @@ export default function SearchBarAttacker({
                 
               )}
               {(megaChargedMove) && slot == 1 && (
-                <div key={megaChargedMove}>
+                <div className="min-w-0" key={megaChargedMove}>
                 <Card
                   key={megaChargedMove}
-                  className={`mb-4 ${selectedChargedMove === megaChargedMove ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
+                  className={`mb-4 w-full ${selectedChargedMove === megaChargedMove ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
                   onClick={() => handleChargedMoveSelect(megaChargedMove, PoGoAPI.getMovePBByID(megaChargedMove, allMoves))}
                 >
                   <CardHeader>
@@ -908,6 +908,13 @@ export default function SearchBarAttacker({
                         <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} show={false} />
                       )}
                     </div>
+
+                    {((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).unreleased) && (
+                      <>
+                        <p className="mt-2 break-words text-xs italic text-red-500 font-bold">UNRELEASED MOVE.</p>
+                        <p className="break-words text-xs italic text-red-500">This move is not yet available in Pokémon GO. It may be released in the future.</p>
+                      </>
+                    )}
 
                   </CardContent>
                 </Card>

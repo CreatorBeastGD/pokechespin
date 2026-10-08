@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import MyCustomMoves from "@/components/my-custom-moves";
 import { set } from "mongoose";
+import SearchBarMoveEditorSuperMega from "@/components/search-bar-editor-move-supermega";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -39,7 +40,7 @@ export default function Home() {
     
   const [attackingPokemon, setAttackingPokemon] = useState<any>(null);
   
-  
+  const [superMegaMoveEditor, setSuperMegaMoveEditor] = useState<boolean>(false);
   
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
   const [searchBarNames, setSearchBarNames] = useState<any>(null);
@@ -48,6 +49,8 @@ export default function Home() {
   const [allEnglishText, setAllEnglishText] = useState<any>(null);
   const [allDataLoaded, setAllDataLoaded] = useState<boolean>(false);
   const [paramsLoaded, setParamsLoaded] = useState<boolean>(false);
+
+  const [allMegaMoves, setAllMegaMoves] = useState<any>(null);
   
 
   const [types, setTypes] = useState<any>(null);
@@ -78,6 +81,14 @@ export default function Home() {
 
       const moves = await PoGoAPI.getAllMovesPB();
       setAllMoves(moves);
+      
+      let emptyList: any[] = [];
+      const megaMoves = PoGoAPI.getMegaMoves();
+      megaMoves.forEach((megaMove) => {
+        emptyList.push(PoGoAPI.getMovePBByID(megaMove+"_1", moves));
+      });
+      setAllMegaMoves(emptyList);
+
       //console.log("Fetched all moves from PokeBattler API");
       
       PoGoAPI.customMoveFixer(pokemonlist, moves);
@@ -126,54 +137,6 @@ export default function Home() {
     }
   }
 
-  function allPokemonSelected() {
-    for (let i = 0; i < numMembers; i++) {
-      if (!attackingPokemon[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  const raidSurname = (raidMode: string) => {
-    if (raidMode === "raid-t1") {
-      return "Tier 1";
-    } else if (raidMode === "raid-t3") {
-      return "Tier 3";
-    } else if (raidMode === "raid-t4") {
-      return "Tier 4";
-    } else if (raidMode === "raid-mega") {
-      return "Mega";
-    } else if (raidMode === "raid-t5") {
-      return "Tier 5";
-    } else if (raidMode === "raid-elite") {
-      return "Elite";
-    } else if (raidMode === "raid-primal") {
-      return "Primal";
-    } else if (raidMode === "raid-mega-leg") {
-      return "Mega Legendary";
-    } else if (raidMode === "raid-t7-supermega") {
-      return "Super Mega";
-    } else if (raidMode === "raid-t1-shadow") {
-      return "Tier 1 Shadow";
-    } else if (raidMode === "raid-t3-shadow") {
-      return "Tier 3 Shadow";
-    } else if (raidMode === "raid-t5-shadow") {
-      return "Tier 5 Shadow";
-    } else {
-      return "Normal";
-    }
-  }
-
-  const copyLinkToClipboard = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      alert("Link copied to clipboard!");
-    }).catch((err) => {
-      console.error("Failed to copy: ", err);
-    });
-  };
 
   return (
     <div className="flex flex-col flex-row items-center justify-center space-y-4">
@@ -229,24 +192,37 @@ export default function Home() {
             <CardDescription>Set a move and update any of its properties. You must be aware that these changes will only be reflected to your calculator. Sharing a link with a customized move won't pass its custom values.</CardDescription>
             <CardDescription><span>Note: Custom moves won't be saved on a database but on your local storage, so they will only be available for you and only on this browser. If you clear your cookies or access the calculator from another browser or device, these custom moves will be lost. Max moves cannot be edited.</span></CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
-
+            <Button onClick={() => setSuperMegaMoveEditor(!superMegaMoveEditor)} className="mt-2 w-full">{superMegaMoveEditor ? "Switch to Normal Move Editor" : "Switch to Super/Mega Move Editor"}</Button>
           </CardHeader>
           {(pokemonList && searchBarNames && allMoves) ? (
-            <CardContent>
-              <SearchBarMoveEditor
-                allEnglishText={allEnglishText}
-                allMoves={allMoves}
-                onSelect={(move) => handleMoveSelect(move)}
-                allTypes={types}
-                autoUpdaterHandler={setAutoUpdater}
-                deletedMoveId={deletedMoveId}
-              /> 
-            </CardContent>) : (
-              <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
-                <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-                <p className="text-primary text-lg">Loading...</p>
-              </div>
-            )}
+            (!superMegaMoveEditor) ? (
+              <CardContent>
+                <SearchBarMoveEditor
+                  allEnglishText={allEnglishText}
+                  allMoves={allMoves.filter((move:any) => !PoGoAPI.IsMegaChargedMove(move.moveId))}
+                  onSelect={(move) => handleMoveSelect(move)}
+                  allTypes={types}
+                  autoUpdaterHandler={setAutoUpdater}
+                  deletedMoveId={deletedMoveId}
+                /> 
+              </CardContent>) : (
+                <CardContent>
+                <SearchBarMoveEditorSuperMega
+                  allEnglishText={allEnglishText}
+                  allMoves={allMoves.filter((move:any) => !PoGoAPI.IsMegaChargedMove(move.moveId))}
+                  allMegaMoves={allMegaMoves}
+                  onSelect={(move) => handleMoveSelect(move)}
+                  allTypes={types}
+                  autoUpdaterHandler={setAutoUpdater}
+                  deletedMoveId={deletedMoveId}
+                /> 
+              </CardContent>
+              )) : (
+          <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
+            <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
+            <p className="text-primary text-lg">Loading...</p>
+          </div>
+        )}
         </Card>
         <Card className="md:w-1/2 w-full ">
             <CardHeader >
