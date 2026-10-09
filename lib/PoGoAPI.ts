@@ -920,20 +920,28 @@ export class PoGoAPI {
             let newPower = 0;
             let buff = 1;
 
+            let DPEDPT = (baseMoveData.power / (baseMoveData.durationMs / 500)) * (baseMoveData.power / -baseMoveData.energyDelta);
+                
+
             if (megaMove && megaMove.moveId.startsWith(baseMove)) {
                 newPower = megaMove.power;
             } else {
-                let DPEDPT = (baseMoveData.power / (baseMoveData.durationMs / 500)) * (baseMoveData.power / -baseMoveData.energyDelta);
                 
                 if (baseMoveData.energyDelta == -100) {
                     buff = 1.2;
                 } else {
-                    buff = (DPEDPT > 50 ? 1 : DPEDPT < 17.5 ? 1.7 : 1)
+                    if (DPEDPT > 50) {
+                        buff = 1;
+                    } else if (DPEDPT < 17.5) {
+                        buff = 2;
+                    } else if (DPEDPT < 25) {
+                        buff = 1.75;
+                    } else {
+                        buff = 1.35;
+                    }
                 }
                 newPower = Math.round(Math.sqrt((Math.pow(baseMoveData.power, 2) * (100)) / -baseMoveData.energyDelta) * buff/10)*10;
             }
-            
-            
             return {
                 moveId: moveId,
                 power: Math.floor((newPower) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),

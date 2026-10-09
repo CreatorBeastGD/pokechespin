@@ -912,7 +912,8 @@ export default function SearchBarAttacker({
                     {((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).unreleased) && (
                       <>
                         <p className="mt-2 break-words text-xs italic text-red-500 font-bold">UNRELEASED MOVE.</p>
-                        <p className="break-words text-xs italic text-red-500">This move is not yet available in Pokémon GO. It may be released in the future.</p>
+                        <p className="break-words text-xs italic text-red-500">This move is not yet available in Pokémon GO. It may be released in the future with different stats. </p>
+                        <p className="mt-2 break-words text-xs italic text-red-500 font-bold">You may change this Move's power in the <a href="/editor" className="text-blue-500 hover:underline">Editor</a>.</p>
                       </>
                     )}
 
