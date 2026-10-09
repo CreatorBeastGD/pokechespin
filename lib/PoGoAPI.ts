@@ -204,6 +204,9 @@ export class PoGoAPI {
     }
 
     static getPokemonNamePB(pokemonId: string, textList: any) {
+        if (pokemonId == null) {
+            return "???";
+        }
         if (pokemonId === "GEM") {
             return "Purified Gem";
         } if (pokemonId == "PIKACHU_WCS_2025_FORM") {
@@ -926,7 +929,6 @@ export class PoGoAPI {
             if (megaMove && megaMove.moveId.startsWith(baseMove)) {
                 newPower = megaMove.power;
             } else {
-                
                 if (baseMoveData.energyDelta == -100) {
                     buff = 1.2;
                 } else {
