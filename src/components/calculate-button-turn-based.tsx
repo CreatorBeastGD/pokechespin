@@ -67,6 +67,7 @@ export default function CalculateButtonSimulateTurnBased({
 
   const [relobbyConfirmation, setRelobbyConfirmation] = useState<boolean>(false);
   const [showCard, setShowCard] = useState<boolean>(true);
+  const [range, setRange] = useState<[number, number]>([0, 0]);
 
   const simulationChartConfig = {
     currentDPS1: {
@@ -215,34 +216,52 @@ export default function CalculateButtonSimulateTurnBased({
     gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth &&
     !gameStatus.timeout
   );
-  const requiredDPS = gameStatus
-    ? gameStatus.enemyPokemonMaxHealth / PoGoAPI.getRaidTime(raidMode)
+  const raidTime = PoGoAPI.getRaidTime(raidMode);
+  const requiredDPS = gameStatus && raidTime > 0
+    ? gameStatus.enemyPokemonMaxHealth / raidTime
     : 0;
 
-  const simulationChartData = gameStatus?.simulationLog.map((logEntry, index, logs) => ({
-    turn: logEntry.turn,
-    activeAllyIndex: logEntry.activeAllyIndex,
-    activeAllyName: attacker[logEntry.activeAllyIndex]
-      ? PoGoAPI.getPokemonNamePB(attacker[logEntry.activeAllyIndex].pokemonId, allEnglishText)
-      : "Unknown Pokemon",
-    isRelobbying: logEntry.isRelobbying,
-    allyHP: logEntry.allyHP,
-    allyEnergy: logEntry.allyEnergy,
-    enemyHP: logEntry.enemyHP,
-    hasUsedChargedMove: logEntry.hasUsedChargedMove,
-    isVictory: simulationWon && index === logs.length - 1,
-    currentDPS1: logEntry.activeAllyIndex === 0 ? logEntry.currentDPS : null,
-    currentDPS2: logEntry.activeAllyIndex === 1 ? logEntry.currentDPS : null,
-    currentDPS3: logEntry.activeAllyIndex === 2 ? logEntry.currentDPS : null,
-    currentDPS4: logEntry.activeAllyIndex === 3 ? logEntry.currentDPS : null,
-    currentDPS5: logEntry.activeAllyIndex === 4 ? logEntry.currentDPS : null,
-    currentDPS6: logEntry.activeAllyIndex === 5 ? logEntry.currentDPS : null,
-  })) ?? [];
+  const simulationChartData = [...(gameStatus?.simulationLog ?? [])].map((logEntry) => ({
+    ...logEntry,
+    currentDPS: Number.isFinite(logEntry.currentDPS) ? logEntry.currentDPS : null,
+  }));
+  const slicedSimulationChartData = simulationChartData.slice(range[0], range[1]).map((logEntry, index, logs) => {
+    return {
+      turn: logEntry.turn,
+      activeAllyIndex: logEntry.activeAllyIndex,
+      activeAllyName: attacker[logEntry.activeAllyIndex]
+        ? PoGoAPI.getPokemonNamePB(attacker[logEntry.activeAllyIndex].pokemonId, allEnglishText)
+        : "Unknown Pokémon",
+      isRelobbying: logEntry.isRelobbying,
+      allyHP: logEntry.allyHP,
+      allyEnergy: logEntry.allyEnergy,
+      enemyHP: logEntry.enemyHP,
+      hasUsedChargedMove: logEntry.hasUsedChargedMove,
+      isVictory: simulationWon && index === logs.length - 1,
+      currentDPS1: logEntry.activeAllyIndex === 0 ? logEntry.currentDPS : null,
+      currentDPS2: logEntry.activeAllyIndex === 1 ? logEntry.currentDPS : null,
+      currentDPS3: logEntry.activeAllyIndex === 2 ? logEntry.currentDPS : null,
+      currentDPS4: logEntry.activeAllyIndex === 3 ? logEntry.currentDPS : null,
+      currentDPS5: logEntry.activeAllyIndex === 4 ? logEntry.currentDPS : null,
+      currentDPS6: logEntry.activeAllyIndex === 5 ? logEntry.currentDPS : null,
+    };
+  });
+  const chartData = range[1] > range[0]
+    ? slicedSimulationChartData
+    : simulationChartData.map((logEntry) => ({
+        ...logEntry,
+        currentDPS1: logEntry.activeAllyIndex === 0 ? logEntry.currentDPS : null,
+        currentDPS2: logEntry.activeAllyIndex === 1 ? logEntry.currentDPS : null,
+        currentDPS3: logEntry.activeAllyIndex === 2 ? logEntry.currentDPS : null,
+        currentDPS4: logEntry.activeAllyIndex === 3 ? logEntry.currentDPS : null,
+        currentDPS5: logEntry.activeAllyIndex === 4 ? logEntry.currentDPS : null,
+        currentDPS6: logEntry.activeAllyIndex === 5 ? logEntry.currentDPS : null,
+      }));
 
   const renderChargedMoveDot = (props: any) => {
     const hasValue = props.value !== null && props.value !== undefined;
 
-    if (props.payload?.isVictory && hasValue) {
+    if (props.payload?.isVictory && hasValue && (range[1] == simulationChartData.length)) {
       return (
         <polygon
           key={props.key}
@@ -445,11 +464,11 @@ export default function CalculateButtonSimulateTurnBased({
             <CardTitle className="text-sm">Simulation Graphic</CardTitle>
             <CardDescription className="text-xs">The log of the simulation will be displayed here.</CardDescription>
           <ChartContainer config={simulationChartConfig} className="min-h-[240px] w-full">
-            <LineChart data={simulationChartData} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
+            <LineChart data={chartData} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="turn" tickLine={false} axisLine={false} tickMargin={8} />
               <YAxis tickLine={false} axisLine={false} tickMargin={8} width={42} />
-              {gameStatus!.timer > 0 &&(<ReferenceLine
+              {gameStatus!.timer > 0 && Number.isFinite(requiredDPS) && (<ReferenceLine
                 y={requiredDPS}
                 stroke="#e08e8e"
                 strokeDasharray="6 4"
@@ -465,7 +484,7 @@ export default function CalculateButtonSimulateTurnBased({
                 content={
                   <ChartTooltipContent
                     labelFormatter={(label, payload) => {
-                      const point = payload?.[0]?.payload as typeof simulationChartData[number] | undefined;
+                      const point = payload?.[0]?.payload as typeof slicedSimulationChartData[number] | undefined;
                       return (
                         <div className="grid gap-1">
                           <span>Turn {label}</span>
@@ -494,6 +513,17 @@ export default function CalculateButtonSimulateTurnBased({
               <Line type="monotone" dataKey="currentDPS6" stroke="var(--color-currentDPS6)" strokeWidth={2} dot={renderChargedMoveDot} strokeLinejoin="round" connectNulls={false} />
             </LineChart>
           </ChartContainer>
+          <div className="flex flex-row justify-between items-center mt-2">
+            <Slider
+              defaultValue={range}
+              max={simulationChartData.length}
+              step={1}
+              min={0}
+              className="w-full mb-1"
+              color="bg-blue-700"
+              onValueChange={(value) => setRange([value[0], value[1]])}
+            />
+          </div>
           <div className="flex flex-col space-y-1 my-4 ">
             {attacker.slice(0, attacker.length).map((pokemon: any, index: number) => (
               <div key={index} className="flex flex-row items-center space-x-2">
