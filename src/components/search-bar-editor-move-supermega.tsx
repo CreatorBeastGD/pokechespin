@@ -133,7 +133,7 @@ export default function SearchBarMoveEditorSuperMega({
       autoUpdaterHandler(true);
     }
 
-    alert("Custom move values saved for " + PoGoAPI.getMoveNamePB(selectedMove.moveId, allEnglishText) + "!");
+    alert("Custom move values saved for " + PoGoAPI.formatMoveName(selectedMove.moveId) + "!");
   }
 
   const resetToDefault = () => {
@@ -149,7 +149,7 @@ export default function SearchBarMoveEditorSuperMega({
       autoUpdaterHandler(true);
     }
 
-    alert("Custom move values reset to default for " + PoGoAPI.getMoveNamePB(selectedMove.moveId, allEnglishText) + "!");
+    alert("Custom move values reset to default for " + PoGoAPI.formatMoveName(selectedMove.moveId) + "!");
   }
 
   const getNextCustomEnergy = (symbol: string) => {
