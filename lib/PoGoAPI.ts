@@ -390,6 +390,8 @@ export class PoGoAPI {
                 return "Icicle Spear+";
             case "OMINOUS_WIND_PLUS":
                 return "Ominous Wind+";
+            case "ROCK_SLIDE_PLUS":
+                return "Rock Slide+";
             default:
                 break;
         }
@@ -2113,6 +2115,7 @@ export class PoGoAPI {
             "METEOR_BEAM_PLUS",
             "DRAGON_PULSE_PLUS",
             "ICICLE_SPEAR_PLUS",
+            "ROCK_SLIDE_PLUS",
         ];
 
     static IsMegaChargedMove(moveId: string) {
@@ -2370,6 +2373,9 @@ export class PoGoAPI {
                 break;
             case "BAXCALIBUR_3_PERCENT_MEGA":
                 megaMove = "ICICLE_SPEAR_PLUS";
+                break;
+            case "AERODACTYL_MEGA":
+                megaMove = "ROCK_SLIDE_PLUS";
                 break;
         }
         if (!megaMove) {
