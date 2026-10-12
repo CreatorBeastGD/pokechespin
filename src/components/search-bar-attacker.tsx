@@ -478,7 +478,7 @@ export default function SearchBarAttacker({
             return;
           }
           const hasMegaChargedMove = PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, pokemonData.megaLevel);
-          const isMegaChargedMove = (hasMegaChargedMove || "").startsWith(importedChargedMove);
+          const isMegaChargedMove = (hasMegaChargedMove || "").startsWith(importedChargedMove) && importedChargedMove.includes("_PLUS");
 
           if (!availableChargedMoves.includes(importedChargedMove) && !isMegaChargedMove) {
             setError("The selected Charged Move is not available for this Pokémon.");
