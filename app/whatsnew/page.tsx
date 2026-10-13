@@ -19,6 +19,11 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.43.1",
+        desc: "+ Added Ominous Wind+",
+        date: "2026-10-13",
+    },
+    {
         title: "v1.43 (ALL Mega Charged Moves and Mega Move Editor!)",
         desc: "+ Added all Mega Charged Moves recently datamined to the game!\n"+
                 ">>>>>> All available megas will have their respective Mega+ move with a calculated power!\n"+

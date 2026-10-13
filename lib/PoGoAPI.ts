@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.43";
+        return "1.43.1";
     }
 
     static async getAllPokemon() {
@@ -915,6 +915,17 @@ export class PoGoAPI {
                 damageWindowStartMs: 2498,
                 damageWindowEndMs: 2500,
                 animationId: "NIGHT_SHADE",
+            };
+        } if (moveId.startsWith("OMINOUS_WIND_PLUS")) {
+            return {
+                moveId: "OMINOUS_WIND_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("OMINOUS_WIND_PLUS_") ? megaMove.power : 145) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 2500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_GHOST",
+                damageWindowStartMs: 2498,
+                damageWindowEndMs: 2500,
+                animationId: "OMINOUS_WIND",
             };
         } if (moveId.endsWith("_PLUS_1") || moveId.endsWith("_PLUS_2") || moveId.endsWith("_PLUS_3") || moveId.endsWith("_PLUS_4")) {
             let baseMove = moveId.replace(/_PLUS_[1-4]$/, "");
