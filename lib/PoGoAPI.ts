@@ -721,7 +721,7 @@ export class PoGoAPI {
         if (moveId.startsWith("ACID_SPRAY_PLUS")) {
             return {
                 moveId: "ACID_SPRAY_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("ACID_SPRAY_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("ACID_SPRAY_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_POISON",
@@ -732,7 +732,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("LIQUIDATION_PLUS")) {
             return {
                 moveId: "LIQUIDATION_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("LIQUIDATION_PLUS_") ? megaMove.power : 180) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("LIQUIDATION_PLUS_") ? megaMove.power : 180) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_WATER",
@@ -743,7 +743,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("OUTRAGE_PLUS")) {
             return {
                 moveId: "OUTRAGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("OUTRAGE_PLUS_") ? megaMove.power : 185) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("OUTRAGE_PLUS_") ? megaMove.power : 185) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 4000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_DRAGON",
@@ -754,7 +754,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DRILL_PECK_PLUS")) {
             return {
                 moveId: "DRILL_PECK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("DRILL_PECK_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("DRILL_PECK_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FLYING",
@@ -765,7 +765,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("SEED_BOMB_PLUS")) {
             return {
                 moveId: "SEED_BOMB_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("SEED_BOMB_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("SEED_BOMB_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_GRASS",
@@ -776,7 +776,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("MYSTICAL_FIRE_PLUS")) {
             return {
                 moveId: "MYSTICAL_FIRE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("MYSTICAL_FIRE_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("MYSTICAL_FIRE_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIRE",
@@ -787,7 +787,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("SURF_PLUS")) {
             return {
                 moveId: "SURF_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("SURF_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("SURF_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 1500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_WATER",
@@ -798,7 +798,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("PSYBEAM_PLUS")) {
             return {
                 moveId: "PSYBEAM_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("PSYBEAM_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("PSYBEAM_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_PSYCHIC",
@@ -809,7 +809,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("BRICK_BREAK_PLUS")) {
             return {
                 moveId: "BRICK_BREAK_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("BRICK_BREAK_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("BRICK_BREAK_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 1500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIGHTING",
@@ -820,7 +820,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("VOLT_TACKLE_PLUS")) {
             return {
                 moveId: "VOLT_TACKLE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("VOLT_TACKLE_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("VOLT_TACKLE_PLUS_") ? megaMove.power : 170) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -831,7 +831,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DYNAMIC_PUNCH_PLUS")) {
             return {
                 moveId: "DYNAMIC_PUNCH_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("DYNAMIC_PUNCH_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("DYNAMIC_PUNCH_PLUS_") ? megaMove.power : 130) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FIGHTING",
@@ -842,7 +842,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("ZAP_CANNON_PLUS")) {
             return {
                 moveId: "ZAP_CANNON_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("ZAP_CANNON_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("ZAP_CANNON_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -853,7 +853,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("FUTURE_SIGHT_PLUS")) {
             return {
                 moveId: "FUTURE_SIGHT_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("FUTURE_SIGHT_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("FUTURE_SIGHT_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_PSYCHIC",
@@ -864,7 +864,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("FELL_STINGER_PLUS")) {
             return {
                 moveId: "FELL_STINGER_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("FELL_STINGER_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("FELL_STINGER_PLUS_") ? megaMove.power : 140) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_BUG",
@@ -875,7 +875,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DARK_PULSE_PLUS")) {
             return {
                 moveId: "DARK_PULSE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("DARK_PULSE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("DARK_PULSE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 3000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_DARK",
@@ -886,7 +886,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("BRAVE_BIRD_PLUS")) {
             return {
                 moveId: "BRAVE_BIRD_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("BRAVE_BIRD_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("BRAVE_BIRD_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_FLYING",
@@ -897,7 +897,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("DISCHARGE_PLUS")) {
             return {
                 moveId: "DISCHARGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("DISCHARGE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("DISCHARGE_PLUS_") ? megaMove.power : 150) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_ELECTRIC",
@@ -908,7 +908,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("NIGHT_SHADE_PLUS")) {
             return {
                 moveId: "NIGHT_SHADE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("NIGHT_SHADE_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("NIGHT_SHADE_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_GHOST",
@@ -919,7 +919,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("OMINOUS_WIND_PLUS")) {
             return {
                 moveId: "OMINOUS_WIND_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.floor((megaMove && megaMove.moveId.startsWith("OMINOUS_WIND_PLUS_") ? megaMove.power : 145) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((megaMove && megaMove.moveId.startsWith("OMINOUS_WIND_PLUS_") ? megaMove.power : 145) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_GHOST",
@@ -957,7 +957,7 @@ export class PoGoAPI {
             }
             return {
                 moveId: moveId,
-                power: Math.floor((newPower) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.round((newPower) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: baseMoveData.durationMs,
                 energyDelta: -100,
                 type: baseMoveData.type,
