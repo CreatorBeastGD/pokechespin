@@ -511,6 +511,14 @@ export class PoGoAPI {
                 case "STARMIE_MEGA":
                     pokemon[0].stats.baseAttack = 276;
                     break;
+                case "BAXCALIBUR":
+                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
+                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                    break;
+                case "BAXCALIBUR_MEGA":
+                    pokemon[0].cinematicMoves = ["BLIZZARD", "DRAGON_CLAW", "ICY_WIND", "AVALANCHE", "OUTRAGE", "GLAIVE_RUSH"];
+                    pokemon[0].eliteCinematicMove = ["GLAIVE_RUSH"];
+                    break;
                 default:
                     break;
             }
