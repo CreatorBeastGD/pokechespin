@@ -82,6 +82,7 @@ export class Calculator {
       "AZELF": "raid-t5-dmax",
       "DIALGA": "raid-t5-dmax",
       "PALKIA": "raid-t5-dmax",
+      "REGIDRAGON": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
@@ -100,6 +101,7 @@ export class Calculator {
       "GRIMMSNARL_GIGANTAMAX": "raid-t6-gmax",
       "MEOWTH_GIGANTAMAX": "raid-t6-gmax",
       "PIKACHU_GIGANTAMAX": "raid-t6-gmax",
+      "DURALUDON_GIGANTAMAX": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {

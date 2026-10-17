@@ -19,6 +19,13 @@ const novedades = [
         date: "🎂 2025-12-31",
     },
     {
+        title: "v1.43.2",
+        desc: "+ Added the ability to sort the tanks on Max Specific Rankings by their EPT (Energy Per Turn) instead of their Hits to Faint, allowing you to see which Pokémon are better tanks based on their energy generation and charged move usage.\n"+
+                "(Raikou being the best charger against Dialga was not on my bingo...)\n"+
+                "Expect some more changes about EPT in the future. This is pretty primitive yet.",
+        date: "2026-10-17",
+    },
+    {
         title: "v1.43.1",
         desc: "+ Added Ominous Wind+",
         date: "2026-10-13",

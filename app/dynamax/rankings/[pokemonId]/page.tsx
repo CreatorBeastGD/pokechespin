@@ -37,6 +37,7 @@ export default function rankingsPage() {
     const [types, setTypes] = useState<any>(null);
     const [prioritiseFast, setPrioritiseFast] = useState<boolean>(false);
     const [rankingDisplay, setRankingDisplay] = useState<string>("HP_PERCENT");
+    const [sortByEPT, setSortByEPT] = useState<boolean>(false);
 
     const [pokebox, setPokebox] = useState<any>(null);
 
@@ -338,11 +339,20 @@ export default function rankingsPage() {
 
     const getAverageTankScore = (hpdmg: number, hpper: number) => {
         return (hpdmg + hpper) / 2;
-    }   
+    }
+
+    const getEPT = (defender: any): number => {
+        return defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 1000);
+    }
 
     const defenderList = showGeneralBestDefenders ? generalBestDefenders : generalMode ? generalBestDefenders : bestDefenders;
 
     defenderList?.sort((a: any, b: any) => {
+        if (sortByEPT) {
+            const eptDifference = getEPT(a) - getEPT(b);
+            return -eptDifference;
+        }
+
         if (prioritiseFast) {
             if (rankingDisplay === "HP_DMG") {
                 return TankScorePenalization(a) * a.tankScore - TankScorePenalization(b) * b.tankScore;
@@ -696,6 +706,10 @@ export default function rankingsPage() {
                                 </>
                             )                            
                         }
+
+                        <p className="italic text-slate-700 text-sm">
+                            <Switch onCheckedChange={setSortByEPT} checked={sortByEPT} /> Sort Tanks by EPT
+                        </p>
                         
                         </CardContent>
                     </Card>
@@ -784,6 +798,7 @@ export default function rankingsPage() {
                                         <button onClick={toggleShowAllDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
                                             {showBestDefenders ? "Show Top 5 only" : "Show All"}
                                         </button>
+                                        
                                         {!generalMode && (<button onClick={toggleGeneralDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
                                             {showGeneralBestDefenders ? "Show Best Defenders" : "Show General Best Defenders"}
                                         </button>)}
@@ -806,6 +821,13 @@ export default function rankingsPage() {
                                                         <div>
                                                             <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {defender.pbID ? PoGoAPI.FromID(pokebox, defender.pbID).customName ? PoGoAPI.FromID(pokebox, defender.pbID).customName : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText) : PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}<span className="text-sm italic text-gray-500">{defender.pbID ? " (Lv. " + PoGoAPI.FromID(pokebox, defender.pbID).stats.level + ")" : ""}</span></h3>
                                                             <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            {sortByEPT && (
+                                                                <>
+                                                                <Separator className="mt-1 mb-1"/>
+                                                                    <p className="text-xs italic text-black">{defender.chargedMove.cycleTotalME.toFixed(2)}ME (<span className="font-bold text-red-600">{defender.chargedMove.cycleTotalMEWithMushroom.toFixed(2)}ME</span>) in {(defender.chargedMove.cycleDuration / 1000).toFixed(2)}s</p>
+                                                                    <p className="text-xs italic text-black">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 1000)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 1000)).toFixed(2)}EPT</span> </p>
+                                                                </>
+                                                                )}
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
@@ -837,7 +859,7 @@ export default function rankingsPage() {
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
+                                                        <Progress color={sortByEPT ? "green" : GetColorForDefender(defender)} value={sortByEPT ? (100 * (defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 1000))/(defendersToShow[0].chargedMove.cycleTotalME / (defendersToShow[0].chargedMove.cycleDuration / 1000))) : GetValueToShow(defender)}/>
                                                     </div>
                                                 </div>
                                             </div>
