@@ -2407,6 +2407,27 @@ export class PoGoAPI {
             case "AERODACTYL_MEGA":
                 megaMove = "ROCK_SLIDE_PLUS";
                 break;
+            case "CLEFABLE_MEGA":
+                megaMove = "MOONBLAST_PLUS";
+                break;
+            case "SLOWBRO_MEGA":
+                megaMove = "CHILLING_WATER_PLUS";
+                break;
+            case "GLALIE_MEGA":
+                megaMove = "ICE_BEAM_PLUS";
+                break;
+            case "GALLADE_MEGA":
+                megaMove = "SACRED_SWORD_PLUS";
+                break;
+            case "FROSLASS_MEGA":
+                megaMove = "WEATHER_BALL_ICE_PLUS";
+                break;
+            case "SCRAFTY_MEGA":
+                megaMove = "UPPER_HAND_PLUS";
+                break;
+            case "DRAMPA_MEGA":
+                megaMove = "TWISTER_PLUS";
+                break;
         }
         if (!megaMove) {
             return null;
