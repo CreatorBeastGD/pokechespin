@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.43.2";
+        return "1.43.2.1";
     }
 
     static async getAllPokemon() {
@@ -410,7 +410,7 @@ export class PoGoAPI {
 
 
         // April fools!
-        if (today > new Date("2026-4-1").getTime() && today < new Date("2026-4-2").getTime()) {
+        if (today > new Date("2027-4-1").getTime() && today < new Date("2027-4-2").getTime()) {
             objImage = "CHESPIN";
         }
 

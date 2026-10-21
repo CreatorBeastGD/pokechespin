@@ -9,14 +9,17 @@ import Image from "next/image";
 
 const novedades = [
     {
-        title: "🎂 One Year of PokéChespin 🎂",
-        desc: "PokéChespin is one year old today! 🎉\n"+
-                "One year ago, I had the idea of starting a dumb project since I've learnt a bit of web development on my career, and I was curious of how damage calculations worked, so I started this.\n"+
-                "Nowhere in my dreams I though this project would grow that much, thank you all for your support, I really hope you like this and find it useful!\n"+
-                "I wish to keep improving it and adding more features in the future to keep helping y'all!\n"+
-                "Thank you so much, and happy one year anniversary to PokéChespin (and new year 2026)! 🎉🎂",
+        title: "About the 'This Deployment is paused by the owner' message",
+        desc: "Hi all! due to a couple attacks suffered from a bot, I had to pause the deployment of PokéChespin for a while. I apologize for the inconvenience that may have caused.\n"+
+                "Starting this thursday, the page should be running as usual. Let's hope this doesn't happen again, and I can keep the page running for you all!\n",
 
-        date: "🎂 2025-12-31",
+        date: "2026-10-19",
+    },
+    {
+        title: "v1.43.2.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Sneasel, Weavile.\n",
+        date: "2026-10-19",
     },
     {
         title: "v1.43.2",
@@ -1242,7 +1245,7 @@ export default function WhatsNewPage() {
 				<div className="w-full">
 					<div className="space-y-4">
 						{novedades.map((item, idx) => (
-							<Card key={idx} className={idx === 0 ? "type-fairy" : ""}>
+							<Card key={idx} className={idx === 0 ? "type-fire" : ""}>
 								<CardHeader>
 									<div className="flex justify-between items-center">
 										<h2 className="text-xl font-semibold">{item.title}</h2>

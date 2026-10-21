@@ -45,6 +45,7 @@ export class Calculator {
       "SHUCKLE": "raid-t2-dmax",
       "EEVEE": "raid-t2-dmax",
       "FEEBAS": "raid-t2-dmax",
+      "SNEASEL": "raid-t2-dmax",
 
       "BELDUM": "raid-t3-dmax",
       "FALINKS": "raid-t3-dmax",
@@ -82,7 +83,7 @@ export class Calculator {
       "AZELF": "raid-t5-dmax",
       "DIALGA": "raid-t5-dmax",
       "PALKIA": "raid-t5-dmax",
-      "REGIDRAGON": "raid-t5-dmax",
+      "REGIDRAGO": "raid-t5-dmax",
 
       "VENUSAUR_GIGANTAMAX": "raid-t6-gmax",
       "CHARIZARD_GIGANTAMAX": "raid-t6-gmax",
@@ -287,6 +288,8 @@ export class Calculator {
       "RHYPERIOR",
       "SIZZLIPEDE",
       "CENTISKORCH",
+      "SNEASEL",
+      "WEAVILE",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
