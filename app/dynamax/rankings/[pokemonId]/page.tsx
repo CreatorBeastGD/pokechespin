@@ -825,7 +825,7 @@ export default function rankingsPage() {
                                                                 <>
                                                                 <Separator className="mt-1 mb-1"/>
                                                                     <p className="text-xs italic text-black">{defender.chargedMove.cycleTotalME.toFixed(2)}ME (<span className="font-bold text-red-600">{defender.chargedMove.cycleTotalMEWithMushroom.toFixed(2)}ME</span>) in {(defender.chargedMove.cycleDuration / 1000).toFixed(2)}s</p>
-                                                                    <p className="text-xs italic text-black">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 1000)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 1000)).toFixed(2)}EPT</span> </p>
+                                                                    <p className="text-xs italic text-black">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT</span> </p>
                                                                 </>
                                                                 )}
                                                         </div>
