@@ -28,7 +28,7 @@
     "http-proxy-middleware": "^3.0.5",
     "lucide-react": "^0.469.0",
     "mongoose": "^9.0.2",
-    "next": "^16.3.8",
+    "next": "^16.4.1",
     "nextjs": "^0.0.3",
     "pnpm": "^11.18.0",
     "pogocalc": "file:",
