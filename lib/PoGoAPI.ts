@@ -3887,6 +3887,7 @@ export class PoGoAPI {
         let bestMove = this.getMovePBByID(pokemon.quickMoves[0], allMoves);
         let bestDuration = 99999999;
         let bestDamage = 0;
+        let bestEnergy = 0;
 
         let bestEPT = 0;
 
@@ -3899,12 +3900,17 @@ export class PoGoAPI {
                 bestMove = moveData;
                 bestDuration = moveData.durationMs;
                 bestDamage = damage;
+                bestEnergy = moveData.energyDelta;
                 bestEPT = ept;
             } else if (ept === bestEPT) {
-                if (moveData.durationMs < bestDuration || damage > bestDamage) {
-                    bestMove = moveData;
-                    bestDuration = moveData.durationMs;
-                    bestDamage = damage;
+                if (moveData.durationMs < bestDuration || moveData.energyDelta >= bestEnergy) {
+                    if (damage > bestDamage) {
+                        bestMove = moveData;
+                        bestDuration = moveData.durationMs;
+                        bestDamage = damage;
+                        bestEnergy = moveData.energyDelta;
+                        bestEPT = ept;
+                    }
                 }
             }
         });
