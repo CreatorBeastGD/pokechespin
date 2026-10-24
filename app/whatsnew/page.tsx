@@ -16,6 +16,19 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.43.2.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Uxie, Mesprit, Azelf.\n"+
+            "+ Changed some stats on Tier 5 Max Battles \n"+
+                ">>>>>> Uxie\n >>>>>> ~ HP: 17000 \n"+
+                ">>>>>> ~ CPM: 0.9 \n"+
+                ">>>>>> Mesprit\n >>>>>> ~ HP: 19000 \n"+
+                ">>>>>> ~ CPM: 0.85 \n"+
+                ">>>>>> Azelf\n >>>>>> ~ HP: 22000 \n"+
+                ">>>>>> ~ CPM: 0.8 \n",
+        date: "2026-10-19",
+    },
+    {
         title: "v1.43.2.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Sneasel, Weavile.\n",
