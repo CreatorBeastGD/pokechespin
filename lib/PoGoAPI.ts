@@ -1837,6 +1837,7 @@ export class PoGoAPI {
             REGISTEEL: [8005245, 15, 15, 18000],
             UXIE: [8005245, 15, 15, 17000],
             MESPRIT: [8006003, 15, 15, 17000],
+            AZELF: [8005243, 15, 15, 22000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {
