@@ -1836,6 +1836,7 @@ export class PoGoAPI {
             REGIROCK: [8005243, 15, 15, 20000],
             REGISTEEL: [8005245, 15, 15, 18000],
             UXIE: [8005245, 15, 15, 17000],
+            MESPRIT: [8006003, 15, 15, 17000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

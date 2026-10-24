@@ -648,6 +648,7 @@ export class Calculator {
             REGIROCK: 20000,
             REGISTEEL: 18000,
             UXIE: 17000,
+            MESPRIT: 19000
         };
 
         const t6gmaxHP: Record<string, number> = {
