@@ -56,6 +56,8 @@ export default function rankingsPage() {
 
     const [playersInTeam, setPlayersInTeam] = useState<number>(1);
 
+    const [orderByBulk, setOrderByBulk] = useState<boolean>(true);
+
 
     const [showingCounters, setShowingCounters] = useState<boolean>(false);
 
@@ -156,6 +158,9 @@ export default function rankingsPage() {
                 const isShowingCounters = urlSP.get("show_counters") ? urlSP.get("show_counters") === "true" : false;
                 setShowingCounters(isShowingCounters);
 
+                const isOrderByBulk = urlSP.get("order_by_bulk") ? urlSP.get("order_by_bulk") === "true" : true;
+                setOrderByBulk(isOrderByBulk);
+
                 setRaidMode(raidMode);
                 const bestAttackers = PoGoAPI.GetBestAttackersDynamaxType(cType, pokemonList, dmaxPokemon, allMoves, types, weatherBoost, dCannon);
                 setBestAttackers(bestAttackers);
@@ -191,6 +196,7 @@ export default function rankingsPage() {
         urlSP.set("extra_shields", extraHP.toString());
         urlSP.set("dynamax_cannon", dCannon.toString());
         urlSP.set("show_counters", showingCounters.toString());
+        urlSP.set("order_by_bulk", orderByBulk.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -204,6 +210,15 @@ export default function rankingsPage() {
 
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("show_counters", showing.toString());
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
+    const toggleShowingEPT = (showing: boolean) => {
+        setOrderByBulk(showing);
+
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("order_by_bulk", showing.toString());
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
@@ -260,6 +275,15 @@ export default function rankingsPage() {
     
     let attackersToShow = showingCounters ? bestAttackers : bestAttackersSpecific;
     attackersToShow = showBestAttackers ? attackersToShow : attackersToShow?.slice(0, 5);
+
+    defenderList?.sort((a: any, b: any) => {
+        if (orderByBulk) {
+            return (-PoGoAPI.GetBulk(a.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(a.pokemon.pokemonId))) + (PoGoAPI.GetBulk(b.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(b.pokemon.pokemonId)));
+        } else {
+            return (-a.chargedMove.cycleTotalMEWithMushroom / (a.chargedMove.cycleDuration / 500)) + (b.chargedMove.cycleTotalMEWithMushroom / (b.chargedMove.cycleDuration / 500));
+        }
+    });
+
     const defendersToShow = showBestDefenders ? defenderList : defenderList?.slice(0, 5);
 
 
@@ -342,17 +366,36 @@ export default function rankingsPage() {
     }
 
     const GetColorForDefender = (defender: any) => {
+        if (orderByBulk) {
             return (GetValueToShow(defender)) >= 100 ? "violet" :
             (GetValueToShow(defender)) > 75 ? "green" :
             (GetValueToShow(defender)) > 60 ? "yellow" :
             (GetValueToShow(defender)) > 50 ? "orange" : "red";
+        } else {
+            let ept = defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500);
+            return (ept > 1) ? "violet" :
+            (ept == 1) ? "green" :
+            "red";
+        }
 
     }
 
 
-    function GetValueToShow(defender: any): number {
-        return 100 * (PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)) /
+    function GetValueToShow(defender: any, noshroom: boolean = false): number {
+        if (orderByBulk) {
+            return 100 * (PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)) /
             PoGoAPI.GetBulk(defendersToShow[0].pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defendersToShow[0].pokemon.pokemonId)));
+        } else {
+            let ept = 0;
+            if (noshroom) {
+                ept = defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500);
+            } else {
+                ept = defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500);
+            }
+            let bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
+            ept = (ept / bestEpt) * 100;
+            return ept;
+        }
     }
 
     return (
@@ -486,8 +529,8 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
-                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -533,10 +576,15 @@ export default function rankingsPage() {
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
-                                    
+                                    <div className="flex flex-row items-center justify-between space-x-4 w-full">
                                         <button onClick={toggleShowAllDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
                                             {showBestDefenders ? "Show Top 5 only" : "Show All"}
                                         </button>
+                                        <button onClick={() => toggleShowingEPT(!orderByBulk)}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {orderByBulk ? "Order by Chargers" : "Order by Bulk"}
+                                        </button>
+                                    </div>
+                                        
                                     {defendersToShow?.map((defender: any, index: number) => (
                                         
                                         <Card className="w-full" key={index}>
@@ -553,8 +601,11 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
-                                                            <p className="text-sm italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <Separator className="mt-1 mb-1"/>
+                                                            <p className="text-xs italic text-black">{defender.chargedMove.cycleTotalME.toFixed(2)}ME (<span className="font-bold text-red-600">{defender.chargedMove.cycleTotalMEWithMushroom.toFixed(2)}ME</span>) in {(defender.chargedMove.cycleDuration / 1000).toFixed(2)}s</p>
+                                                            <p className="text-xs italic text-black">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT</span> </p>    
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
@@ -569,11 +620,11 @@ export default function rankingsPage() {
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className=" font-bold text-black text-xl">Bulk</h3>
+                                                        <h3 className=" font-bold text-black text-xl">{orderByBulk ? "Bulk" : "EPT"}</h3>
                                                         <p className={"font-bold "}>
                                                         {
                                                             (() => {
-                                                            const value = parseFloat(PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)).toFixed(2));
+                                                            const value = orderByBulk ? parseFloat(PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)).toFixed(2)) : parseFloat((defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)).toFixed(2));
                                                             const [intPart, decPart] = value.toFixed(2).split(".");
                                                             return (
                                                                 <>
@@ -586,7 +637,29 @@ export default function rankingsPage() {
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <Progress color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
+                                                        <div className="relative">
+                                                            <Progress className="absolute top-0 left-0" color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
+                                                            <Progress  color={GetColorForDefender(defender)} value={GetValueToShow(defender, true)}/>
+                                                            {!orderByBulk && (() => {
+                                                                const bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
+                                                                const oneEptPosition = (1 / bestEpt) * 100;
+                                                                return oneEptPosition <= 100 && (
+                                                                    
+                                                                    <>
+                                                                    <span
+                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-red-600 "
+                                                                        style={{ left: `${oneEptPosition}%` }}
+                                                                        aria-label="1 EPT"
+                                                                    >
+                                                                        <span className="px-4 pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-xxs leading-none text-white">
+                                                                            1EPT
+                                                                        </span>
+                                                                    </span>
+                                                                    
+                                                                    </>
+                                                                );
+                                                            })()}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -493,7 +493,6 @@ export class Calculator {
 
       // Source: NFL Research Team
       static getMaxEnergyGain(damage: number, bossHP: number, raidMode: string = "normal", bossId: string = "", customEGM: number = 1) {
-        
 
         let multiplier = raidMode === "normal" ? 1 : raidMode === "raid-t5-dmax" ? 4 : raidMode === "raid-t6-gmax" ? 15 : 1;
         let decimals = raidMode === "normal" ? 0 : raidMode === "raid-t5-dmax" ? 2 : raidMode === "raid-t6-gmax" ? 2 : 0;
@@ -588,7 +587,7 @@ export class Calculator {
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (additionalBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
           
-          // console.log(0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers );
+          console.log(0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers );
           
           return shroom * (Math.floor(
               0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers 
@@ -636,6 +635,8 @@ export class Calculator {
       }
 
       static getEffectiveDMAXHP(raidMode: string, pokemonId: string, hasWeakness?: boolean) {
+        if (pokemonId === "DUMMY") return 20000;
+        
         const t5dmaxHP: Record<string, number> = {
             ZAPDOS: 13000,
             MOLTRES: 20000,
