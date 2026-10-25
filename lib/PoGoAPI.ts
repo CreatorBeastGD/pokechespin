@@ -1766,8 +1766,9 @@ export class PoGoAPI {
             defenderStats = this.convertStats(defenderStats, raid, defender.pokemonId);
             bonusDefender = [bonusDefender[0], this.isShadow(defender.pokemonId), false, 0];
         }
-        console.log(attacker.pokemonId,defender.pokemonId,move.moveId ,types,attackerStats,defenderStats ,bonusAttacker,bonusDefender , raidMode , damageMultiplier);
+        //console.log(attacker.pokemonId,defender.pokemonId,move.moveId ,types,attackerStats,defenderStats ,bonusAttacker,bonusDefender , raidMode , damageMultiplier);
         const effectiveness = this.getEfectiveness(defender, move, types, attacker);
+        /*
         console.log (move.power,
             Calculator.getEffectiveAttackRawCPM(attacker.stats.baseAttack, attackerStats[1] , isDynamaxBoss ? attackerStats[0] : Calculator.getCPM(attackerStats[0])),
             Calculator.getEffectiveDefenseRawCPM(defender.stats.baseDefense, defenderStats[2], (raid === "raid-custom-dmax" || raid === "raid-custom-gmax") ? defenderStats[0] : Calculator.getCPM(defenderStats[0])),
@@ -1779,6 +1780,7 @@ export class PoGoAPI {
             bonusDefender,
             outsideBonus ? outsideBonus : 1
         )
+        */
         return Calculator.calculateDamage(
             move.power, 
             Calculator.getEffectiveAttackRawCPM(attacker.stats.baseAttack, attackerStats[1] , isDynamaxBoss ? attackerStats[0] : Calculator.getCPM(attackerStats[0])), 
@@ -3661,7 +3663,7 @@ export class PoGoAPI {
         let bestEnergyGain = 0;
         let bestEnergyGainShroom = 0;
 
-        console.log("Calculating best charged move for " + pokemon.pokemonId + " against " + boss.pokemonId + " with fast move " + fastMove.moveId);
+        // console.log("Calculating best charged move for " + pokemon.pokemonId + " against " + boss.pokemonId + " with fast move " + fastMove.moveId);
 
         movesToCheck.forEach((move: any) => {
             let moveData = this.getMovePBByID(move, allMoves);
@@ -3685,7 +3687,7 @@ export class PoGoAPI {
                 // console.log("New best charged move for " + pokemon.pokemonId + ": " + moveData.moveId + " with EPT: " + ept + " and EPT with mushroom: " + bestEPTShroom);
             }
         });
-        console.log(bestMove ? pokemon.pokemonId + " - Best Charged Move: " + bestMove.moveId + " EPT: " + bestEPT + " EPT with mushroom: " + bestEPTShroom : pokemon.pokemonId + " - No valid charged moves found.");
+        // console.log(bestMove ? pokemon.pokemonId + " - Best Charged Move: " + bestMove.moveId + " EPT: " + bestEPT + " EPT with mushroom: " + bestEPTShroom : pokemon.pokemonId + " - No valid charged moves found.");
         return { move: bestMove, 
             ept: bestEPT, 
             needsMushroom: (bestEPTShroom >= 1 && bestEPT < 1), 

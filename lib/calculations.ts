@@ -587,7 +587,7 @@ export class Calculator {
           const defenseFinal = bonusDefender[1] ? (defense * 5/6) : defense;
           const modifiers = (additionalBonus ?? 1) * effectiveness * STAB * (this.getWeatherBoostBonus(type, bonusAttacker[0])) * (this.getFriendshipBonus(bonusAttacker[3])) * (bonusAttacker[2] ? (STAB ? 1.3 : 1.1) : 1);
           
-          console.log(0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers );
+          // console.log(0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers );
           
           return shroom * (Math.floor(
               0.5 * (power ?? 0) * (attackFinal / defenseFinal) * modifiers 
