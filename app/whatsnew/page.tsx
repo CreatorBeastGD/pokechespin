@@ -16,6 +16,12 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.43.3",
+        desc: "+ Added a Chargers ranking to Type Rankings. You will be able to check between tanks and chargers!\n"+
+                "~ Fixed a bug on the Solo Simulator where mega boost could apply incorrectly on certain scenarios.\n",
+        date: "2026-10-25",
+    },
+    {
         title: "v1.43.2.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Uxie, Mesprit, Azelf.\n"+
