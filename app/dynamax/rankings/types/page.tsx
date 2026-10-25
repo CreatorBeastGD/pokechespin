@@ -570,10 +570,17 @@ export default function rankingsPage() {
                     <Card className="md:w-1/2 w-full">
                         <CardHeader className="text-xl font-bold">Best Tanks against {PoGoAPI.formatTypeName(currentType)} Type Moves</CardHeader>
                         <CardContent>
-                            <CardDescription className="space-y-3 mb-4">
+                            {orderByBulk ? (
+                                <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best tanks to use against {PoGoAPI.formatTypeName(currentType)} Type moves in a Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
                                 <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. This list considers all Pokémon are at Level 40 with perfect IVs.</p>
                             </CardDescription>
+                            ) : (
+                                <CardDescription className="space-y-3 mb-4">
+                                <p>These are the best chargers to use against a {PoGoAPI.formatTypeName(currentType)} Type boss in a Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
+                                <p>The progress bar will now represent the effectiveness of each charger while using charged moves. If purple, the charger will always be using their charged move, and the progress bar in red will show the improvement under a Max Mushroom. This assumes all Pokémon are at Level 40 with perfect IVs.</p>
+                            </CardDescription>
+                            )}
                             <div className="flex flex-row items-center justify-center ">
                                 <div className="flex flex-col items-center justify-center space-y-4">
                                     <div className="flex flex-row items-center justify-between space-x-4 w-full">
@@ -637,8 +644,8 @@ export default function rankingsPage() {
                                                         </p>
                                                     </div>
                                                     <div className="w-full">
-                                                        <div className="relative">
-                                                            <Progress className="absolute top-0 left-0" color={GetColorForDefender(defender)} value={GetValueToShow(defender)}/>
+                                                        <div className={orderByBulk ? "relative" : "relative pb-3"}>
+                                                            {!orderByBulk && <Progress className="absolute top-0 left-0" color={"red"} value={GetValueToShow(defender)}/>}
                                                             <Progress  color={GetColorForDefender(defender)} value={GetValueToShow(defender, true)}/>
                                                             {!orderByBulk && (() => {
                                                                 const bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
@@ -647,13 +654,19 @@ export default function rankingsPage() {
                                                                     
                                                                     <>
                                                                     <span
-                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-red-600 "
+                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-white"
                                                                         style={{ left: `${oneEptPosition}%` }}
                                                                         aria-label="1 EPT"
+                                                                    />
+                                                                    <span
+                                                                        className="pointer-events-none absolute z-10 whitespace-nowrap text-center text-xxs leading-none text-red-600"
+                                                                        style={{
+                                                                            left: `${oneEptPosition}%`,
+                                                                            top: "50%",
+                                                                            transform: "translateX(-50%)",
+                                                                        }}
                                                                     >
-                                                                        <span className="px-4 pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-xxs leading-none text-white">
-                                                                            1EPT
-                                                                        </span>
+                                                                        1EPT
                                                                     </span>
                                                                     
                                                                     </>
