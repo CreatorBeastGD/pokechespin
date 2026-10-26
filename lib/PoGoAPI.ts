@@ -943,7 +943,7 @@ export class PoGoAPI {
             let buff = 1;
 
             let DPEDPT = (baseMoveData.power / (baseMoveData.durationMs / 500)) * (baseMoveData.power / -baseMoveData.energyDelta);
-                
+            // huh
 
             if (megaMove && megaMove.moveId.startsWith(baseMove)) {
                 newPower = megaMove.power;
