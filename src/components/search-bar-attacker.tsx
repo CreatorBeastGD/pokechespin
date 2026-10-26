@@ -893,7 +893,7 @@ export default function SearchBarAttacker({
                   </CardHeader>
                   <CardContent>
                     <CardDescription>Type: <TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).type)} /></CardDescription>
-                    <CardDescription>Power: {(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).power}</CardDescription>
+                    <CardDescription>Power: {Math.floor(100*(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).power)/100}</CardDescription>
                     <CardDescription>Duration: {PoGoAPI.getMovePBByID(megaChargedMove, allMoves).durationMs / 1000}s</CardDescription>
                     
                     <CardDescription>Energy cost: {(-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) > -100 ? (-(PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).energyDelta) : 0}</CardDescription>
