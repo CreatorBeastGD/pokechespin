@@ -235,6 +235,9 @@ export default function rankingsPage() {
                 const playersAmount = urlSP.get("players_in_team") ? parseInt(urlSP.get("players_in_team") ?? "1") : 1;
                 setPlayersInTeam(playersAmount);
 
+                const orderByBulk = urlSP.get("order_by_bulk") ? urlSP.get("order_by_bulk") === "true" : false;
+                setSortByEPT(orderByBulk);
+
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
                     const bestAttackers = PoGoAPI.GetBestAttackersDynamax(pokemon, pokemonList, dmaxPokemon, raidMode, allMoves, types, weatherBoost, false, parseFloat(urlSP.get("custom_cpm") ?? "1"), false, parseInt(urlSP.get("custom_hp") ?? "10000"), parseInt(urlSP.get("custom_energy_gain_mult") ?? "4"), parseInt(urlSP.get("level") ?? "40"), pokebox);
@@ -304,6 +307,7 @@ export default function rankingsPage() {
         urlSP.set("custom_hp", customBossHP.toString());
         urlSP.set("extra_shields", extraHP.toString());
         urlSP.set("dynamax_cannon", dCannon.toString());
+        urlSP.set("order_by_bulk", sortByEPT.toString());
         const url = window.location.href.split("?")[0] + "?" + urlSP.toString();
         navigator.clipboard.writeText(url).then(() => {
           alert("Link copied to clipboard!");
@@ -324,6 +328,15 @@ export default function rankingsPage() {
         setShowGeneralBestDefenders(!showGeneralBestDefenders);
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("general", showGeneralBestDefenders ? "false" : "true");
+        const pathname = window.location.pathname;
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    }
+
+    const toggleSortByEPT = () => {
+        setSortByEPT(!sortByEPT);
+        
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set("order_by_bulk", sortByEPT ? "true" : "false");
         const pathname = window.location.pathname;
         window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
@@ -520,32 +533,75 @@ export default function rankingsPage() {
    
 
     const GetColorForDefender = (defender: any) => {
-        if (rankingDisplay === "HP_PERCENT") {
-            return (GetValueToShow(defender)) === 1 * GetValueToShow(defendersToShow[0]) ? "violet" :
-            (GetValueToShow(defender)) > 0.75 * GetValueToShow(defendersToShow[0]) ? "green" :
-            (GetValueToShow(defender)) > 0.6 * GetValueToShow(defendersToShow[0]) ? "yellow" :
-            (GetValueToShow(defender)) > 0.5 * GetValueToShow(defendersToShow[0]) ? "orange" : "red";
+        if (sortByEPT) {
+            let eptShroom = defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500);
+            if (eptShroom > 1) {
+                return "violet";
+            } else if (eptShroom == 1) {
+                return "green";
+            } else {
+                return "red";
+            }
         } else {
-            return (GetValueToShow(defender)) == 100 ? "violet" :
-            (GetValueToShow(defender)) > 75 ? "green" :
-            (GetValueToShow(defender)) > 60 ? "yellow" :
-            (GetValueToShow(defender)) > 50 ? "orange" : "red";
+            if (rankingDisplay === "HP_PERCENT") {
+                return (GetValueToShow(defender)) === 1 * GetValueToShow(defendersToShow[0]) ? "violet" :
+                (GetValueToShow(defender)) > 0.75 * GetValueToShow(defendersToShow[0]) ? "green" :
+                (GetValueToShow(defender)) > 0.6 * GetValueToShow(defendersToShow[0]) ? "yellow" :
+                (GetValueToShow(defender)) > 0.5 * GetValueToShow(defendersToShow[0]) ? "orange" : "red";
+            } else {
+                return (GetValueToShow(defender)) == 100 ? "violet" :
+                (GetValueToShow(defender)) > 75 ? "green" :
+                (GetValueToShow(defender)) > 60 ? "yellow" :
+                (GetValueToShow(defender)) > 50 ? "orange" : "red";
+            }
         }
 
     }
 
 
-    function GetValueToShow(defender: any): number {
-        if (rankingDisplay === "HP_DMG") {
-            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
-        } else if (rankingDisplay === "HP_PERCENT") {
-            return parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0])) * 100 ;
-        } else if (rankingDisplay === "AVG") {
-            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+
+    function GetValueToShow(defender: any, noshroom: boolean = false): number {
+        if (sortByEPT) {
+            let ept = 0;
+            if (noshroom) {
+                ept = defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500);
+            } else {
+                ept = defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500);
+            }
+            let bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
+            ept = (ept / bestEpt) * 100;
+            return ept;
         } else {
-            return 100;
+            if (rankingDisplay === "HP_DMG") {
+            return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+            } else if (rankingDisplay === "HP_PERCENT") {
+                return parseFloat(GetTankScore(defender)) / parseFloat(GetTankScore(defendersToShow[0])) * 100 ;
+            } else if (rankingDisplay === "AVG") {
+                return parseFloat(GetTankScore(defendersToShow[0])) / parseFloat(GetTankScore(defender)) * 100 ;
+            } else {
+                return 100;
+            }
         }
     }
+
+    /* 
+    function GetValueToShow(defender: any, noshroom: boolean = false): number {
+        if (orderByBulk) {
+            return 100 * (PoGoAPI.GetBulk(defender.pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defender.pokemon.pokemonId)) /
+            PoGoAPI.GetBulk(defendersToShow[0].pokemon, [40,15,15,15], types, currentType, currentExtraHPForPokemon(defendersToShow[0].pokemon.pokemonId)));
+        } else {
+            let ept = 0;
+            if (noshroom) {
+                ept = defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500);
+            } else {
+                ept = defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500);
+            }
+            let bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
+            ept = (ept / bestEpt) * 100;
+            return ept;
+        }
+    }
+    */
 
     return (
         <>
@@ -707,9 +763,7 @@ export default function rankingsPage() {
                             )                            
                         }
 
-                        <p className="italic text-slate-700 text-sm">
-                            <Switch onCheckedChange={setSortByEPT} checked={sortByEPT} /> Sort Tanks by EPT
-                        </p>
+                        
                         
                         </CardContent>
                     </Card>
@@ -788,7 +842,7 @@ export default function rankingsPage() {
                         <CardHeader className="text-xl font-bold">Best Tanks {showGeneralBestDefenders ? "in general" : ""}</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
-                                <p>These are the best tanks to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
+                                <p>These are the best {sortByEPT ? "chargers" : "tanks"} to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
                                 <p>The best Charged Move for a Pokémon will show if it provides a higher Energy Per Turn (EPT) than only using Fast Moves. A Charged Move will show in <span className="font-bold text-red-600">bold red</span> if it requires a Mushroom to be effective. {!pokeboxReadyAndShowing && <span>This list considers all Pokémon are at Level {level} with perfect IVs.</span>}</p>
                             </CardDescription>
                             <div className="flex flex-row items-center justify-center ">
@@ -796,12 +850,18 @@ export default function rankingsPage() {
                                     
                                     <div className="flex flex-row items-center justify-between space-x-4 w-full">
                                         <button onClick={toggleShowAllDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
-                                            {showBestDefenders ? "Show Top 5 only" : "Show All"}
+                                            {showBestDefenders ? "Top 5" : "All"}
                                         </button>
                                         
                                         {!generalMode && (<button onClick={toggleGeneralDefenders}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
-                                            {showGeneralBestDefenders ? "Show Best Defenders" : "Show General Best Defenders"}
+                                            {showGeneralBestDefenders ? "Moveset" : "General"}
                                         </button>)}
+
+                                        
+
+                                        <button onClick={toggleSortByEPT}  className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mt-4 text-sm">
+                                            {sortByEPT ? "Tanks" : "Chargers"}
+                                        </button>
                                     </div>
                                     {defendersToShow?.map((defender: any, index: number) => (
                                         
@@ -842,11 +902,11 @@ export default function rankingsPage() {
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="font-bold text-black">Tank Score</h3>
+                                                        <h3 className="font-bold text-black">{sortByEPT ? "EPT" : "Tank Score"}</h3>
                                                         <p className={"font-bold " + (defender.fastMove.durationMs > 500 && prioritiseFast ? "text-red-600" : "")}>
                                                         {
                                                             (() => {
-                                                            const value = parseFloat(GetTankScore(defender));
+                                                            const value = (sortByEPT ? (defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)) : parseFloat(GetTankScore(defender)));
                                                             const [intPart, decPart] = value.toFixed(2).split(".");
                                                             return (
                                                                 <>
@@ -858,9 +918,35 @@ export default function rankingsPage() {
                                                         }
                                                         </p>
                                                     </div>
-                                                    <div className="w-full">
-                                                        <Progress color={sortByEPT ? "green" : GetColorForDefender(defender)} value={sortByEPT ? (100 * (defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 1000))/(defendersToShow[0].chargedMove.cycleTotalME / (defendersToShow[0].chargedMove.cycleDuration / 1000))) : GetValueToShow(defender)}/>
-                                                    </div>
+                                                    <div className={!sortByEPT ? "relative" : "relative pb-3"}>
+                                                            {sortByEPT && <Progress className="absolute top-0 left-0" color={"red"} value={GetValueToShow(defender)}/>}
+                                                            <Progress  color={GetColorForDefender(defender)} value={GetValueToShow(defender, true)}/>
+                                                            {sortByEPT && (() => {
+                                                                const bestEpt = defendersToShow[0].chargedMove.cycleTotalMEWithMushroom / (defendersToShow[0].chargedMove.cycleDuration / 500);
+                                                                const oneEptPosition = (1 / bestEpt) * 100;
+                                                                return oneEptPosition <= 100 && (
+                                                                    
+                                                                    <>
+                                                                    <span
+                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-white"
+                                                                        style={{ left: `${oneEptPosition}%` }}
+                                                                        aria-label="1 EPT"
+                                                                    />
+                                                                    <span
+                                                                        className="pointer-events-none absolute z-10 whitespace-nowrap text-center text-xxs leading-none text-red-600"
+                                                                        style={{
+                                                                            left: `${oneEptPosition}%`,
+                                                                            top: "50%",
+                                                                            transform: "translateX(-50%)",
+                                                                        }}
+                                                                    >
+                                                                        1EPT
+                                                                    </span>
+                                                                    
+                                                                    </>
+                                                                );
+                                                            })()}
+                                                        </div>
                                                 </div>
                                             </div>
                                         </Card>
