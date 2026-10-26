@@ -839,7 +839,7 @@ export default function rankingsPage() {
                         </CardContent>
                     </Card>
                     <Card className="md:w-1/2 w-full">
-                        <CardHeader className="text-xl font-bold">Best Tanks {showGeneralBestDefenders ? "in general" : ""}</CardHeader>
+                        <CardHeader className="text-xl font-bold">Best {sortByEPT ? "Chargers" : ("Tanks" + (showGeneralBestDefenders ? "in general" : ""))}</CardHeader>
                         <CardContent>
                             <CardDescription className="space-y-3 mb-4">
                                 <p>These are the best {sortByEPT ? "chargers" : "tanks"} to use against {PoGoAPI.getPokemonNamePB(pokemonInfo?.pokemonId, allEnglishText)} in a {getStars(raidMode)} Max Battle under {weather.toLowerCase().replaceAll("_", " ")} weather.</p>
