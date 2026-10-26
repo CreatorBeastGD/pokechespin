@@ -3677,7 +3677,7 @@ export class PoGoAPI {
             const ept = ((MaxEnergyGainFast * fastMoveUsesForCharged) + (energyGain * Math.floor(100 / -moveData.energyDelta))) / ((moveData.durationMs * Math.floor(100 / -moveData.energyDelta) + fastMoveUsesForCharged * fastMove.durationMs) / 500);
             const epts = ((MaxEnergyGainFast * fastMoveUsesForCharged) + (energyGainShroom * Math.floor(100 / -moveData.energyDelta))) / ((moveData.durationMs * Math.floor(100 / -moveData.energyDelta) + fastMoveUsesForCharged * fastMove.durationMs) / 500);
 
-            console.log(pokemon.pokemonId + " - Charged Move: " + moveData.moveId + " Damage: " + damage + " Energy Gain: " + energyGain + " EPT: " + ept);
+            //console.log(pokemon.pokemonId + " - Charged Move: " + moveData.moveId + " Damage: " + damage + " Energy Gain: " + energyGain + " EPT: " + ept);
             if (epts > bestEPTShroom && epts >= 1) {
                 bestMove = moveData;
                 bestEPT = ept;
