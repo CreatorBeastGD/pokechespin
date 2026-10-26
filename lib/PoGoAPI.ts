@@ -751,7 +751,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("OUTRAGE_PLUS")) {
             return {
                 moveId: "OUTRAGE_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: Math.round((megaMove && megaMove.moveId.startsWith("OUTRAGE_PLUS_") ? megaMove.power : 185) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: Math.floor((megaMove && megaMove.moveId.startsWith("OUTRAGE_PLUS_") ? megaMove.power : 185) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 4000,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_DRAGON",
