@@ -235,8 +235,8 @@ export default function rankingsPage() {
                 const playersAmount = urlSP.get("players_in_team") ? parseInt(urlSP.get("players_in_team") ?? "1") : 1;
                 setPlayersInTeam(playersAmount);
 
-                const orderByBulk = urlSP.get("order_by_bulk") ? urlSP.get("order_by_bulk") === "true" : false;
-                setSortByEPT(orderByBulk);
+                const orderByBulk = urlSP.get("order_by_bulk") ? urlSP.get("order_by_bulk") === "true" : true;
+                setSortByEPT(!orderByBulk);
 
                 if (raidMode && defenderFastAttack && defenderChargedAttack) {
                     setRaidMode(raidMode);
