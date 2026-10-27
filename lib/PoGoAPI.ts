@@ -5331,7 +5331,7 @@ export class PoGoAPI {
         value = Math.imul(value, 2246822507) >>> 0;
         value ^= value >>> 13;
         value = Math.imul(value, 3266489909) >>> 0;
-        value ^= value >>> 16;
+        value = (value ^ (value >>> 16)) >>> 0;
 
         return value / 4294967296;
     }
@@ -5953,6 +5953,7 @@ export class PoGoAPI {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
+                console.log(gamestatus.chargedMoveChance);
                 if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && this.nextRandom(gamestatus, 0) < gamestatus.chargedMoveChance) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;

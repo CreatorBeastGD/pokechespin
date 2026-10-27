@@ -209,9 +209,7 @@ export default function CalculateButtonSimulateTurnBased({
       )
 
       setPreviousSteps((prev) => [...prev, prevGameStatus].slice(-20));
-      previousSteps.forEach((step, index) => {
-        console.log(step)
-      })
+      
       setGameStatus(newState);
   }
 
@@ -319,6 +317,26 @@ export default function CalculateButtonSimulateTurnBased({
     setPreviousSteps((prev) => prev.slice(0, prev.length - 1));
   }
 
+  function changeChargedMoveChance(value: number): void {
+    if (!gameStatus) return;
+
+    const previousGameStatus = cloneRaidStatus(gameStatus);
+    let previousStepsCopy: RaidStatus[] = [];
+    previousSteps.forEach((step) => {
+      if (step) {
+        const clonedStep = cloneRaidStatus(step);
+        if (clonedStep) {
+          clonedStep.chargedMoveChance = value;
+          previousStepsCopy.push(clonedStep);
+        }
+      }
+    });
+    setPreviousSteps(previousStepsCopy);
+    const currentGameStatus = cloneRaidStatus(gameStatus)!;
+    currentGameStatus.chargedMoveChance = value;
+    setGameStatus({ ...currentGameStatus });
+  }
+
   return (
     <>
       <Button onClick={startSimulation} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -332,7 +350,7 @@ export default function CalculateButtonSimulateTurnBased({
        {customChargedMoveChance && startedSim && (
         <>
           <p className="text-sm italic text-muted-foreground my-2">Charged Move Chance: {(gameStatus!.chargedMoveChance * 100).toFixed(0)}% (Default of 30%)</p>
-          <Slider onValueChange={(value) => setGameStatus(gameStatus ? {...gameStatus, chargedMoveChance: value[0]} : null)} value={[gameStatus?.chargedMoveChance ?? 0]} max={1} step={0.05} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
+          <Slider onValueChange={(value) => changeChargedMoveChance(value[0])} value={[gameStatus?.chargedMoveChance ?? 0]} max={1} step={0.05} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
           </>
         )}
         
