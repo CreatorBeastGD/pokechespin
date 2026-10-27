@@ -193,10 +193,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         types,
         allMoves
       )
-      setPreviousSteps((prev) => [...prev, prevGameStatus]);
-      if (previousSteps.length > 19) {
-        setPreviousSteps((prev) => prev.slice(1));
-      }
+      setPreviousSteps((prev) => [...prev, prevGameStatus].slice(-20));
       setGameStatus(newState);
   }
 

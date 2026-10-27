@@ -77,6 +77,9 @@ export class RaidStatus {
         hasUsedChargedMove: boolean;
     }[] = [];
 
+    rngSeed: number = 0;
+
+
     constructor(pokemonCount: number, relobbyTimer: number) {
         this.timer = 0;
         this.allyPokemonMaxHealth = new Array(pokemonCount).fill(0);
@@ -102,5 +105,6 @@ export class RaidStatus {
         this.nextEnergyGainTurn = null;
         this.allyTDO = new Array(pokemonCount).fill(0);
         this.allyActiveTurns = new Array(pokemonCount).fill(0);
+        this.rngSeed = Date.now() >>> 0;
     }
 }

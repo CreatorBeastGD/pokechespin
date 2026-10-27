@@ -43,6 +43,8 @@ export class GameStatus {
 
     bossCastedMove: boolean = false;
 
+    rngSeed: number = 0;
+
     constructor() {
         this.timer = 0;
         this.allyPokemonMaxHealth = [];
@@ -69,5 +71,6 @@ export class GameStatus {
         this.timeout = false;
         this.targetDodgeWindow = false;
         this.bossCastedMove = false;
+        this.rngSeed = Date.now() >>> 0;
     }
 }

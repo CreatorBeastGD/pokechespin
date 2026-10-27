@@ -208,11 +208,7 @@ export default function CalculateButtonSimulateTurnBased({
         energyResolveBug
       )
 
-      setPreviousSteps((prev) => [...prev, prevGameStatus]);
-
-      if (previousSteps.length > 19) {
-        setPreviousSteps((prev) => prev.slice(1));
-      }
+      setPreviousSteps((prev) => [...prev, prevGameStatus].slice(-20));
       previousSteps.forEach((step, index) => {
         console.log(step)
       })

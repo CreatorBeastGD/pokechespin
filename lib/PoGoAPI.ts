@@ -5319,6 +5319,25 @@ export class PoGoAPI {
         }
     }
 
+    private static nextRandom(status: RaidStatus | GameStatus, slot: number): number {
+        const turn = Math.floor(status.timer * 2);
+        let value = (
+            status.rngSeed +
+            Math.imul(turn, 2246822519) +
+            Math.imul(slot, 3266489917)
+        ) >>> 0;
+
+        value ^= value >>> 16;
+        value = Math.imul(value, 2246822507) >>> 0;
+        value ^= value >>> 13;
+        value = Math.imul(value, 3266489909) >>> 0;
+        value ^= value >>> 16;
+
+        return value / 4294967296;
+    }
+
+    
+
     static TurnBasedSimulatorAllyTurnRaid(
         attackers: any[], 
         defender: any, 
@@ -5934,12 +5953,12 @@ export class PoGoAPI {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
-                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && Math.random() < gamestatus.chargedMoveChance) {
+                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && this.nextRandom(gamestatus, 0) < gamestatus.chargedMoveChance) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
-                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
                 } else {
                     gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
-                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(Math.random()*3))*0.5+1.5;
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
                 }
                 
                 gamestatus.targetDodgeWindow = true;
@@ -6103,7 +6122,7 @@ export class PoGoAPI {
                 color: "#ff0000"
             }
         }
-        
+
         if (gamestatus.allyPokemonMaxHealth.length === 0) {
             gamestatus.allyPokemonMaxHealth = [];
             for (let i = 0 ; i < attackers.length ; i++) {
@@ -6518,7 +6537,7 @@ export class PoGoAPI {
 
         if (gamestatus.timer % 15 === 0 && gamestatus.timer > 0) {
             // Spawn orb
-            const dodgeDirection = Math.random() > 0.5 ? "left" : "right";
+            const dodgeDirection = this.nextRandom(gamestatus, 10) > 0.5 ? "left" : "right";
             gamestatus.spawnedOrb = {
                 location: dodgeDirection,
                 timeLeft: 10
@@ -6691,7 +6710,7 @@ export class PoGoAPI {
             if (gamestatus.enemyActiveMove == null) {
                 // Choose move
                 gamestatus.enemyPrepPhase = true;
-                if (Math.random() > 0.5 || (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] != 0 && Math.random() > 0.33)) {
+                if (this.nextRandom(gamestatus, 0) > 0.5 || (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] != 0 && this.nextRandom(gamestatus, 1) > 0.33)) {
                     gamestatus.enemyActiveMove = {move: defenderTargetAttack, isTarget: true};
                     gamestatus.enemyCooldown = Math.ceil(targetCooldown * 2 / 1000) / 2;
                 } else {
