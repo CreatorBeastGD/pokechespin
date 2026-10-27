@@ -103,21 +103,4 @@ export class RaidStatus {
         this.allyTDO = new Array(pokemonCount).fill(0);
         this.allyActiveTurns = new Array(pokemonCount).fill(0);
     }
-
-    NeedsRelobby = () => {
-        return this.isRelobby == 2;
-    }
-
-    CanCastChargedMove = (chargedMove: any) => {
-        if (!chargedMove) return false;
-        return this.allyEnergy[this.activeAllyIndex] >= -chargedMove[this.activeAllyIndex].energyDelta
-    }
-
-    TimedOut = () => {
-        return this.timeout;
-    }
-
-    EnemyDefeated = () => {
-        return this.enemyPokemonDamage >= this.enemyPokemonMaxHealth;
-    }
 }

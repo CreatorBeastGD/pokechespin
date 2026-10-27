@@ -17,6 +17,19 @@ import { RaidStatus } from "./RaidStatus";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "./ui/chart";
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
+const cloneRaidStatus = (status: RaidStatus | null): RaidStatus | null => {
+  if (!status) return null;
+
+  const data = Object.fromEntries(
+    Object.entries(status).filter(([, value]) => typeof value !== "function")
+  );
+
+  return Object.assign(
+    Object.create(Object.getPrototypeOf(status)),
+    structuredClone(data),
+  ) as RaidStatus;
+};
+
 export default function CalculateButtonSimulateTurnBased({
   attacker,
   defender,
@@ -68,6 +81,8 @@ export default function CalculateButtonSimulateTurnBased({
   const [relobbyConfirmation, setRelobbyConfirmation] = useState<boolean>(false);
   const [showCard, setShowCard] = useState<boolean>(true);
   const [range, setRange] = useState<[number, number]>([0, 0]);
+
+  const [previousSteps, setPreviousSteps] = useState<(RaidStatus|null)[]>([]);
 
   const simulationChartConfig = {
     currentDPS1: {
@@ -153,6 +168,8 @@ export default function CalculateButtonSimulateTurnBased({
       initGameStatus
     );
 
+    setPreviousSteps([]);
+
   };
 
   const getIndexOrMax = (index: number, list: any[]): number => {
@@ -167,6 +184,8 @@ export default function CalculateButtonSimulateTurnBased({
     if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
     //console.log(raidMode)  
     setRelobbyConfirmation(false);
+
+    const prevGameStatus = cloneRaidStatus(gameStatus);
     
     const newState = PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
         attacker,
@@ -188,6 +207,15 @@ export default function CalculateButtonSimulateTurnBased({
         relobbyTime,
         energyResolveBug
       )
+
+      setPreviousSteps((prev) => [...prev, prevGameStatus]);
+
+      if (previousSteps.length > 19) {
+        setPreviousSteps((prev) => prev.slice(1));
+      }
+      previousSteps.forEach((step, index) => {
+        console.log(step)
+      })
       setGameStatus(newState);
   }
 
@@ -289,6 +317,12 @@ export default function CalculateButtonSimulateTurnBased({
   };
 
   
+  function RewindSimulation(): void {
+    if (previousSteps.length === 0) return;
+    setGameStatus(previousSteps[previousSteps.length - 1]);
+    setPreviousSteps((prev) => prev.slice(0, prev.length - 1));
+  }
+
   return (
     <>
       <Button onClick={startSimulation} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -311,8 +345,9 @@ export default function CalculateButtonSimulateTurnBased({
         <div>
           <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between items-center">
               <label className="font-bold text-xs">Raid ({gameStatus ? (PoGoAPI.getRaidTime(raidMode) - gameStatus.timer > 0 ? PoGoAPI.getRaidTime(raidMode) - gameStatus.timer : 0) : 0}s)</label>
+              <button onClick={RewindSimulation} className="py-1 px-2 text-white text-xs bg-primary rounded-lg">Rewind ({previousSteps.length ?? 0})</button>
             </div>
             <Separator className=""/>
             <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>

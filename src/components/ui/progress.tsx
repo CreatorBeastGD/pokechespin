@@ -35,4 +35,51 @@ const Progress = React.forwardRef<
 ))
 Progress.displayName = ProgressPrimitive.Root.displayName
 
-export { Progress }
+type SemiCircularProgressProps = {
+  value: number;
+  color: string;
+};
+
+function SemiCircularProgress({
+  value,
+  color,
+}: SemiCircularProgressProps) {
+  const percentage = Math.max(0, Math.min(100, value));
+
+  const colorClass = color ? color : "text-primary";
+
+  return (
+    <svg
+      viewBox="0 0 100 55"
+      className="h-auto w-[70%] overflow-visible"
+      aria-label={`${Math.floor(percentage)}%`}
+      role="progressbar"
+      aria-valuenow={percentage}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
+      <path
+        d="M 10 50 A 40 40 0 0 1 90 50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="8"
+        strokeLinecap="round"
+        className="text-primary/20"
+      />
+
+      <path
+        d="M 10 50 A 40 40 0 0 1 90 50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="8"
+        strokeLinecap="round"
+        pathLength="100"
+        strokeDasharray="100"
+        strokeDashoffset={100 - percentage}
+        className={`${colorClass} transition-all duration-300`}
+      />
+    </svg>
+  );
+}
+
+export { Progress, SemiCircularProgress }

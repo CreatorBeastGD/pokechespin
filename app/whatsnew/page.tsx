@@ -16,6 +16,16 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.44 (Rewind!)",
+        desc: "+ Added a new feature to the Solo Raid Simulator and Max Battle Simulator, called 'Rewind'!\n"+
+                ">>>>>> This new feature allows you to rewind the simulation to a previous state, just in case you made a mistake during the simulation!\n"+
+                ">>>>>> You can rewind up to 20 turns back, and you can do it as many times as you want!\n"+
+                "+ Feature added as a button on both simulators.\n"+
+                "+ Tweaked the design of the Max Battle Simulator a bit.\n",
+        date: "2026-10-27",
+
+    },
+    {
         title: "v1.43.3",
         desc: "+ Added a Chargers ranking to Type Rankings. You will be able to check between tanks and chargers!\n"+
                 "~ Fixed a bug on the Solo Simulator where mega boost could apply incorrectly on certain scenarios.\n",

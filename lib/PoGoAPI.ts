@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.43.3";
+        return "1.44";
     }
 
     static async getAllPokemon() {
@@ -5551,8 +5551,6 @@ export class PoGoAPI {
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
             //console.log(gamestatus.enemyPokemonMaxHealth);
         }
-        
-        
         
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
         

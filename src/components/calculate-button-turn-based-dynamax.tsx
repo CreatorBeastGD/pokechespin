@@ -6,7 +6,7 @@ import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge"
 import { CardHeader, Card, CardTitle, CardContent, CardDescription } from "./ui/card";
-import { Progress } from "./ui/progress";
+import { Progress, SemiCircularProgress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calculator } from "../../lib/calculations";
@@ -72,6 +72,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   const [customEnergyGainMult, setCustomEnergyGainMult] = useState<number>((Number)(searchParams.get("custom_energy_gain_mult") || 1));
 
   const [showHP, setShowHP] = useState<boolean>(false);
+
+  const [previousSteps, setPreviousSteps] = useState<(GameStatus|null)[]>([]);
 
   useEffect(() => {
     setCustomBossCPM((Number)(searchParams.get("custom_cpm") || 1));
@@ -154,6 +156,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         types,
         allMoves
       )
+    
+    setPreviousSteps([]);
 
     setGameStatus(
       initGameStatus
@@ -163,6 +167,9 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
   const SendMessage = async (message: string) => {
     if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
+    
+      const prevGameStatus = structuredClone(gameStatus);
+    
       const newState = PoGoAPI.TurnBasedSimulatorAllyTurn(
         attacker,
         defender,
@@ -186,6 +193,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         types,
         allMoves
       )
+      setPreviousSteps((prev) => [...prev, prevGameStatus]);
+      if (previousSteps.length > 19) {
+        setPreviousSteps((prev) => prev.slice(1));
+      }
       setGameStatus(newState);
   }
 
@@ -223,6 +234,13 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     setAdvEffect(newAdvEffect);
   }
 
+  function RewindSimulation(): void {
+    if (previousSteps.length === 0) return;
+    const lastStep = previousSteps[previousSteps.length - 1];
+    setGameStatus(lastStep);
+    setPreviousSteps((prev) => prev.slice(0, -1));
+  }
+  
   return (
     <>
       <Button onClick={startSimulation} className="w-full py-2 text-white bg-primary rounded-lg">
@@ -252,7 +270,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             </select>
 
             <p>Helper Bonus ({helperBonus + (helperBonus == 15 ? "+" : "")})</p>
-            <div className="flex flex-row items-center space-x-2">
+            <div className="flex flex-row items-center space-x-2 ">
               <Slider onValueChange={(value) => handleHelperBonus(value)} value={[helperBonus]} max={15} step={1} min={0} className="w-[60%] mb-1" color="bg-blue-700"/>
               <button onClick={() => handleHelperBonus([helperBonus - 1])} className="bg-yellow-600 text-white px-4 rounded mr-2">–</button>
               <button onClick={() => handleHelperBonus([helperBonus + 1])} className="bg-yellow-600 text-white px-4 rounded">+</button>
@@ -263,9 +281,17 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
       {startedSim &&
         <Card className="mt-4 py-4 px-4 mb-2">
           <div className="flex flex-col space-y-1">
-            <div className="flex flex-row justify-between">
-              <label className="font-bold text-xs">Max Battle ({gameStatus?.timer}s)</label>
-              <label className="font-bold text-xs">Max Meter: {Math.floor(gameStatus?.maxEnergy || 0)}</label>
+            <div className="relative flex min-h-16 items-center justify-between">
+              <div className="flex min-w-0 flex-col">
+                <label className="font-bold text-xs">Max Battle</label>
+                <label className="font-bold text-xs">{gameStatus?.timer}s</label>
+                
+              </div>
+              <div className="absolute left-1/2 top-1/2 flex h-16 w-32 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+                <SemiCircularProgress value={gameStatus?.maxEnergy || 0} color={"text-rose-700"} />
+                <label className="absolute translate-y-1/4 inset-0 flex items-center justify-center font-bold text-xs">{Math.floor(gameStatus?.maxEnergy || 0)}/100</label>
+              </div>
+              <button onClick={RewindSimulation} className="whitespace-nowrap rounded-lg bg-primary px-2 py-1 text-xs text-white">Rewind ({previousSteps.length ?? 0})</button>
             </div>
             <Separator className=""/>
             <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
