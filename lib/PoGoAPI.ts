@@ -3933,8 +3933,8 @@ export class PoGoAPI {
                 bestEnergy = moveData.energyDelta;
                 bestEPT = ept;
             } else if (ept === bestEPT) {
-                if (moveData.durationMs < bestDuration || moveData.energyDelta >= bestEnergy) {
-                    if (damage > bestDamage) {
+                if (moveData.durationMs <= bestDuration) {
+                    if (moveData.energyDelta > bestEnergy || (damage >= bestDamage && moveData.energyDelta >= bestEnergy)) {
                         bestMove = moveData;
                         bestDuration = moveData.durationMs;
                         bestDamage = damage;

@@ -320,7 +320,6 @@ export default function CalculateButtonSimulateTurnBased({
   function changeChargedMoveChance(value: number): void {
     if (!gameStatus) return;
 
-    const previousGameStatus = cloneRaidStatus(gameStatus);
     let previousStepsCopy: RaidStatus[] = [];
     previousSteps.forEach((step) => {
       if (step) {
