@@ -1,7 +1,7 @@
 "use client";
 "strict mode";
 
-import { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
 import { Badge } from "@/components/ui/badge"
@@ -80,6 +80,7 @@ export default function CalculateButtonSimulateTurnBased({
 
   const [relobbyConfirmation, setRelobbyConfirmation] = useState<boolean>(false);
   const [showCard, setShowCard] = useState<boolean>(true);
+  const [showSummary, setShowSummary] = useState<boolean>(false);
   const [range, setRange] = useState<[number, number]>([0, 0]);
 
   const [previousSteps, setPreviousSteps] = useState<(RaidStatus|null)[]>([]);
@@ -266,6 +267,7 @@ export default function CalculateButtonSimulateTurnBased({
       currentDPS4: logEntry.activeAllyIndex === 3 ? logEntry.currentDPS : null,
       currentDPS5: logEntry.activeAllyIndex === 4 ? logEntry.currentDPS : null,
       currentDPS6: logEntry.activeAllyIndex === 5 ? logEntry.currentDPS : null,
+      allyMessage: logEntry.allyMessage,
     };
   });
   const chartData = range[1] > range[0]
@@ -503,11 +505,18 @@ export default function CalculateButtonSimulateTurnBased({
             }
           </div>
         </Card>
-        <Button
-          onClick={() => setShowCard(!showCard)} className="w-full py-2 text-white bg-primary rounded-lg mt-2"
+        <div className="flex flex-row justify-between items-center space-x-2">
+            <Button
+          onClick={() => {setShowCard(!showCard); setShowSummary(false);}} className="w-full py-2 text-white bg-primary rounded-lg mt-2"
         >
           {showCard ? "Hide" : "Show"} Graphic
         </Button>
+        <Button
+          onClick={() => {setShowSummary(!showSummary); setShowCard(false);}} className="w-full py-2 text-white bg-primary rounded-lg mt-2"
+        >
+          {showSummary ? "Hide" : "Show"} Summary
+        </Button>
+        </div>
         {showCard && (<Card className="mt-4 py-4 px-4 mb-2">
             <CardTitle className="text-sm">Simulation Graphic</CardTitle>
             <CardDescription className="text-xs">The log of the simulation will be displayed here.</CardDescription>
@@ -592,6 +601,71 @@ export default function CalculateButtonSimulateTurnBased({
             Vs. {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)} in a {PoGoAPI.raidSurname(raidMode)} raid with {weather} weather and {advenEffect} adventure effect.
           </p>
         </Card>)}
+        {showSummary && (
+          <Card className="mt-4 py-4 px-4 mb-2">
+          <CardTitle className="text-sm">Simulation Summary</CardTitle>
+          <CardDescription className="text-xs">The summary of the simulation will be displayed here.</CardDescription>
+          <div className="flex flex-col space-y-1 mt-2">
+            {PoGoAPI.GetSimulationSummary(gameStatus!).map((entry, index) => (
+              <div key={index} className="flex flex-col items-start space-x-2 space-y-1">
+                <div className="flex flex-row items-center space-x-2">
+                  <Badge
+                    className="font-bold text-white"
+                    style={{ backgroundColor: simulationChartColors[entry.activeIndex] }}
+                  >
+                    {entry.activeIndex + 1}.
+                  </Badge>{" "}
+                  <p className="text-sm font-medium">{PoGoAPI.getPokemonNamePB(attacker[entry.activeIndex]?.pokemonId, allEnglishText)}</p>
+                  <p className="text-xs text-muted-foreground">({entry.startingTurn !== null ? entry.startingTurn/2+"s" : "N/A"} - {entry.endingTurn !== null ? entry.endingTurn/2+"s" : "N/A"})</p>
+                </div>
+                <p className="text-xs text-muted-foreground">f: {PoGoAPI.formatMoveName(quickMove[entry.activeIndex]?.moveId)} | c: {PoGoAPI.formatMoveName(chargedMove[entry.activeIndex]?.moveId)}</p>
+                <p className="text-xs text-muted-foreground">f: {entry.moveSequence.split("f").length - 1} | c: {entry.moveSequence.split("c").length - 1}</p>
+                <div className="flex flex-wrap items-center ">
+                  {entry.moveSequence.split("").map((move, moveIndex) => (
+                    <Fragment key={moveIndex}>
+                      {move === "r" ? (
+                        <div className="basis-full flex items-center gap-2 my-1">
+                          <Separator className="flex-1" />
+                          <span className="text-xs text-muted-foreground">relobby...</span>
+                          <Separator className="flex-1" />
+                        </div>
+                      ) : (
+                        <>
+                          <Badge className={"m-1 text-xxs w-6 h-6 flex items-center justify-center text-white type-"+(move === "f" ? (quickMove[entry.activeIndex].type).replace("POKEMON_TYPE_", "").toLowerCase() : move === "c" ? (chargedMove[entry.activeIndex].type).replace("POKEMON_TYPE_", "").toLowerCase() : "gray")}>{move}</Badge>
+                          {move === "c" && <span className="basis-full h-0" />}
+                        </>
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
+                
+                
+                <Separator className="my-1"/>
+              </div>
+            ))}
+            <p>Total moves for each Pokémon:</p>
+            {attacker.slice(0, attacker.length).map((pokemon: any, index: number) => {
+              const summaryEntries = PoGoAPI.GetSimulationSummary(gameStatus!).filter(entry => entry.activeIndex === index);
+              const fastMoveCount = summaryEntries.reduce((acc, entry) => acc + (entry.moveSequence.split("f").length - 1), 0);
+              const chargedMoveCount = summaryEntries.reduce((acc, entry) => acc + (entry.moveSequence.split("c").length - 1), 0);
+              return (
+                <div key={index} className="flex flex-col items-start space-x-2">
+                  <p className="text-xs text-muted-foreground">
+                    {PoGoAPI.getPokemonNamePB(pokemon?.pokemonId, allEnglishText)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {PoGoAPI.formatMoveName(quickMove[index]?.moveId)}: {fastMoveCount} | {PoGoAPI.formatMoveName(chargedMove[index]?.moveId)}: {chargedMoveCount}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Damage done: {fastMoveCount} x {gameStatus!.allyDamageValues[index][0]} + {chargedMoveCount} x {gameStatus!.allyDamageValues[index][1]} = {fastMoveCount * gameStatus!.allyDamageValues[index][0] + chargedMoveCount * gameStatus!.allyDamageValues[index][1]} ({((fastMoveCount * gameStatus!.allyDamageValues[index][0] + chargedMoveCount * gameStatus!.allyDamageValues[index][1]) / (gameStatus!.enemyPokemonDamage) * 100).toFixed(2)}%)
+                  </p>
+                </div>
+              );
+            })}
+                
+          </div>
+        </Card>
+        )}
         </div>
         }
         

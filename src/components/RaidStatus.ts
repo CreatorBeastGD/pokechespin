@@ -75,6 +75,8 @@ export class RaidStatus {
         allyEnergy: string;
         enemyHP: string;
         hasUsedChargedMove: boolean;
+        allyMessage: string | null;
+        landedMove: "f" | "c" | "d" | "fr" | "cr" | "dr" | null;
     }[] = [];
 
     rngSeed: number = 0;
@@ -107,4 +109,13 @@ export class RaidStatus {
         this.allyActiveTurns = new Array(pokemonCount).fill(0);
         this.rngSeed = Date.now() >>> 0;
     }
+}
+
+export class RaidStatusSummary {
+    logEntry: RaidStep[] = [];
+}
+
+export class RaidStep {
+    activeAlly: number = 0;
+    moveSequence: string[] = []; // f for fast, c for charged, d for dodge
 }

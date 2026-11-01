@@ -5572,7 +5572,7 @@ export class PoGoAPI {
         }
         
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
-        
+        let landedmove: "c" | "f" | "d" | "r" | null = null;
         if (gamestatus.nextEnergyGainTurn && gamestatus.timer >= gamestatus.nextEnergyGainTurn) {
             gamestatus.nextEnergyGainTurn = null;
             gamestatus.allyEnergy[gamestatus.activeAllyIndex] += gamestatus.nextEnergyGainAmount || 0;
@@ -5650,6 +5650,8 @@ export class PoGoAPI {
                     } else {
                         gamestatus.damageReduction = 1;
                     }
+
+                    landedmove = "d";
 
                     break;
                 
@@ -5773,6 +5775,9 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
                     gamestatus.isRelobby = 1;
+                    
+                    gamestatus.simulationLog[gamestatus.simulationLog.length - 1].landedMove += "r";
+
                     return {...gamestatus} as RaidStatus;
                 
             }
@@ -5809,6 +5814,8 @@ export class PoGoAPI {
                     if (gamestatus.enemyEnergy > 100) {
                         gamestatus.enemyEnergy = 100;
                     }
+
+                    landedmove = gamestatus.allyActiveMove.isCharged ? "c" : "f";
 
                     if (raidMode.endsWith("shadow") || raidMode.endsWith("supermega")) {
                         const remainingHealthPercentage = (gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage) / gamestatus.enemyPokemonMaxHealth;
@@ -5919,6 +5926,8 @@ export class PoGoAPI {
             allyEnergy: gamestatus.allyEnergy[gamestatus.activeAllyIndex] + "/100",
             enemyHP: gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage + "/" + gamestatus.enemyPokemonMaxHealth,
             hasUsedChargedMove: gamestatus.chargedMoveEnd,
+            allyMessage: gamestatus.allyCurrentMessage?.message || null,
+            landedMove: landedmove
         });
 
 
@@ -6887,4 +6896,53 @@ export class PoGoAPI {
         const formattedWeather = weatherName.replace("_", " ").toLowerCase();
         return formattedWeather.charAt(0).toUpperCase() + formattedWeather.slice(1);
       }
+    
+    static GetSimulationSummary(gamestatus: RaidStatus): {
+        activeIndex: number;
+        moveSequence: string;
+        startingTurn: number | null;
+        endingTurn: number | null;
+    }[] {
+        const simLog = gamestatus.simulationLog;
+        const simList: {
+            activeIndex: number;
+            moveSequence: string;
+            startingTurn: number | null;
+            endingTurn: number | null;
+        }[] = [];
+
+        let currentIndex = 0;
+
+        while (currentIndex < simLog.length) {
+            const activeIndex = simLog[currentIndex].activeAllyIndex;
+
+            simList.push({
+                activeIndex,
+                moveSequence: "",
+                startingTurn: null,
+                endingTurn: null
+            });
+
+            while (
+                currentIndex < simLog.length &&
+                simLog[currentIndex].activeAllyIndex === activeIndex
+            ) {
+                const landedMove = simLog[currentIndex].landedMove;
+                if (simList[simList.length - 1].startingTurn === null && landedMove) {
+                    simList[simList.length - 1].startingTurn = currentIndex;
+                }
+
+                if (landedMove) {
+                    simList[simList.length - 1].moveSequence += landedMove;
+                }
+
+                currentIndex++;
+                if (currentIndex >= simLog.length || simLog[currentIndex].activeAllyIndex !== activeIndex) {
+                    simList[simList.length - 1].endingTurn = currentIndex - 1;
+                }
+            }
+        }
+
+        return simList;
+    }
 }
