@@ -927,7 +927,7 @@ export class PoGoAPI {
         } if (moveId.startsWith("OMINOUS_WIND_PLUS")) {
             return {
                 moveId: "OMINOUS_WIND_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
-                power: ((megaMove && megaMove.moveId.startsWith("OMINOUS_WIND_PLUS_") ? megaMove.power : 145) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                power: ((megaMove && megaMove.moveId.startsWith("OMINOUS_WIND_PLUS_") ? megaMove.power : 174) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
                 durationMs: 2500,
                 energyDelta: -100,
                 type: "POKEMON_TYPE_GHOST",
