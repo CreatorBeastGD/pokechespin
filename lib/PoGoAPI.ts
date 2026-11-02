@@ -6933,7 +6933,14 @@ export class PoGoAPI {
                 }
 
                 if (landedMove) {
-                    simList[simList.length - 1].moveSequence += landedMove;
+                    console.log(parseFloat(simLog[currentIndex].enemyHP), parseFloat(simLog[currentIndex-1].enemyHP), gamestatus.enemyPokemonMaxHealth, gamestatus.allyDamageValues[activeIndex][landedMove == "c" ? 1 : 0]);
+                    if ((parseFloat(simLog[currentIndex-1].enemyHP) - parseFloat(simLog[currentIndex].enemyHP)) == gamestatus.allyDamageValues[activeIndex][landedMove == "c" ? 1 : 0]) {
+                        simList[simList.length - 1].moveSequence += landedMove;
+                    } else {
+                        if (simList.length > 1) {
+                            simList[simList.length - 2].moveSequence += landedMove;
+                        }
+                    }
                 }
 
                 currentIndex++;
@@ -6945,4 +6952,13 @@ export class PoGoAPI {
 
         return simList;
     }
+
+    static GetTotalMovesOnSimulationSummary(gamestatus: {
+            activeIndex: number;
+            moveSequence: string;
+            startingTurn: number | null;
+            endingTurn: number | null;
+        }[])  {
+            
+        }
 }

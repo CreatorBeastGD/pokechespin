@@ -302,7 +302,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
             <div className="flex flex-row justify-between">
-              <label className="text-xs">{gameStatus?.enemyCurrentMessage?.message}</label>
+              <label className="text-xs min-h-8">{gameStatus?.enemyCurrentMessage?.message}</label>
             </div>
 
             <Separator className="my-2"/>
@@ -325,7 +325,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             </div>
 
             <div className="flex flex-row justify-between">
-              <label className="text-xs">{gameStatus?.allyCurrentMessage?.message}</label>
+              <p className="text-xs min-h-8">{gameStatus?.allyCurrentMessage?.message}</p>
             </div>
             
             

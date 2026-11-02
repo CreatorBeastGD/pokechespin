@@ -365,7 +365,7 @@ export default function CalculateButtonSimulateTurnBased({
               <button onClick={RewindSimulation} className="py-1 px-2 text-white text-xs bg-primary rounded-lg">Rewind ({previousSteps.length ?? 0})</button>
             </div>
             <Separator className=""/>
-            <label className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</label>
+            <p className={"text-xs " + (gameStatus?.enrageCurrentMessage?.message.startsWith("Timeout reached") ? "text-red-600" : "")}>{gameStatus?.enrageCurrentMessage?.message}</p>
             <Separator className=""/>
             <label className={"font-bold text-sm"}>{(gameStatus!.enemyPokemonMaxHealth - gameStatus!.enemyPokemonDamage) < 0 ? "The Raid Boss has been defeated!" : (gameStatus?.globalCurrentMessage?.message)}</label>
           
@@ -376,7 +376,7 @@ export default function CalculateButtonSimulateTurnBased({
             {gameStatus && <Progress color={getHealthBarColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)} value={((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100} className="w-full"/>}
             
             <div className="flex flex-row justify-between">
-              <label className="text-xs">{gameStatus?.enemyCurrentMessage?.message}</label>
+              <p className="text-xs min-h-8">{gameStatus?.enemyCurrentMessage?.message}</p>
             </div>
 
             <Separator className="my-2"/>
@@ -398,7 +398,7 @@ export default function CalculateButtonSimulateTurnBased({
             </div>
 
             <div className="flex flex-row justify-between">
-              <label className="text-xs">{gameStatus?.allyCurrentMessage?.message}</label>
+              <p className="text-xs min-h-8">{gameStatus?.allyCurrentMessage?.message}</p>
             </div>
             
             
