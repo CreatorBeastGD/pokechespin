@@ -103,6 +103,7 @@ export class Calculator {
       "MEOWTH_GIGANTAMAX": "raid-t6-gmax",
       "PIKACHU_GIGANTAMAX": "raid-t6-gmax",
       "DURALUDON_GIGANTAMAX": "raid-t6-gmax",
+      "ETERNATUS_ETERNAMAX_FORM": "raid-t6-gmax",
     }
 
     static GetBossesFromBossList(dmaxDifficulty: string): string[] {
