@@ -6933,8 +6933,8 @@ export class PoGoAPI {
                 }
 
                 if (landedMove) {
-                    console.log(parseFloat(simLog[currentIndex].enemyHP), parseFloat(simLog[currentIndex-1].enemyHP), gamestatus.enemyPokemonMaxHealth, gamestatus.allyDamageValues[activeIndex][landedMove == "c" ? 1 : 0]);
-                    if ((parseFloat(simLog[currentIndex-1].enemyHP) - parseFloat(simLog[currentIndex].enemyHP)) == gamestatus.allyDamageValues[activeIndex][landedMove == "c" ? 1 : 0]) {
+                    console.log(landedMove);
+                    if ((parseFloat(simLog[currentIndex-1].enemyHP) - parseFloat(simLog[currentIndex].enemyHP)) == gamestatus.allyDamageValues[activeIndex][(landedMove == "c" || landedMove == "cr") ? 1 : 0]) {
                         simList[simList.length - 1].moveSequence += landedMove;
                     } else {
                         if (simList.length > 1) {
