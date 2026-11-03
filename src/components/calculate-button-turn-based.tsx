@@ -112,6 +112,9 @@ export default function CalculateButtonSimulateTurnBased({
     setStartedSim(false);
     setGameStatus(null);
     setRelobbyConfirmation(false);
+    setShowCard(false );
+    setShowSummary(false);
+    setRange([0, 0]);
 
     //console.log("Changed dependencies")
 
@@ -631,7 +634,7 @@ export default function CalculateButtonSimulateTurnBased({
                         </div>
                       ) : (
                         <>
-                          <Badge className={"m-1 text-xxs w-6 h-6 flex items-center justify-center text-white type-"+(move === "f" ? (quickMove[entry.activeIndex].type).replace("POKEMON_TYPE_", "").toLowerCase() : move === "c" ? (chargedMove[entry.activeIndex].type).replace("POKEMON_TYPE_", "").toLowerCase() : "gray")}>{move}</Badge>
+                          <Badge className={"m-1 text-xxs w-6 h-6 flex items-center justify-center text-white type-"+(move === "f" ? (quickMove[entry.activeIndex]?.type)?.replace("POKEMON_TYPE_", "").toLowerCase() : move === "c" ? (chargedMove[entry.activeIndex]?.type)?.replace("POKEMON_TYPE_", "").toLowerCase() : "gray")}>{move}</Badge>
                           {move === "c" && <span className="basis-full h-0" />}
                         </>
                       )}
