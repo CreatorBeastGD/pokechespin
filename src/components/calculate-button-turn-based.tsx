@@ -643,15 +643,16 @@ export default function CalculateButtonSimulateTurnBased({
                 <Separator className="my-1"/>
               </div>
             ))}
-            <p>Total moves for each Pokémon:</p>
+            
+            <CardTitle className="text-sm mt-4">Total moves for each Pokémon</CardTitle>
             {attacker.slice(0, attacker.length).map((pokemon: any, index: number) => {
               const summaryEntries = PoGoAPI.GetSimulationSummary(gameStatus!).filter(entry => entry.activeIndex === index);
               const fastMoveCount = summaryEntries.reduce((acc, entry) => acc + (entry.moveSequence.split("f").length - 1), 0);
               const chargedMoveCount = summaryEntries.reduce((acc, entry) => acc + (entry.moveSequence.split("c").length - 1), 0);
               return (
                 <div key={index} className="flex flex-col items-start space-x-2">
-                  <p className="text-xs text-muted-foreground">
-                    {PoGoAPI.getPokemonNamePB(pokemon?.pokemonId, allEnglishText)}
+                  <p className="text-xs text-black font-bold">
+                    {index+1}º - {PoGoAPI.getPokemonNamePB(pokemon?.pokemonId, allEnglishText)}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {PoGoAPI.formatMoveName(quickMove[index]?.moveId)}: {fastMoveCount} | {PoGoAPI.formatMoveName(chargedMove[index]?.moveId)}: {chargedMoveCount}

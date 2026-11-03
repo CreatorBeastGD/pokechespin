@@ -6933,10 +6933,12 @@ export class PoGoAPI {
                 }
 
                 if (landedMove) {
-                    console.log(landedMove);
                     if ((parseFloat(simLog[currentIndex-1].enemyHP) - parseFloat(simLog[currentIndex].enemyHP)) == gamestatus.allyDamageValues[activeIndex][(landedMove == "c" || landedMove == "cr") ? 1 : 0]) {
                         simList[simList.length - 1].moveSequence += landedMove;
                     } else {
+                        if (landedMove == "d") {
+                            simList[simList.length - 1].moveSequence += "d";
+                        }
                         if (simList.length > 1) {
                             simList[simList.length - 2].moveSequence += landedMove;
                         }
