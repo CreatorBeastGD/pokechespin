@@ -294,6 +294,8 @@ export class Calculator {
       "UXIE",
       "MESPRIT",
       "AZELF",
+      "DIALGA",
+      "PALKIA",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
@@ -311,6 +313,7 @@ export class Calculator {
       "GRIMMSNARL_GIGANTAMAX",
       "MEOWTH_GIGANTAMAX",
       "PIKACHU_GIGANTAMAX",
+      "DURALUDON_GIGANTAMAX",
       "ZACIAN_CROWNED_SWORD_FORM",
       "ZAMAZENTA_CROWNED_SHIELD_FORM",
       "ETERNATUS"
@@ -655,6 +658,8 @@ export class Calculator {
             UXIE: 17000,
             MESPRIT: 19000,
             AZELF: 22000,
+            DIALGA: 17000,
+            PALKIA: 18000,
         };
 
         const t6gmaxHP: Record<string, number> = {

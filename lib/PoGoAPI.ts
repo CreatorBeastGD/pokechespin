@@ -1863,6 +1863,8 @@ export class PoGoAPI {
             UXIE: [8005245, 15, 15, 17000],
             MESPRIT: [8006003, 15, 15, 17000],
             AZELF: [8005243, 15, 15, 22000],
+            DIALGA: [8005144, 15, 15, 17000],
+            PALKIA: [8005144, 15, 15, 18000]
         };
 
         const t6gmaxStats: Record<string, number[]> = {
@@ -1886,6 +1888,7 @@ export class PoGoAPI {
             ETERNATUS_ETERNAMAX_FORM: [8005244, 15, 15, 60000],
             MEOWTH_GIGANTAMAX: [8006052, 15, 15, 80000],
             PIKACHU_GIGANTAMAX: [8006025, 15, 15, 80000],
+            DURALUDON_GIGANTAMAX: [100, 15, 15, 50000]
         };
 
         // DMAX Tier 5

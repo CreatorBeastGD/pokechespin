@@ -16,6 +16,20 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.44.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Dialga, Palkia, Gigantamax Duraludon.\n"+
+            "+ Changed some stats on Tier 5 Max Battles \n"+
+                ">>>>>> Dialga\n >>>>>> ~ HP: 17000 \n"+
+                ">>>>>> ~ CPM: 0.7 \n"+
+                ">>>>>> Palkia\n >>>>>> ~ HP: 18000 \n"+
+                ">>>>>> ~ CPM: 0.7 \n"+
+                ">>>>>> Gigantamax Duraludon\n >>>>>> ~ HP: 50000 \n"+
+                ">>>>>> ~ CPM: 1 \n"+
+                "+ Added a new simulation summary on Solo Raid Simulations.",
+        date: "2026-11-05",
+    },
+    {
         title: "v1.44 (Rewind!)",
         desc: "+ Added a new feature to the Solo Raid Simulator and Max Battle Simulator, called 'Rewind'!\n"+
                 ">>>>>> This new feature allows you to rewind the simulation to a previous state, just in case you made a mistake during the simulation!\n"+
