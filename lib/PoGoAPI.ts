@@ -3655,9 +3655,9 @@ export class PoGoAPI {
         const movesToCheck = pokemon.cinematicMoves.filter((move: any) => {
             return move != "RETURN" && move != "FRUSTRATION" && move != "AEROBLAST_PLUS_PLUS" && move != "SACRED_FIRE_PLUS_PLUS";
         });
-        let MaxEnergyGainFast = this.getDamage(pokemon, boss, fastMove, types, [level,attack,15,15], defenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, 0, 1); 
-        MaxEnergyGainFast = Calculator.getMaxEnergyGain(MaxEnergyGainFast, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
-        let MaxEnergyGainFastShroom = Calculator.getMaxEnergyGain(2*MaxEnergyGainFast, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
+        let damage = this.getDamage(pokemon, boss, fastMove, types, [level,attack,15,15], defenderStats, [weather, false, false, 0], [weather, false, false, 0], raidMode, 0, 1); 
+        let MaxEnergyGainFast = Calculator.getMaxEnergyGain(damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
+        let MaxEnergyGainFastShroom = Calculator.getMaxEnergyGain(2*damage, raidMode.startsWith("raid-custom") ? customBossHP : Calculator.getEffectiveDMAXHP(raidMode, boss.pokemonId, this.hasDoubleWeaknesses(boss.type, boss.type2, types)), raidMode, boss.pokemonId, customEGM);
         let fastMoveUsesForCharged = 0;
         let bestMove: any = null;
         let energyGain = 0;
