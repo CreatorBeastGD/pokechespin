@@ -683,6 +683,7 @@ export class Calculator {
             ETERNATUS_ETERNAMAX_FORM: 60000,
             MEOWTH_GIGANTAMAX: 80000,
             PIKACHU_GIGANTAMAX: 80000,
+            DURALUDON_GIGANTAMAX: 50000,
         };
 
         if (raidMode === "raid-t5-dmax") {

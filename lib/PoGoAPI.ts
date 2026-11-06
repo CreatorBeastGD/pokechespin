@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.44";
+        return "1.44.1.1";
     }
 
     static async getAllPokemon() {
@@ -1863,8 +1863,8 @@ export class PoGoAPI {
             UXIE: [8005245, 15, 15, 17000],
             MESPRIT: [8006003, 15, 15, 17000],
             AZELF: [8005243, 15, 15, 22000],
-            DIALGA: [8005144, 15, 15, 17000],
-            PALKIA: [8005144, 15, 15, 18000]
+            DIALGA: [8003, 15, 15, 17000],
+            PALKIA: [8003, 15, 15, 18000]
         };
 
         const t6gmaxStats: Record<string, number[]> = {
