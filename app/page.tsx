@@ -903,25 +903,7 @@ export default function Home() {
                 allTypes={types}
                 />
             </CardContent>
-            <CardContent>
-              <CardDescription> StatusSim</CardDescription>
-              <CalculateButtonMultiSimulateAdvanced 
-                allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
-                defender={defendingPokemon} 
-                quickMove={selectedQuickMoveAttacker} 
-                chargedMove={selectedChargedMoveAttacker}
-                quickMoveDefender={selectedQuickMoveDefender}
-                chargedMoveDefender={selectedChargedMoveDefender}
-                attackerStats={attackerStats}
-                defenderStats={defenderStats}
-                raidMode={raidMode}
-                bonusAttacker={bonusAttacker}
-                bonusDefender={bonusDefender}
-                boost={advEffect}
-                allTypes={types}
-                />
-            </CardContent>
+            
             <CardContent>
               <CardDescription> Play Raid simulation (one player only)</CardDescription>
               <CalculateButtonSimulateTurnBased
