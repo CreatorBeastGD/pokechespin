@@ -16,7 +16,7 @@ export function Announcement()
                 <p className="font-bold">GO: Wild Area Global announcement.</p>
                 <p className="text-xs">The GO: Wild Area' Global Challenge has been completed! With this, the following changes are live now in Pokémon GO.</p>
                 <ul className="list-disc list-inside text-xs">
-                    <li>The Crowned Dogs' Adventure Effect have been buffed to x1.4 (Raids) and x1.2 (Max Battles).</li>
+                    <li>The Crowned Dogs' Adventure Effects have been buffed to x1.4 (Raids) and x1.2 (Max Battles).</li>
                     <li>Max Orbs will now provide 20 Max Energy when claimed in Max Battles. (x2 the original amount)</li>
                 </ul>
                 <p className="text-xs font-semibold">If you want these changes applied in PokéChespin, change this options in your Configurations!</p>
