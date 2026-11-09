@@ -43,6 +43,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
         <ServiceWorkerRegister />
         
         <Suspense fallback={
@@ -52,7 +53,6 @@ export default function RootLayout({
           <p className="text-white text-lg">Loading Pokémon GO Damage Calculator...</p>
         </div>
         }>
-          
           {children}
         </Suspense>
         <div className="flex flex-col items-center justify-center space-y-3 mt-4 mb-4">

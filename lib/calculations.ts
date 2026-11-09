@@ -296,6 +296,8 @@ export class Calculator {
       "AZELF",
       "DIALGA",
       "PALKIA",
+      "MELTAN",
+      "MELMETAL",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",

@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
 import CalculateButtonSimulateTurnBasedDynamax from "@/components/calculate-button-turn-based-dynamax";
+import { Announcement } from "@/components/Announcement";
 
 export default function Home() {
   
@@ -593,6 +594,8 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
+      <Announcement/>
+
       <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">

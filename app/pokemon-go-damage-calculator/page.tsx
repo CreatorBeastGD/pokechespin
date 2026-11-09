@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { Announcement } from "@/components/Announcement";
 
 async function getRankings(func: (data: any) => void) {
     try {
@@ -97,6 +98,9 @@ export default function Page() {
             <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
             <h1 className="title">Pokémon GO Damage Calculator | PokéChespin <span className="text-lg">v{PoGoAPI.getVersion()}</span></h1>
             <p className="text-white text-lg px-4">Calculate the damage output of your Pokémon in Pokémon GO! Simulate battles and raids, and find out the best moveset for your Pokémon.</p>
+            
+            <Announcement/>
+            
             <a href={"/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 <button className="w-full ">
                   Go to PokéChespin for Raids

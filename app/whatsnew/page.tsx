@@ -16,6 +16,14 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.44.2",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Meltan, Melmetal.\n"+
+                "+ Added a new config to PokéChespin called 'Max Orb Multiplier'\n"+
+                ">>>>>> This new config allows you to set a custom multiplier for the Max Orbs obtained from Max Battles.\n",
+        date: "2026-11-09",
+    },
+    {
         title: "v1.44.1.1",
         desc: "+ Changed some stats on Tier 5 Max Battles \n"+
                 ">>>>>> Dialga\n"+

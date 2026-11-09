@@ -26,6 +26,7 @@ import CalculateButtonSimulateTurnBased from "@/components/calculate-button-turn
 import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 import CalculateButtonMultiSimulateAdvanced from "@/components/calculate-button-advanced-multisim";
 import { AnyARecord } from "dns";
+import { Announcement } from "@/components/Announcement";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -630,6 +631,8 @@ export default function Home() {
       </div>
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
+      <Announcement/>
+
       <Navbar/>
       <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
         <Card className="md:w-1/2 w-full">

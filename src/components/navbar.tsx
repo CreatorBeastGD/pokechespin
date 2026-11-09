@@ -41,6 +41,7 @@ const Navbar = () => {
     let [customChargedMoveChance, setCustomChargedMoveChance] = useState(false);
     let [gemless, setGemless] = useState(false);
     let [slowerSwaps, setSlowerSwaps] = useState(false);
+    let [maxOrbBoost, setMaxOrbBoost] = useState("x1");
 
     let [allPokemonOptionLoaded, setAllPokemonOptionLoaded] = useState(false);
     let [allPokemon, setAllPokemon] = useState<any>(null);
@@ -68,6 +69,7 @@ const Navbar = () => {
         const customChargedMoveChanceStorage = localStorage.getItem("customChargedMoveChance");
         const gemlessStorage = localStorage.getItem("gemless");
         const slowerSwapsStorage = localStorage.getItem("slowerSwaps");
+        const maxOrbBoostStorage = localStorage.getItem("maxOrbBoost");
         const pokeboxIDStorage = localStorage.getItem("pokeboxId");
         const usePokeboxOnRankingsStorage = localStorage.getItem("usePokeboxOnRankings");
 
@@ -91,6 +93,12 @@ const Navbar = () => {
             setShowOnlyCustomPokemonOnRankings(showOnlyCustomPokemonOnRankingsStorage === "true");
         } else {
             localStorage.setItem("showOnlyCustomPokemonOnRankings", "false");
+        }
+
+        if (maxOrbBoostStorage) {
+            setMaxOrbBoost(maxOrbBoostStorage);
+        } else {
+            localStorage.setItem("maxOrbBoost", "x1");
         }
 
 
@@ -220,6 +228,10 @@ const Navbar = () => {
     let ChangeCustomPokemonToRankings = (option: string) => {
         setCustomPokemonToRankings(option);
     }
+
+    let ChangeOrbBoost = (option: string) => {
+        setMaxOrbBoost(option);
+    }
     
 
     let ApplyChanges = () => {
@@ -242,7 +254,7 @@ const Navbar = () => {
         localStorage.setItem("simplifyCalculationText", simplifyCalculationText.toString());
         localStorage.setItem("pokeboxId", pokeboxID);
         localStorage.setItem("usePokeboxOnRankings", usePokeboxOnRankings.toString());
-        
+        localStorage.setItem("maxOrbBoost", maxOrbBoost);
         // reload page
         window.location.reload();
     }
@@ -267,6 +279,7 @@ const Navbar = () => {
         setSlowerSwaps(false);
         setPokeboxID("");
         setUsePokeboxOnRankings(false);
+        setMaxOrbBoost("x1");
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -290,6 +303,7 @@ const Navbar = () => {
         localStorage.setItem("slowerSwaps", "false");
         localStorage.setItem("pokeboxId", "");
         localStorage.setItem("usePokeboxOnRankings", "false");
+        localStorage.setItem("maxOrbBoost", "x1");
         // reload page
         window.location.reload();
     }
@@ -444,6 +458,16 @@ const Navbar = () => {
                                 </select>
                                 <SheetDescription className="text-xs text-muted-foreground mt-2">
                                     The first value (++) will be used on Raids, while the second value (+) will be used on Max Battles.
+                                </SheetDescription>
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label htmlFor="maxOrbBoost" className="text-sm">Max Orb Multiplier</label>
+                                <select value={maxOrbBoost} onChange={(e) => setMaxOrbBoost(e.target.value)} id="maxOrbBoost" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5">
+                                    <option value="x1">x1 (Base)</option>
+                                    <option value="x2">x2</option>
+                                </select>
+                                <SheetDescription className="text-xs text-muted-foreground mt-2">
+                                    Add a multiplier to the amount of Max Energy gained from Max Orbs on Max Battles. x1 is 10 Max Energy.
                                 </SheetDescription>
                             </div>
                             <div className="flex flex-col ">

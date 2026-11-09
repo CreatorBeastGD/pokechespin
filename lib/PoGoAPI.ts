@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.44.1.1";
+        return "1.44.2";
     }
 
     static async getAllPokemon() {
@@ -4506,6 +4506,18 @@ export class PoGoAPI {
         return pokemonToReturn || pokeboxList[0];
     }
 
+    static GetMaxOrbEnergy() {
+        let boost = localStorage.getItem("maxOrbBoost") || "x1";
+        switch (boost) {
+            case "x1":
+                return 10;
+            case "x2":
+                return 20;
+            default:
+                return 10;
+        }
+    }
+
     static async AdvancedSimulationDynamax(
         attackers: any[][], 
         defender: any, 
@@ -4744,7 +4756,7 @@ export class PoGoAPI {
                         if (hasParticle[i]) {
                             // Attacker i uses the Max Orb
                             battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
-                            maxEnergy += 10;
+                            maxEnergy += this.GetMaxOrbEnergy();
                             if (maxEnergy > 100) {
                                 maxEnergy = 100;
                             }
@@ -4757,7 +4769,7 @@ export class PoGoAPI {
                     // Attacker i uses the Max Orb
                     attackerDamageStart[i] = -1002;
                     battleLog.push({"turn": time, "attacker": "attacker", "maxOrb": true, "member": i});
-                    maxEnergy += 10;
+                    maxEnergy += this.GetMaxOrbEnergy();
                     if (maxEnergy > 100) {
                         maxEnergy = 100;
                     }
@@ -6429,7 +6441,7 @@ export class PoGoAPI {
                 if (gamestatus.allyDodgeDirection != "none") {
                     if (gamestatus.spawnedOrb.location == gamestatus.allyDodgeDirection && gamestatus.spawnedOrb.timeLeft > 0) {
                         // collected orb
-                        gamestatus.maxEnergy += 10;
+                        gamestatus.maxEnergy += this.GetMaxOrbEnergy();
                         if (gamestatus.maxEnergy >= 100) {
                             gamestatus.maxEnergy = 100;
                             gamestatus.maxPhaseCounter = 4;
