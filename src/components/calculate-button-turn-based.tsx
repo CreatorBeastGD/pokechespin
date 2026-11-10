@@ -188,7 +188,7 @@ export default function CalculateButtonSimulateTurnBased({
   }
 
   const SendMessage = async (message: string) => {
-    if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
+    if ((message === "charged" || message === "charged2") && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
     //console.log(raidMode)  
     setRelobbyConfirmation(false);
 
@@ -686,10 +686,7 @@ export default function CalculateButtonSimulateTurnBased({
                 return counts;
               }, { fast: 0, charged: 0, secondCharged: 0 });
               const secondChargedMoveData = secondChargedMove[index];
-              const totalDamage =
-                moveCounts.fast * gameStatus!.allyDamageValues[index][0] +
-                moveCounts.charged * gameStatus!.allyDamageValues[index][1] +
-                moveCounts.secondCharged * gameStatus!.allyDamageValues[index][2];
+              const totalDamage = gameStatus!.allyTDO[index];
               return (
                 <div key={index} className="flex flex-col items-start space-x-2">
                   <p className="text-xs text-black font-bold">
@@ -700,9 +697,7 @@ export default function CalculateButtonSimulateTurnBased({
                     {secondChargedMoveData && ` | ${PoGoAPI.formatMoveName(secondChargedMoveData.moveId)}: ${moveCounts.secondCharged}`}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Damage done: {moveCounts.fast} x {gameStatus!.allyDamageValues[index][0]} + {moveCounts.charged} x {gameStatus!.allyDamageValues[index][1]}
-                    {secondChargedMoveData && ` + ${moveCounts.secondCharged} x ${gameStatus!.allyDamageValues[index][2]}`}
-                    {" = "}{totalDamage} ({(totalDamage / gameStatus!.enemyPokemonDamage * 100).toFixed(2)}%)
+                    Damage done: {totalDamage} ({(totalDamage / gameStatus!.enemyPokemonDamage * 100).toFixed(2)}%)
                   </p>
                 </div>
               );

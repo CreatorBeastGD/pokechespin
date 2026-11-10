@@ -5422,7 +5422,7 @@ export class PoGoAPI {
             }
         }
 
-        console.log(attackersSecondCinematicMove)
+        // console.log(attackersSecondCinematicMove)
 
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
 
@@ -5636,6 +5636,7 @@ export class PoGoAPI {
         
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
         let landedmove: "c" | "f" | "d" | "r" | "c2" | null = null;
+        let landedMoveIndex: number | null = null;
         if (gamestatus.nextEnergyGainTurn && gamestatus.timer >= gamestatus.nextEnergyGainTurn) {
             gamestatus.nextEnergyGainTurn = null;
             gamestatus.allyEnergy[gamestatus.activeAllyIndex] += gamestatus.nextEnergyGainAmount || 0;
@@ -5676,7 +5677,7 @@ export class PoGoAPI {
                 // Charged Move
                 case "charged":
                     if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
-                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true};
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: false};
                         gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
                         gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
                         gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
@@ -5693,7 +5694,7 @@ export class PoGoAPI {
                 // Charged Move
                 case "charged2":
                     if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
-                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true};
+                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: true};
                         gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta;
                         gamestatus.allyCooldown = Math.ceil(attackersSecondCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
                         gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
@@ -5732,6 +5733,7 @@ export class PoGoAPI {
                     }
 
                     landedmove = "d";
+                    landedMoveIndex = gamestatus.activeAllyIndex;
 
                     break;
                 
@@ -5883,7 +5885,10 @@ export class PoGoAPI {
 
                 if (gamestatus.allyActiveMove != null) {
                     // ally deals damage
-                    const projectedDamage = gamestatus.enrage ? gamestatus.allyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? (gamestatus.allyActiveMove.move == attackersSecondCinematicMove[gamestatus.activeAllyIndex] ? 2 : 1) : 0] : gamestatus.allyDamageValues[gamestatus.activeAllyIndex][gamestatus.allyActiveMove.isCharged ? (gamestatus.allyActiveMove.move == attackersSecondCinematicMove[gamestatus.activeAllyIndex] ? 2 : 1) : 0];
+                    const damageIndex = !gamestatus.allyActiveMove.isCharged ? 0 : gamestatus.allyActiveMove.isSecondCharged ? 2 : 1;
+                    const projectedDamage = gamestatus.enrage
+                        ? gamestatus.allyDamageValuesEnraged[gamestatus.activeAllyIndex][damageIndex]
+                        : gamestatus.allyDamageValues[gamestatus.activeAllyIndex][damageIndex];
                     
                     gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
                     gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
@@ -5895,7 +5900,8 @@ export class PoGoAPI {
                         gamestatus.enemyEnergy = 100;
                     }
 
-                    landedmove = gamestatus.allyActiveMove.isCharged ? (gamestatus.allyActiveMove.move == attackersSecondCinematicMove[gamestatus.activeAllyIndex] ? "c2" : "c") : "f";
+                    landedmove = !gamestatus.allyActiveMove.isCharged ? "f" : gamestatus.allyActiveMove.isSecondCharged ? "c2" : "c";
+                    landedMoveIndex = gamestatus.activeAllyIndex;
 
                     if (raidMode.endsWith("shadow") || raidMode.endsWith("supermega")) {
                         const remainingHealthPercentage = (gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage) / gamestatus.enemyPokemonMaxHealth;
@@ -6007,7 +6013,8 @@ export class PoGoAPI {
             enemyHP: gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage + "/" + gamestatus.enemyPokemonMaxHealth,
             hasUsedChargedMove: gamestatus.chargedMoveEnd,
             allyMessage: gamestatus.allyCurrentMessage?.message || null,
-            landedMove: landedmove
+            landedMove: landedmove,
+            landedMoveIndex
         });
 
 
@@ -7014,21 +7021,33 @@ export class PoGoAPI {
                 simLog[currentIndex].activeAllyIndex === activeIndex
             ) {
                 const landedMove = simLog[currentIndex].landedMove;
-                if (simList[simList.length - 1].startingTurn === null && landedMove) {
-                    simList[simList.length - 1].startingTurn = currentIndex;
-                }
-
                 if (landedMove) {
-                    if ((parseFloat(simLog[currentIndex-1].enemyHP) - parseFloat(simLog[currentIndex].enemyHP)) == gamestatus.allyDamageValues[activeIndex][(landedMove.startsWith("c")) ? (landedMove === "c2" ? 2 : 1) : 0]) {
-                        simList[simList.length - 1].moveSequence += landedMove;
-                    } else {
-                        if (landedMove == "d") {
-                            simList[simList.length - 1].moveSequence += "d";
-                        }
-                        if (simList.length > 1) {
-                            simList[simList.length - 2].moveSequence += landedMove;
+                    const moveActorIndex = simLog[currentIndex].landedMoveIndex ?? activeIndex;
+                    let actorSummary: typeof simList[number] | null = null;
+                    for (let summaryIndex = simList.length - 1; summaryIndex >= 0; summaryIndex--) {
+                        if (simList[summaryIndex].activeIndex === moveActorIndex) {
+                            actorSummary = simList[summaryIndex];
+                            break;
                         }
                     }
+
+                    if (!actorSummary) {
+                        actorSummary = {
+                            activeIndex: moveActorIndex,
+                            moveSequence: "",
+                            startingTurn: null,
+                            endingTurn: currentIndex
+                        };
+                        simList.splice(simList.length - 1, 0, actorSummary);
+                    }
+
+                    if (actorSummary.startingTurn === null) {
+                        actorSummary.startingTurn = currentIndex;
+                    }
+                    if (actorSummary !== simList[simList.length - 1]) {
+                        actorSummary.endingTurn = currentIndex;
+                    }
+                    actorSummary.moveSequence += landedMove;
                 }
 
                 currentIndex++;

@@ -13,7 +13,7 @@ export class RaidStatus {
     allyEnergy: number[] = [];
     enemyEnergy: number = 0;
 
-    allyActiveMove: {move: any, isCharged: boolean} | null = null;
+    allyActiveMove: {move: any, isCharged: boolean, isSecondCharged?: boolean} | null = null;
     enemyActiveMove: {move: any, isCharged: boolean} | null = null;
 
     activeAllyIndex: number = 0;
@@ -77,6 +77,7 @@ export class RaidStatus {
         hasUsedChargedMove: boolean;
         allyMessage: string | null;
         landedMove: "f" | "c" | "d" | "fr" | "cr" | "dr" | "c2" | "c2r" | null;
+        landedMoveIndex: number | null;
     }[] = [];
 
     rngSeed: number = 0;
