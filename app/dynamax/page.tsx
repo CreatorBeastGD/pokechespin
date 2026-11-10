@@ -39,6 +39,7 @@ export default function Home() {
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
   const [selectedMaxMoveAttacker, setSelectedMaxMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
   const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
+  const [selectedSecondChargedMoveAttacker, setSelectedSecondChargedMoveAttacker] = useState<any | null>(Array(numMembers).fill(Array(3).fill(null)));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
   const [attackerStats, setAttackerStats] = useState<any>(Array(numMembers).fill(Array(3).fill([50, 15, 15, 15])));
@@ -96,6 +97,7 @@ export default function Home() {
           searchParams.delete(`attacker${j}${i}`);
           searchParams.delete(`attacker_fast_attack${j}${i}`);
           searchParams.delete(`attacker_cinematic_attack${j}${i}`);
+          searchParams.delete(`attacker_cinematic_attack${j}${i}_2`);
           searchParams.delete(`attacker_stats${j}${i}`);
           searchParams.delete(`attacker_max_moves${j}${i}`);
         }
@@ -115,6 +117,7 @@ export default function Home() {
     const newSelectedQuickMoveAttacker = [...selectedQuickMoveAttacker.slice(0, newNumMembers)];
     const newSelectedMaxMoveAttacker = [...selectedMaxMoveAttacker.slice(0, newNumMembers)];
     const newSelectedChargedMoveAttacker = [...selectedChargedMoveAttacker.slice(0, newNumMembers)];
+    const newSelectedSecondChargedMoveAttacker = [...selectedSecondChargedMoveAttacker.slice(0, newNumMembers)];
     const newAttackerStats = [...attackerStats.slice(0, newNumMembers)];
     const newMaxMoves = [...maxMoves.slice(0, newNumMembers)];
     const newBonusAttacker = [...bonusAttacker.slice(0, newNumMembers)];
@@ -125,6 +128,7 @@ export default function Home() {
       newSelectedQuickMoveAttacker.push(Array(3).fill(null));
       newSelectedMaxMoveAttacker.push(Array(3).fill(null));
       newSelectedChargedMoveAttacker.push(Array(3).fill(null));
+      newSelectedSecondChargedMoveAttacker.push(Array(3).fill(null));
       newAttackerStats.push(Array(3).fill([50, 15, 15, 15]));
       newMaxMoves.push(Array(3).fill([1, 0, 0]));
       newBonusAttacker.push(Array(3).fill(["EXTREME", false, false, 0]));
@@ -136,6 +140,7 @@ export default function Home() {
     setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
     setSelectedMaxMoveAttacker(newSelectedMaxMoveAttacker);
     setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    setSelectedSecondChargedMoveAttacker(newSelectedSecondChargedMoveAttacker);
     setAttackerStats(newAttackerStats);
     setMaxMoves(newMaxMoves);
     setBonusAttacker(newBonusAttacker);
@@ -181,6 +186,7 @@ export default function Home() {
       const newAttackingPokemon = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => attackingPokemon[i][j]));
       const newQuickMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedQuickMoveAttacker[i][j]));
       const newChargedMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedChargedMoveAttacker[i][j]));
+      const newSecondChargedMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => selectedSecondChargedMoveAttacker[i][j]));
       const newStats = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => attackerStats[i][j]));
       const newMaxMoveList = Array.from({ length: numMembers }, (_, i) => Array.from({ length: 3 }, (_, j) => maxMoves[i][j]));
   
@@ -197,6 +203,7 @@ export default function Home() {
           const attacker = searchParams.get(`attacker${i}${j}`);
           const quickMove = searchParams.get(`attacker_fast_attack${i}${j}`);
           const chargedMove = searchParams.get(`attacker_cinematic_attack${i}${j}`);
+          const secondChargedMove = searchParams.get(`attacker_cinematic_attack${i}${j}_2`);
           const stats = searchParams.get(`attacker_stats${i}${j}`);
           const maxMoveStats = searchParams.get(`attacker_max_moves${i}${j}`);
   
@@ -208,6 +215,9 @@ export default function Home() {
           }
           if (chargedMove !== null) {
             newChargedMoveList[i - 1][j - 1] = PoGoAPI.getMovePBByID(chargedMove, allMoves);
+          }
+          if (secondChargedMove !== null) {
+            newSecondChargedMoveList[i - 1][j - 1] = PoGoAPI.getMovePBByID(secondChargedMove, allMoves);
           }
           if (stats !== null) {
             newStats[i - 1][j - 1] = stats.split(",").map((stat: string) => parseFloat(stat));
@@ -221,6 +231,7 @@ export default function Home() {
       setAttackingPokemon(newAttackingPokemon);
       setSelectedQuickMoveAttacker(newQuickMoveList);
       setSelectedChargedMoveAttacker(newChargedMoveList);
+      setSelectedSecondChargedMoveAttacker(newSecondChargedMoveList);
       setAttackerStats(newStats);
       setMaxMoves(newMaxMoveList);
   
@@ -298,6 +309,12 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
         setSelectedChargedMoveAttacker(newChargedMoveList);
     }
 
+    const secondChargedMove = urlParams.get(`attacker_cinematic_attack${member}${slot}_2`);
+    const newSecondChargedMoveList = [...selectedSecondChargedMoveAttacker];
+    newSecondChargedMoveList[member - 1] = [...newSecondChargedMoveList[member - 1]];
+    newSecondChargedMoveList[member - 1][slot - 1] = secondChargedMove ? PoGoAPI.getMovePBByID(secondChargedMove, allMoves) : null;
+    setSelectedSecondChargedMoveAttacker(newSecondChargedMoveList);
+
     // 3. Actualizar stats
     const stats = urlParams.get(`attacker_stats${member}${slot}`);
     if (stats) {
@@ -347,6 +364,14 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       );
       setSelectedChargedMoveAttacker(newChargedMoveList);
       newSearchParams.delete(`attacker_cinematic_attack${member}${slot}`);
+
+      const newSecondChargedMoveList = selectedSecondChargedMoveAttacker.map((memberArray: any[], index: number) =>
+        index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
+          slotIndex === slot - 1 ? null : m
+        ) : memberArray
+      );
+      setSelectedSecondChargedMoveAttacker(newSecondChargedMoveList);
+      newSearchParams.delete(`attacker_cinematic_attack${member}${slot}_2`);
 
       const newStats = attackerStats.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((stat: any, slotIndex: number) =>
@@ -470,14 +495,25 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     }
   };
 
-  const handleChargedMoveSelectAttacker = (moveId: any, move: any, member: any, slot: any) => {
-    if (move !== undefined) {
-      const newMoveList = selectedChargedMoveAttacker.map((memberArray: any[], index: number) =>
+  const handleChargedMoveSelectAttacker = (moveId: any, move: any, member: any, slot: any, isSecond: boolean = false) => {
+    if (move !== undefined || move === null) {
+      const selectedMoves = isSecond ? selectedSecondChargedMoveAttacker : selectedChargedMoveAttacker;
+      const updateSelectedMoves = isSecond ? setSelectedSecondChargedMoveAttacker : setSelectedChargedMoveAttacker;
+      const updatedMoveList = selectedMoves.map((memberArray: any[], index: number) =>
         index === member - 1 ? memberArray.map((m: any, slotIndex: number) =>
-          slotIndex === slot - 1 ? move : m
+          slotIndex === slot - 1 ? move ?? null : m
         ) : memberArray
       );
-      setSelectedChargedMoveAttacker(newMoveList);
+      updateSelectedMoves(updatedMoveList);
+
+      const newSearchParams = new URLSearchParams(window.location.search);
+      const key = `attacker_cinematic_attack${member}${slot}${isSecond ? "_2" : ""}`;
+      if (moveId) {
+        newSearchParams.set(key, moveId);
+      } else {
+        newSearchParams.delete(key);
+      }
+      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
     }
   };
 
@@ -654,6 +690,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                         attacker: attackingPokemon[memberIndex][slotIndex],
                         quickMove: selectedQuickMoveAttacker[memberIndex][slotIndex],
                         chargedMove: selectedChargedMoveAttacker[memberIndex][slotIndex],
+                        secondChargedMove: selectedSecondChargedMoveAttacker[memberIndex][slotIndex],
                         attackerStats: attackerStats[memberIndex][slotIndex],
                         maxMoves: maxMoves[memberIndex][slotIndex]
                       }}
@@ -888,6 +925,26 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 simplifyCalculationText={simpleMode}
               />
             </CardContent>
+            {selectedSecondChargedMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
+              <CardContent>
+              <CardDescription> Damage dealt per second charged attack</CardDescription>
+              <CalculateButton 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon[selectedMember-1][selectedPokemonSlot-1]} 
+                defender={defendingPokemon} 
+                move={selectedSecondChargedMoveAttacker[selectedMember-1][selectedPokemonSlot-1]}
+                attackerStats={attackerStats[selectedMember-1][selectedPokemonSlot-1]}
+                defenderStats={defenderStats}
+                bonusAttacker={[weather, false, false, previewFriendship]}
+                bonusDefender={bonusDefender}
+                raidMode={raidMode}
+                additionalBonus={PoGoAPI.getHelperBonusDamage(previewHelper)}
+                shroomBonus={previewShroom ? 2 : 1}
+                bladeBoost={previewAdvEffect === "blade"}
+                simplifyCalculationText={simpleMode}
+              />
+            </CardContent>
+            )}
             {selectedQuickMoveAttacker[selectedMember-1][selectedPokemonSlot-1] !== null &&(
             <CardContent>
               <CardDescription> Damage dealt per MAX attack</CardDescription>
@@ -950,6 +1007,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   defender={defendingPokemon} 
                   quickMove={selectedQuickMoveAttacker} 
                   chargedMove={selectedChargedMoveAttacker}
+                  secondChargedMove={selectedSecondChargedMoveAttacker}
                   largeAttack={selectedQuickMoveDefender}
                   targetAttack={selectedChargedMoveDefender}
                   attackerStats={attackerStats}
@@ -970,6 +1028,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                   defender={defendingPokemon}
                   quickMove={selectedQuickMoveAttacker[0]}
                   chargedMove={selectedChargedMoveAttacker[0]}
+                  secondChargedMove={selectedSecondChargedMoveAttacker[0]}
                   largeAttack={selectedQuickMoveDefender}
                   targetAttack={selectedChargedMoveDefender}
                   attackerStats={attackerStats[0]}

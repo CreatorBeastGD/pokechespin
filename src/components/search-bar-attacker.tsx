@@ -22,7 +22,8 @@ import { PBPokemonData } from "./PokemonData";
 interface SearchBarAttackerProps {
   onSelect: (pokemon: any, slot: any) => void;
   onQuickMoveSelect: (moveId: string, move: any, slot: any) => void;
-  onChargedMoveSelect: (moveId: string, move: any, slot: any) => void;
+  onChargedMoveSelect: (moveId: string, move: any, slot: any, isSecond: boolean) => void;
+  onSecondChargedMoveSelect: (moveId: string, move: any, slot: any) => void;
   onChangedStats: (stats: any, slot: any) => void;
   onChangedMegaLevel: (megaLevel: number, slot: any) => void;
   onBonusChange: (bonuses: any, slot: any) => void;
@@ -43,6 +44,7 @@ export default function SearchBarAttacker({
     onSelect, 
     onQuickMoveSelect, 
     onChargedMoveSelect, 
+    onSecondChargedMoveSelect,
     onChangedMegaLevel,
     onChangedStats, 
     onBonusChange, 
@@ -68,12 +70,14 @@ export default function SearchBarAttacker({
   const [error, setError] = useState<string | null>(null);
   const [selectedQuickMove, setSelectedQuickMove] = useState<string | null>(null);
   const [selectedChargedMove, setSelectedChargedMove] = useState<string | null>(null);
+  const [selectedSecondChargedMove, setSelectedSecondChargedMove] = useState<string | null>(null);
   const [stats, setStats] = useState<any>([50, 15, 15, 15]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
   const [availableForms, setAvailableForms] = useState<any[]>([]);
   const [clickedSuggestion, setClickedSuggestion] = useState<boolean>(false);
   const [isImporting, setIsImporting] = useState<boolean>(false);
+  const [isSecondChargedMove, setIsSecondChargedMove] = useState<boolean>(false);
 
   const [showWeaknesses, setShowWeaknesses] = useState<boolean>(false);
 
@@ -104,6 +108,7 @@ export default function SearchBarAttacker({
       }
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
+      if (initialValues.secondChargedMove) handleChargedMoveSelect(initialValues.secondChargedMove.moveId, initialValues.secondChargedMove, true, true);
       if (initialValues.megalevel) handleMegaLevelChange(initialValues.megalevel);
       if (initialValues.attacker) {
         const megaChargedMove = PoGoAPI.HasMegaChargedMove(initialValues.attacker.pokemonId, initialValues.megalevel);
@@ -216,6 +221,7 @@ export default function SearchBarAttacker({
     setError(null);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
+    handleChargedMoveSelect("", null, true, true);
     setSelectedForm("normal");
     setSuggestions([])
     let searchParam = PoGoAPI.getKey(pokemon, searchBarNames);
@@ -237,7 +243,7 @@ export default function SearchBarAttacker({
       newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
       newSearchParams.delete(slot === 1 ? "attacker_fast_attack" + memberSlot : "defender_fast_attack");
       newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" + memberSlot : "defender_cinematic_attack");
-      
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack" + memberSlot + "_2" : "defender_cinematic_attack_2");
 
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
 
@@ -282,6 +288,7 @@ export default function SearchBarAttacker({
     setError(null);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
+    handleChargedMoveSelect("", null, true, true);
     try {
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
@@ -290,7 +297,7 @@ export default function SearchBarAttacker({
       newSearchParams.set(slot === 1 ? "attacker"+memberSlot : "defender", response?.pokemonId);
       newSearchParams.delete(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack");
       newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack");
-      
+      newSearchParams.delete(slot === 1 ? "attacker_cinematic_attack"+memberSlot + "_2" : "defender_cinematic_attack_2");
       window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
 
       const megaChargedMove = PoGoAPI.HasMegaChargedMove(response?.pokemonId, megaLevel);
@@ -326,19 +333,30 @@ export default function SearchBarAttacker({
     }
   };
 
-  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
+  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true, isSecond: boolean = false) => {
     if (paramsLoaded) {
     
     //console.log(moveId);
     //console.log(move)
 
-    setSelectedChargedMove(moveId);
-    onChargedMoveSelect(moveId, move, memberSlot);
-    if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
-      newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    if (isSecond) {
+      setSelectedSecondChargedMove(moveId);
+      onChargedMoveSelect(moveId, move, memberSlot, true);
+      if (write) {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot+"_2" : "defender_cinematic_attack", moveId);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }
+    } else {
+      setSelectedChargedMove(moveId);
+      onChargedMoveSelect(moveId, move, memberSlot, false);
+      if (write) {
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", moveId);
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      }
     }
+    
     }
   };
 
@@ -431,6 +449,7 @@ export default function SearchBarAttacker({
       stats: stats,
       quickMove: selectedQuickMove ? selectedQuickMove : null,
       chargedMove: selectedChargedMove ? selectedChargedMove : null,
+      secondChargedMove: selectedSecondChargedMove ? selectedSecondChargedMove : null,
       bonuses: selectedBonuses,
       maxmoves: importMaxMove,
     };
@@ -467,6 +486,7 @@ export default function SearchBarAttacker({
           const importedMaxMoves = [pokemonData.max.attack, pokemonData.max.guard, pokemonData.max.spirit];
           const importedQuickMove = pokemonData.fastAttackId;
           let importedChargedMove = pokemonData.chargedAttackId;
+          const importedSecondChargedMove = pokemonData.secondChargedAttackId ?? "";
 
           const quickMoveData = PoGoAPI.getMovePBByID(importedQuickMove, allMoves);
 
@@ -480,8 +500,12 @@ export default function SearchBarAttacker({
           const hasMegaChargedMove = PoGoAPI.HasMegaChargedMove(importedPokemon.pokemonId, pokemonData.megaLevel);
           const isMegaChargedMove = (hasMegaChargedMove || "").startsWith(importedChargedMove) && importedChargedMove.includes("_PLUS");
 
-          if (!availableChargedMoves.includes(importedChargedMove) && !isMegaChargedMove) {
+          if (!availableChargedMoves.includes(importedChargedMove)) {
             setError("The selected Charged Move is not available for this Pokémon.");
+            return;
+          } 
+          if (importedSecondChargedMove && !availableChargedMoves.includes(importedSecondChargedMove)) {
+            setError("The selected Second Charged Move is not available for this Pokémon.");
             return;
           }
 
@@ -495,6 +519,9 @@ export default function SearchBarAttacker({
           }
 
           const chargedMoveData = PoGoAPI.getMovePBByID(importedChargedMove, allMoves);
+          const secondChargedMoveData = importedSecondChargedMove
+            ? PoGoAPI.getMovePBByID(importedSecondChargedMove, allMoves)
+            : null;
 
           await searchPokemonInit(importedPokemon, false);
           await waitForImportSync(80);
@@ -503,6 +530,7 @@ export default function SearchBarAttacker({
           handleQuickMoveSelect(importedQuickMove, quickMoveData, false);
           await waitForImportSync(80);
           handleChargedMoveSelect(chargedMoveData.moveId, chargedMoveData, false);
+          handleChargedMoveSelect(secondChargedMoveData?.moveId ?? "", secondChargedMoveData, false, true);
           setImportMaxMove(importedMaxMoves);
           await waitForImportSync(120);
 
@@ -512,7 +540,13 @@ export default function SearchBarAttacker({
           const quickMoveKey = slot === 1 ? `attacker_fast_attack${memberSlot}` : "defender_fast_attack";
           const chargedMoveKey = slot === 1 ? `attacker_cinematic_attack${memberSlot}` : "defender_cinematic_attack";
           const megaLevelKey = slot === 1 ? `attacker_megalevel${memberSlot}` : "defender_megalevel";
-          
+          const secondChargedMoveKey = slot === 1 ? `attacker_cinematic_attack${memberSlot}_2` : "defender_cinematic_attack_2";
+          if (importedSecondChargedMove) {
+            newSearchParams.set(secondChargedMoveKey, importedSecondChargedMove);
+          } else {
+            newSearchParams.delete(secondChargedMoveKey);
+          }
+
           newSearchParams.set(pokemonKey, importedPokemon.pokemonId);
           newSearchParams.set(statsKey, importedStats.join(","));
           newSearchParams.set(quickMoveKey, importedQuickMove);
@@ -553,6 +587,7 @@ export default function SearchBarAttacker({
                           const pokemonData = PoGoAPI.getPokemonPBByID(data.pokemon, pokemonList)[0];
                           const quickMove = PoGoAPI.getMovePBByID(data.quickMove, allMoves);
                           const chargedMove = PoGoAPI.getMovePBByID(data.chargedMove, allMoves);
+                          const secondChargedMove = data.secondChargedMove ? PoGoAPI.getMovePBByID(data.secondChargedMove, allMoves) : null;
 
                           const isValidMegaMove = data.chargedMove === PoGoAPI.HasMegaChargedMove(pokemonData.pokemonId, data.chargedMove.slice(-1));
 
@@ -612,6 +647,10 @@ export default function SearchBarAttacker({
                           handleQuickMoveSelect(data.quickMove, quickMove, false);
                           await waitForImportSync(80);
                           handleChargedMoveSelect(data.chargedMove, chargedMove, false);
+                          if (secondChargedMove) {
+                            await waitForImportSync(80);
+                            handleChargedMoveSelect(secondChargedMove.moveId, secondChargedMove, false, true);
+                          }
                           await waitForImportSync(80);
                           if (isValidMegaMove) {
                             handleMegaLevelChange(data.chargedMove.slice(-1));
@@ -633,8 +672,10 @@ export default function SearchBarAttacker({
                           newSearchParams.set(slot === 1 ? "attacker_bonuses"+memberSlot : "defender_bonuses", data.bonuses.join(","));
                           newSearchParams.set(slot === 1 ? "attacker_fast_attack"+memberSlot : "defender_fast_attack", data.quickMove);
                           newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot : "defender_cinematic_attack", data.chargedMove);
+                          if (secondChargedMove) {
+                            newSearchParams.set(slot === 1 ? "attacker_cinematic_attack"+memberSlot+"_2" : "defender_cinematic_attack_2", secondChargedMove.moveId);
+                          }
 
-                          
                           window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
                       } finally {
                           setTimeout(() => {
@@ -840,11 +881,17 @@ export default function SearchBarAttacker({
 
             <div className="min-w-0 flex-1">
               <p>Charged Attacks:</p>
-              {preferredMovesCharged.map((move: string) => (
+              {slot === 1 && (
+                <div className="flex flex-row items-center space-x-2">
+                  <Switch checked={isSecondChargedMove} onCheckedChange={(checked) => setIsSecondChargedMove(checked)} className="mb-2" />
+                  <p className="text-sm font-medium">Second Charged Attack</p>
+                </div>
+              )}
+              {preferredMovesCharged.filter((move: any) => isSecondChargedMove ? move !== selectedChargedMove : move !== selectedSecondChargedMove).map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
                   key={move}
-                  className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
+                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200' : ''}`}
+                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves), true, isSecondChargedMove) }
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(move) ? " +" : "")}</CardTitle>
@@ -871,21 +918,19 @@ export default function SearchBarAttacker({
                   </CardContent>
                 </Card>)
               ))}
-              {(megaChargedMove) && slot == 1 && (
+              {(megaChargedMove && !((isSecondChargedMove && selectedChargedMove === megaChargedMove) || (!isSecondChargedMove && selectedSecondChargedMove === megaChargedMove))) && slot == 1 && (
                 <div className="flex flex-row items-center space-x-2">
                 <Button onClick={() => handleMegaLevelChange(megaLevel === 2 ? 1 : megaLevel === 3 ? 2 : megaLevel === 4 ? 3 : 1)} className="mb-2 mr-2">-</Button>
                 <p className="text-sm">Mega Level: {megaLevel}</p>
                 <Button onClick={() => handleMegaLevelChange(megaLevel === 1 ? 2 : megaLevel === 2 ? 3 : megaLevel === 3 ? 4 : 4)} className="mb-2 mr-2">+</Button>
                 </div>
-
-                
               )}
-              {(megaChargedMove) && slot == 1 && (
+              {(megaChargedMove && !((isSecondChargedMove && selectedChargedMove === megaChargedMove) || (!isSecondChargedMove && selectedSecondChargedMove === megaChargedMove))) && slot == 1 && (
                 <div className="min-w-0" key={megaChargedMove}>
                 <Card
                   key={megaChargedMove}
-                  className={`mb-4 w-full ${selectedChargedMove === megaChargedMove ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
-                  onClick={() => handleChargedMoveSelect(megaChargedMove, PoGoAPI.getMovePBByID(megaChargedMove, allMoves))}
+                  className={`mb-4 w-full ${(selectedChargedMove === megaChargedMove || selectedSecondChargedMove === megaChargedMove) ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
+                  onClick={() => handleChargedMoveSelect(megaChargedMove, PoGoAPI.getMovePBByID(megaChargedMove, allMoves), true, isSecondChargedMove) }
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(megaChargedMove, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(megaChargedMove) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(megaChargedMove) ? " +" : "")}</CardTitle>

@@ -51,7 +51,7 @@ export class RaidStatus {
 
     chargedMoveCooldown: number = 0;
 
-    // Index 0 is fast, index 1 is charged.
+    // Index 0 is fast, index 1 is charged, and index 2 is the second charged move.
     allyDamageValues: number[][] = [];
     allyDamageValuesEnraged: number[][] = [];
     enemyDamageValues: number[][] = [];
@@ -76,7 +76,7 @@ export class RaidStatus {
         enemyHP: string;
         hasUsedChargedMove: boolean;
         allyMessage: string | null;
-        landedMove: "f" | "c" | "d" | "fr" | "cr" | "dr" | null;
+        landedMove: "f" | "c" | "d" | "fr" | "cr" | "dr" | "c2" | "c2r" | null;
     }[] = [];
 
     rngSeed: number = 0;

@@ -17,6 +17,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   defender,
   quickMove,
   chargedMove,
+  secondChargedMove,
   largeAttack,
   targetAttack,
   attackerStats,
@@ -32,6 +33,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
   defender: any;
   quickMove: any;
   chargedMove: any;
+  secondChargedMove: any;
   largeAttack: any;
   targetAttack: any;
   attackerStats: any;
@@ -141,7 +143,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setCau(0);
     setGraphic(null);
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, strategy, shroom, friendship, prioritiseEnergy, advEffect, customEnergyGainMult]);
+  }, [attacker, defender, quickMove, chargedMove, secondChargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, customBossHP, customBossCPM, customBossAtkMult, strategy, shroom, friendship, prioritiseEnergy, advEffect, customEnergyGainMult]);
 
   const raidSurname = (raidMode: string) => {
     if (raidMode === "raid-t1-dmax") {
@@ -181,7 +183,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setLoading(true);
     // Both should have the same weather boost.
     const { time, attackerQuickAttackUses, attackerChargedAttackUses, defenderLargeAttackUses, defenderTargetAttackUses, battleLog, attackerFaints, attackerDamage, win, dynamaxPhases} = 
-    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? (customBossHP) : 10000, customBossCPM ? (customBossCPM) : 1, customBossAtkMult ? (customBossAtkMult) : 1, customEnergyGainMult);
+    await PoGoAPI.AdvancedSimulationDynamax(attacker, defender, quickMove, chargedMove, attackerStats, largeAttack, targetAttack, raidMode, JSON.parse(JSON.stringify(maxMoves)), strategy, shroom, weather, helperBonus, friendship, prioritiseEnergy, advEffect, customBossHP ? (customBossHP) : 10000, customBossCPM ? (customBossCPM) : 1, customBossAtkMult ? (customBossAtkMult) : 1, customEnergyGainMult, secondChargedMove);
     setTypes(await PoGoAPI.getTypes());
     setLoading(false);
     setVisibleEntries(50);

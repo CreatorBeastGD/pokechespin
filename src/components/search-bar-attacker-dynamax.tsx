@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
+import { Switch } from "./ui/switch";
 import { Calculator } from "../../lib/calculations";
 import { useSearchParams, usePathname } from "next/navigation";
 import { clear } from "console";
@@ -21,7 +22,7 @@ import { PBPokemonData } from "./PokemonData";
 interface SearchBarAttackerProps {
   onSelect: (pokemon: any, member: any, slot: any) => void;
   onQuickMoveSelect: (moveId: string, move: any, member: any, slot: any) => void;
-  onChargedMoveSelect: (moveId: string, move: any, member: any, slot: any) => void;
+  onChargedMoveSelect: (moveId: string, move: any, member: any, slot: any, isSecond: boolean) => void;
   onChangedStats: (stats: any, member: any, slot: any) => void;
   onClickedClearButton: (member:any, slot: any) => void;
   onChangedMaxMoveStats: (maxMoves: any, member: any, slot: any) => void;
@@ -68,6 +69,8 @@ export default function SearchBarAttackerDynamax({
   const [error, setError] = useState<string | null>(null);
   const [selectedQuickMove, setSelectedQuickMove] = useState<string | null>(null);
   const [selectedChargedMove, setSelectedChargedMove] = useState<string | null>(null);
+  const [selectedSecondChargedMove, setSelectedSecondChargedMove] = useState<string | null>(null);
+  const [isSecondChargedMove, setIsSecondChargedMove] = useState<boolean>(false);
   const [stats, setStats] = useState<any>([50, 15, 15, 15]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedBonuses, setSelectedBonuses] = useState<any[]>(["EXTREME", false, false, 0]);
@@ -95,6 +98,7 @@ export default function SearchBarAttackerDynamax({
       if (initialValues.attackerStats) handleStatsSelect(initialValues.attackerStats);
       if (initialValues.quickMove) handleQuickMoveSelect(initialValues.quickMove.moveId, initialValues.quickMove);
       if (initialValues.chargedMove) handleChargedMoveSelect(initialValues.chargedMove.moveId, initialValues.chargedMove);
+      if (initialValues.secondChargedMove) handleChargedMoveSelect(initialValues.secondChargedMove.moveId, initialValues.secondChargedMove, true, true);
       if (initialValues.maxMoves) handleMaxMovesSelect(initialValues.maxMoves);
     } 
   }, []); // Agrega `initialValues` como dependencia
@@ -128,22 +132,24 @@ export default function SearchBarAttackerDynamax({
     }
   };
 
-  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true) => {
-    setSelectedChargedMove(moveId);
-    onChargedMoveSelect(moveId, move, member, number);
+  const handleChargedMoveSelect = (moveId: string, move: any, write: boolean = true, isSecond: boolean = false) => {
+    if (isSecond) {
+      setSelectedSecondChargedMove(moveId || null);
+    } else {
+      setSelectedChargedMove(moveId || null);
+    }
+    onChargedMoveSelect(moveId, move, member, number, isSecond);
     if (write) {
       //console.log(moveId);
       setTimeout(() => {
+        const key = `attacker_cinematic_attack${member}${number}${isSecond ? "_2" : ""}`;
+        const newSearchParams = new URLSearchParams(searchParams.toString());
         if (moveId !== "") {
-          //console.log("attacker_cinematic_attack"+member+""+number);
-          const newSearchParams = new URLSearchParams(searchParams.toString());
-          newSearchParams.set("attacker_cinematic_attack"+member+""+number, moveId);
-          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+          newSearchParams.set(key, moveId);
         } else {
-          const newSearchParams = new URLSearchParams(searchParams.toString());
-          newSearchParams.delete("attacker_cinematic_attack"+member+""+number);
-          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+          newSearchParams.delete(key);
         }
+        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
       }, 1);
     }
   }
@@ -188,6 +194,7 @@ export default function SearchBarAttackerDynamax({
     setPokemon(pokemonD.pokedex.pokemonId);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
+    handleChargedMoveSelect("", null, true, true);
     setLoading(true);
     setError(null);
     try {
@@ -211,6 +218,7 @@ export default function SearchBarAttackerDynamax({
     setError(null);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
+    handleChargedMoveSelect("", null, true, true);
     setSelectedForm("normal");
     setSuggestions([])
     //console.log(searchBarNames)
@@ -242,6 +250,7 @@ export default function SearchBarAttackerDynamax({
     setError(null);
     handleQuickMoveSelect("", null);
     handleChargedMoveSelect("", null);
+    handleChargedMoveSelect("", null, true, true);
     try {
       const response = PoGoAPI.getPokemonPBByID(form, pokemonList)[0];
       setPokemonData(response);
@@ -263,6 +272,7 @@ export default function SearchBarAttackerDynamax({
     onSelect(searchForm(event.target.value), member, number);
     setSelectedQuickMove(null);
     setSelectedChargedMove(null);
+    setSelectedSecondChargedMove(null);
   };
 
   // [level, attack, defense, stamina]
@@ -348,6 +358,7 @@ export default function SearchBarAttackerDynamax({
       stats: stats,
       quickMove: selectedQuickMove ? selectedQuickMove : null,
       chargedMove: selectedChargedMove ? selectedChargedMove : null,
+      secondChargedMove: selectedSecondChargedMove,
       bonuses: exportBonus,
       maxmoves: maxMoves,
     };
@@ -386,6 +397,10 @@ export default function SearchBarAttackerDynamax({
             setError("The selected Charged Move is not available for this Pokémon.");
             return;
           }
+          if (pokemonData.secondChargedAttackId && !availableChargedMoves.includes(pokemonData.secondChargedAttackId)) {
+            setError("The selected Second Charged Move is not available for this Pokémon.");
+            return;
+          }
 
         const importedStats = [
           pokemonData.stats.level,
@@ -394,6 +409,9 @@ export default function SearchBarAttackerDynamax({
           pokemonData.stats.hp,
         ];
         const importedMaxMoves = [pokemonData.max.attack, pokemonData.max.guard, pokemonData.max.spirit];
+        setSelectedQuickMove(importedQuickMove);
+        setSelectedChargedMove(importedChargedMove);
+        setSelectedSecondChargedMove(pokemonData.secondChargedAttackId ?? null);
 
         const urlParams = new URLSearchParams(window.location.search);
         const prefix = `attacker`;
@@ -403,6 +421,12 @@ export default function SearchBarAttackerDynamax({
         urlParams.set(`${prefix}_max_moves${member}${number}`, importedMaxMoves.join(","));
         urlParams.set(`${prefix}_fast_attack${member}${number}`, pokemonData.fastAttackId);
         urlParams.set(`${prefix}_cinematic_attack${member}${number}`, pokemonData.chargedAttackId);
+        const secondChargedMoveKey = `${prefix}_cinematic_attack${member}${number}_2`;
+        if (pokemonData.secondChargedAttackId) {
+          urlParams.set(secondChargedMoveKey, pokemonData.secondChargedAttackId);
+        } else {
+          urlParams.delete(secondChargedMoveKey);
+        }
 
         const newUrl = `${pathname}?${urlParams.toString()}`;
         window.history.replaceState({}, "", newUrl);
@@ -449,6 +473,11 @@ const importPokemon = async () => {
                               setIsImporting(false);
                               return;
                           }
+                          else if (data.secondChargedMove && !(DataPokemon.cinematicMoves.concat(DataPokemon.eliteCinematicMove)).includes(data.secondChargedMove)) {
+                              setError("The selected Second Charged Move is not available for this Pokémon.");
+                              setIsImporting(false);
+                              return;
+                          }
                           
                           else if (data.stats.length !== 4 || data.bonuses.length !== 4) {
                               setError("Invalid data format in the imported file.");
@@ -486,6 +515,15 @@ const importPokemon = async () => {
                           urlParams.set(`${prefix}_max_moves${member}${number}`, data.maxmoves.join(","));
                           urlParams.set(`${prefix}_fast_attack${member}${number}`, data.quickMove);
                           urlParams.set(`${prefix}_cinematic_attack${member}${number}`, data.chargedMove);
+                          const secondChargedMoveKey = `${prefix}_cinematic_attack${member}${number}_2`;
+                          if (data.secondChargedMove) {
+                            urlParams.set(secondChargedMoveKey, data.secondChargedMove);
+                          } else {
+                            urlParams.delete(secondChargedMoveKey);
+                          }
+                          setSelectedQuickMove(data.quickMove);
+                          setSelectedChargedMove(data.chargedMove);
+                          setSelectedSecondChargedMove(data.secondChargedMove ?? null);
 
                           const newUrl = `${pathname}?${urlParams.toString()}`;
                           window.history.replaceState({}, '', newUrl);
@@ -526,7 +564,10 @@ const importPokemon = async () => {
   const preferredMovesQuick = 'preferredMovesQuick' in preferredMoves ? preferredMoves.preferredMovesQuick : selectedPokemon?.quickMoves;
   const preferredMovesCharged = 'preferredMovesCharged' in preferredMoves ? preferredMoves.preferredMovesCharged : selectedPokemon?.cinematicMoves;
 
-  const dynamaxMove = selectedQuickMove ? PoGoAPI.getDynamaxAttack(selectedPokemon?.pokemonId, (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves)).type, allMoves, maxMoves[0], (PoGoAPI.getMovePBByID(selectedQuickMove ?? "a", allMoves))) : null;
+  const selectedQuickMoveData = selectedQuickMove ? PoGoAPI.getMovePBByID(selectedQuickMove, allMoves) : null;
+  const dynamaxMove = selectedPokemon?.pokemonId && selectedQuickMoveData
+    ? PoGoAPI.getDynamaxAttack(selectedPokemon.pokemonId, selectedQuickMoveData.type, allMoves, maxMoves[0], selectedQuickMoveData)
+    : null;
   
   const weaknesses = selectedPokemon ? PoGoAPI.getAllWeaknesses(selectedPokemon.type, selectedPokemon.type2, allTypes) : null;
 
@@ -727,12 +768,16 @@ const importPokemon = async () => {
 
             <div>
               <p>Charged Attacks:</p>
+              <div className="flex flex-row items-center space-x-2">
+                <Switch checked={isSecondChargedMove} onCheckedChange={setIsSecondChargedMove} className="mb-2" />
+                <p className="text-sm font-medium">Second Charged Attack</p>
+              </div>
               {preferredMovesCharged.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (
                 <Card
                   key={move}
-                  className={`mb-4 ${selectedChargedMove === move ? 'bg-blue-200' : ''}`}
-                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
+                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200' : ''}`}
+                  onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves), true, isSecondChargedMove)}
                 >
                   <CardHeader>
                     <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(move, allMoves)).moveId)}{(selectedPokemon?.eliteCinematicMove ?? []).includes(move) ? " *" : ((selectedPokemon?.customCinematicMoves ?? []).includes(move) ? " +" : "")}</CardTitle>

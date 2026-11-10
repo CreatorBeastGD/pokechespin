@@ -39,6 +39,7 @@ export default function Home() {
   const [defendingPokemon, setDefendingPokemon] = useState<any>(null);
   const [selectedQuickMoveAttacker, setSelectedQuickMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
   const [selectedChargedMoveAttacker, setSelectedChargedMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
+  const [selectedSecondChargedMoveAttacker, setSelectedSecondChargedMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
   const [attackerStats, setAttackerStats] = useState<any[][]>(Array(numMembers).fill([50, 15, 15, 15]));
@@ -128,6 +129,7 @@ export default function Home() {
             searchParams.delete(`attacker${j}`);
             searchParams.delete(`attacker_fast_attack${j}`);
             searchParams.delete(`attacker_cinematic_attack${j}`);
+            searchParams.delete(`attacker_cinematic_attack${j}_2`);
             searchParams.delete(`attacker_stats${j}`);
             searchParams.delete(`attacker_bonuses${j}`);
         }
@@ -146,6 +148,8 @@ export default function Home() {
     const newSelectedQuickMoveAttacker = [...selectedQuickMoveAttacker.slice(0, newNumMembers)];
    
     const newSelectedChargedMoveAttacker = [...selectedChargedMoveAttacker.slice(0, newNumMembers)];
+    const newSelectedSecondChargedMoveAttacker = [...selectedSecondChargedMoveAttacker.slice(0, newNumMembers)];
+
     const newAttackerStats = [...attackerStats.slice(0, newNumMembers)];
     
     const newBonusAttacker = [...bonusAttacker.slice(0, newNumMembers)];
@@ -155,6 +159,7 @@ export default function Home() {
       newAttackingPokemon.push((null));
       newSelectedQuickMoveAttacker.push((null));
       newSelectedChargedMoveAttacker.push((null));
+      newSelectedSecondChargedMoveAttacker.push((null));
       newAttackerStats.push(([50, 15, 15, 15]));
       newBonusAttacker.push((["EXTREME", false, false, 0]));
     }
@@ -163,6 +168,7 @@ export default function Home() {
     setAttackingPokemon(newAttackingPokemon);
     setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
     setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+    setSelectedSecondChargedMoveAttacker(newSelectedSecondChargedMoveAttacker);
     setAttackerStats(newAttackerStats);
     setBonusAttacker(newBonusAttacker);
   };
@@ -174,6 +180,7 @@ export default function Home() {
       const newAttackingPokemon = Array.from({ length: numMembers }, (_, i) => {attackingPokemon[i] ? attackingPokemon[i] : null});
       const newSelectedQuickMoveAttacker = Array.from({ length: numMembers }, (_, i) => {selectedQuickMoveAttacker[i] ? selectedQuickMoveAttacker[i] : null});
       const newSelectedChargedMoveAttacker = Array.from({ length: numMembers }, (_, i) => {selectedChargedMoveAttacker[i] ? selectedChargedMoveAttacker[i] : null});
+      const newSelectedSecondChargedMoveAttacker = Array.from({ length: numMembers }, (_, i) => {selectedSecondChargedMoveAttacker[i] ? selectedSecondChargedMoveAttacker[i] : null});
       const newAttackerStats = Array.from({ length: numMembers }, (_, i) => attackerStats[i]);
       const newBonusAttacker = Array.from({ length: numMembers }, (_, i) => bonusAttacker[i]);
       const newUrlParams = new URLSearchParams(window.location.search);
@@ -231,6 +238,7 @@ export default function Home() {
         const attackerParam = searchParams.get(`attacker${i}`);
         const quickMoveParam = searchParams.get(`attacker_fast_attack${i}`);
         const chargedMoveParam = searchParams.get(`attacker_cinematic_attack${i}`);
+        const secondChargedMoveParam = searchParams.get(`attacker_cinematic_attack${i}_2`);
         const statsParam = searchParams.get(`attacker_stats${i}`);
         const bonusParam = searchParams.get(`attacker_bonuses${i}`);
         const megaLevelParam = searchParams.get(`attacker_mega_level${i}`);
@@ -251,6 +259,11 @@ export default function Home() {
           chargedMove.moveId = chargedMoveParam;
           newSelectedChargedMoveAttacker[i - 1] = chargedMove;
         }
+        if (secondChargedMoveParam) {
+          let secondChargedMove = PoGoAPI.getMovePBByID(secondChargedMoveParam, allMoves);
+          secondChargedMove.moveId = secondChargedMoveParam;
+          newSelectedSecondChargedMoveAttacker[i - 1] = secondChargedMove;
+        }
         if (statsParam) {
           newAttackerStats[i - 1] = statsParam.split(",").map((stat: string) => parseFloat(stat));
         }
@@ -264,6 +277,7 @@ export default function Home() {
       setAttackingPokemon(newAttackingPokemon);
       setSelectedQuickMoveAttacker(newSelectedQuickMoveAttacker);
       setSelectedChargedMoveAttacker(newSelectedChargedMoveAttacker);
+      setSelectedSecondChargedMoveAttacker(newSelectedSecondChargedMoveAttacker);
       setAttackerStats(newAttackerStats);
       setBonusAttacker(newBonusAttacker);
       setMegaLevel(newMegaLevel);
@@ -357,6 +371,15 @@ export default function Home() {
       setSelectedChargedMoveAttacker(newChargedMoveList);
       newSearchParams.delete(`attacker_cinematic_attack${slot}`);
 
+      const newSecondChargedMoveList = selectedSecondChargedMoveAttacker.map((move, index) => {
+        if (index === slot - 1) {
+          return null;
+        }
+        return move;
+      });
+      setSelectedSecondChargedMoveAttacker(newSecondChargedMoveList);
+      newSearchParams.delete(`attacker_cinematic_attack${slot}_2`);
+
       const newAttackerStatsList = attackerStats.map((stats, index) => {
         if (index === slot - 1) {
           return [50, 15, 15, 15];
@@ -418,15 +441,23 @@ export default function Home() {
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
 
-  const handleChargedMoveSelectAttacker = (moveId: string, move: any, slot: any) => {
+  const handleChargedMoveSelectAttacker = (moveId: string, move: any, slot: any, isSecond: boolean = false) => {
     const normalizedMove = move ?? null;
-    setSelectedChargedMoveAttacker((prev) => prev.map((m, index) => (index === slot - 1 ? normalizedMove : m)));
-
     const newSearchParams = new URLSearchParams(window.location.search);
-    if (moveId && moveId !== "") {
-      newSearchParams.set(`attacker_cinematic_attack${slot}`, moveId);
+    if (isSecond) {
+      setSelectedSecondChargedMoveAttacker((prev) => prev.map((m, index) => (index === slot - 1 ? normalizedMove : m)));
+      if (moveId && moveId !== "") {
+        newSearchParams.set(`attacker_cinematic_attack${slot+"_2"}`, moveId);
+      } else {
+        newSearchParams.delete(`attacker_cinematic_attack${slot+"_2"}`);
+      }
     } else {
-      newSearchParams.delete(`attacker_cinematic_attack${slot}`);
+      setSelectedChargedMoveAttacker((prev) => prev.map((m, index) => (index === slot - 1 ? normalizedMove : m)));
+      if (moveId && moveId !== "") {
+        newSearchParams.set(`attacker_cinematic_attack${slot}`, moveId);
+      } else {
+        newSearchParams.delete(`attacker_cinematic_attack${slot}`);
+      }
     }
     window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
   };
@@ -667,6 +698,7 @@ export default function Home() {
                 onSelect={(pokemon) => handleAttackerSelect(pokemon, slotIndex + 1)}
                 onQuickMoveSelect={handleQuickMoveSelectAttacker}
                 onChargedMoveSelect={handleChargedMoveSelectAttacker}
+                onSecondChargedMoveSelect={handleChargedMoveSelectAttacker}
                 onChangedStats={handleChangedStatsAttacker}
                 onChangedMegaLevel={handleChangedMegaLevelAttacker}
                 onBonusChange={handleBonusChangeAttacker}
@@ -676,6 +708,7 @@ export default function Home() {
                     attacker: attackingPokemon[slotIndex],
                     quickMove: selectedQuickMoveAttacker[slotIndex],
                     chargedMove: selectedChargedMoveAttacker[slotIndex],
+                    secondChargedMove: selectedSecondChargedMoveAttacker[slotIndex],
                     attackerStats: attackerStats[slotIndex],
                     bonusAttacker: bonusAttacker[slotIndex],
                     megalevel: megaLevel[slotIndex]
@@ -711,6 +744,7 @@ export default function Home() {
               onSelect={handleDefenderSelect}
               onQuickMoveSelect={handleQuickMoveSelectDefender}
               onChargedMoveSelect={handleChargedMoveSelectDefender}
+              onSecondChargedMoveSelect={handleChargedMoveSelectDefender}
               onChangedStats={handleChangedStatsDefender}
               onChangedMegaLevel={handleChangedMegaLevelDefender}
               onBonusChange={handleBonusChangeDefender}
@@ -840,6 +874,26 @@ export default function Home() {
                 simplifyCalculationText={simpleMode}
               />
             </CardContent>
+            {selectedSecondChargedMoveAttacker[selectedPokemonSlot-1] != null && (
+              <CardContent>
+              <CardDescription> Damage dealt per Second Charged Attack</CardDescription>
+              <CalculateButton 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon[selectedPokemonSlot-1]} 
+                defender={defendingPokemon} 
+                move={selectedSecondChargedMoveAttacker[selectedPokemonSlot-1]}
+                attackerStats={attackerStats[selectedPokemonSlot-1]}
+                defenderStats={defenderStats}
+                bonusAttacker={bonusAttacker[selectedPokemonSlot-1]}
+                bonusDefender={bonusDefender}
+                raidMode={raidMode}
+                additionalBonus={megaBoost}
+                bladeBoost={advEffect === "blade"}
+                dynamicBoost={advEffect === "dynamic"}
+                simplifyCalculationText={simpleMode}
+              />
+            </CardContent>
+            )}
             <CardContent>
               <CardDescription> Damage received from Fast Attack</CardDescription>
               <CalculateButtonMaxBoss
@@ -915,6 +969,7 @@ export default function Home() {
                   defender={defendingPokemon}
                   quickMove={selectedQuickMoveAttacker}
                   chargedMove={selectedChargedMoveAttacker}
+                  secondChargedMove={selectedSecondChargedMoveAttacker}
                   defenderQuickMove={selectedQuickMoveDefender}
                   defenderChargedMove={selectedChargedMoveDefender}
                   attackerStats={attackerStats}

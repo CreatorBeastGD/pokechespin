@@ -32,12 +32,17 @@ export function PokebattlerImage({
             <p className="absolute bottom-0 right-0 bg-black text-white text-xxs py-1 px-2 rounded">
                 {resolvedPokemonData.stats.atk}/{resolvedPokemonData.stats.def}/{resolvedPokemonData.stats.hp}
             </p>
-            <p className="absolute bottom-8 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
+            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "11" : "8")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.fastAttackId, allMoves)).moveId)}
             </p>
-            <p className="absolute bottom-5 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
+            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "8" : "5")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.chargedAttackId, allMoves)).moveId)}
             </p>
+            {resolvedPokemonData.secondChargedAttackId && (
+                <p className="absolute bottom-5 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
+                    {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.secondChargedAttackId, allMoves)).moveId)}
+                </p>
+            )}
             {PoGoAPI.IsGigantamax(resolvedPokemonData.highestMegaForm == "" ? resolvedPokemonData.pokemonId : resolvedPokemonData.highestMegaForm) ? (
                 <Image
                 unoptimized

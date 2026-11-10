@@ -20,6 +20,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   defender,
   quickMove,
   chargedMove,
+  secondChargedMove,
   largeAttack,
   targetAttack,
   attackerStats,
@@ -37,6 +38,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   defender: any;
   quickMove: any;
   chargedMove: any;
+  secondChargedMove: any;
   largeAttack: any;
   targetAttack: any;
   attackerStats: any;
@@ -115,7 +117,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
     //console.log("Changed dependencies")
 
-  }, [attacker, defender, quickMove, chargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, maxMoves, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
+  }, [attacker, defender, quickMove, chargedMove, secondChargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, maxMoves, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
 
   const getHealthBarColor = (healthPercent: number) => {
     if (healthPercent > 50) {
@@ -154,7 +156,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         "init",
         null,
         types,
-        allMoves
+        allMoves,
+        secondChargedMove
       )
     
     setPreviousSteps([]);
@@ -166,7 +169,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   };
 
   const SendMessage = async (message: string) => {
-    if (message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
+    const activeIndex = gameStatus!.activeAllyIndex;
+    const selectedChargedMove = message === "charged2" ? secondChargedMove[activeIndex] : chargedMove[activeIndex];
+    if ((message === "charged" || message === "charged2") &&
+        (!selectedChargedMove || gameStatus!.allyEnergy[activeIndex] < -selectedChargedMove.energyDelta)) return;
     
       const prevGameStatus = structuredClone(gameStatus);
     
@@ -191,7 +197,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         message,
         gameStatus,
         types,
-        allMoves
+        allMoves,
+        secondChargedMove
       )
       setPreviousSteps((prev) => [...prev, prevGameStatus].slice(-20));
       setGameStatus(newState);
@@ -316,7 +323,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             <div className="flex flex-row justify-between items-end space-x-4">
               <div className="w-[50%]">
                 <label className="text-xs items-end">Energy: {gameStatus?.allyEnergy[gameStatus!.activeAllyIndex]}/100</label>
-                <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+                <div className="flex flex-col space-y-1">
+                  <Progress separators={Math.floor(100/(-chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].energyDelta))} color={"type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>
+                  {secondChargedMove[gameStatus!.activeAllyIndex] && <Progress separators={Math.floor(100/(-secondChargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].energyDelta))} color={"type-" + PoGoAPI.formatTypeName(secondChargedMove[gameStatus!.activeAllyIndex == 3 ? 0 : gameStatus!.activeAllyIndex].type).toLowerCase()} value={(gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] / 100) * 100} className="w-full"/>}
+                </div>
               </div>
               <div className="w-[50%]">
                 <label className="text-xs items-end">Shields: {gameStatus?.allyPokemonShields[gameStatus!.activeAllyIndex]}/{gameStatus?.allyPokemonMaxShields[gameStatus!.activeAllyIndex]}</label>
@@ -336,6 +346,11 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
                 <Separator className="my-4"/>
                 <Button onClick={() => SendMessage("fast")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(quickMove[gameStatus!.activeAllyIndex].type).toLowerCase()}>{PoGoAPI.formatMoveName(quickMove[gameStatus.activeAllyIndex].moveId)}</Button>
                 <Button onClick={() => SendMessage("charged")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(chargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()}>{PoGoAPI.formatMoveName(chargedMove[gameStatus.activeAllyIndex].moveId)}</Button>
+                {secondChargedMove[gameStatus!.activeAllyIndex] && (
+                  <Button onClick={() => SendMessage("charged2")} className={"w-full py-2 text-white bg-primary rounded-lg type-" + PoGoAPI.formatTypeName(secondChargedMove[gameStatus!.activeAllyIndex].type).toLowerCase()}>
+                    {PoGoAPI.formatMoveName(secondChargedMove[gameStatus.activeAllyIndex].moveId)}
+                  </Button>
+                )}
                 <Separator className="my-4"/>
                 <div className="flex flex-row justify-center items-center space-x-2">
                   <Button onClick={() => SendMessage("dodgeleft")} className="w-full py-2 text-white bg-primary rounded-lg">{"← Dodge"}</Button>

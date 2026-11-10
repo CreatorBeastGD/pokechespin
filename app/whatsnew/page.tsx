@@ -16,6 +16,17 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.45 (Double Charged Moves!)",
+        desc: "+ Added the ability to select a second charged move for your Pokémon on PokéChespin for Raids and PokéChespin for Max Battles!\n"+
+                ">>>>>> This allows you to select a second charged move and use it on Solo Raid Simulations, Solo Max Battle Simulations, calculations and more\n"+
+                ">>>>>> This functionallity is completely supported with importing and exporting with JSON files and from your PokéBox fron PokeBattler!\n"+
+                " The following functionallities don't have Double Charged Move support, but will be added later:\n"+
+                " >>>>>> - Breakpoints page, both for Raids and Max Battles. (only the first charged move will show)\n"+
+                " >>>>>> - Automatic Raid automatic simulators. (only the first charged move will be used)\n"+
+                " As of right now, this functionallity is pretty experimental, so there may be some errors about this. Hopefully there aren't any, but if you find something, feel free to contact me!\n",
+        date: "2026-11-10"
+    },
+    {
         title: "v1.44.2.1",
         desc: "+ Separated the 'Custom AE Boost' config into 2 configs. One of them affects only the Adventure Effects, while the other enables the config to affect their respective moves according to how they affected them on Max Finale.",
         date: "2026-11-10",
