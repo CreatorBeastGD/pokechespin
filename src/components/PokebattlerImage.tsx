@@ -25,21 +25,21 @@ export function PokebattlerImage({
             <p className="absolute top-8 left-0 bg-black text-white text-xxxs py-1 px-2 rounded-br-lg">
                 {resolvedPokemonData.customName}
             </p>
-
+            <p className="absolute bottom-4 left-0 bg-black text-white text-xxs py-1 px-2 rounded">
+                {resolvedPokemonData.stats.atk}/{resolvedPokemonData.stats.def}/{resolvedPokemonData.stats.hp}
+            </p>
             <p className="absolute bottom-0 left-0 bg-black text-white text-tiny py-1 px-2 rounded">
                 Lv. {resolvedPokemonData.stats.level} 
             </p>
-            <p className="absolute bottom-0 right-0 bg-black text-white text-xxs py-1 px-2 rounded">
-                {resolvedPokemonData.stats.atk}/{resolvedPokemonData.stats.def}/{resolvedPokemonData.stats.hp}
-            </p>
-            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "11" : "8")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
+            
+            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "8" : "5")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.fastAttackId, allMoves)).moveId)}
             </p>
-            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "8" : "5")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
+            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "5" : "2")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.chargedAttackId, allMoves)).moveId)}
             </p>
             {resolvedPokemonData.secondChargedAttackId && (
-                <p className="absolute bottom-5 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
+                <p className="absolute bottom-2 right-0 bg-black text-white text-xxxs py-1 px-2 rounded">
                     {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.secondChargedAttackId, allMoves)).moveId)}
                 </p>
             )}
@@ -51,7 +51,7 @@ export function PokebattlerImage({
                 width={20}
                 height={20}
                 style={{ objectFit: 'scale-down', width: '20px', height: '20px' }}
-                className="absolute bottom-6 left-1"
+                className="absolute bottom-10 left-1"
             />
             ) : resolvedPokemonData.isDynamax ? (
                 <Image
@@ -61,7 +61,7 @@ export function PokebattlerImage({
                 width={20}
                 height={20}
                 style={{ objectFit: 'scale-down', width: '20px', height: '20px' }}
-                className="absolute bottom-6 left-1"
+                className="absolute bottom-10 left-1"
             />
             ) : null}
             <Image
