@@ -32,10 +32,10 @@ export function PokebattlerImage({
                 Lv. {resolvedPokemonData.stats.level} 
             </p>
             
-            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "8" : "5")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
+            <p className={"absolute bottom-8 right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.fastAttackId, allMoves)).moveId)}
             </p>
-            <p className={"absolute bottom-"+(resolvedPokemonData.secondChargedAttackId ? "5" : "2")+" right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
+            <p className={"absolute bottom-5 right-0 bg-black text-white text-xxxs py-1 px-2 rounded"}>
                 {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(resolvedPokemonData.chargedAttackId, allMoves)).moveId)}
             </p>
             {resolvedPokemonData.secondChargedAttackId && (
