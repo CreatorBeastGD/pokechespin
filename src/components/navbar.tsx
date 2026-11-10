@@ -25,6 +25,7 @@ const Navbar = () => {
 
     let [doubleFriendshipBonus, setDoubleFriendshipBonus] = useState(false);
     let [customBladeBoostAmount, setCustomBladeBoostAmount] = useState(0.1);
+    let [bladeBoostAffectsMoves, setBladeBoostAffectsMoves] = useState(false);
     let [showAllPokemonAsShiny, setShowAllPokemonAsShiny] = useState(false);
     let [showAllGmax, setShowAllGmax] = useState(false);
     let [customPokemonToRankings, setCustomPokemonToRankings] = useState("");
@@ -72,6 +73,13 @@ const Navbar = () => {
         const maxOrbBoostStorage = localStorage.getItem("maxOrbBoost");
         const pokeboxIDStorage = localStorage.getItem("pokeboxId");
         const usePokeboxOnRankingsStorage = localStorage.getItem("usePokeboxOnRankings");
+        const customBladeBoostAffectsMovesStorage = localStorage.getItem("customBladeBoostAffectsMoves");
+
+        if (customBladeBoostAffectsMovesStorage) {
+            setBladeBoostAffectsMoves(customBladeBoostAffectsMovesStorage === "true");
+        } else {
+            localStorage.setItem("customBladeBoostAffectsMoves", "false");
+        }
 
         if (usePokeboxOnRankingsStorage) {
             setUsePokeboxOnRankings(usePokeboxOnRankingsStorage === "true");
@@ -255,6 +263,7 @@ const Navbar = () => {
         localStorage.setItem("pokeboxId", pokeboxID);
         localStorage.setItem("usePokeboxOnRankings", usePokeboxOnRankings.toString());
         localStorage.setItem("maxOrbBoost", maxOrbBoost);
+        localStorage.setItem("customBladeBoostAffectsMoves", bladeBoostAffectsMoves.toString());
         // reload page
         window.location.reload();
     }
@@ -280,6 +289,7 @@ const Navbar = () => {
         setPokeboxID("");
         setUsePokeboxOnRankings(false);
         setMaxOrbBoost("x1");
+        setBladeBoostAffectsMoves(false);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -304,6 +314,7 @@ const Navbar = () => {
         localStorage.setItem("pokeboxId", "");
         localStorage.setItem("usePokeboxOnRankings", "false");
         localStorage.setItem("maxOrbBoost", "x1");
+        localStorage.setItem("customBladeBoostAffectsMoves", "false");
         // reload page
         window.location.reload();
     }
@@ -460,6 +471,15 @@ const Navbar = () => {
                                     The first value (++) will be used on Raids, while the second value (+) will be used on Max Battles.
                                 </SheetDescription>
                             </div>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Custom AE Boost affects respective moves.</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={bladeBoostAffectsMoves} onChange={(e) => setBladeBoostAffectsMoves(e.target.checked)} type="checkbox" id="bladeBoostAffectsMoves" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Makes the Custom AE Boost affect their respective moves (Zacian's Behemoth Blade and Zamazenta's Behemoth Bash).
+                                    </p>
+                                </div>
+                            </div>  
                             <div className="flex flex-col w-full">
                                 <label htmlFor="maxOrbBoost" className="text-sm">Max Orb Multiplier</label>
                                 <select value={maxOrbBoost} onChange={(e) => setMaxOrbBoost(e.target.value)} id="maxOrbBoost" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-primary focus:border-primary block w-full p-2.5">

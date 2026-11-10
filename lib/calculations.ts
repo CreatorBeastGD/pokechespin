@@ -743,6 +743,10 @@ export class Calculator {
     }
 
       static GetDuggoAttackBoost() {
+        const canBenefitFromBoost = localStorage.getItem("customBladeBoostAffectsMoves") === "true";
+        if (!canBenefitFromBoost) {
+          return 1;
+        }
         const customBoost = localStorage.getItem("customBladeBoostAmount");
         if (customBoost && parseFloat(customBoost) > 0) {
           switch (customBoost) {
