@@ -741,8 +741,8 @@ export class Calculator {
       static DynamicBoost(raidMode: any): any {
         return 1.15;
     }
-
-      static GetDuggoAttackBoost() {
+    // This is a function exclusively used for the the moves.
+     static GetDuggoAttackBoost() {
         const canBenefitFromBoost = localStorage.getItem("customBladeBoostAffectsMoves") === "true";
         if (!canBenefitFromBoost) {
           return 1;

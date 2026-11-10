@@ -16,6 +16,11 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.44.2.1",
+        desc: "+ Separated the 'Custom AE Boost' config into 2 configs. One of them affects only the Adventure Effects, while the other enables the config to affect their respective moves according to how they affected them on Max Finale.",
+        date: "2026-11-10",
+    },
+    {
         title: "v1.44.2",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Meltan, Melmetal.\n"+
