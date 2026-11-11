@@ -133,7 +133,7 @@ export default function Home() {
             searchParams.delete(`attacker_stats${j}`);
             searchParams.delete(`attacker_bonuses${j}`);
         }
-        window.history.replaceState({}, "", `${window.location.pathname}?${searchParams.toString()}`);
+        PoGoAPI.updateSearchParams(searchParams);
       }, 1);
     }, [numMembers]);
 
@@ -231,7 +231,7 @@ export default function Home() {
         }
 
         setTimeout(() => {
-          window.history.replaceState({}, "", `${window.location.pathname}?${newUrlParams.toString()}`);
+          PoGoAPI.updateSearchParams(newUrlParams);
         }, 1);
       
       for (let i = 1; i <= numMembers; i++) {
@@ -396,7 +396,7 @@ export default function Home() {
       setBonusAttacker(newBonusAttackerList);
       newSearchParams.delete(`attacker_bonuses${slot}`);
 
-      window.history.replaceState({}, "", `${window.location.pathname}?${newSearchParams}`);
+      PoGoAPI.updateSearchParams(newSearchParams);
       setTimeout(() => {
         setCleared(true);
       }, 100);
@@ -960,25 +960,7 @@ export default function Home() {
                 allTypes={types}
                 />
             </CardContent>
-            <CardContent>
-              <CardDescription> StatusSim</CardDescription>
-              <CalculateButtonMultiSimulateAdvanced 
-                allEnglishText={allEnglishText}
-                attacker={attackingPokemon} 
-                defender={defendingPokemon} 
-                quickMove={selectedQuickMoveAttacker} 
-                chargedMove={selectedChargedMoveAttacker}
-                quickMoveDefender={selectedQuickMoveDefender}
-                chargedMoveDefender={selectedChargedMoveDefender}
-                attackerStats={attackerStats}
-                defenderStats={defenderStats}
-                raidMode={raidMode}
-                bonusAttacker={bonusAttacker}
-                bonusDefender={bonusDefender}
-                boost={advEffect}
-                allTypes={types}
-                />
-            </CardContent>
+            
             <CardContent>
               <CardDescription> Play Raid simulation (one player only)</CardDescription>
               <CalculateButtonSimulateTurnBased
