@@ -237,14 +237,14 @@ export default function CalculateButtonMultiSimulateAdvanced({
     setPartyPower(partyPower);
     setEnergyResolveBug(energyResolveBug);
     
-    const sp = new URLSearchParams(searchParams.toString());
+    const sp = new URLSearchParams(window.location.search);
     sp.set("can_dodge", avoidCharged.toString());
     sp.set("pokemon_team_number", teamCount.toString());
     sp.set("relobby_time", relobbyTime.toString());
     sp.set("teams_number", peopleCount.toString());
     sp.set("party_power", partyPower.toString());
     sp.set("energy_resolve_bug", energyResolveBug.toString());
-    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
+    PoGoAPI.updateSearchParams(sp, pathname);
     
     setTime(0);
     setQau(0);

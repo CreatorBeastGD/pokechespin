@@ -10,7 +10,7 @@ import { Progress } from "./ui/progress";
 import { Slider } from "./ui/slider";
 import { Switch } from "./ui/switch";
 import { Calculator } from "../../lib/calculations";
-import { useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { clear } from "console";
 import TypeBadge from "./TypeBadge";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -83,7 +83,6 @@ export default function SearchBarAttackerDynamax({
 
   const [showWeaknesses, setShowWeaknesses] = useState<boolean>(false);
   
-  const searchParams = useSearchParams();
   const pathname = usePathname();
   const initialLoad = useRef(false);
   const importingFromPokebox = useRef(false);
@@ -107,9 +106,9 @@ export default function SearchBarAttackerDynamax({
     setMaxMoves(maxMoves);
     onChangedMaxMoveStats(maxMoves, member, number);
     if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
   }
 
@@ -120,13 +119,13 @@ export default function SearchBarAttackerDynamax({
       setTimeout(() => {
         if (moveId !== "") {
           //console.log("attacker_fast_attack"+member+""+number);
-          const newSearchParams = new URLSearchParams(searchParams.toString());
+          const newSearchParams = new URLSearchParams(window.location.search);
           newSearchParams.set("attacker_fast_attack"+member+""+number, moveId);
-          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+          PoGoAPI.updateSearchParams(newSearchParams, pathname);
         } else {
-          const newSearchParams = new URLSearchParams(searchParams.toString());
+          const newSearchParams = new URLSearchParams(window.location.search);
           newSearchParams.delete("attacker_fast_attack"+member+""+number);
-          window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+          PoGoAPI.updateSearchParams(newSearchParams, pathname);
         }
       }, 1);
     }
@@ -143,13 +142,13 @@ export default function SearchBarAttackerDynamax({
       //console.log(moveId);
       setTimeout(() => {
         const key = `attacker_cinematic_attack${member}${number}${isSecond ? "_2" : ""}`;
-        const newSearchParams = new URLSearchParams(searchParams.toString());
+        const newSearchParams = new URLSearchParams(window.location.search);
         if (moveId !== "") {
           newSearchParams.set(key, moveId);
         } else {
           newSearchParams.delete(key);
         }
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
       }, 1);
     }
   }
@@ -158,9 +157,9 @@ export default function SearchBarAttackerDynamax({
     setStats(stats);
     onChangedStats(stats, member, number);
     if (write) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
   }
   
@@ -168,18 +167,18 @@ export default function SearchBarAttackerDynamax({
     if (importingFromPokebox.current) return;
     onChangedMaxMoveStats(maxMoves, member, number);
     
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("attacker_max_moves"+member+""+number, maxMoves.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }, [maxMoves]);
 
   useEffect(() => {
     if (importingFromPokebox.current) return;
     onChangedStats(stats, member, number);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("attacker_stats"+member+""+number, stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }, [stats]);
   
   useEffect(() => {
@@ -205,9 +204,9 @@ export default function SearchBarAttackerDynamax({
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM") && !p.pokemonId.endsWith("_S_FORM")));
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     } finally {
       setLoading(false);
     }
@@ -234,11 +233,11 @@ export default function SearchBarAttackerDynamax({
       }
       setAvailableForms(allForms);// Construir nueva URL
       setTimeout(() => {
-        const newSearchParams = new URLSearchParams(searchParams.toString());
+        const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
         newSearchParams.delete("attacker_fast_attack"+member+""+number);
         newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
       }, 1);
     } finally {
       setLoading(false);
@@ -256,11 +255,11 @@ export default function SearchBarAttackerDynamax({
       setPokemonData(response);
       onSelect(response, member, number);
       setTimeout(() => {
-        const newSearchParams = new URLSearchParams(searchParams.toString());
+        const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("attacker"+member+""+number, response?.pokemonId);
         newSearchParams.delete("attacker_fast_attack"+member+""+number);
         newSearchParams.delete("attacker_cinematic_attack"+member+""+number);  
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
       }, 1);
     } finally {
       setLoading(false);
@@ -428,8 +427,7 @@ export default function SearchBarAttackerDynamax({
           urlParams.delete(secondChargedMoveKey);
         }
 
-        const newUrl = `${pathname}?${urlParams.toString()}`;
-        window.history.replaceState({}, "", newUrl);
+        PoGoAPI.updateSearchParams(urlParams, pathname);
 
         setTimeout(() => {
           onClickedImportButton();
@@ -525,8 +523,7 @@ const importPokemon = async () => {
                           setSelectedChargedMove(data.chargedMove);
                           setSelectedSecondChargedMove(data.secondChargedMove ?? null);
 
-                          const newUrl = `${pathname}?${urlParams.toString()}`;
-                          window.history.replaceState({}, '', newUrl);
+                          PoGoAPI.updateSearchParams(urlParams, pathname);
                           
                           setTimeout(() => {
                             onClickedImportButton();

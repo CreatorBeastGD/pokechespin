@@ -119,7 +119,7 @@ const BreakpointsPage = () => {
                 setParamsLoaded(true);
             }
 
-            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+            PoGoAPI.updateSearchParams(urlParams);
             
         }
       }, [allDataLoaded]);

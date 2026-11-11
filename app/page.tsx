@@ -438,7 +438,7 @@ export default function Home() {
     } else {
       newSearchParams.delete(`attacker_fast_attack${slot}`);
     }
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   };
 
   const handleChargedMoveSelectAttacker = (moveId: string, move: any, slot: any, isSecond: boolean = false) => {
@@ -459,7 +459,7 @@ export default function Home() {
         newSearchParams.delete(`attacker_cinematic_attack${slot}`);
       }
     }
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   };
 
   const handleQuickMoveSelectDefender = (moveId: string, move: any) => {
@@ -471,7 +471,7 @@ export default function Home() {
     } else {
       newSearchParams.delete("defender_fast_attack");
     }
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   };
 
   const handleChargedMoveSelectDefender = (moveId: string, move: any) => {
@@ -483,7 +483,7 @@ export default function Home() {
     } else {
       newSearchParams.delete("defender_cinematic_attack");
     }
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   };
 
   const handleChangedStatsAttacker = (stats: any, slot: any) => {
@@ -495,9 +495,9 @@ export default function Home() {
     setAttackerStats(newAttackerStats);
 
     setTimeout(() => {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set(`attacker_stats${slot}`, stats.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }, 1);
   };
 
@@ -511,9 +511,9 @@ export default function Home() {
     setMegaLevel(newMegaLevel);
 
     setTimeout(() => {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set(`attacker_mega_level${slot}`, level.toString());
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }, 1);
   }
 
@@ -525,9 +525,9 @@ export default function Home() {
     setDefenderStats(stats);
 
     setTimeout(() => {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("defender_stats", stats.join(","));
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }, 1);
   };
 
@@ -550,38 +550,38 @@ export default function Home() {
     });
     setBonusAttacker(newBonusAttacker);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("weather", value);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("raid_mode", event.target.value);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   const handleAdvEffectChange = (value: string) => {
     setAdvEffect(value);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("adv_effect", value);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   const handleMegaBoostChange = (value: number) => {
     setMegaBoost(value);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("mega_boost", value.toString());
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   const handleFriendshipChange = (value: number) => {
     setFriendship(value);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     let weather = newSearchParams.get("weather") || "EXTREME";
 
     let newBonusAttacker = bonusAttacker.map((b, index) => {
@@ -590,7 +590,7 @@ export default function Home() {
     setBonusAttacker(newBonusAttacker);
 
     newSearchParams.set("friendship", value.toString());
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
     
   }
 
@@ -960,7 +960,25 @@ export default function Home() {
                 allTypes={types}
                 />
             </CardContent>
-            
+            <CardContent>
+              <CardDescription> StatusSim</CardDescription>
+              <CalculateButtonMultiSimulateAdvanced 
+                allEnglishText={allEnglishText}
+                attacker={attackingPokemon} 
+                defender={defendingPokemon} 
+                quickMove={selectedQuickMoveAttacker} 
+                chargedMove={selectedChargedMoveAttacker}
+                quickMoveDefender={selectedQuickMoveDefender}
+                chargedMoveDefender={selectedChargedMoveDefender}
+                attackerStats={attackerStats}
+                defenderStats={defenderStats}
+                raidMode={raidMode}
+                bonusAttacker={bonusAttacker}
+                bonusDefender={bonusDefender}
+                boost={advEffect}
+                allTypes={types}
+                />
+            </CardContent>
             <CardContent>
               <CardDescription> Play Raid simulation (one player only)</CardDescription>
               <CalculateButtonSimulateTurnBased

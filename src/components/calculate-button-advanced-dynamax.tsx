@@ -207,13 +207,13 @@ export default function CalculateButtonSimulateAdvancedDynamax({
 
     setStrategy(strategy);
     
-    const sp = new URLSearchParams(searchParams.toString());
+    const sp = new URLSearchParams(window.location.search);
     sp.set("strategy", strategy.join(","));
     sp.set("shroom", shroom.join(","));
     sp.set("friendship", friendship.join(","));
     sp.set("adv_effect", advEffect.join(","));
     sp.set("prioritise_energy", prioritiseEnergy.toString());
-    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
+    PoGoAPI.updateSearchParams(sp, pathname);
     
     setTime(0);
     setQau(0);
@@ -235,7 +235,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     if (value[0] > 15) value[0] = 15;
     sethelperBonus(value[0]);
 
-    const sp = new URLSearchParams(searchParams.toString());
+    const sp = new URLSearchParams(window.location.search);
     sp.set("helper_bonus", value[0].toString());
 
     setTime(0);
@@ -244,7 +244,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
     setGraphic(null);
     setAttackerDamage(attacker.map(() => [0,0,0]));
 
-    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
+    PoGoAPI.updateSearchParams(sp, pathname);
   }
 
   const handleStrategyChange = (index: number, value: string) => {

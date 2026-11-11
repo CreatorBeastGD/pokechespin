@@ -102,7 +102,7 @@ export default function Home() {
           searchParams.delete(`attacker_max_moves${j}${i}`);
         }
       }
-      window.history.replaceState({}, "", `${window.location.pathname}?${searchParams.toString()}`);
+      PoGoAPI.updateSearchParams(searchParams);
     }, 1);
   }, [numMembers]);
 
@@ -196,7 +196,7 @@ export default function Home() {
 
       newUrlParams.delete('member');
       newUrlParams.delete('slot');
-      window.history.replaceState({}, '', `${window.location.pathname}?${newUrlParams}`);
+      PoGoAPI.updateSearchParams(newUrlParams);
       
       for (let i = 1; i <= numMembers; i++) {
         for (let j = 1; j <= 3; j++) {
@@ -388,7 +388,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       );
       setMaxMoves(newMaxMoveList);
       newSearchParams.delete(`attacker_max_moves${member}${slot}`);
-      window.history.replaceState({}, "", `${window.location.pathname}?${newSearchParams}`);
+      PoGoAPI.updateSearchParams(newSearchParams);
       
       setTimeout(() => {
         setCleared(true);
@@ -454,12 +454,12 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
     setCustomAtkMult(atkMult);
     setCustomEnergyGainMult(energyGainMult);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("custom_hp", HP.toString());
     newSearchParams.set("custom_cpm", CPM.toString());
     newSearchParams.set("custom_atk_mult", atkMult.toString());
     newSearchParams.set("custom_energy_gain_mult", energyGainMult.toString());
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
 
   }
   
@@ -467,9 +467,9 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
   const handleWeatherSelect = (weatherBoost: any) => {
     setWeather(weatherBoost);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("weather", weatherBoost);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
 
     setBonusAttacker(Array(4).fill(Array(3).fill([weatherBoost, false, false, 0])))
     
@@ -513,7 +513,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
       } else {
         newSearchParams.delete(key);
       }
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
   };
 
@@ -561,9 +561,9 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
   const handleSwitch = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRaidMode(event.target.value);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("raid_mode", event.target.value);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   const raidSurname = (raidMode: string) => {

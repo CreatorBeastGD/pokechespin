@@ -170,7 +170,7 @@ export default function rankingsPage() {
                 setBestDefenders(bestDefenders);
                 urlSP.delete("member");
                 urlSP.delete("slot");
-                window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                PoGoAPI.updateSearchParams(urlSP);
                 load=true;
                 
             }
@@ -211,7 +211,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("show_counters", showing.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const toggleShowingEPT = (showing: boolean) => {
@@ -220,7 +220,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("order_by_bulk", showing.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const toggleShowAllAttackers = () => {
@@ -293,7 +293,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, checked.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
 
         setTimeout(() => {
             defenderList?.sort((a: any, b: any) => {
@@ -316,7 +316,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, value.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     function handleTypeChange(value: string): void {
@@ -324,7 +324,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("current_type", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
         const bestAttackers = PoGoAPI.GetBestAttackersDynamaxType(value, pokemonList, dmaxPokemon, allMoves, types, weather, dCannon);
         setBestAttackers(bestAttackers);
         const bestAttackersNonDCannon = PoGoAPI.GetBestAttackersDynamaxType(value, pokemonList, dmaxPokemon, allMoves, types, weather, false);
@@ -344,7 +344,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("weather", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
         
         const bestAttackers = PoGoAPI.GetBestAttackersDynamaxType(currentType, pokemonList, dmaxPokemon, allMoves, types, value, dCannon);
         setBestAttackers(bestAttackers);

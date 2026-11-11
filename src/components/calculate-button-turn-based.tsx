@@ -224,21 +224,21 @@ export default function CalculateButtonSimulateTurnBased({
   const handleSwitch = (checked: boolean, handle: any) => {
     handle(checked);
     if (checked) {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("energy_resolve_bug", "true");
-      window.history.replaceState(null, "", "?" + newSearchParams.toString());
+      PoGoAPI.updateSearchParams(newSearchParams);
     } else {
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("energy_resolve_bug", "false");
-      window.history.replaceState(null, "", "?" + newSearchParams.toString());
+      PoGoAPI.updateSearchParams(newSearchParams);
     }
   }
 
   const handleRelobbyTime = (value: number) => {
     setRelobbyTime(value);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("relobby_time", value.toString());
-    window.history.replaceState(null, "", "?" + newSearchParams.toString());
+    PoGoAPI.updateSearchParams(newSearchParams);
   }
 
   const simulationWon = Boolean(

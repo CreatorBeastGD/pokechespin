@@ -248,7 +248,7 @@ export default function rankingsPage() {
                     setGeneralBestDefenders(bestGeneralDefenders);
                     urlSP.delete("member");
                     urlSP.delete("slot");
-                    window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    PoGoAPI.updateSearchParams(urlSP);
                     const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
                     setPokeboxReadyAndShowing(showingBox);
                     load=true;
@@ -262,7 +262,7 @@ export default function rankingsPage() {
                     setShowGeneralBestDefenders(true);
                     urlSP.delete("member");
                     urlSP.delete("slot");
-                    window.history.replaceState({}, "", `${window.location.pathname}?${urlSP}`);
+                    PoGoAPI.updateSearchParams(urlSP);
                     const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
                     setPokeboxReadyAndShowing(showingBox);
                     load=true;
@@ -329,7 +329,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("general", showGeneralBestDefenders ? "false" : "true");
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const toggleSortByEPT = () => {
@@ -338,7 +338,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("order_by_bulk", sortByEPT ? "true" : "false");
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const TankScorePenalization = (defender: any): number => {
@@ -427,7 +427,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, checked.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const handleSlider = (value: number, handle: any, linkSection: string) => {
@@ -444,7 +444,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, value.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     function handleLevelChange(value: string): void {
@@ -453,7 +453,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("level", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     function handleRankingConfig(value: string): void {
@@ -473,7 +473,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("ranking_display", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const GetLargeTankiness = (defender: any) => {

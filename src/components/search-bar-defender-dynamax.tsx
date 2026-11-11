@@ -88,17 +88,17 @@ export default function SearchBarDefenderDynamax({
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("defender_fast_attack", moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   };
 
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("defender_cinematic_attack", moveId);
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }
 
   useEffect(() => {
@@ -124,9 +124,9 @@ export default function SearchBarDefenderDynamax({
       const allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === pokemonD.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM") && !p.pokemonId.endsWith("_S_FORM")));
       setAvailableForms(allForms);// Construir nueva URL
       setSelectedForm(pokemonD.pokemonId);
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("defender", response?.pokemonId);
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     } finally {
       setLoading(false);
     }
@@ -150,11 +150,11 @@ export default function SearchBarDefenderDynamax({
         allForms = pokemonList.filter((p: any) => p.pokedex.pokemonId === response.pokedex.pokemonId && (p.pokemonId !== "URSHIFU_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_GIGANTAMAX" && p.pokemonId !== "ZACIAN_GIGANTAMAX" && p.pokemonId !== "ZACIAN_CROWNED_SWORD_GIGANTAMAX" && p.pokemonId !== "ZAMAZENTA_CROWNED_SHIELD_GIGANTAMAX" && !p.pokemonId.endsWith("_SHADOW_FORM") && !p.pokemonId.endsWith("_S_FORM")));
       }
       setAvailableForms(allForms);// Construir nueva URL
-      const newSearchParams = new URLSearchParams(searchParams.toString());
+      const newSearchParams = new URLSearchParams(window.location.search);
       newSearchParams.set("defender", response?.pokemonId);
       newSearchParams.delete("defender_fast_attack");
       newSearchParams.delete("defender_cinematic_attack");  
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     } finally {
       setLoading(false);
     }
@@ -170,12 +170,12 @@ export default function SearchBarDefenderDynamax({
       raidModeLevelMultiplier = (response ? PoGoAPI.convertStats([40, 15, 15, 15], raidMode, response.pokemonId) : PoGoAPI.convertStats([40, 15, 15, 15], raidMode))[0];
       setPokemonData(response);
       onSelect(response, member, number);
-      const newSearchParams = new URLSearchParams(searchParams.toString());    
+      const newSearchParams = new URLSearchParams(window.location.search);    
       newSearchParams.set("defender", response?.pokemonId);
       newSearchParams.delete("defender_fast_attack");
       newSearchParams.delete("defender_cinematic_attack");
       
-      window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
     } finally {
       setLoading(false);
     }
@@ -201,9 +201,9 @@ export default function SearchBarDefenderDynamax({
     
     onChangedStats(stats, member, number);
 
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+    const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set("defender_stats", stats.join(","));
-    window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+    PoGoAPI.updateSearchParams(newSearchParams, pathname);
   }, [stats]);
 
 

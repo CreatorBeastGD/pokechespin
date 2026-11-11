@@ -233,7 +233,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(param, checked.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     function handleDmaxDifficulty(value: string): void {
@@ -242,7 +242,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("dmax_difficulty", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     const handleSlider = (value: number, handle: any, linkSection: string) => {
@@ -259,7 +259,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set(linkSection, value.toString());
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
 
     function handleRankingConfig(value: string): void {
@@ -280,7 +280,7 @@ export default function rankingsPage() {
         const newSearchParams = new URLSearchParams(window.location.search);
         newSearchParams.set("ranking_display", value);
         const pathname = window.location.pathname;
-        window.history.replaceState({}, "", `${pathname}?${newSearchParams.toString()}`);
+        PoGoAPI.updateSearchParams(newSearchParams, pathname);
     }
     
     const GetTankScore = (defender: any): string => {

@@ -10,6 +10,23 @@ const API = (nextConfig as any).API_URL;
 const API_PB = (nextConfig as any).API_PB_URL;
 
 export class PoGoAPI {
+
+    static updateSearchParams(
+        update: ((params: URLSearchParams) => void) | URLSearchParams,
+        pathname: string = window.location.pathname
+    ) {
+        const params = update instanceof URLSearchParams
+            ? update
+            : new URLSearchParams(window.location.search);
+
+        if (typeof update === "function") {
+            update(params);
+        }
+
+        const query = params.toString();
+        const nextUrl = `${pathname}${query ? `?${query}` : ""}${window.location.hash}`;
+        window.history.replaceState({}, "", nextUrl);
+    }
     
     
     static getVersion() {

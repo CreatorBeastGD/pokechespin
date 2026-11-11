@@ -157,7 +157,7 @@ const BreakpointsPage = () => {
             urlSP.delete('advEffect');
             urlSP.delete('friendship');
             urlSP.delete('shroom');
-            window.history.replaceState({}, '', `${window.location.pathname}?${urlSP}`);
+            PoGoAPI.updateSearchParams(urlSP);
             
             
         }

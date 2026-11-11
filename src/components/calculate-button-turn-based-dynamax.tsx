@@ -206,10 +206,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
 
   useEffect(() => {
     
-    const sp = new URLSearchParams(searchParams.toString());
+    const sp = new URLSearchParams(window.location.search);
     sp.set("shroom", shroom.join(","));
     sp.set("adv_effect", advEffect.join(","));
-    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
+    PoGoAPI.updateSearchParams(sp, pathname);
     
   }, [shroom, advEffect]);
 
@@ -219,10 +219,10 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     if (value[0] > 15) value[0] = 15;
     sethelperBonus(value[0]);
 
-    const sp = new URLSearchParams(searchParams.toString());
+    const sp = new URLSearchParams(window.location.search);
     sp.set("helper_bonus", value[0].toString());
 
-    window.history.replaceState({}, "", `${pathname}?${sp.toString()}`);
+    PoGoAPI.updateSearchParams(sp, pathname);
   }
 
 
