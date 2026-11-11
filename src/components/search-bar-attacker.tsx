@@ -239,6 +239,7 @@ export default function SearchBarAttacker({
 
 
       setAvailableForms(allForms);// Construir nueva URL
+      
       const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set(slot === 1 ? "attacker" + memberSlot : "defender", response?.pokemonId);
       newSearchParams.delete(slot === 1 ? "attacker_fast_attack" + memberSlot : "defender_fast_attack");
@@ -421,9 +422,11 @@ export default function SearchBarAttacker({
 
   const handleSuggestionClick = (suggestion: any) => {
     setPokemon(suggestion);
+    setTimeout(() => {
     setClickedSuggestion(true);
-    searchPokemon();
-    setSuggestions([]);
+      searchPokemon();
+      setSuggestions([]);
+    }, 10);
   };
 
   const handleMegaLevelChange = (value: number) => {
