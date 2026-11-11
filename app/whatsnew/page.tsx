@@ -16,6 +16,11 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.45.1.1",
+        desc: "~ 'Trying to' fix some link related issues. Hoping this works.",
+        date: "2026-10-12",
+    },
+    {
         title: "v1.45.1",
         desc: "+ Added new Pokémon to Max Rankings\n"+
                 ">>>>>> Regidrago.\n"+
