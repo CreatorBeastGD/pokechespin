@@ -188,7 +188,7 @@ export default function CalculateButtonSimulateTurnBased({
   }
 
   const SendMessage = async (message: string) => {
-    if ((message === "charged" || message === "charged2") && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) return;
+    if (((message === "charged" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -chargedMove[gameStatus!.activeAllyIndex].energyDelta) || (message === "charged2" && gameStatus!.allyEnergy[gameStatus!.activeAllyIndex] < -secondChargedMove[gameStatus!.activeAllyIndex].energyDelta)) ) return;
     //console.log(raidMode)  
     setRelobbyConfirmation(false);
 
