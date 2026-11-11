@@ -298,6 +298,7 @@ export class Calculator {
       "PALKIA",
       "MELTAN",
       "MELMETAL",
+      "REGIDRAGO",
       "VENUSAUR_GIGANTAMAX",
       "CHARIZARD_GIGANTAMAX",
       "BLASTOISE_GIGANTAMAX",
@@ -662,6 +663,7 @@ export class Calculator {
             AZELF: 22000,
             DIALGA: 17000,
             PALKIA: 18000,
+            REGIDRAGO: 40000,
         };
 
         const t6gmaxHP: Record<string, number> = {

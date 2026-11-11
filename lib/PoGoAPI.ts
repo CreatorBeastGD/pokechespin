@@ -13,7 +13,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.45";
+        return "1.45.1";
     }
 
     static async getAllPokemon() {
@@ -1864,7 +1864,8 @@ export class PoGoAPI {
             MESPRIT: [8006003, 15, 15, 17000],
             AZELF: [8005243, 15, 15, 22000],
             DIALGA: [8003, 15, 15, 17000],
-            PALKIA: [8003, 15, 15, 18000]
+            PALKIA: [8003, 15, 15, 18000],
+            REGIDRAGO: [8005243, 15, 15, 40000],
         };
 
         const t6gmaxStats: Record<string, number[]> = {

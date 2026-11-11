@@ -16,6 +16,15 @@ const novedades = [
         date: "2026-10-19",
     },
     {
+        title: "v1.45.1",
+        desc: "+ Added new Pokémon to Max Rankings\n"+
+                ">>>>>> Regidrago.\n"+
+                "+ Changed some stats on Tier 5 Max Battles \n"+
+                ">>>>>> Regidrago\n"+
+                ">>>>>> ~ HP: 40000 \n",
+        date: "2026-10-20",
+    },
+    {
         title: "v1.45 (Double Charged Moves!)",
         desc: "+ Added the ability to select a second charged move for your Pokémon on PokéChespin for Raids and PokéChespin for Max Battles!\n"+
                 ">>>>>> This allows you to select a second charged move and use it on Solo Raid Simulations, Solo Max Battle Simulations, calculations and more\n"+
