@@ -6486,8 +6486,8 @@ export class PoGoAPI {
                         gamestatus.allyActiveMove = null;
                         gamestatus.allyCooldown = 0;
                         gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] += (20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 1 : 0)));
-                        if (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] > ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" ? 1 : 0)))) {
-                            gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" ? 1 : 0)));
+                        if (gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] > ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 1 : 0)))) {
+                            gamestatus.allyPokemonShields[gamestatus.activeAllyIndex] = ((attackers[gamestatus.activeAllyIndex].pokemonId == "ZAMAZENTA_CROWNED_SHIELD_FORM" ? 4 : 3) * 20 * (attackerMaxMoves[gamestatus.activeAllyIndex][1] + (advEffects === "cannon" && !(attackers[gamestatus.activeAllyIndex].pokemonId === "ZACIAN_CROWNED_SWORD_FORM" || attackers[gamestatus.activeAllyIndex].pokemonId === "ZAMAZENTA_CROWNED_SHIELD_FORM") ? 1 : 0)));
                         }
                         gamestatus.maxPhaseCounter -= 1;
                         if (gamestatus.maxPhaseCounter==0) {
