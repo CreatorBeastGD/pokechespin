@@ -6555,7 +6555,7 @@ export class PoGoAPI {
                         }
 
                         gamestatus.globalCurrentMessage = {
-                            message: "Orb collected! (+10 Max Meter)",
+                            message: "Orb collected! (+"+this.GetMaxOrbEnergy()+" Max Meter)",
                             duration: 0,
                             color: "#85d2fa"
                         }
