@@ -374,11 +374,10 @@ export default function SearchBarAttacker({
     if (index === 0 && (value[0] < 1 || value[0] > (PoGoAPI.IsMega(selectedPokemon.pokemonId) ? 55 : 51))) return;
     if (index > 0 && (value[0] < 0 || value[0] > 15)) return;
 
-    setStats((prev: number[]) => {
-      const newStats = [...prev];
-      newStats[index] = value[0];
-      return newStats;
-    });
+    const newStats = [...stats];
+    newStats[index] = value[0];
+    setStats(newStats);
+    onChangedStats(newStats, memberSlot);
   };
 
   // Bonuses = [weather-boost, shadow, mega, friendship]
@@ -389,11 +388,6 @@ export default function SearchBarAttacker({
       return newBonuses;
     });
   };
-
-  useEffect(() => {
-    onChangedStats(stats, memberSlot);
-    
-  }, [stats]);
 
   useEffect(() => {
     onBonusChange(selectedBonuses, memberSlot);

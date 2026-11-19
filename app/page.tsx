@@ -42,7 +42,9 @@ export default function Home() {
   const [selectedSecondChargedMoveAttacker, setSelectedSecondChargedMoveAttacker] = useState<any[]>(Array(numMembers).fill(null));
   const [selectedQuickMoveDefender, setSelectedQuickMoveDefender] = useState<any | null>(null);
   const [selectedChargedMoveDefender, setSelectedChargedMoveDefender] = useState<any | null>(null);
-  const [attackerStats, setAttackerStats] = useState<any[][]>(Array(numMembers).fill([50, 15, 15, 15]));
+  const [attackerStats, setAttackerStats] = useState<any[][]>(
+    Array.from({ length: numMembers }, () => [50, 15, 15, 15])
+  );
   const [defenderStats, setDefenderStats] = useState<any | null>([50, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("normal");
   const [bonusAttacker, setBonusAttacker] = useState<any[][]>(Array(numMembers).fill(["EXTREME", false, false, 0]));
