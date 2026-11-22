@@ -386,29 +386,29 @@ const Navbar = () => {
     }
    
     return (
-        <NavigationMenu>
-            <NavigationMenuList className="bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg flex flex-row justify-between items-center mb-4">
-                <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+        <NavigationMenu className="w-full max-w-full px-2 sm:px-0">
+            <NavigationMenuList className="bg-black text-white border-b-2 border-white border-opacity-10 rounded-lg flex flex-wrap justify-center sm:flex-nowrap sm:justify-between items-center gap-x-1 gap-y-0 mb-4 px-1 sm:px-0 w-full sm:w-auto">
+                <NavigationMenuItem className="flex items-center justify-center px-1 py-2 sm:p-2 allign-center">
                     <NavigationMenuLink asChild>
                         <Link href="/pokemon-go-damage-calculator" className="text-xs">Menu</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+                <NavigationMenuItem className="flex items-center justify-center px-1 py-2 sm:p-2 allign-center">
                     <NavigationMenuLink asChild>
                         <Link href={`/`} className="text-xs">Raids</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+                <NavigationMenuItem className="flex items-center justify-center px-1 py-2 sm:p-2 allign-center">
                     <NavigationMenuLink asChild>
                         <Link href={`/dynamax`} className="text-xs">Max Battles</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+                <NavigationMenuItem className="flex items-center justify-center px-1 py-2 sm:p-2 allign-center">
                     <NavigationMenuLink asChild>
                         <Link href="/dynamax/rankings/types" className="text-xs">Max Ranking By Types</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem className="flex items-center justify-center p-2 allign-center">
+                <NavigationMenuItem className="flex items-center justify-center px-1 py-2 sm:p-2 allign-center">
                     <NavigationMenuLink asChild>
                         <Link href="/whatsnew" className="text-xs">Updates</Link>
                     </NavigationMenuLink>
