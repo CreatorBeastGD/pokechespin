@@ -236,7 +236,7 @@ export default function CalculateButtonSimulateAdvanced({
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
-      <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
+      <div className="italic  text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setPartyPower)} checked={partyPower}/> Use Party Power {peopleCount === 1 && ("(Not available for 1 team)")}</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnergyResolveBug)} checked={energyResolveBug}/> Energy Resolve Bug</p>
@@ -252,7 +252,7 @@ export default function CalculateButtonSimulateAdvanced({
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
       {!loading && time !== 0 && attacker && defender && quickMove && chargedMove && quickMoveDefender && chargedMoveDefender && (
@@ -274,24 +274,24 @@ export default function CalculateButtonSimulateAdvanced({
             {getRequiredPeople(raidMode)} people are estimated to be required to defeat {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} <span className="font-bold">{(bonusDefender[1] === true&& raidMode === "normal") ? "Shadow " : ""}{PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}</span> in the given time with these given conditions. ({PoGoAPI.getRaidTime(raidMode)} seconds.)
           </p>)}
           
-          <p className="text-sm text-slate-700 italic">
+          <p className="text-sm  italic">
             This simulation takes in consideration a team of {attacker.length} Pokémon casting a Charged Attack whenever is possible. This is not the only available simulation, since {PoGoAPI.getPokemonNamePB(defender.pokemonId, allEnglishText)}'s attacking patterns are random.
           </p>
-          <p className="text-sm text-slate-700 italic">
+          <p className="text-sm  italic">
             The simulation  {avoidCharged ? "takes" : "does not take"}  into consideration the use of dodges. Changing a Pokémon when it faints takes 1 second, and relobbying when all team members faint takes {relobbyTime} seconds in this simulation.
           </p>
           {avoidCharged && (
-            <p className="text-sm text-slate-700 italic">
+            <p className="text-sm  italic">
               The simulation takes into consideration that the attacker will dodge the next Charged Attack if it doesn't faint. This will reduce the damage taken by 75%.
             </p>
           )}
           {raidMode.endsWith("shadow") && (
-            <p className="text-sm text-slate-700 italic">
+            <p className="text-sm  italic">
               The simulation takes into consideration that the defender Pokémon can enrage. 8 purified gems need to be used in order to subdue an enraged Pokémon. {peopleCount === 1 ? "Using 8 purified gems while raiding solo is not possible (MAX. 5)" : ""}
             </p>
             )}
           {partyPower && peopleCount > 1 && (
-            <p className="text-sm text-slate-700 italic">
+            <p className="text-sm  italic">
               The simulation takes into consideration the Party Power feature, which will double the damage of the next Charged Attack after {peopleCount === 2 ? 18 : peopleCount === 3 ? 9 : 6} Fast Attacks are used.
             </p>
           )}
@@ -309,34 +309,34 @@ export default function CalculateButtonSimulateAdvanced({
                       <div key={index} className={"grid grid-cols-2 space-x-7" + (item.attacker === "attacker" ? (item.partypower ? " bg-green-200 shadow-lg shadow-cyan-500 ring" : " bg-green-200") : " bg-red-200") + " p-2 rounded-xl"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker[item.currentAttackerIndex].pokemonId : defender.pokemonId), allEnglishText)}</span></p>
+                          <p className="text-sm  ">Attacker: <span className="font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? attacker[item.currentAttackerIndex].pokemonId : defender.pokemonId), allEnglishText)}</span></p>
                           <Progress className="w-full" value={(Math.floor(item.health - item.stackedDamage) * (100 / item.health))} max={Math.floor(item.health)} />HP: {Math.floor(item.health - item.stackedDamage > 0 ? item.health - item.stackedDamage : 0)} / {Math.floor(item.health)}
                         </div>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90" variant="default"><p className={"text-sm " + (item.move.endsWith("_FAST") ? "text-slate-400" : "text-red-300")}>Move: {PoGoAPI.getMoveNamePB(item.move, allEnglishText)}</p></Badge>
-                          <p className="text-sm text-slate-700">Damage: <span className="font-extrabold">{item.damage}</span></p>
-                          <p className="text-sm text-slate-700">Energy: <span className="font-extrabold">{item.energy}</span></p>
+                          <p className="text-sm ">Damage: <span className="font-extrabold">{item.damage}</span></p>
+                          <p className="text-sm ">Energy: <span className="font-extrabold">{item.energy}</span></p>
                         </div>
                       </div>
                     ) : (
                       <div key={index} className={"grid grid-cols-2 space-x-7 space-y-3 bg-slate-200 p-2 rounded-lg"}>
                         <div className="flex flex-col space-y-1">
                           <Badge className="opacity-90"><p className="text-sm text-slate-400">Time {(item.turn / 1000).toFixed(1)}s</p></Badge>
-                          <p className="text-sm text-slate-700 font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.purifiedgem ? ("GEM") : (attacker[item.currentAttackerIndex]?.pokemonId)) : defender.pokemonId), allEnglishText)}</p>
+                          <p className="text-sm  font-extrabold">{PoGoAPI.getPokemonNamePB((item.attacker === "attacker" ? (item.purifiedgem ? ("GEM") : (attacker[item.currentAttackerIndex]?.pokemonId)) : defender.pokemonId), allEnglishText)}</p>
                         </div>
                         <div className="flex flex-col space-y-1">
                           {(item.relobby === true || item.relobby === false) ? 
-                            (<p className="text-sm text-slate-700">
+                            (<p className="text-sm ">
                               {(item.relobby ? "All party fainted. Relobby is needed." : 
                             (item.attacker == "attacker" ? "Attacker has fainted." : "Raid Boss has fainted."))}</p>) : 
                             (<></>)}
                           {item.dodge ? 
-                            (<p className="text-sm text-slate-700">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
+                            (<p className="text-sm ">{(item.dodge ? "Attacker dodges the next attack." : "")}</p>) : 
                             (item.purifiedgem ? "Purified Gem used." : 
                               item.subdued ? "Defender Pokémon Subdued." :
                                item.enraged ? "Defender Pokémon Enraged." : ""
                             )}
-                          <p className="text-sm text-slate-700">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
+                          <p className="text-sm ">{(item.tdo ? ("TDO: " + item.tdo) : "")}</p>
                         </div>
                       </div>
                     )

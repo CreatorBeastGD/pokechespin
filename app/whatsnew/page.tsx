@@ -9,11 +9,10 @@ import Image from "next/image";
 
 const novedades = [
     {
-        title: "About the 'This Deployment is paused by the owner' message",
-        desc: "Hi all! due to a couple attacks suffered from a bot, I had to pause the deployment of PokéChespin for a while. I apologize for the inconvenience that may have caused.\n"+
-                "Starting this thursday, the page should be running as usual. Let's hope this doesn't happen again, and I can keep the page running for you all!\n",
-
-        date: "2026-10-19",
+        title: "v1.46 (Dark Mode!)",
+        desc: "+ Added Dark Mode to PokéChespin!\n"+
+            "~ Some bug fixes related to weather in raids not applying correctly under certain circumstances and 1st slot losing their stats in raids.\n",
+        date: "2026-11-22",
     },
     {
         title: "v1.45.1.1",
@@ -1336,7 +1335,7 @@ export default function WhatsNewPage() {
 				<div className="w-full">
 					<div className="space-y-4">
 						{novedades.map((item, idx) => (
-							<Card key={idx} className={idx === 0 ? "type-fire" : ""}>
+							<Card key={idx} className={idx === 0 ? "" : ""}>
 								<CardHeader>
 									<div className="flex justify-between items-center">
 										<h2 className="text-xl font-semibold">{item.title}</h2>

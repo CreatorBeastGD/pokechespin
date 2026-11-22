@@ -67,7 +67,7 @@ export default function MyCustomMoves({
     <>
       <p>My custom fast moves</p>
       {customList.filter((move: any) => move.energyDelta > 0).map((move: any) => (
-        <div key={move.moveId} className="relative border p-2 mb-2 rounded bg-gray-100">
+        <div key={move.moveId} className="relative border p-2 mb-2 rounded bg-gray-100 dark:bg-gray-800">
           <p className="text-lg"><strong>{PoGoAPI.getMoveNamePB(move.moveId, allEnglishText)}</strong></p>
           <p className="text-sm text-muted-foreground">({move.moveId})</p>
           <p>Type: {PoGoAPI.formatTypeName(move.type)}</p>
@@ -81,7 +81,7 @@ export default function MyCustomMoves({
 
       <p>My custom charged moves</p>
       {customList.filter((move: any) => move.energyDelta <= 0).map((move: any) => (
-        <div key={move.moveId} className="relative border p-2 mb-2 rounded bg-gray-100">
+        <div key={move.moveId} className="relative border p-2 mb-2 rounded bg-gray-100 dark:bg-gray-800">
           <p className="text-lg"><strong>{PoGoAPI.getMoveNamePB(move.moveId, allEnglishText)}</strong></p>
           <p className="text-sm text-muted-foreground">({move.moveId})</p>
           <p>Type: {PoGoAPI.formatTypeName(move.type)}</p>

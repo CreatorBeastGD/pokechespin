@@ -725,7 +725,7 @@ export default function Home() {
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
         </Card>
@@ -767,7 +767,7 @@ export default function Home() {
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-                <p className="text-primary text-lg">Loading...</p>
+                <p className=" text-lg">Loading...</p>
               </div>
             )}
         </Card>
@@ -779,7 +779,7 @@ export default function Home() {
               <CardDescription>Defender: {raidMode === "normal" ? "" : raidSurname(raidMode) + " Raid Boss"} {PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) !== "???" ? (PoGoAPI.getPokemonNamePB(defendingPokemon?.pokemonId, allEnglishText) + (raidMode === "normal" ? (" (Level " + defenderStats[0] + " " + defenderStats[1] + "-" + defenderStats[2] + "-" + defenderStats[3] + ")") : "")): "TBD"}</CardDescription>
             </CardHeader>
             <CardContent>
-            <p className="italic text-slate-700 text-sm">Weather: </p>
+            <p className="italic  text-sm">Weather: </p>
             <select onChange={(e) => handleBonusChange(e.target.value)} value={bonusAttacker[0][0]} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
               <option value="EXTREME">Extreme</option>
               <option value="SUNNY">Sunny</option>
@@ -791,7 +791,7 @@ export default function Home() {
               <option value="SNOW">Snow</option>
             </select>
             
-            <p className="italic text-slate-700 text-sm">Raid difficulty: </p>
+            <p className="italic  text-sm">Raid difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 <option key="normal" value="normal">Default (Gym Battle)</option>
                 <option key={"raid-t1"} value={"raid-t1"}>Tier-1 Raid (600HP) </option>
@@ -808,7 +808,7 @@ export default function Home() {
                 <option key={"raid-t5-shadow"} value={"raid-t5-shadow"}>Tier-5 Shadow Raid (15000HP) </option>
               </select>
 
-            <p className="italic text-slate-700 text-sm">Adventure Effect: </p>
+            <p className="italic  text-sm">Adventure Effect: </p>
             <select onChange={(e) => handleAdvEffectChange(e.target.value)} value={advEffect} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
               <option value={"none"}>No Adventure Effect</option>
               <option value={"blade"}>Behemoth Blade (++ATK)</option>
@@ -816,14 +816,14 @@ export default function Home() {
               <option value={"dynamic"}>Dynamic Punch+ (x1.15 ATK vs Megas)</option>
             </select>
 
-            <p className="italic text-slate-700 text-sm">Mega Boost level on Calculations: </p>
+            <p className="italic  text-sm">Mega Boost level on Calculations: </p>
             <select onChange={(e) => handleMegaBoostChange(parseFloat(e.target.value))} value={megaBoost} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
               <option value={"1"}>No Mega Boost</option>
               <option value={"1.1"}>Non-Same Type Boost (x1.1)</option>
               <option value={"1.3"}>Same Type Boost (x1.3)</option>
             </select>
 
-              <p className="italic text-slate-700 text-sm">Friendship level ({friendship})</p>
+              <p className="italic  text-sm">Friendship level ({friendship})</p>
               <Slider onValueChange={(value) => handleFriendshipChange(value[0])} value={[friendship]} max={5} step={1} min={0} className="w-full mb-1" color="bg-blue-700"/>
             
 
@@ -831,10 +831,8 @@ export default function Home() {
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
               </button>
-              <a href={"https://pokemongo-damage-calculator.vercel.app"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Clean this setup
-                </button>
+              <a href={"https://pokemongo-damage-calculator.vercel.app"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Clean this setup
               </a>
               <button onClick={checkBreakpoints} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Breakpoint Check

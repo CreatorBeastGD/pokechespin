@@ -35,6 +35,13 @@ body {
 
 .title {
   @apply text-5xl font-bold text-center my-5;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.dark .title {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
 }
 
 .favicon {
@@ -267,13 +274,11 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 186 15% 10%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: 180 10% 5%;
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -300,6 +305,24 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .dark body {
+    background-color: #3b3b3b;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.82)),
+      url("/apple-icon.png");
+    background-repeat: repeat;
+    background-size: 140px 140px;
+    animation: chespin-mosaic 12s linear infinite;
+  }
+
+  @keyframes chespin-mosaic {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 140px 140px;
+    }
   }
 }
 

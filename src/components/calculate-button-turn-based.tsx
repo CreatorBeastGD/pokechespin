@@ -365,7 +365,7 @@ export default function CalculateButtonSimulateTurnBased({
       <div className="w-full">
       {startedSim &&
         <div>
-          <Card className="mt-4 py-4 px-4 mb-2">
+          <Card className="mt-4 py-4 px-4 mb-2 dark:bg-neutral-900">
           <div className="flex flex-col space-y-1">
             <div className="flex flex-row justify-between items-center">
               <label className="font-bold text-xs">Raid ({gameStatus ? (PoGoAPI.getRaidTime(raidMode) - gameStatus.timer > 0 ? PoGoAPI.getRaidTime(raidMode) - gameStatus.timer : 0) : 0}s)</label>
@@ -553,9 +553,10 @@ export default function CalculateButtonSimulateTurnBased({
                   fontSize: 12,
                 }}
               />)}
-              <ChartTooltip
+              <ChartTooltip 
                 content={
                   <ChartTooltipContent
+                    className="dark:bg-gray-800"
                     labelFormatter={(label, payload) => {
                       const point = payload?.[0]?.payload as typeof slicedSimulationChartData[number] | undefined;
                       return (
@@ -689,7 +690,7 @@ export default function CalculateButtonSimulateTurnBased({
               const totalDamage = gameStatus!.allyTDO[index];
               return (
                 <div key={index} className="flex flex-col items-start space-x-2">
-                  <p className="text-xs text-black font-bold">
+                  <p className="text-xs  font-bold">
                     {index+1}º - {PoGoAPI.getPokemonNamePB(pokemon?.pokemonId, allEnglishText)}
                   </p>
                   <p className="text-xs text-muted-foreground">

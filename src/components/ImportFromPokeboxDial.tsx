@@ -67,7 +67,7 @@ export function PokeboxButton({
   return (
     <Dialog>
       <DialogTrigger asChild >
-        <Button className="mb-2 mr-2">
+        <Button className="mb-2 mr-2 text-white">
           
         Import from Pokebox
         <Image 

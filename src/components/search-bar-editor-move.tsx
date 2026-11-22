@@ -183,7 +183,7 @@ export default function SearchBarMoveEditor({
         onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(suggestions[0])}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
         {suggestions.map((suggestion) => (
           <li
             key={suggestion.moveId}
@@ -196,9 +196,9 @@ export default function SearchBarMoveEditor({
         </ul>
       )}
       <div>
-        <Button onClick={searchMove} className="mt-4 mb-2 mr-2">Search</Button>
-        <Button onClick={saveCustomMove} className="mt-4 mb-2 mr-2">Save</Button>
-        <Button onClick={resetToDefault} className="mt-4 mb-2">Default</Button>
+        <Button onClick={searchMove} className="mt-4 mb-2 mr-2 text-white">Search</Button>
+        <Button onClick={saveCustomMove} className="mt-4 mb-2 mr-2 text-white">Save</Button>
+        <Button onClick={resetToDefault} className="mt-4 mb-2 text-white">Default</Button>
       </div>
       <p className="text-sm text-muted-foreground">
         Clicking "Default" will reset the move's values to their original state. This action cannot be undone, so make sure you want to reset before clicking it.
@@ -211,7 +211,7 @@ export default function SearchBarMoveEditor({
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
       {error && <p>{error}</p>}
@@ -262,7 +262,7 @@ export default function SearchBarMoveEditor({
                 Edit fast move
               </h2>
               <p>Type</p>
-              <select className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value={customType} onChange={(e) => setCustomType(e.target.value)} >
+              <select className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" value={customType} onChange={(e) => setCustomType(e.target.value)} >
                 {allTypes.map((type: any) => (
                   <option key={"POKEMON_TYPE_" + type.type.toUpperCase()} value={"POKEMON_TYPE_" + type.type.toUpperCase()}>
                     {PoGoAPI.formatTypeName(type.type)}
@@ -271,21 +271,21 @@ export default function SearchBarMoveEditor({
               </select>
               <p>Power</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2">-</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2 text-white">-</Button>
                 <p className="inline-block  ">{customDamage}</p> 
-                <Button onClick={() => setCustomDamage(customDamage >= 100 ? 100 : customDamage + 1)} className="mx-2">+</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 100 ? 100 : customDamage + 1)} className="mx-2 text-white">+</Button>
               </div>
               <p>Energy Gain</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomEnergy(customEnergy <= 1 ? 1 : customEnergy - 1)} className="mx-2">-</Button>
+                <Button onClick={() => setCustomEnergy(customEnergy <= 1 ? 1 : customEnergy - 1)} className="mx-2 text-white">-</Button>
                 <p className="inline-block  ">{customEnergy}</p> 
-                <Button onClick={() => setCustomEnergy(customEnergy >= 100 ? 100 : customEnergy + 1)} className="mx-2">+</Button>
+                <Button onClick={() => setCustomEnergy(customEnergy >= 100 ? 100 : customEnergy + 1)} className="mx-2 text-white">+</Button>
               </div>
               <p>Duration (s)</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDuration(customDuration <= 500 ? 500 : customDuration - 500)} className="mx-2">-</Button>
+                <Button onClick={() => setCustomDuration(customDuration <= 500 ? 500 : customDuration - 500)} className="mx-2 text-white">-</Button>
                 <p className="inline-block  ">{customDuration / 1000}s</p> 
-                <Button onClick={() => setCustomDuration(customDuration >= 10000 ? 10000 : customDuration + 500)} className="mx-2">+</Button>
+                <Button onClick={() => setCustomDuration(customDuration >= 10000 ? 10000 : customDuration + 500)} className="mx-2 text-white">+</Button>
               </div>
             </>
             ) : (
@@ -294,7 +294,7 @@ export default function SearchBarMoveEditor({
                 Edit charged move
               </h2>
               <p>Type</p>
-              <select className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500" value={customType} onChange={(e) => setCustomType(e.target.value)} >
+              <select className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" value={customType} onChange={(e) => setCustomType(e.target.value)} >
                 {allTypes.map((type: any) => (
                   <option key={"POKEMON_TYPE_" + type.type.toUpperCase()} value={"POKEMON_TYPE_" + type.type.toUpperCase()}>
                     {PoGoAPI.formatTypeName(type.type)}
@@ -303,15 +303,15 @@ export default function SearchBarMoveEditor({
               </select>
               <p>Power</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2">-5</Button>
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2">-1</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2 text-white">-5</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2 text-white">-1</Button>
                 <p className="inline-block  ">{customDamage}</p> 
-                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 1)} className="mx-2">+1</Button>
-                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2">+5</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 1)} className="mx-2 text-white">+1</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2 text-white">+5</Button>
               </div>
               <p>Energy Cost</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomEnergy(getNextCustomEnergy("-"))} className="mx-2">-</Button>
+                <Button onClick={() => setCustomEnergy(getNextCustomEnergy("-"))} className="mx-2 text-white">-</Button>
                 <div className="w-[50%] flex flex-row justify-between mt-2 space-x-2">
                   {(-customEnergy) <= 100 && (
                     <TypeBadge type={PoGoAPI.formatTypeName(customType)} show={false} />
@@ -323,13 +323,13 @@ export default function SearchBarMoveEditor({
                     <TypeBadge type={PoGoAPI.formatTypeName(customType)} show={false} />
                   )}
                 </div>
-                <Button onClick={() => setCustomEnergy(getNextCustomEnergy("+"))} className="mx-2">+</Button>
+                <Button onClick={() => setCustomEnergy(getNextCustomEnergy("+"))} className="mx-2 text-white">+</Button>
               </div>
               <p>Duration (s)</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDuration(customDuration <= 500 ? 500 : customDuration - 500)} className="mx-2">-</Button>
+                <Button onClick={() => setCustomDuration(customDuration <= 500 ? 500 : customDuration - 500)} className="mx-2 text-white">-</Button>
                 <p className="inline-block  ">{customDuration / 1000}s</p> 
-                <Button onClick={() => setCustomDuration(customDuration >= 10000 ? 10000 : customDuration + 500)} className="mx-2">+</Button>
+                <Button onClick={() => setCustomDuration(customDuration >= 10000 ? 10000 : customDuration + 500)} className="mx-2 text-white">+</Button>
               </div>
               </>
             )}

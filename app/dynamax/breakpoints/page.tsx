@@ -373,10 +373,8 @@ const BreakpointsPage = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-row justify-center space-x-4">
-                            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
-                                <button className="w-full h-full">
-                                    Go Back
-                                </button>
+                            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-center text-white bg-primary rounded-lg mt-4 mb-4">
+                                Go Back
                             </a>
                             <button className='w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4' onClick={copyURL}>
                                 Copy URL
@@ -514,11 +512,9 @@ const BreakpointsPage = () => {
 
         ) : (
             error ? <p>{error}
-            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
-                                <button className="w-full">
-                                    Go Back
-                                </button>
-                            </a>
+            <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-center text-white bg-primary rounded-lg mt-4 mb-4">
+                Go Back
+            </a>
                             </p> : <p>Loading...</p>
         )}
         <div className="flex flex-col items-center justify-center space-x-3 mt-4 mb-4">

@@ -14,7 +14,7 @@ export function Announcement()
     }
     return (
         isActive && (
-            <div className="mx-4 bg-dragon text-black p-4 rounded-lg mb-4 border border-poison border-4 flex flex-row space-x-2">
+            <div className="mx-4 bg-dragon  p-4 rounded-lg mb-4 border border-poison border-4 flex flex-row space-x-2">
                 <Image
                     unoptimized
                     className={"  mb-4 mt-4  "}

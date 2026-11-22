@@ -287,7 +287,7 @@ export default function CalculateButtonMultiSimulateAdvanced({
       <Button onClick={calculateDamage} className="w-full py-2 text-white bg-primary rounded-lg">
         Simulate
       </Button>
-      <div className="italic text-slate-700 text-sm my-2 space-y-2 flex flex-col">
+      <div className="italic  text-sm my-2 space-y-2 flex flex-col">
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setAvoidCharged)} checked={avoidCharged} /> Try to dodge charged attacks if attacker doesn't faint. (75% damage reduction)</p>
         <p><Switch onCheckedChange={(checked) => handleSwitch(checked, setEnergyResolveBug)} checked={energyResolveBug}/> Energy Resolve Bug</p>
         <p>Set custom relobby time ({relobbyTime} seconds):</p>
@@ -296,7 +296,7 @@ export default function CalculateButtonMultiSimulateAdvanced({
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
           <Progress value={100 * simAmount / TOTAL_SIM_AMOUNT} className="w-full" />
         </div>
       )}

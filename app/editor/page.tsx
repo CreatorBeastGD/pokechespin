@@ -182,7 +182,7 @@ export default function Home() {
           </CardContent>) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
         </Card>
@@ -192,7 +192,7 @@ export default function Home() {
             <CardDescription>Set a move and update any of its properties. You must be aware that these changes will only be reflected to your calculator. Sharing a link with a customized move won't pass its custom values.</CardDescription>
             <CardDescription><span>Note: Custom moves won't be saved on a database but on your local storage, so they will only be available for you and only on this browser. If you clear your cookies or access the calculator from another browser or device, these custom moves will be lost. Max moves cannot be edited.</span></CardDescription>
             <CardDescription><span className="italic text-xs">(Pick one result from suggestions)</span></CardDescription>
-            <Button onClick={() => setSuperMegaMoveEditor(!superMegaMoveEditor)} className="mt-2 w-full">{superMegaMoveEditor ? "Switch to Normal Move Editor" : "Switch to Super/Mega Move Editor"}</Button>
+            <Button onClick={() => setSuperMegaMoveEditor(!superMegaMoveEditor)} className="mt-2 w-full text-white">{superMegaMoveEditor ? "Switch to Normal Move Editor" : "Switch to Super/Mega Move Editor"}</Button>
           </CardHeader>
           {(pokemonList && searchBarNames && allMoves) ? (
             (!superMegaMoveEditor) ? (
@@ -220,7 +220,7 @@ export default function Home() {
               )) : (
           <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
             <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-            <p className="text-primary text-lg">Loading...</p>
+            <p className=" text-lg">Loading...</p>
           </div>
         )}
         </Card>
@@ -246,7 +246,7 @@ export default function Home() {
                 </Button>
               </div> 
              </div>
-             <Button onClick={() => {setAlertMessage(PoGoAPI.createCustomMove(newMoveName, newMoveIsFast, allMoves)); setAutoUpdater(!autoUpdater);}} className="mt-4 w-full">Create Move</Button>
+             <Button onClick={() => {setAlertMessage(PoGoAPI.createCustomMove(newMoveName, newMoveIsFast, allMoves)); setAutoUpdater(!autoUpdater);}} className="mt-4 w-full text-white">Create Move</Button>
              <p>{alertMessage}</p>
 
              <MyCustomMoves

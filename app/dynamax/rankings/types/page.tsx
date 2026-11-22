@@ -415,10 +415,8 @@ export default function rankingsPage() {
                 
                 <Navbar/>
                 <h1 className="text-2xl font-bold">Best Attackers and Defenders - {PoGoAPI.formatTypeName(currentType)} Type</h1>
-                <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-white bg-primary rounded-lg mt-4 mb-4">
-                    <button className="w-full">
-                        Go to Max Battles Calculator
-                    </button>
+                <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-center text-white bg-primary rounded-lg mt-4 mb-4">
+                    Go to Max Battles Calculator
                 </a>
                 <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
                     <Card className="md:w-1/2 w-full">
@@ -465,9 +463,9 @@ export default function rankingsPage() {
                             Copy ranking link
                         </button>
 
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
+                        <p className="italic  dark:text-gray-200 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setDCannon, "dynamax_cannon")} checked={dCannon} /> Use Dynamax Cannon Adventure Effect</p>
 
-                        <p className="italic text-slate-700 text-sm ">Weather</p>
+                        <p className="italic  dark:text-gray-200 text-sm ">Weather</p>
                         <select onChange={(e) => handleWeatherChange(e.target.value)} value={weather} className="mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                             <option value="EXTREME">Extreme</option>
                             <option value="SUNNY">Sunny</option>
@@ -481,8 +479,8 @@ export default function rankingsPage() {
 
                         {(
                             <>
-                            <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
-                        <p className="italic text-slate-700 text-sm ">Shield Amount: {extraHP}</p>
+                            <p className="italic  dark:text-gray-200 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        <p className="italic  text-sm ">Shield Amount: {extraHP}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setExtraHP, "extra_shields")} value={[extraHP]} max={180} step={60} min={0} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                             </>)
                         }
@@ -518,7 +516,7 @@ export default function rankingsPage() {
                                             <div className="flex flex-row items-center justify-between space-x-4 w-full p-4">
                                                 <Image
                                                     unoptimized
-                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 bg-white"}
+                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border "}
                                                     src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(attacker?.pokemon.pokemonId, imageLinks)}
                                                     alt={attacker?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                                                     width={80}
@@ -529,8 +527,8 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
-                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className="font-bold "><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(attacker.maxMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-xs italic ">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.quickMove.moveId, allMoves)).moveId)} {(attacker.chargedMove.ept >= 1 || attacker.chargedMove.needsMushroom) ? <span className={attacker.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(attacker.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -544,14 +542,14 @@ export default function rankingsPage() {
                                                     
                                                     <div className="flex flex-row items-center justify-between space-x-4">
 
-                                                        <h3 className="text-sm font-bold text-black">Damage</h3>
+                                                        <h3 className="text-sm font-bold ">Damage</h3>
                                                         <p>{attacker.damage}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
-                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p className="font-bold text-black">
+                                                        <h3 className="text-xl font-bold ">Percent to Best</h3>
+                                                        <p className="font-bold ">
                                                             {((attacker.damage / (showingCounters ? (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage) : (bestAttackerSpecificReference ? bestAttackerSpecificReference.damage : bestAttackersSpecific[0].damage))) * 100).toFixed(2).split('.')[0]}
                                                             <span className="text-xs align-top">.{((attacker.damage / (showingCounters ? (bestAttackerReference ? bestAttackerReference.damage : bestAttackers[0].damage) : (bestAttackerSpecificReference ? bestAttackerSpecificReference.damage : bestAttackersSpecific[0].damage))) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
@@ -598,7 +596,7 @@ export default function rankingsPage() {
                                             <div  className="flex flex-row items-center justify-between space-x-4 w-full p-4">
                                                 <Image
                                                     unoptimized
-                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200  bg-white"}
+                                                    className={"rounded-lg shadow-lg mb-4 mt-4 border "}
                                                     src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(defender?.pokemon.pokemonId, imageLinks )}
                                                     alt={defender?.pokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                                                     width={50}
@@ -608,26 +606,26 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="font-bold text-black"><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
-                                                            <p className="text-xs italic text-black">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
+                                                            <h3 className="font-bold "><TypeBadge type={PoGoAPI.formatTypeName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).type)} customtext={" "} dot={true} />  {PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <p className="text-xs italic ">w/ {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.fastMove.moveId, allMoves)).moveId)} ({(defender.fastMove.durationMs / 1000)}s) {(defender.chargedMove.ept >= 1 || defender.chargedMove.needsMushroom) ? <span className={defender.chargedMove.needsMushroom ? "font-bold text-red-600" : ""}>& {PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(defender.chargedMove.move.moveId, allMoves)).moveId)}</span> : ''} </p>
                                                             <Separator className="mt-1 mb-1"/>
-                                                            <p className="text-xs italic text-black">{defender.chargedMove.cycleTotalME.toFixed(2)}ME (<span className="font-bold text-red-600">{defender.chargedMove.cycleTotalMEWithMushroom.toFixed(2)}ME</span>) in {(defender.chargedMove.cycleDuration / 1000).toFixed(2)}s</p>
-                                                            <p className="text-xs italic text-black">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT</span> </p>    
+                                                            <p className="text-xs italic ">{defender.chargedMove.cycleTotalME.toFixed(2)}ME (<span className="font-bold text-red-600">{defender.chargedMove.cycleTotalMEWithMushroom.toFixed(2)}ME</span>) in {(defender.chargedMove.cycleDuration / 1000).toFixed(2)}s</p>
+                                                            <p className="text-xs italic ">{(defender.chargedMove.cycleTotalME / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT -&gt; <span className="font-bold text-red-600">{(defender.chargedMove.cycleTotalMEWithMushroom / (defender.chargedMove.cycleDuration / 500)).toFixed(2)}EPT</span> </p>    
                                                         </div>
                                                         <p className="text-sm italic textgray">#{index+1}</p>
                                                     </div>
                                                     <Separator className="mt-1 mb-1"/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Damage Received</h3>
+                                                        <h3 className="text-sm font-bold ">Damage Received</h3>
                                                         <p >{(defender.large)}/<span className="text-xs">{getHPDamage(defender.pokemon.stats.baseStamina, defender.pokemon.pokemonId)}</span></p>
                                                     </div>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className="text-sm font-bold text-black">Hits to Faint</h3>
+                                                        <h3 className="text-sm font-bold ">Hits to Faint</h3>
                                                         <p >{(100 / parseFloat(GetLargeTankiness(defender) + "")).toFixed(2)}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
-                                                        <h3 className=" font-bold text-black text-xl">{orderByBulk ? "Bulk" : "EPT"}</h3>
+                                                        <h3 className=" font-bold  text-xl">{orderByBulk ? "Bulk" : "EPT"}</h3>
                                                         <p className={"font-bold "}>
                                                         {
                                                             (() => {
@@ -654,7 +652,7 @@ export default function rankingsPage() {
                                                                     
                                                                     <>
                                                                     <span
-                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-white"
+                                                                        className="pointer-events-none absolute top-0 z-10 h-2 w-0.5 -translate-x-1/2 bg-white dark:bg-gray-800"
                                                                         style={{ left: `${oneEptPosition}%` }}
                                                                         aria-label="1 EPT"
                                                                     />

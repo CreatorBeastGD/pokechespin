@@ -540,7 +540,7 @@ export default function SearchBarEditor({
         onKeyDown={(e) => e.key === "Enter" && searchPokemon()}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.pokemonId}
@@ -553,9 +553,9 @@ export default function SearchBarEditor({
         </ul>
       )}
       <div>
-        <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-        <Button onClick={saveCustomMovesToPokemon} className="mt-4 mb-2 mr-2">Save</Button>
-        <Button onClick={resetCustomMovesToDefault} className="mt-4 mb-2">Default</Button>
+        <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2 text-white">Search</Button>
+        <Button onClick={saveCustomMovesToPokemon} className="mt-4 mb-2 mr-2 text-white">Save</Button>
+        <Button onClick={resetCustomMovesToDefault} className="mt-4 mb-2 text-white">Default</Button>
       </div>
       <p className="text-sm text-muted-foreground">
         Clicking "Default" will reset the Pokémon's values to their original state. This action cannot be undone, so make sure you want to reset before clicking it.
@@ -570,7 +570,7 @@ export default function SearchBarEditor({
       {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
       {error && <p>{error}</p>}
@@ -585,7 +585,7 @@ export default function SearchBarEditor({
             <WeaknessResistanceTable weaknesses={weaknesses} />
           )}
           
-          <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
+          <select onChange={handleFormChange} value={selectedForm} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
             {uniqueForms.map((form: any) => (
               <option key={form.pokemonId} value={form.pokemonId}>
                 {PoGoAPI.getPokemonNamePB(form.pokemonId, allEnglishText)}
@@ -614,7 +614,7 @@ export default function SearchBarEditor({
           
             <Image
               unoptimized
-                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : PoGoAPI.IsMega(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-red-200 via-green-200 to-blue-200" : PoGoAPI.IsPrimal(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-blue-500 via-black-500 to-red-500" : "bg-white") + " dark:bg-gray-800 dark:border-gray-700"}
+                className={"rounded-lg shadow-lg mb-4 mt-4 border border-gray-200 p-2 " + (selectedBonuses[1] === true ? "bg-gradient-to-t from-purple-900 to-violet-100" : PoGoAPI.IsMega(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-red-200 via-green-200 to-blue-200" : PoGoAPI.IsPrimal(selectedPokemon.pokemonId) ? "bg-gradient-to-br from-blue-500 via-black-500 to-red-500" : "bg-white ") + " dark:bg-gray-800 dark:border-gray-700"}
                 src={"https://static.pokebattler.com/assets/pokemon/256/" + PoGoAPI.getPokemonImageByID(selectedPokemon.pokemonId, assets )}
                 alt={selectedPokemon.pokemonId + " | Pokémon GO Damage Calculator"}
                 width={400}
@@ -657,7 +657,7 @@ export default function SearchBarEditor({
                       onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(fmSuggestions[0], "fast")}
                     />
                     {fmSuggestions.length > 0 && (
-                      <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+                      <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
                         {fmSuggestions.map((suggestion) => (
                           <li
                             key={suggestion.moveId}
@@ -708,7 +708,7 @@ export default function SearchBarEditor({
                       onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(cmSuggestions[0], "charged")}
                     />
                     {cmSuggestions.length > 0 && (
-                      <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+                      <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
                         {cmSuggestions.map((suggestion) => (
                           <li
                             key={suggestion.moveId}

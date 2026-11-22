@@ -9,6 +9,7 @@ import { BuyMeACoffeeIcon, GitHubSponsorIcon } from "@/components/buy-me-a-coffe
 import CookieBanner from "@/components/cookie-banner";
 import Navbar from "@/components/navbar";
 import ServiceWorkerRegister from "@/components/sw-register";
+import ThemeProvider from "@/components/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,9 +42,10 @@ export default function RootLayout({
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2398840545137307" crossOrigin="anonymous"></script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
 
+        <ThemeProvider />
         <ServiceWorkerRegister />
         
         <Suspense fallback={

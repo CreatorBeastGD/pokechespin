@@ -728,11 +728,11 @@ export default function SearchBarAttacker({
         onKeyDown={(e) => e.key === "Enter" && searchPokemon()}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.pokemonId}
-              className="p-2 cursor-pointer hover:bg-gray-200 "
+              className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 "
               onClick={() => handleSuggestionClick(PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText))}
             >
               {PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText)}
@@ -741,15 +741,15 @@ export default function SearchBarAttacker({
         </ul>
       )}
       <div>
-        <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-        {slot === 1 && (<Button onClick={exportPokemon} className="mb-2 mr-2">Export</Button>)}
-        {slot === 1 && (<Button onClick={importPokemon} className=" mb-2 mr-2">Import</Button>)}
+        <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2 text-white">Search</Button>
+        {slot === 1 && (<Button onClick={exportPokemon} className="mb-2 mr-2 text-white">Export</Button>)}
+        {slot === 1 && (<Button onClick={importPokemon} className=" mb-2 mr-2 text-white">Import</Button>)}
         {slot === 1 && (<PokeboxButton imageLinks={assets} englishText={allEnglishText} allMoves={allMoves} onSelectPokemon={importPokemonFromPokebox} />)}
       </div>
       {loading || isImporting && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
       {error && <p>{error}</p>}
@@ -780,7 +780,7 @@ export default function SearchBarAttacker({
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + (slot == 1 ? stats[1] : (slot == 2 && raidMode === "normal") ? stats[1] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effAttack)}</p>
+                <p className="dark:text-gray-300">Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + (slot == 1 ? stats[1] : (slot == 2 && raidMode === "normal") ? stats[1] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effAttack)}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -793,7 +793,7 @@ export default function SearchBarAttacker({
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effDefense)}</p>
+                <p className="dark:text-gray-300">Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + (slot == 1 ? stats[2] : (slot == 2 && raidMode === "normal") ? stats[2] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + " = " + (effDefense)}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -808,7 +808,7 @@ export default function SearchBarAttacker({
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Stamina: {"Floor( ( " + selectedPokemon?.stats?.baseStamina + " + " + (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + ") = " + (Math.floor(effStamina))}</p>
+                <p className="dark:text-gray-300">Effective Stamina: {"Floor( ( " + selectedPokemon?.stats?.baseStamina + " + " + (slot == 1 ? stats[3] : (slot == 2 && raidMode === "normal") ? stats[3] : 15) + ") x " + Calculator.getCPM(slot == 1 ? stats[0] : (slot == 2 && raidMode === "normal") ? stats[0] : raidmode == "normal" ? 40 : raidModeLevelMultiplier) + ") = " + (Math.floor(effStamina))}</p>
               </PopoverContent>
             </Popover>
             )}
@@ -860,7 +860,7 @@ export default function SearchBarAttacker({
               {preferredMovesQuick.map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
                   key={move}
-                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
+                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200 dark:bg-teal-950 dark:border-teal-500' : ''}`}
                   onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
@@ -888,7 +888,7 @@ export default function SearchBarAttacker({
               {preferredMovesCharged.filter((move: any) => isSecondChargedMove ? move !== selectedChargedMove : move !== selectedSecondChargedMove).map((move: string) => (
                 PoGoAPI.getMovePBByID(move, allMoves).type && (<Card
                   key={move}
-                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200' : ''}`}
+                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200 dark:bg-teal-950 dark:border-teal-500' : ''}`}
                   onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves), true, isSecondChargedMove) }
                 >
                   <CardHeader>
@@ -927,7 +927,7 @@ export default function SearchBarAttacker({
                 <div className="min-w-0" key={megaChargedMove}>
                 <Card
                   key={megaChargedMove}
-                  className={`mb-4 w-full ${(selectedChargedMove === megaChargedMove || selectedSecondChargedMove === megaChargedMove) ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200'}`}
+                  className={`mb-4 w-full ${(selectedChargedMove === megaChargedMove || selectedSecondChargedMove === megaChargedMove) ? 'bg-gradient-to-br from-blue-200 via-blue-300 to-blue-200 dark:from-gray-800 dark:via-blue-900 dark:to-teal-800 dark:border-blue-500' : 'bg-gradient-to-br from-red-200 via-green-200 to-blue-200 dark:from-red-950 dark:via-green-900 dark:to-blue-900'}`}
                   onClick={() => handleChargedMoveSelect(megaChargedMove, PoGoAPI.getMovePBByID(megaChargedMove, allMoves), true, isSecondChargedMove) }
                 >
                   <CardHeader>

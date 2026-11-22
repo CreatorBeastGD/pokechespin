@@ -101,40 +101,30 @@ export default function Page() {
             
             <Announcement/>
             
-            <a href={"/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Go to PokéChespin for Raids
-                </button>
+            <a href={"/"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Go to PokéChespin for Raids
             </a>
-            <a href={"/dynamax"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Go to PokéChespin for Max Battles
-                </button>
+            <a href={"/dynamax"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Go to PokéChespin for Max Battles
             </a>
-            <a href={"/dynamax/rankings/general"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Check PokéChespin Max General Rankings
-                </button>
+            <a href={"/dynamax/rankings/general"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Check PokéChespin Max General Rankings
             </a>
-            <a href={"/dynamax/rankings/types"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Check PokéChespin Max Rankings By Type
-                </button>
+            <a href={"/dynamax/rankings/types"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Check PokéChespin Max Rankings By Type
             </a>
-            <a href={"/whatsnew"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  See what's new!
-                </button>
+            <a href={"/whatsnew"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                See what's new!
             </a>
 
             <Separator className="w-[50%]"/>
             <p className="text-white text-sm px-4">Collaborating projects</p>
-            <a href={"https://soloraidarchive.github.io/"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  <Image unoptimized src="https://soloraidarchive.github.io/assets/icons/favicon-32.png" alt="Solo Raid Archive" className="inline-block mr-2" width={32} height={32} />
+            <a href={"https://soloraidarchive.github.io/"} className="flex flex-col items-center w-full py-2 text-white bg-primary rounded-lg space-y-2 mb-4">
+                <span className="flex items-center">
+                    <Image unoptimized src="https://soloraidarchive.github.io/assets/icons/favicon-32.png" alt="Solo Raid Archive" className="inline-block mr-2" width={32} height={32} />
                     Solo Raid Archive
-                    <p className="text-white text-sm px-4 mt-2">Made by SpiritedBloom. A community-driven project for storing all solo raids and sharing strategies.</p>
-                </button>
+                </span>
+                <span className="text-white text-sm px-4">Made by SpiritedBloom. A community-driven project for storing all solo raids and sharing strategies.</span>
             </a>
 
             {allDataLoaded ? (

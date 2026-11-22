@@ -585,11 +585,11 @@ const importPokemon = async () => {
         onKeyDown={(e) => e.key === "Enter" && searchPokemon()}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.pokemonId}
-              className="p-2 cursor-pointer hover:bg-gray-200 "
+              className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 "
               onClick={() => handleSuggestionClick(PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText))}
             >
               {PoGoAPI.getPokemonNamePB(suggestion.pokemonId, allEnglishText)}
@@ -597,15 +597,15 @@ const importPokemon = async () => {
           ))}
         </ul>
       )}
-      <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2">Search</Button>
-      <Button onClick={exportPokemon} className=" mb-2 mr-2">Export</Button>
-      <Button onClick={importPokemon} className=" mb-2 mr-2" disabled={isImporting}>Import</Button>
-      <Button onClick={() => clearButton()} className=" mb-2 mr-2">Clear</Button>
+      <Button onClick={searchPokemon} className="mt-4 mb-2 mr-2 text-white">Search</Button>
+      <Button onClick={exportPokemon} className=" mb-2 mr-2 text-white">Export</Button>
+      <Button onClick={importPokemon} className=" mb-2 mr-2 text-white" disabled={isImporting}>Import</Button>
+      <Button onClick={() => clearButton()} className=" mb-2 mr-2 text-white">Clear</Button>
       <PokeboxButton imageLinks={assets} englishText={allEnglishText} allMoves={allMoves} onSelectPokemon={importPokemonFromPokebox} />
       {loading && (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
       {error && <p>{error}</p>}
@@ -634,7 +634,7 @@ const importPokemon = async () => {
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + Calculator.getCPM(stats[0]) + " = " + (effAttack)}</p>
+                <p className="dark:text-gray-300">Effective Attack: {"(" + selectedPokemon?.stats?.baseAttack + " + " + stats[1] + ") x " + Calculator.getCPM(stats[0]) + " = " + (effAttack)}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -648,7 +648,7 @@ const importPokemon = async () => {
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + Calculator.getCPM(stats[0]) + " = " + (effDefense)}</p>
+                <p className="dark:text-gray-300">Effective Defense: {"(" + selectedPokemon?.stats?.baseDefense + " + " + stats[2] + ") x " + Calculator.getCPM(stats[0]) + " = " + (effDefense)}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -661,7 +661,7 @@ const importPokemon = async () => {
                 <button className="" >?</button>
               </PopoverTrigger>
               <PopoverContent>
-                <p>Effective Stamina: {"Floor( (" + selectedPokemon?.stats?.baseStamina + " + " + stats[3] + ") x " + Calculator.getCPM(stats[0]) + " ) = " + (Math.floor(effStamina))}</p>
+                <p className="dark:text-gray-300">Effective Stamina: {"Floor( (" + selectedPokemon?.stats?.baseStamina + " + " + stats[3] + ") x " + Calculator.getCPM(stats[0]) + " ) = " + (Math.floor(effStamina))}</p>
               </PopoverContent>
             </Popover>
           </div>
@@ -727,7 +727,7 @@ const importPokemon = async () => {
                 PoGoAPI.getMovePBByID(move, allMoves).type && (
                 <Card
                   key={move}
-                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200' : ''}`}
+                  className={`mb-4 ${selectedQuickMove === move ? 'bg-blue-200 dark:bg-teal-950 dark:border-teal-500' : ''}`}
                   onClick={() => handleQuickMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves))}
                 >
                   <CardHeader>
@@ -773,7 +773,7 @@ const importPokemon = async () => {
                 PoGoAPI.getMovePBByID(move, allMoves).type && (
                 <Card
                   key={move}
-                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200' : ''}`}
+                  className={`mb-4 ${(isSecondChargedMove ? selectedSecondChargedMove : selectedChargedMove) === move ? 'bg-blue-200 dark:bg-teal-950 dark:border-teal-500' : ''}`}
                   onClick={() => handleChargedMoveSelect(move, PoGoAPI.getMovePBByID(move, allMoves), true, isSecondChargedMove)}
                 >
                   <CardHeader>

@@ -15,7 +15,7 @@ const Progress = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
+      "relative h-2 w-full overflow-hidden rounded-full bg-primary/20 dark:bg-primary/80",
       className
     )}
     {...props}
@@ -27,7 +27,7 @@ const Progress = React.forwardRef<
     {separators > 0 && (
       <div className="absolute inset-0 flex items-center justify-between pointer-events-none">
         {Array.from({ length: separators - 1 }).map((_, index) => (
-        <div key={index} className={"absolute left-" + (index+1) + "/" + separators + " h-full w-0.5 bg-white"}></div>
+        <div key={index} className={"absolute left-" + (index+1) + "/" + separators + " h-full w-0.5 bg-white dark:bg-gray-800"}></div>
         ))}
       </div>
     )}

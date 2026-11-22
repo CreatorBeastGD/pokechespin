@@ -411,7 +411,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <h3 className="text-xl font-bold ">{PoGoAPI.getPokemonNamePB(attacker?.pokemon.pokemonId, allEnglishText)}</h3>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -421,14 +421,14 @@ export default function rankingsPage() {
                                                     
                                                     <div className="flex flex-row items-center justify-between space-x-4">
 
-                                                        <h3 className="text-sm font-bold text-black">Global Score</h3>
+                                                        <h3 className="text-sm font-bold ">Global Score</h3>
                                                         <p>{attacker.tier.toFixed(4)}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
-                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p className="font-bold text-black">
+                                                        <h3 className="text-xl font-bold ">Percent to Best</h3>
+                                                        <p className="font-bold ">
                                                             {((attacker.tier / bestAttackers[0].tier) * 100).toFixed(2).split('.')[0]}
                                                             <span className="text-xs align-top">.{((attacker.tier / bestAttackers[0].tier) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>
@@ -478,10 +478,10 @@ export default function rankingsPage() {
                             
                         
                         
-                        <p className="italic text-slate-700 text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
-                        <p className="italic text-slate-700 text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
+                        <p className="italic  text-sm mb-4 mt-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setPrioritiseFast, "prioritise_fast_attack")} checked={prioritiseFast} /> Prioritise Fastest Attacks for Tanks</p>
+                        <p className="italic  text-sm mb-4"><Switch onCheckedChange={(checked) => handleSwitch(checked, setZamaExtraShield, "zamazenta_extra_shield")} checked={zamaExtraShield} /> Include Zamazenta - Crowned Shield's Extra Shield</p>
                         
-                        <p className="italic text-slate-700 text-sm ">Players in the team: {playersInTeam}</p>
+                        <p className="italic  text-sm ">Players in the team: {playersInTeam}</p>
                         <Slider onValueChange={(value) => handleSlider(value[0], setPlayersInTeam, "players_in_team")} value={[playersInTeam]} max={4} step={1} min={1} className="w-[60%] mb-4 mr-2 " color="bg-black"/>
                         
                         <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg "
@@ -516,7 +516,7 @@ export default function rankingsPage() {
                                                 <div className="space-y-1 w-full">
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         <div>
-                                                            <h3 className="text-xl font-bold text-black">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
+                                                            <h3 className="text-xl font-bold ">{PoGoAPI.getPokemonNamePB(defender?.pokemon.pokemonId, allEnglishText)}</h3>
                                                         </div>
                                                         
                                                         <p className="text-sm italic textgray">#{index+1}</p>
@@ -526,14 +526,14 @@ export default function rankingsPage() {
                                                     
                                                     <div className="flex flex-row items-center justify-between space-x-4">
 
-                                                        <h3 className="text-sm font-bold text-black">Global Score</h3>
-                                                        <p className={(prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black"}>{GetTankScore(defender)}</p>
+                                                        <h3 className="text-sm font-bold ">Global Score</h3>
+                                                        <p className={(prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : ""}>{GetTankScore(defender)}</p>
                                                     </div>
                                                     <Separator/>
                                                     <div className="flex flex-row items-center justify-between space-x-4">
                                                         
-                                                        <h3 className="text-xl font-bold text-black">Percent to Best</h3>
-                                                        <p className={"font-bold " + ((prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "text-black")}>
+                                                        <h3 className="text-xl font-bold ">Percent to Best</h3>
+                                                        <p className={"font-bold " + ((prioritiseFast && ((defender.fastMove.durationMs / 500) > 1)) ? "text-red-600" : "")}>
                                                             {((GetValueToShow(defender)/100) * 100).toFixed(2).split('.')[0]}
                                                             <span className="text-xs align-top">.{((GetValueToShow(defender)/100) * 100).toFixed(2).split('.')[1]}</span>%
                                                         </p>

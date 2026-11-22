@@ -20,8 +20,21 @@ import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { Button } from "./ui/button";
+import { Moon, Sun } from "lucide-react";
 
 const Navbar = () => {
+    const [darkMode, setDarkMode] = useState(false);
+
+    useEffect(() => {
+        setDarkMode(localStorage.getItem("darkMode") === "true");
+    }, []);
+
+    const toggleDarkMode = () => {
+        const nextDarkMode = !darkMode;
+        localStorage.setItem("darkMode", nextDarkMode.toString());
+        document.documentElement.classList.toggle("dark", nextDarkMode);
+        setDarkMode(nextDarkMode);
+    };
 
     let [doubleFriendshipBonus, setDoubleFriendshipBonus] = useState(false);
     let [customBladeBoostAmount, setCustomBladeBoostAmount] = useState(0.1);
@@ -680,6 +693,17 @@ const Navbar = () => {
                     </ScrollArea>
                     </SheetContent>
                 </Sheet>
+                <NavigationMenuItem className="flex items-center justify-center p-1">
+                    <button
+                        type="button"
+                        onClick={toggleDarkMode}
+                        className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white transition-colors hover:bg-white/10"
+                        aria-label={darkMode ? "Activate light mode" : "Activate dark mode"}
+                        title={darkMode ? "Light mode" : "Dark mode"}
+                    >
+                        {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
+                </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>
     );

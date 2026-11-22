@@ -663,7 +663,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
 
             <div>
             
-          <p className="text-primary text-sm my-2 mx-2">Checking member {selectedMember}, Pokémon slot {selectedPokemonSlot}...</p>
+          <p className=" text-sm my-2 mx-2">Checking member {selectedMember}, Pokémon slot {selectedPokemonSlot}...</p>
             {Array.from({ length: numMembers }, (_, memberIndex) => (
               <div key={memberIndex}>
                 {Array.from({ length: 3 }, (_, slotIndex) => (
@@ -705,7 +705,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             ) : (
         <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
           <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-          <p className="text-primary text-lg">Loading...</p>
+          <p className=" text-lg">Loading...</p>
         </div>
       )}
         </Card>
@@ -743,7 +743,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             /></CardContent>) : (
               <div className="flex flex-col items-center justify-center space-y-2 mt-4 mb-4">
                 <Image unoptimized src="https://i.imgur.com/aIGLQP3.png" alt="Favicon" className="inline-block mr-2 favicon" width={32} height={32} />
-                <p className="text-primary text-lg">Loading...</p>
+                <p className=" text-lg">Loading...</p>
               </div>
             )}
         </Card>
@@ -757,7 +757,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             <CardContent>
               
             
-            <p className="italic text-slate-700 text-sm">Weather: </p>
+            <p className="italic  text-sm">Weather: </p>
               <select onChange={(e) => handleWeatherSelect(e.target.value)} value={weather} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 <option key={"EXTREME"} value={"EXTREME"}>Extreme</option>
                 <option key={"CLOUDY"} value={"CLOUDY"}>Cloudy</option>
@@ -769,7 +769,7 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
                 <option key={"FOG"} value={"FOG"}>Fog</option>
               </select>
             
-            <p className="italic text-slate-700 text-sm">Max Battle difficulty: </p>
+            <p className="italic  text-sm">Max Battle difficulty: </p>
               <select onChange={handleSwitch} value={raidMode} className="mt-2 mb-4 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 p-2 rounded-lg">
                 
                 <option key={"raid-t1-dmax"} value={"raid-t1-dmax"}>Tier-1 Max Battle (1700HP) </option>
@@ -785,54 +785,54 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               {
               (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") && (
                 <Card className="w-full mt-4 mb-4 p-4">
-                  <CardTitle className="italic text-slate-700 text-sm mt-2">
+                  <CardTitle className="italic  text-sm mt-2">
                     Custom Max Battle Parameters
                   </CardTitle>
                   <div className="flex flex-col mt-2 mb-4 w-full space-y-1">
                   
                     <label>Custom Boss HP: </label>
-                    <input type="number" min={1000} max={10000000} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customHP}
+                    <input type="number" min={1000} max={10000000} className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg" value={customHP}
                     onChange={(e) => setCustomMaxBattleValues(Number(e.target.value), customCPM, customAtkMult, customEnergyGainMult)}
                     />
                     
                     <label>Custom CPM: </label>
-                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customCPM} 
+                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg" value={customCPM} 
                     onChange={(e) => setCustomMaxBattleValues(customHP, Number(e.target.value), customAtkMult, customEnergyGainMult)}/>
 
                     <label>Custom Attack Multiplier</label>
-                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customAtkMult} 
+                    <input type="number" step="0.01" min={0.1} max={10} className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg" value={customAtkMult} 
                     onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, Number(e.target.value), customEnergyGainMult)}/>
 
                     <label>Custom Energy Gain Multiplier</label>
-                    <input type="number" step="1" min={1} max={50} className="p-2 mt-1 bg-white border border-gray-300 rounded-lg" value={customEnergyGainMult}
+                    <input type="number" step="1" min={1} max={50} className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg" value={customEnergyGainMult}
                     onChange={(e) => setCustomMaxBattleValues(customHP, customCPM, customAtkMult, Number(e.target.value))}/>
 
-                    <p className="italic text-slate-700 text-sm mt-2 pt-3">Custom Max Battles allow you to set a custom HP, CPM, Attack Multiplier, and Energy Gain Multiplier for the boss. This is useful for simulating hypothetical scenarios or future raid bosses.</p>
+                    <p className="italic  text-sm mt-2 pt-3">Custom Max Battles allow you to set a custom HP, CPM, Attack Multiplier, and Energy Gain Multiplier for the boss. This is useful for simulating hypothetical scenarios or future raid bosses.</p>
                     {raidMode === "raid-custom-dmax" ? (
-                      <p className="italic text-slate-700 text-sm mt-2">Custom Dynamax Battles will have the same attack patterns as T5 Max Battles. (6.5s for Large, 7s for Target)</p>
+                      <p className="italic  text-sm mt-2">Custom Dynamax Battles will have the same attack patterns as T5 Max Battles. (6.5s for Large, 7s for Target)</p>
                     ) : (
-                      <p className="italic text-slate-700 text-sm mt-2">Custom Gigantamax Battles will have the same attack patterns as Gigantamax Battles. (2.5s for Large, 5s for Target)</p>
+                      <p className="italic  text-sm mt-2">Custom Gigantamax Battles will have the same attack patterns as Gigantamax Battles. (2.5s for Large, 5s for Target)</p>
                     )}
-                    <p className="italic text-slate-700 text-sm mt-2">For reference, T5 Max Battles usually have x4 Energy Gain Multiplier, while Gigantamax Battles usually have x15.</p>
+                    <p className="italic  text-sm mt-2">For reference, T5 Max Battles usually have x4 Energy Gain Multiplier, while Gigantamax Battles usually have x15.</p>
                   </div>
                 </Card>
               )
               }
 
               <Card className="w-full mt-4 mb-4 p-4">
-                <CardTitle className="italic text-slate-700 text-sm mt-2">
+                <CardTitle className="italic  text-sm mt-2">
                   Preview Bonuses (only used on calculations)
                 </CardTitle>
 
                 <div className="flex flex-col mt-2 mb-4 w-full space-y-2">
-                  <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                  <select className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg"
                   value={previewShroom.toString()}
                   onChange={(e) => setPreviewShroom(e.target.value === "true")}
                   >
                     <option value="false">No shrooms</option>
                     <option value="true">Shroom (x2)</option>
                   </select>
-                  <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+                  <select className="p-2 mt-1 bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-300 rounded-lg"
                   value={previewAdvEffect.toString()}
                   onChange={(e) => setPreviewAdvEffect(e.target.value)}
                   >
@@ -860,17 +860,15 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
               </Card>
 
               {((raidMode === "raid-t5-dmax" || raidMode === "raid-t6-gmax") && defendingPokemon) && (
-                <p className="italic text-slate-700 text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId, PoGoAPI.hasDoubleWeaknesses(defendingPokemon.type, defendingPokemon.type2, types))}HP</p>
+                <p className="italic  text-sm mt-2">Tier 5 and 6 Max Battles have varying HP. {PoGoAPI.getPokemonNamePB(defendingPokemon.pokemonId, allEnglishText)} has {Calculator.getEffectiveDMAXHP(raidMode, defendingPokemon.pokemonId, PoGoAPI.hasDoubleWeaknesses(defendingPokemon.type, defendingPokemon.type2, types))}HP</p>
                 )}
 
               <div className="flex flex-row items-center justify-center space-x-4 mt-4 mb-4 w-full">
               <button onClick={copyLinkToClipboard} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Copy setup link
               </button>
-              <a href={"https://pokemongo-damage-calculator.vercel.app/dynamax"} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
-                <button className="w-full ">
-                  Clean this setup
-                </button>
+              <a href={"https://pokemongo-damage-calculator.vercel.app/dynamax"} className="w-full py-2 text-center text-white bg-primary rounded-lg space-y-4 mb-4">
+                Clean this setup
               </a>
               <button onClick={checkBreakpoints} className="w-full py-2 text-white bg-primary rounded-lg space-y-4 mb-4">
                 Breakpoint Check
@@ -1054,10 +1052,10 @@ const handleLoadImportFromLink = (member: any, slot: any) => {
             )
             }
             <CardContent>
-              <p className="text-sm text-slate-700 italic font-bold">
+              <p className="text-sm  italic font-bold">
                 Using the simulator, be aware that there may be a huge difference in the playstyle between the simulation and a real life battle! This can give you an idea of how a max battle will go, but it can be improved by the player in real life!
               </p>
-              <p className="text-sm text-slate-700 italic font-bold mt-2"> 
+              <p className="text-sm  italic font-bold mt-2"> 
                 Stats for future Legendary and Gigantamax Battles are not definitive and they use a default value. Their real stats will be added once their Max Battles are available in the game.
               </p>
             </CardContent>
