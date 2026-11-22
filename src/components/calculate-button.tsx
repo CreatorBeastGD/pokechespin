@@ -50,6 +50,8 @@ export default function CalculateButton({
   const customAtkMult = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_atk_mult") || 1) : null;
   const customEnergyGainMult = raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax" ? (Number)(searchParams.get("custom_energy_gain_mult") || 1) : 1;
 
+  const weather = searchParams.get("weather") || "EXTREME";
+
   useEffect(() => {
     setDamage(0);
     setDamageEnraged(0);
@@ -65,6 +67,7 @@ export default function CalculateButton({
     if (raidMode === "raid-custom-dmax" || raidMode === "raid-custom-gmax") {
       defenderStatsModified[0] = customCPM;
     }
+
     
     const types = await PoGoAPI.getTypes();
     const damage = await PoGoAPI.getDamageAttack(attacker, defender, move, attackerStats, defenderStatsModified, bonusAttacker, bonusDefender, raidMode, additionalBonus * (bladeBoost ? Calculator.BladeBoost(raidMode) : (dynamicBoost && PoGoAPI.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)), shroomBonus);

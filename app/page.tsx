@@ -47,8 +47,8 @@ export default function Home() {
   );
   const [defenderStats, setDefenderStats] = useState<any | null>([50, 15, 15, 15]);
   const [raidMode, setRaidMode] = useState<any>("normal");
-  const [bonusAttacker, setBonusAttacker] = useState<any[][]>(Array(numMembers).fill(["EXTREME", false, false, 0]));
-  const [bonusDefender, setBonusDefender] = useState<any[]>(["EXTREME", false, false, 0]);
+  const [bonusAttacker, setBonusAttacker] = useState<any[][]>(Array(numMembers).fill([searchParams.get("weather") || "EXTREME", false, false, 0]));
+  const [bonusDefender, setBonusDefender] = useState<any[]>([searchParams.get("weather") || "EXTREME", false, false, 0]);
   const [pokemonList, setAllPokemonPB] = useState<any>(null);
   const [searchBarNames, setSearchBarNames] = useState<any>(null);
   const [allMoves, setAllMoves] = useState<any>(null);
@@ -163,7 +163,7 @@ export default function Home() {
       newSelectedChargedMoveAttacker.push((null));
       newSelectedSecondChargedMoveAttacker.push((null));
       newAttackerStats.push(([50, 15, 15, 15]));
-      newBonusAttacker.push((["EXTREME", false, false, 0]));
+      newBonusAttacker.push(([bonusAttacker[0][0], false, false, 0]));
     }
 
     setNumMembers(newNumMembers);

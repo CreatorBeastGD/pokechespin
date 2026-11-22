@@ -131,7 +131,7 @@ export default function Home() {
       newSelectedSecondChargedMoveAttacker.push(Array(3).fill(null));
       newAttackerStats.push(Array(3).fill([50, 15, 15, 15]));
       newMaxMoves.push(Array(3).fill([1, 0, 0]));
-      newBonusAttacker.push(Array(3).fill(["EXTREME", false, false, 0]));
+      newBonusAttacker.push(Array(3).fill([bonusAttacker[0][0][0], false, false, 0]));
       
     }
 
