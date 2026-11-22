@@ -64,7 +64,7 @@ function SemiCircularProgress({
         stroke="currentColor"
         strokeWidth="8"
         strokeLinecap="round"
-        className="text-primary/20"
+        className="text-primary/20 dark:text-primary/80"
       />
 
       <path

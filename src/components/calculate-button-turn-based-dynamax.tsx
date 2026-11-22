@@ -250,9 +250,9 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
       <Button onClick={startSimulation} className="w-full py-2 text-white bg-primary rounded-lg">
         Play
       </Button>
-      <div className="w-full">
+      <div className="w-full ">
         {!startedSim &&
-        <Card className="mt-4 py-4 px-4 mb-2">
+        <Card className="mt-4 py-4 px-4 mb-2 ">
           <div className="flex flex-col space-y-3">
             <label >Member</label>
             
@@ -283,7 +283,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         </Card>
         }
       {startedSim &&
-        <Card className="mt-4 py-4 px-4 mb-2">
+        <Card className="mt-4 py-4 px-4 mb-2 dark:bg-neutral-900">
           <div className="flex flex-col space-y-1">
             <div className="relative flex min-h-16 items-center justify-between">
               <div className="flex min-w-0 flex-col">
