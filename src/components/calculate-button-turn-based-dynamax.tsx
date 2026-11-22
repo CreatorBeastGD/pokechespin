@@ -256,14 +256,14 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
           <div className="flex flex-col space-y-3">
             <label >Member</label>
             
-            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            <select className="p-2 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
               value={shroom[0]}
               onChange={(e) => handleShroomChange(0, e.target.value)}
             >
               <option value="false">No shrooms</option>
               <option value="true">Shroom (x2)</option>
             </select>
-            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            <select className="p-2 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
               value={advEffect[0]}
               onChange={(e) => handleAdvEffectChange(0, e.target.value)}
             >

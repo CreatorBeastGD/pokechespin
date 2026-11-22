@@ -281,7 +281,7 @@ export default function CalculateButtonSimulateAdvancedDynamax({
         <Card className="mt-4 py-4 px-4 mb-2" key={i}>
           <div className="flex flex-col space-y-3" key={i}>
             <label >Member {i + 1}</label>
-            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            <select className="p-2 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
               value={strategy[i]}
               onChange={(e) => handleStrategyChange(i, e.target.value)}
             >
@@ -289,14 +289,14 @@ export default function CalculateButtonSimulateAdvancedDynamax({
               <option value="tank">Tank</option>
               <option value="heal">Healer</option>
             </select>
-            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            <select className="p-2 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
               value={shroom[i]}
               onChange={(e) => handleShroomChange(i, e.target.value)}
             >
               <option value="false">No shrooms</option>
               <option value="true">Shroom (x2)</option>
             </select>
-            <select className="p-2 mt-1 bg-white border border-gray-300 rounded-lg"
+            <select className="p-2 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
               value={advEffect[i]}
               onChange={(e) => handleAdvEffectChange(i, e.target.value)}
             >
