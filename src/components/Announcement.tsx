@@ -9,7 +9,7 @@ export function Announcement()
 {
     const currentDate = new Date();
     let isActive = true;
-    if (currentDate > new Date("2026-22-15T23:59:59Z")) {
+    if (currentDate > new Date("2026-11-21T23:59:59Z")) {
         isActive = false; // Don't render the announcement if the current date is after November 15, 2026
     }
     return (
