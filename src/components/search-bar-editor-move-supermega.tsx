@@ -182,7 +182,7 @@ export default function SearchBarMoveEditorSuperMega({
         onKeyDown={(e) => e.key === "Enter" && handleMoveSuggestionClick(suggestions[0])}
       />
       {suggestions.length > 0 && (
-        <ul className="absolute bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
+        <ul className="absolute bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded-md shadow-lg z-10 resp-box-suggest ">
         {suggestions.map((suggestion) => (
           <li
             key={suggestion.moveId}
@@ -195,9 +195,9 @@ export default function SearchBarMoveEditorSuperMega({
         </ul>
       )}
       <div>
-        <Button onClick={searchMove} className="mt-4 mb-2 mr-2">Search</Button>
-        <Button onClick={saveCustomMove} className="mt-4 mb-2 mr-2">Save</Button>
-        <Button onClick={resetToDefault} className="mt-4 mb-2">Default</Button>
+        <Button onClick={searchMove} className="mt-4 mb-2 mr-2 text-white">Search</Button>
+        <Button onClick={saveCustomMove} className="mt-4 mb-2 mr-2 text-white">Save</Button>
+        <Button onClick={resetToDefault} className="mt-4 mb-2 text-white">Default</Button>
       </div>
       <p className="text-sm text-muted-foreground">
         Clicking "Default" will reset the move's values to their original state. This action cannot be undone, so make sure you want to reset before clicking it.
@@ -251,11 +251,11 @@ export default function SearchBarMoveEditorSuperMega({
               </h2>
               <p>Power</p>
               <div className="w-full flex flex-row justify-between items-center">
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2">-5</Button>
-                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2">-1</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 5)} className="mx-2 text-white">-5</Button>
+                <Button onClick={() => setCustomDamage(customDamage <= 0 ? 0 : customDamage - 1)} className="mx-2 text-white">-1</Button>
                 <p className="inline-block  ">{customDamage}</p> 
-                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 1)} className="mx-2">+1</Button>
-                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2">+5</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 1)} className="mx-2 text-white">+1</Button>
+                <Button onClick={() => setCustomDamage(customDamage >= 1000 ? 1000 : customDamage + 5)} className="mx-2 text-white">+5</Button>
               </div>
               </>
         </Card>
