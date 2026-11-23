@@ -390,8 +390,9 @@ export class PoGoAPI {
             case "SLUDGE_WAVE_PLUS":
                 return "Sludge Wave+";
             case "FLYING_PRESS_PLUS":
-            case "FLYNG_PRESS_PLUS":
                 return "Flying Press+";
+            case "WEATHER_BALL_ICE_PLUS":
+                return "Weather Ball Ice+";
             case "POWER_GEM_PLUS":
                 return "Power Gem+";
             case "DRAIN_PUNCH_PLUS":
@@ -412,6 +413,18 @@ export class PoGoAPI {
                 return "Ominous Wind+";
             case "ROCK_SLIDE_PLUS":
                 return "Rock Slide+";
+            case "CHILLING_WATER_PLUS":
+                return "Chilling Water+";
+            case "MOONBLAST_PLUS":
+                return "Moonblast+";
+            case "ICE_BEAM_PLUS":
+                return "Ice Beam+";
+            case "SACRED_SWORD_PLUS":
+                return "Sacred Sword+";
+            case "UPPER_HAND_PLUS":
+                return "Upper Hand+";
+            case "TWISTER_PLUS":
+                return "Twister+";
             default:
                 break;
         }
@@ -2206,6 +2219,13 @@ export class PoGoAPI {
             "DRAGON_PULSE_PLUS",
             "ICICLE_SPEAR_PLUS",
             "ROCK_SLIDE_PLUS",
+            "CHILLING_WATER_PLUS",
+            "MOONBLAST_PLUS",
+            "WEATHER_BALL_ICE_PLUS",
+            "ICE_BEAM_PLUS",
+            "SACRED_SWORD_PLUS",
+            "UPPER_HAND_PLUS",
+            "TWISTER_PLUS",
         ];
 
     static IsMegaChargedMove(moveId: string) {
