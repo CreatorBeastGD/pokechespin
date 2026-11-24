@@ -685,17 +685,7 @@ export default function Home() {
       <Announcement/>
 
       <Navbar/>
-      {canOpenPlayerSimulation && (
-        <div className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 md:hidden">
-          <button
-            type="button"
-            onClick={openPlayerSimulation}
-            className="w-full max-w-sm rounded-md bg-primary px-4 py-4 text-base font-medium text-primary-foreground shadow-xl"
-          >
-            Start real-time raid
-          </button>
-        </div>
-      )}
+      
       <div className="flex responsive-test space-y-4 md:space-x-4 big-box">
         <Card className="md:w-1/2 w-full">
           <CardHeader>

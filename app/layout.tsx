@@ -70,11 +70,11 @@ export default function RootLayout({
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             2026 CreatorBeastGD.
           </p>
-          <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white w-1/4 p-3 border border-gray-500 rounded-lg">
+          <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white md:w-1/4 w-1/2 p-3 border border-gray-500 rounded-lg">
             <BuyMeACoffeeIcon/>
             <p className="px-2">Buy me a Chespin!</p>
           </a>
-          <a href="https://github.com/sponsors/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white w-1/4 p-3 border border-gray-500 rounded-lg">
+          <a href="https://github.com/sponsors/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white md:w-1/4 w-1/2 p-3 border border-gray-500 rounded-lg">
             <GitHubSponsorIcon/>
             <p className="px-2">Sponsor me on GitHub!</p>
           </a>
