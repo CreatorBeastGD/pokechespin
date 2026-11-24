@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,6 +50,7 @@ export default function PlayerPage() {
   const [config, setConfig] = useState<PlayerConfig | null>(null);
   const [gameStatus, setGameStatus] = useState<RaidStatus | null>(null);
   const [running, setRunning] = useState(false);
+  const [hasStartedRaid, setHasStartedRaid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
@@ -198,32 +199,41 @@ export default function PlayerPage() {
     return () => observer.disconnect();
   }, []);
 
-  const initializeSimulation = () => {
-    if (!config) return;
-
-    const status = PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
-      config.attackers,
-      config.defender,
-      config.quickMoves,
-      config.chargedMoves,
-      config.secondChargedMoves,
-      config.defenderQuickMove,
-      config.defenderChargedMove,
-      config.attackerStats,
-      config.attackerBonuses,
-      config.defenderBonuses,
-      config.raidMode,
-      config.weather,
-      config.advEffect,
+  const createInitialSimulation = (currentConfig: PlayerConfig) =>
+    PoGoAPI.RealTimeSimulatorAllyTurnRaid(
+      currentConfig.attackers,
+      currentConfig.defender,
+      currentConfig.quickMoves,
+      currentConfig.chargedMoves,
+      currentConfig.secondChargedMoves,
+      currentConfig.defenderQuickMove,
+      currentConfig.defenderChargedMove,
+      currentConfig.attackerStats,
+      currentConfig.attackerBonuses,
+      currentConfig.defenderBonuses,
+      currentConfig.raidMode,
+      currentConfig.weather,
+      currentConfig.advEffect,
       "init",
       null,
-      config.types,
-      config.allMoves,
-      config.relobbyTime,
-      config.energyResolveBug,
+      currentConfig.types,
+      currentConfig.allMoves,
+      currentConfig.relobbyTime,
+      currentConfig.energyResolveBug,
     );
 
+  useEffect(() => {
+    if (!config) return;
+    setGameStatus(createInitialSimulation(config));
+    setRunning(false);
+    setHasStartedRaid(false);
+  }, [config]);
+
+  const initializeSimulation = () => {
+    if (!config) return;
+    const status = createInitialSimulation(config);
     setGameStatus(status);
+    setHasStartedRaid(true);
     setRunning(true);
   };
 
@@ -235,7 +245,7 @@ export default function PlayerPage() {
         if (!current || !config) return current;
         const statusCopy = cloneRaidStatus(current);
 
-        const next = PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
+        const next = PoGoAPI.RealTimeSimulatorAllyTurnRaid(
           config.attackers,
           config.defender,
           config.quickMoves,
@@ -287,7 +297,7 @@ export default function PlayerPage() {
       if (action !== "relobby" && current.allyCooldown > 0) return current;
       const statusCopy = cloneRaidStatus(current);
 
-      return PoGoAPI.TurnBasedSimulatorAllyTurnRaid(
+      return PoGoAPI.RealTimeSimulatorAllyTurnRaid(
         config.attackers,
         config.defender,
         config.quickMoves,
@@ -320,8 +330,34 @@ export default function PlayerPage() {
     `type-${String(move?.type ?? "normal").replace("POKEMON_TYPE_", "").toLowerCase()}`;
   const getMoveName = (move: any) =>
     move?.moveId ? PoGoAPI.formatMoveName(move.moveId) : "Move";
+  const getMoveAnimationDuration = (move: any) => {
+    const durationMs = Number(move?.durationMs);
+    const normalizedDurationMs = Number.isFinite(durationMs) && durationMs > 0
+      ? Math.ceil(durationMs / 500) * 500
+      : 1000;
+
+    return `${normalizedDurationMs / 2}ms`;
+  };
 
   const activeIndex = gameStatus?.activeAllyIndex ?? 0;
+  const allySprite = useMemo(
+    () => config && PoGoAPI.getPokemonImageByID(config.attackers[activeIndex].pokemonId, config.imageLinks),
+    [config, activeIndex],
+  );
+  const enemySprite = useMemo(
+    () => config && PoGoAPI.getPokemonImageByID(config.defender.pokemonId, config.imageLinks),
+    [config],
+  );
+  const allySpriteMovement = gameStatus?.allyCurrentMessage?.damage
+    ? "translate-x-8 scale-110"
+    : gameStatus?.allyActiveMove
+      ? "raid-ally-attacking"
+      : "translate-x-0 scale-100";
+  const enemySpriteMovement = gameStatus?.enemyCurrentMessage?.damage
+    ? "-translate-x-8 scale-110"
+    : gameStatus?.enemyActiveMove && !gameStatus.enemyPrepPhase
+      ? "raid-enemy-attacking"
+      : "translate-x-0 scale-100";
   const raidRemaining = config && gameStatus
     ? Math.max(0, PoGoAPI.getRaidTime(config.raidMode) - gameStatus.timer)
     : 0;
@@ -385,16 +421,36 @@ export default function PlayerPage() {
           pointerStart.current = null;
         }}
       >
-        <Card className="mt-4">
+        
+        <Card className="relative mt-4">
+          <CardHeader>
+            <CardTitle>Real-Time Raid Player (BETA)</CardTitle>
+            <CardDescription>
+              Play the configured raid using the same turn-based battle engine, but with real-time interaction.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            To start the raid, click the "Start Raid" button below. It is highly recommended to play on mobile devices. Clicking anywhere in the main card will default to use a Fast Attack.
+          </CardContent>
+          <CardContent>
+            Additional configurations:
+            <p>Relobby Time: {config?.relobbyTime || 0}s</p>
+            <p>Weather: {config?.weather || "None"}</p>
+            <p>Adventure Effect: {config?.advEffect || "None"}</p>
+            <button
+            className="w-full py-2 text-white bg-primary rounded-lg mt-4 "
+            onClick={() => {
+              window.location.href = "/" + window.location.search;
+            }}>
+              Back to PokéChespin for Raids
+            </button>
+          </CardContent>
+          
+        </Card>
+        <Card className="relative mt-4">
           <CardHeader>
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <CardTitle>Real-Time Raid Player</CardTitle>
-                <CardDescription>
-                  Play the configured raid using the same turn-based battle engine.
-                </CardDescription>
-              </div>
-              {gameStatus && (
+              {gameStatus && hasStartedRaid && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -418,12 +474,6 @@ export default function PlayerPage() {
 
             {!config && !error && <p>Loading raid configuration...</p>}
 
-            {config && !gameStatus && (
-              <Button className="w-full" onClick={initializeSimulation}>
-                Start raid
-              </Button>
-            )}
-
             {config && gameStatus && (
               <>
                 <div className="flex items-center justify-between gap-2 text-sm">
@@ -432,61 +482,82 @@ export default function PlayerPage() {
                     className="min-w-24"
                     data-no-fast
                     onClick={() => sendAction("relobby")}
-                    disabled={!running}
+                    disabled={
+                      !running ||
+                      gameStatus.timer < 1 ||
+                      gameStatus.simulationLog.length === 0
+                    }
                   >
                     Relobby
                   </Button>
                   <strong className="text-lg">{raidRemaining}s</strong>
                 </div>
 
-                <Separator className="my-3" />
-                <p className="font-semibold">{gameStatus.enrageCurrentMessage?.message}</p>
+                <Separator className="my-2" />
                 <p className="text-sm">{gameStatus.globalCurrentMessage?.message}</p>
 
-                <div className="mt-4">
-                  <div className="mb-1 flex justify-between text-xs">
-                    <span>{PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}</span>
-                    <span>
-                      {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
-                    </span>
-                  </div>
-                  <Progress
-                    value={Math.max(0, ((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)}
-                    color={getHealthColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)}
-                  />
-                  <p className="mt-2 min-h-5 text-xs text-red-600">
-                    {gameStatus.enemyCurrentMessage?.message}
-                  </p>
-                </div>
-
-                <Separator className="my-4" />
-
-                <div>
-                  <div className="mb-1 flex justify-between text-xs">
-                    <span>{PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}</span>
-                    <span>
-                      {Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} / {gameStatus.allyPokemonMaxHealth[activeIndex]} HP
-                    </span>
-                  </div>
-                  <Progress
-                    value={Math.max(0, ((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}
-                    color={getHealthColor(((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}
-                  />
-                  <div className="mt-1">
-                    <Progress
-                      value={Math.max(0, Math.min(100, gameStatus.allyEnergy[activeIndex]))}
-                      color="bg-blue-500"
-                      className="h-2"
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+                    <img
+                      src={"https://static.pokebattler.com/assets/pokemon/128/" + allySprite}
+                      alt=""
+                      className={"absolute right-1/4 top-1/3 h-20 w-20 -translate-y-1/2 object-contain opacity-40 transition-transform duration-300 ease-out " + allySpriteMovement}
+                      style={gameStatus.allyActiveMove ? { animationDuration: getMoveAnimationDuration(gameStatus.allyActiveMove.move) } : undefined}
+                    />
+                    <img
+                      src={"https://static.pokebattler.com/assets/pokemon/128/" + enemySprite}
+                      alt=""
+                      className={"absolute right-1 top-1/3 h-20 w-20 -translate-y-1/2 object-contain opacity-40 transition-transform duration-300 ease-out " + enemySpriteMovement}
+                      style={gameStatus.enemyActiveMove && !gameStatus.enemyPrepPhase ? { animationDuration: getMoveAnimationDuration(gameStatus.enemyActiveMove.move) } : undefined}
                     />
                   </div>
-                  <p className="mt-2 min-h-5 text-xs">
-                    {gameStatus.allyCurrentMessage?.message}
-                  </p>
-                  <p className="text-xs">Energy: {gameStatus.allyEnergy[activeIndex]}/100</p>
+
+                  <div className="relative z-10">
+                    <div className="mt-2">
+                      <div className="mb-1 flex justify-between text-xs">
+                        <span>{PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}</span>
+                        <span>
+                          {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
+                        </span>
+                      </div>
+                      <Progress
+                        value={Math.max(0, ((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)}
+                        color={getHealthColor(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)}
+                      />
+                      <p className="mt-2 min-h-8 text-xs text-red-600">
+                        {gameStatus.enemyCurrentMessage?.message}
+                      </p>
+                    </div>
+
+                    <Separator className="my-3" />
+
+                    <div>
+                      <div className="mb-1 flex justify-between text-xs">
+                        <span>{PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}</span>
+                        <span>
+                          {Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} / {gameStatus.allyPokemonMaxHealth[activeIndex]} HP
+                        </span>
+                      </div>
+                      <Progress
+                        value={Math.max(0, ((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}
+                        color={getHealthColor(((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}
+                      />
+                      <div className="mt-1">
+                        <Progress
+                          value={Math.max(0, Math.min(100, gameStatus.allyEnergy[activeIndex]))}
+                          color="bg-blue-500"
+                          className="h-2"
+                        />
+                      </div>
+                      <p className="mt-2 min-h-8 text-xs">
+                        {gameStatus.allyCurrentMessage?.message}
+                      </p>
+                      <p className="text-xs">Energy: {gameStatus.allyEnergy[activeIndex]}/100</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mt-5 rounded-xl border border-border bg-muted/30 p-3">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Primary actions</p>
+                <div className="mt-5 rounded-xl border border-border bg-muted/30 p-2">
                   <div className="grid grid-cols-2 gap-2" data-no-fast>
                     <Button
                       className={"h-14 text-sm text-white disabled:pointer-events-auto " + getMoveTypeClass(config.quickMoves[activeIndex])}
@@ -543,7 +614,6 @@ export default function PlayerPage() {
                 </div>
 
                 <div className="mt-5">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Switch Pokémon</p>
                   <div
                     className="grid w-full gap-1 sm:gap-2"
                     style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}
@@ -601,6 +671,17 @@ export default function PlayerPage() {
               </>
             )}
           </CardContent>
+          {config && gameStatus && !hasStartedRaid && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/60 p-4 backdrop-blur-[2px]">
+              <Button
+                className="h-14 min-w-[10rem] px-12 py-2 text-lg shadow-xl"
+                data-no-fast
+                onClick={initializeSimulation}
+              >
+                Start raid
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
       </ClickSparkWithProps>

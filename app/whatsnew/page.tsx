@@ -9,6 +9,14 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.47 (REALTIME Solo Raid Player!)",
+        desc: "+ Added a new feature to PokéChespin called 'Real-Time Raid Player'!\n"+
+            ">>>>>> This new feature allows you to play the configured raid in real-time, using the same turn-based battle engine, but with real-time interaction!\n"+
+            ">>>>>> You can access this feature by clicking the new button right below the Solo Raid Simulator one!\n"+
+            ">>>>>> Feature still in beta, there may be some bugs or issues with it. If you find any, please report it, and have fun!",
+        date: "2026-11-24",
+    },
+    {
         title: "v1.46.0.1",
         desc: "+ Added a new spark pulse effect to both Solo Simulators when clicking on it. This can be disabled on the Customization section of the Configurations.\n",
         date: "2026-11-24",

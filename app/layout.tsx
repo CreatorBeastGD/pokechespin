@@ -70,16 +70,14 @@ export default function RootLayout({
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             2026 CreatorBeastGD.
           </p>
-          <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white bg-black text-xs w-1/2 border-2 border-white border-opacity-10">
-            <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center"><BuyMeACoffeeIcon/>
-              <p className="px-2">Buy me a Chespin!</p>
-            </a>
-          </div>
-          <div className="flex flex-row  space-x-2 bg-black p-2 rounded-lg text-white bg-black text-xs w-1/2 border-2 border-white border-opacity-10">
-            <a href="https://github.com/sponsors/creatorbeastgd" className="flex flex-row items-center justify-center"><GitHubSponsorIcon/>
-              <p className="px-2">Sponsor me on GitHub!</p>
-            </a>
-          </div>
+          <a href="https://buymeacoffee.com/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white w-1/4 p-3 border border-gray-500 rounded-lg">
+            <BuyMeACoffeeIcon/>
+            <p className="px-2">Buy me a Chespin!</p>
+          </a>
+          <a href="https://github.com/sponsors/creatorbeastgd" className="flex flex-row items-center justify-center bg-black text-white w-1/4 p-3 border border-gray-500 rounded-lg">
+            <GitHubSponsorIcon/>
+            <p className="px-2">Sponsor me on GitHub!</p>
+          </a>
           
         </div>
         <Analytics />

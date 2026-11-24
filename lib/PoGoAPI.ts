@@ -30,7 +30,7 @@ export class PoGoAPI {
     
     
     static getVersion() {
-        return "1.46.0.1";
+        return "1.47";
     }
 
     static async getAllPokemon() {
@@ -5422,8 +5422,8 @@ export class PoGoAPI {
     
 
     static TurnBasedSimulatorAllyTurnRaid(
-        attackers: any[], 
-        defender: any, 
+        attackers: any[],
+        defender: any,
         attackersQuickMove: any[],
         attackersCinematicMove: any[],
         attackersSecondCinematicMove: any[],
@@ -5476,27 +5476,27 @@ export class PoGoAPI {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
 
         defenderBonuses[0] = attackersBonuses[0][0];
-        
+
         if (order === "init") {
             gamestatus.allyPokemonMaxHealth = [];
             for (let i = 0 ; i < attackers.length ; i++) {
                 gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
-                
+
                 gamestatus.allyDamageValues.push([
                     Math.floor(this.getDamage(
-                        attackers[i], 
-                        defender, 
-                        attackersQuickMove[i], 
-                        types, 
-                        attackersStats[i], 
-                        defenderStats, 
+                        attackers[i],
+                        defender,
+                        attackersQuickMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        defenderBonuses, 
-                        raidMode, 1, 
+                        defenderBonuses,
+                        raidMode, 1,
                         (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type)
                     )),
                     Math.floor(this.getDamage(
-                        attackers[i], 
+                        attackers[i],
                         defender,
                         attackersCinematicMove[i],
                         types,
@@ -5507,9 +5507,9 @@ export class PoGoAPI {
                         raidMode, 1,
                         (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersCinematicMove[i].type)
                     )),
-                    attackersSecondCinematicMove[i] != null ? 
+                    attackersSecondCinematicMove[i] != null ?
                     Math.floor(this.getDamage(
-                        attackers[i], 
+                        attackers[i],
                         defender,
                         attackersSecondCinematicMove[i],
                         types,
@@ -5524,19 +5524,19 @@ export class PoGoAPI {
 
                 gamestatus.allyDamageValuesEnraged.push([
                     Math.floor(this.getDamageEnraged(
-                        attackers[i], 
-                        defender, 
-                        attackersQuickMove[i], 
-                        types, 
-                        attackersStats[i], 
-                        defenderStats, 
+                        attackers[i],
+                        defender,
+                        attackersQuickMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        defenderBonuses, 
-                        raidMode, false, 
+                        defenderBonuses,
+                        raidMode, false,
                         (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
                     )),
                     Math.floor(this.getDamageEnraged(
-                        attackers[i], 
+                        attackers[i],
                         defender,
                         attackersCinematicMove[i],
                         types,
@@ -5549,7 +5549,7 @@ export class PoGoAPI {
                     )),
                     attackersSecondCinematicMove[i] != null ?
                     Math.floor(this.getDamageEnraged(
-                        attackers[i], 
+                        attackers[i],
                         defender,
                         attackersSecondCinematicMove[i],
                         types,
@@ -5565,28 +5565,28 @@ export class PoGoAPI {
                 gamestatus.enemyDamageValues.push([
                     Math.floor(this.getDamage(
                         defender,
-                        attackers[i], 
-                        defenderQuickMove, 
+                        attackers[i],
+                        defenderQuickMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        1, 
+                        "normal",
+                        1,
                         (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
-                    )), 
+                    )),
                     Math.floor(this.getDamage(
                         defender,
-                        attackers[i], 
-                        defenderCinematicMove, 
+                        attackers[i],
+                        defenderCinematicMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        1, 
+                        "normal",
+                        1,
                         (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ))
                 ])
@@ -5594,28 +5594,28 @@ export class PoGoAPI {
                 gamestatus.enemyDamageValuesReduced.push([
                     Math.floor(this.getDamage(
                         defender,
-                        attackers[i], 
-                        defenderQuickMove, 
+                        attackers[i],
+                        defenderQuickMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        1, 
+                        "normal",
+                        1,
                         (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
-                    )), 
+                    )),
                     Math.floor(this.getDamage(
                         defender,
-                        attackers[i], 
-                        defenderCinematicMove, 
+                        attackers[i],
+                        defenderCinematicMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        1, 
+                        "normal",
+                        1,
                         (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ))
                 ])
@@ -5623,28 +5623,28 @@ export class PoGoAPI {
                 gamestatus.enemyDamageValuesEnraged.push([
                     Math.floor(this.getDamageEnraged(
                         defender,
-                        attackers[i], 
-                        defenderQuickMove, 
+                        attackers[i],
+                        defenderQuickMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
                         "normal",
                         true,
                         ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
-                    )), 
+                    )),
                     Math.floor(this.getDamageEnraged(
                         defender,
-                        attackers[i], 
-                        defenderCinematicMove, 
+                        attackers[i],
+                        defenderCinematicMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        true, 
+                        "normal",
+                        true,
                         ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ))
                 ])
@@ -5652,28 +5652,28 @@ export class PoGoAPI {
                 gamestatus.enemyDamageValuesEnragedReduced.push([
                     Math.floor(this.getDamageEnraged(
                         defender,
-                        attackers[i], 
-                        defenderQuickMove, 
+                        attackers[i],
+                        defenderQuickMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
                         "normal",
                         true,
                         (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
-                    )), 
+                    )),
                     Math.floor(this.getDamageEnraged(
                         defender,
-                        attackers[i], 
-                        defenderCinematicMove, 
+                        attackers[i],
+                        defenderCinematicMove,
                         types,
-                        defenderStats,  
-                        attackersStats[i], 
-                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        defenderStats,
+                        attackersStats[i],
+                        defenderBonuses,
                         [weather, this.isShadow(attackers[i].pokemonId), false, 0],
-                        "normal", 
-                        true, 
+                        "normal",
+                        true,
                         (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
                     ))
                 ])
@@ -5682,7 +5682,7 @@ export class PoGoAPI {
             gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
             //console.log(gamestatus.enemyPokemonMaxHealth);
         }
-        
+
         let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
         let landedmove: "c" | "f" | "d" | "r" | "c2" | null = null;
         let landedMoveIndex: number | null = null;
@@ -5703,7 +5703,8 @@ export class PoGoAPI {
                 case "init":
                     //console.log(gamestatus);
                     return {...gamestatus} as RaidStatus;
-                case "rt-fast":
+                // Fast Move
+                case "fast":
                     gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};
                     gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
                     gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
@@ -5714,72 +5715,11 @@ export class PoGoAPI {
                             gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
                         }
                     } else {
-                        gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
-                        gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
-                    }
-
-                    gamestatus.allyCurrentMessage = {
-                        message: "Using " + PoGoAPI.formatMoveName(attackersQuickMove[gamestatus.activeAllyIndex].moveId),
-                        damage: 0,
-                        duration: gamestatus.allyCooldown,
-                        color: "#575757"
-                    };
-                    return {...gamestatus} as RaidStatus;
-                case "rt-charged":
-                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
-                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: false};
-                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
-                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
-                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
-                    }
-                    return {...gamestatus} as RaidStatus;
-                case "rt-charged2":
-                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
-                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: true};
-                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta;
-                        gamestatus.allyCooldown = Math.ceil(attackersSecondCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
-                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
-                    }
-                    return {...gamestatus} as RaidStatus;
-                case "rt-dodge":
-                    gamestatus.allyActiveMove = null;
-                    gamestatus.allyCooldown = 1;
-
-                    if (gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
-                        gamestatus.allyDodgeTurn = gamestatus.timer;
-                    }
-
-                    gamestatus.allyCurrentMessage = {
-                        message: "Dodged",
-                        damage: 0,
-                        duration: 0,
-                        color: "#a2fa85"
-                    };
-
-                    if (gamestatus.hasDodged != true && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd - 1)) {
-                        gamestatus.damageReduction = 0.25;
-                        gamestatus.hasDodged = true;
-                    } else {
-                        gamestatus.damageReduction = 1;
-                    }
-                    return {...gamestatus} as RaidStatus;
-                // Fast Move
-                case "fast":
-                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
-                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
-                    gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
-                    
-                    if (!enableEnergyResolveBug) {
-                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
-                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
-                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
-                        }
-                    } else {
                         // Energy resolve bug: you get the energy one turn later.
                         gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
                         gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
                     }
-                    
+
                     //console.log(gamestatus.allyCooldown);
                     break;
 
@@ -5799,7 +5739,7 @@ export class PoGoAPI {
                         }
                     }
                     break;
-                
+
                 // Charged Move
                 case "charged2":
                     if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
@@ -5833,9 +5773,9 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
 
-                    
+
                     if ((gamestatus.hasDodged != true) && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd-1)) {
-                        gamestatus.damageReduction = 0.25; 
+                        gamestatus.damageReduction = 0.25;
                         gamestatus.hasDodged = true;
                     } else {
                         gamestatus.damageReduction = 1;
@@ -5845,8 +5785,8 @@ export class PoGoAPI {
                     landedMoveIndex = gamestatus.activeAllyIndex;
 
                     break;
-                
-                
+
+
                 // Switch to pokémon slot 0
                 case "switch0":
                     gamestatus.allyActiveMove = null;
@@ -5881,8 +5821,8 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
                     return {...gamestatus} as RaidStatus;
-                    
-                
+
+
                 // Switch to pokémon slot 2
                 case "switch2":
                     gamestatus.allyActiveMove = null;
@@ -5897,10 +5837,10 @@ export class PoGoAPI {
                         damage: 0,
                         duration: 0,
                         color: "#a2fa85"
-                    } 
+                    }
                     return {...gamestatus} as RaidStatus;
-                    
-                
+
+
                 case "switch3":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
@@ -5916,7 +5856,7 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
                     return {...gamestatus} as RaidStatus;
-                
+
                 case "switch4":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
@@ -5934,7 +5874,7 @@ export class PoGoAPI {
 
                     return {...gamestatus} as RaidStatus;
 
-                    
+
                 case "switch5":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
@@ -5951,7 +5891,7 @@ export class PoGoAPI {
                     }
 
                     return {...gamestatus} as RaidStatus;
-                
+
                 case "relobby":
                     gamestatus.allyActiveMove = null;
                     gamestatus.allyCooldown = gamestatus.relobbyTimer;
@@ -5966,13 +5906,13 @@ export class PoGoAPI {
                         color: "#a2fa85"
                     }
                     gamestatus.isRelobby = 1;
-                    
+
                     gamestatus.simulationLog[gamestatus.simulationLog.length - 1].landedMove += "r";
 
                     return {...gamestatus} as RaidStatus;
-                
+
             }
-        } 
+        }
         if (gamestatus.chargedMoveCooldown > 0) {
             gamestatus.chargedMoveCooldown -= 0.5;
             if (gamestatus.chargedMoveCooldown < 0) {
@@ -5981,14 +5921,14 @@ export class PoGoAPI {
         }
         if (gamestatus.allyCooldown > 0) {
             gamestatus.allyCooldown -= 0.5;
-            
+
             if (gamestatus.allyCooldown <= 0) {
                 gamestatus.allyCooldown = 0;
 
                 if (gamestatus.isRelobby === 1) {
                     gamestatus.isRelobby = 0;
-                     
-                    gamestatus.allyCooldown = !gamestatus.enemyPrepPhase ? 
+
+                    gamestatus.allyCooldown = !gamestatus.enemyPrepPhase ?
                     ((localStorage.getItem("freezeRejoin") === "true") ? (gamestatus.dodgeWindowEnd - gamestatus.timer) : 0 ) : 0;
                 }
 
@@ -5998,7 +5938,7 @@ export class PoGoAPI {
                     const projectedDamage = gamestatus.enrage
                         ? gamestatus.allyDamageValuesEnraged[gamestatus.activeAllyIndex][damageIndex]
                         : gamestatus.allyDamageValues[gamestatus.activeAllyIndex][damageIndex];
-                    
+
                     gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
                     gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
 
@@ -6075,20 +6015,20 @@ export class PoGoAPI {
         }
 
         this.TurnBasedSimulatorEnemyTurnRaid(
-            attackers, 
-            defender, 
-            attackersQuickMove, 
+            attackers,
+            defender,
+            attackersQuickMove,
             attackersCinematicMove,
-            attackersStats, 
+            attackersStats,
             attackersBonuses,
-            defenderQuickMove, 
+            defenderQuickMove,
             defenderCinematicMove,
-            defenderBonuses, 
-            raidMode, 
-            weather, 
-            advEffects,  
-            gamestatus, 
-            types, 
+            defenderBonuses,
+            raidMode,
+            weather,
+            advEffects,
+            gamestatus,
+            types,
             allMoves
         );
 
@@ -6128,39 +6068,37 @@ export class PoGoAPI {
 
 
         const next = {...gamestatus} as RaidStatus;
-        
+
         //console.log(next);
         return next;
     }
 
     static TurnBasedSimulatorEnemyTurnRaid(
-        attackers: any[], 
-        defender: any, 
-        attackersQuickMove: any[], 
-        attackersCinematicMove: any[], 
-        attackersStats: any[][], 
+        attackers: any[],
+        defender: any,
+        attackersQuickMove: any[],
+        attackersCinematicMove: any[],
+        attackersStats: any[][],
         attackersBonuses: any[][],
-        defenderQuickAttack: any, 
+        defenderQuickAttack: any,
         defenderCinematicAttack: any,
-        defenderBonuses: any[], 
-        raidMode: string, 
+        defenderBonuses: any[],
+        raidMode: string,
         weather: string = "EXTREME",
         advEffects: string = "none",
         gamestatus: RaidStatus,
         types: any = null,
         allMoves: any = null,
-    ) {        
+    ) {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
-        
+
         // enemy can cast a move
         if (gamestatus.enemyCooldown == 0) {
             if (gamestatus.enemyActiveMove == null) {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
-                gamestatus.enemyMoveHitIn = null;
-                gamestatus.enemyMoveHasHit = false;
-                gamestatus.enemyMoveHitAt = null;
+                console.log(gamestatus.chargedMoveChance);
                 if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && this.nextRandom(gamestatus, 0) < gamestatus.chargedMoveChance) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
@@ -6168,7 +6106,871 @@ export class PoGoAPI {
                     gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
                 }
-                
+
+                gamestatus.targetDodgeWindow = true;
+                gamestatus.allyDodgeTurn = 0;
+                gamestatus.enemyCurrentMessage = {
+                    duration: gamestatus.enemyCooldown,
+                    message: "Move being prepared...",
+                    damage: 0,
+                    color: "#575757"
+                }
+                gamestatus.dodgeWindowEnd = gamestatus.timer + gamestatus.enemyCooldown + Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+            } else {
+                // Enemy starts to cast move
+                gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+            }
+        }
+        if (gamestatus.enemyCooldown > 0) {
+            gamestatus.enemyCooldown -= 0.5;
+            if (gamestatus.enemyCooldown <= 0) {
+                gamestatus.enemyCooldown = 0;
+                if (gamestatus.enemyPrepPhase === true) {
+                    gamestatus.enemyPrepPhase = false;
+                    if (gamestatus.enemyActiveMove?.isCharged) {
+                        gamestatus.enemyEnergy += defenderCinematicAttack.energyDelta;
+                    }
+                } else {
+                    // Enemy deals damage
+                    //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
+                    let projectedDamage = gamestatus.damageReduction == 1 ?
+                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] :
+                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnragedReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
+                    let proDamageReal = projectedDamage;
+
+                    gamestatus.allyDodgeTurn = 0;
+                    if (!gamestatus.enemyActiveMove?.isCharged) {
+                        gamestatus.enemyEnergy += gamestatus.enemyActiveMove?.move.energyDelta || 0;
+                        if (gamestatus.enemyEnergy > 100) {
+                            gamestatus.enemyEnergy = 100;
+                        }
+                    }
+
+                    if (!gamestatus.isRelobby) {
+                        gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] += proDamageReal;
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += Math.ceil(proDamageReal / 2);
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    }
+
+                    gamestatus.hasDodged = false;
+
+                    // mon fucking dies
+                    if (gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] >= gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex]) {
+                        gamestatus.allyActiveMove = null;
+                        gamestatus.nextEnergyGainTurn = null;
+                        gamestatus.nextEnergyGainAmount = 0;
+                        gamestatus.allyCooldown = 0;
+                        gamestatus.activeAllyIndex = this.getHigherIndexNotDead(gamestatus.allyPokemonMaxHealth.map((max, idx) => max - gamestatus.allyPokemonDamage[idx]));
+                        if (gamestatus.activeAllyIndex === attackers.length) {
+                            // all fainted
+                            gamestatus.activeAllyIndex = 0;
+                            gamestatus.allyActiveMove = null;
+                            gamestatus.globalCurrentMessage = {
+                                message: "All your Pokémon have fainted!",
+                                duration: 0,
+                                color: "#fa8585"
+                            }
+                            gamestatus.isRelobby = 2;
+                        }
+                    }
+                    gamestatus.enemyCurrentMessage = {
+                        message: "The Raid Boss uses " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove?.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#fa8585"
+                    }
+                    gamestatus.damageReduction = 1;
+                    gamestatus.prevWasCharged = !!gamestatus.enemyActiveMove?.isCharged;
+                    gamestatus.enemyActiveMove = null;
+                    gamestatus.enemyPrepPhase = true;
+                }
+            }
+            else {
+                if (gamestatus.enemyActiveMove != null) {
+                    if (gamestatus.enemyActiveMove.isCharged) {
+                        if (!gamestatus.enemyPrepPhase) {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    } else {
+                        if (!gamestatus.enemyPrepPhase) {
+                            gamestatus.enemyCurrentMessage = {
+                                duration: gamestatus.enemyCooldown,
+                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                                damage: 0,
+                                color: "#575757"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    static RealTimeSimulatorAllyTurnRaid(
+        attackers: any[],
+        defender: any,
+        attackersQuickMove: any[],
+        attackersCinematicMove: any[],
+        attackersSecondCinematicMove: any[],
+        defenderQuickMove: any,
+        defenderCinematicMove: any,
+        attackersStats: any[][],
+        attackersBonuses: any[][],
+        defenderBonuses: any[],
+        raidMode: string,
+        weather: string = "EXTREME",
+        advEffects: string = "none",
+        order: string,
+        gamestatus: RaidStatus | null,
+        types: any,
+        allMoves: any,
+        relobbyTimer: number = 8,
+        enableEnergyResolveBug: boolean = true,
+    ) {
+        //console.log(attackerMaxMoves)
+        // Setup gamestatus if first turn
+        if (!gamestatus || order === "init") {
+            gamestatus = new RaidStatus(attackers.length, relobbyTimer);
+            gamestatus.globalCurrentMessage = {
+                message: "Battle started!",
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.allyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+            gamestatus.enemyCurrentMessage = {
+                message: "Battle started!",
+                damage: 0,
+                duration: 0,
+                color: "#ffffff"
+            }
+
+            gamestatus.enrageCurrentMessage = {
+                message: "The Raid Boss is acting normally.",
+                duration: 0,
+                color: "#ff0000"
+            }
+        }
+
+        // console.log(attackersSecondCinematicMove)
+
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+
+        defenderBonuses[0] = attackersBonuses[0][0];
+
+        if (order === "init") {
+            gamestatus.allyPokemonMaxHealth = [];
+            for (let i = 0 ; i < attackers.length ; i++) {
+                gamestatus.allyPokemonMaxHealth.push(Math.floor(Calculator.getEffectiveStamina(attackers[i].stats.baseStamina, attackersStats[i][3], attackersStats[i][0])));
+
+                gamestatus.allyDamageValues.push([
+                    Math.floor(this.getDamage(
+                        attackers[i],
+                        defender,
+                        attackersQuickMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, 1,
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type)
+                    )),
+                    Math.floor(this.getDamage(
+                        attackers[i],
+                        defender,
+                        attackersCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, 1,
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersCinematicMove[i].type)
+                    )),
+                    attackersSecondCinematicMove[i] != null ?
+                    Math.floor(this.getDamage(
+                        attackers[i],
+                        defender,
+                        attackersSecondCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, 1,
+                        (gamestatus.enrage ? (raidMode.endsWith("supermega") ? (1/4) : (1/3)) : 1)*(advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersSecondCinematicMove[i].type)
+                    )) : 0
+                ])
+
+                gamestatus.allyDamageValuesEnraged.push([
+                    Math.floor(this.getDamageEnraged(
+                        attackers[i],
+                        defender,
+                        attackersQuickMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, false,
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                    )),
+                    Math.floor(this.getDamageEnraged(
+                        attackers[i],
+                        defender,
+                        attackersCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, false,
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                    )),
+                    attackersSecondCinematicMove[i] != null ?
+                    Math.floor(this.getDamageEnraged(
+                        attackers[i],
+                        defender,
+                        attackersSecondCinematicMove[i],
+                        types,
+                        attackersStats[i],
+                        defenderStats,
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        defenderBonuses,
+                        raidMode, false,
+                        (advEffects === "blade" ? Calculator.BladeBoost(raidMode) : (advEffects === "dynamic" && this.IsMega(defender.pokemonId) ? Calculator.DynamicBoost(raidMode) : 1)) * this.MegaBoostToApply(attackers, 1, types, i, attackersQuickMove[i].type), raidMode.endsWith("supermega") ? 3.0 : 2.2
+                    )) : 0
+                ])
+
+                gamestatus.enemyDamageValues.push([
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i],
+                        defenderQuickMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        1,
+                        (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )),
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i],
+                        defenderCinematicMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        1,
+                        (gamestatus.enrage ? 1.8 : 1) * (1 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+                gamestatus.enemyDamageValuesReduced.push([
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i],
+                        defenderQuickMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        1,
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )),
+                    Math.floor(this.getDamage(
+                        defender,
+                        attackers[i],
+                        defenderCinematicMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        1,
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+                gamestatus.enemyDamageValuesEnraged.push([
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i],
+                        defenderQuickMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )),
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i],
+                        defenderCinematicMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        ((advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+                gamestatus.enemyDamageValuesEnragedReduced.push([
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i],
+                        defenderQuickMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    )),
+                    Math.floor(this.getDamageEnraged(
+                        defender,
+                        attackers[i],
+                        defenderCinematicMove,
+                        types,
+                        defenderStats,
+                        attackersStats[i],
+                        [weather, this.isShadow(defender.pokemonId), false, 0],
+                        [weather, this.isShadow(attackers[i].pokemonId), false, 0],
+                        "normal",
+                        true,
+                        (0.25 * (advEffects === "bash" ? 1/Calculator.BashBoost(raidMode) : 1))
+                    ))
+                ])
+
+            }
+            gamestatus.enemyPokemonMaxHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+            //console.log(gamestatus.enemyPokemonMaxHealth);
+        }
+
+        let defenderHealth = Calculator.getEffectiveStaminaForRaid(defender.stats.baseStamina, defender.stats.raidCP, defender.stats.raidBossCP, raidMode);
+        let landedmove: "c" | "f" | "d" | "r" | "c2" | null = null;
+        let landedMoveIndex: number | null = null;
+        if (gamestatus.nextEnergyGainTurn && gamestatus.timer >= gamestatus.nextEnergyGainTurn) {
+            gamestatus.nextEnergyGainTurn = null;
+            gamestatus.allyEnergy[gamestatus.activeAllyIndex] += gamestatus.nextEnergyGainAmount || 0;
+            gamestatus.nextEnergyGainAmount = 0;
+            if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+            }
+        }
+
+        if (order === "relobby" && (gamestatus.timer < 1 || gamestatus.simulationLog.length === 0)) {
+            return {...gamestatus} as RaidStatus;
+        }
+
+        gamestatus.chargedMoveEnd = false;
+
+        // ally can cast a move
+        if (gamestatus.allyCooldown == 0 || order === "relobby") {
+            switch (order) {
+                case "init":
+                    //console.log(gamestatus);
+                    return {...gamestatus} as RaidStatus;
+                case "rt-fast":
+                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};
+                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+
+                    if (!enableEnergyResolveBug) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    } else {
+                        gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
+                        gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Using " + PoGoAPI.formatMoveName(attackersQuickMove[gamestatus.activeAllyIndex].moveId),
+                        damage: 0,
+                        duration: gamestatus.allyCooldown,
+                        color: "#575757"
+                    };
+                    return {...gamestatus} as RaidStatus;
+                case "rt-charged":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: false};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    }
+                    return {...gamestatus} as RaidStatus;
+                case "rt-charged2":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: true};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersSecondCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    }
+                    return {...gamestatus} as RaidStatus;
+                case "rt-dodge":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+
+                    if (gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    };
+
+                    if (gamestatus.hasDodged != true && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd - 1)) {
+                        gamestatus.damageReduction = 0.25;
+                        gamestatus.hasDodged = true;
+                    } else {
+                        gamestatus.damageReduction = 1;
+                    }
+                    return {...gamestatus} as RaidStatus;
+                // Fast Move
+                case "fast":
+                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};
+                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+
+                    if (!enableEnergyResolveBug) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    } else {
+                        // Energy resolve bug: you get the energy one turn later.
+                        gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
+                        gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                    }
+
+                    //console.log(gamestatus.allyCooldown);
+                    break;
+
+                // Charged Move
+                case "charged":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: false};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    } else {
+                        gamestatus.allyCurrentMessage = {
+                            message: "No move cast",
+                            damage: 0,
+                            duration: 0,
+                            color: "#a2fa85"
+                        }
+                    }
+                    break;
+
+                // Charged Move
+                case "charged2":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: true};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersSecondCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    } else {
+                        gamestatus.allyCurrentMessage = {
+                            message: "No move cast",
+                            damage: 0,
+                            duration: 0,
+                            color: "#a2fa85"
+                        }
+                    }
+                    break;
+
+                // Dodge to the right
+                case "dodge":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+
+                    if (gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+
+                    if ((gamestatus.hasDodged != true) && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd-1)) {
+                        gamestatus.damageReduction = 0.25;
+                        gamestatus.hasDodged = true;
+                    } else {
+                        gamestatus.damageReduction = 1;
+                    }
+
+                    landedmove = "d";
+                    landedMoveIndex = gamestatus.activeAllyIndex;
+
+                    break;
+
+
+                // Switch to pokémon slot 0
+                case "switch0":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                    if (gamestatus.activeAllyIndex != 0 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[0] < gamestatus.allyPokemonMaxHealth[0]) {
+                        gamestatus.activeAllyIndex = 0;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    return {...gamestatus} as RaidStatus;
+
+
+                // Switch to pokémon slot 1
+                case "switch1":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                    if (gamestatus.activeAllyIndex != 1 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[1] < gamestatus.allyPokemonMaxHealth[1]) {
+                        gamestatus.activeAllyIndex = 1;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    return {...gamestatus} as RaidStatus;
+
+
+                // Switch to pokémon slot 2
+                case "switch2":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                    if (gamestatus.activeAllyIndex != 2 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[2] < gamestatus.allyPokemonMaxHealth[2]) {
+                        gamestatus.activeAllyIndex = 2;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    return {...gamestatus} as RaidStatus;
+
+
+                case "switch3":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                        if (gamestatus.activeAllyIndex != 3 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[3] < gamestatus.allyPokemonMaxHealth[3]) {
+                            gamestatus.activeAllyIndex = 3;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    return {...gamestatus} as RaidStatus;
+
+                case "switch4":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                        if (gamestatus.activeAllyIndex != 4 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[4] < gamestatus.allyPokemonMaxHealth[4]) {
+                            gamestatus.activeAllyIndex = 4;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+
+
+                case "switch5":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = localStorage.getItem("slowerSwaps") === "true" ? 1 : 0.5;
+                    gamestatus.chargedMoveCooldown = (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) ? 0 : 1;
+                        if (gamestatus.activeAllyIndex != 5 && gamestatus.allyPokemonMaxHealth && gamestatus.allyPokemonDamage[5] < gamestatus.allyPokemonMaxHealth[5]) {
+                            gamestatus.activeAllyIndex = 5;
+                        }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Switched Pokémon",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+
+                case "relobby":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = gamestatus.relobbyTimer;
+                    gamestatus.chargedMoveCooldown = 0;
+                    gamestatus.activeAllyIndex = 0;
+                    gamestatus.allyEnergy = Array(attackers.length).fill(0);
+                    gamestatus.allyPokemonDamage = Array(attackers.length).fill(0);
+                    gamestatus.allyCurrentMessage = {
+                        message: "Relobbying...",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    gamestatus.isRelobby = 1;
+
+                    const lastLogEntry = gamestatus.simulationLog[gamestatus.simulationLog.length - 1];
+                    if (lastLogEntry?.landedMove) {
+                        lastLogEntry.landedMove += "r";
+                    }
+
+                    return {...gamestatus} as RaidStatus;
+
+            }
+        }
+        if (gamestatus.chargedMoveCooldown > 0) {
+            gamestatus.chargedMoveCooldown -= 0.5;
+            if (gamestatus.chargedMoveCooldown < 0) {
+                gamestatus.chargedMoveCooldown = 0;
+            }
+        }
+        if (gamestatus.allyCooldown > 0) {
+            gamestatus.allyCooldown -= 0.5;
+
+            if (gamestatus.allyCooldown <= 0) {
+                gamestatus.allyCooldown = 0;
+
+                if (gamestatus.isRelobby === 1) {
+                    gamestatus.isRelobby = 0;
+
+                    gamestatus.allyCooldown = !gamestatus.enemyPrepPhase ?
+                    ((localStorage.getItem("freezeRejoin") === "true") ? (gamestatus.dodgeWindowEnd - gamestatus.timer) : 0 ) : 0;
+                }
+
+                if (gamestatus.allyActiveMove != null) {
+                    // ally deals damage
+                    const damageIndex = !gamestatus.allyActiveMove.isCharged ? 0 : gamestatus.allyActiveMove.isSecondCharged ? 2 : 1;
+                    const projectedDamage = gamestatus.enrage
+                        ? gamestatus.allyDamageValuesEnraged[gamestatus.activeAllyIndex][damageIndex]
+                        : gamestatus.allyDamageValues[gamestatus.activeAllyIndex][damageIndex];
+
+                    gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
+                    gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
+
+                    gamestatus.enemyPokemonDamage += projectedDamage;
+
+                    gamestatus.enemyEnergy += Math.ceil(projectedDamage / 2);
+                    if (gamestatus.enemyEnergy > 100) {
+                        gamestatus.enemyEnergy = 100;
+                    }
+
+                    landedmove = !gamestatus.allyActiveMove.isCharged ? "f" : gamestatus.allyActiveMove.isSecondCharged ? "c2" : "c";
+                    landedMoveIndex = gamestatus.activeAllyIndex;
+
+                    if (raidMode.endsWith("shadow") || raidMode.endsWith("supermega")) {
+                        const remainingHealthPercentage = (gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage) / gamestatus.enemyPokemonMaxHealth;
+                        if ((remainingHealthPercentage <= (raidMode.endsWith("supermega") ? 0.8 : 0.6)) && !gamestatus.isSubdued && !gamestatus.enrage) {
+                            gamestatus.enrage = true;
+                            gamestatus.enrageCurrentMessage = {
+                                message: "The Raid Boss enrages!",
+                                duration: 0,
+                                color: "#ff0000"
+                            }
+                        } if (raidMode.endsWith("shadow") && remainingHealthPercentage <= 0.15 && gamestatus.enrage) {
+                            gamestatus.enrage = false;
+                            gamestatus.isSubdued = true;
+                            gamestatus.enrageCurrentMessage = {
+                                message: "The Raid Boss subdued.",
+                                duration: 0,
+                                color: "#a2fa85"
+                            }
+                        }
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Your Pokémon used " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId) + " for " + projectedDamage + " damage!",
+                        damage: projectedDamage,
+                        duration: 0,
+                        color: "#a2fa85"
+                    }
+                    gamestatus.allyActiveMove = null;
+                }
+            }
+            else {
+                if (gamestatus.isRelobby === 1) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Relobbying...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else if (gamestatus.allyActiveMove != null) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Using " + PoGoAPI.formatMoveName(gamestatus.allyActiveMove.move.moveId),
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else if (gamestatus.allyDodgeTurn > 0) {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Dodging...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                } else {
+                    gamestatus.allyCurrentMessage = {
+                        duration: gamestatus.allyCooldown,
+                        message: "Swapping...",
+                        damage: 0,
+                        color: "#575757"
+                    };
+                }
+            }
+        }
+
+        this.RealTimeSimulatorEnemyTurnRaid(
+            attackers,
+            defender,
+            attackersQuickMove,
+            attackersCinematicMove,
+            attackersStats,
+            attackersBonuses,
+            defenderQuickMove,
+            defenderCinematicMove,
+            defenderBonuses,
+            raidMode,
+            weather,
+            advEffects,
+            gamestatus,
+            types,
+            allMoves,
+            order === "tick"
+        );
+
+        gamestatus.timer += 0.5;
+        gamestatus.allyActiveTurns[gamestatus.activeAllyIndex] += 0.5;
+
+        if (gamestatus.timer >= (gamestatus.lastHitTime > PoGoAPI.getRaidTime(raidMode) ? gamestatus.lastHitTime : PoGoAPI.getRaidTime(raidMode))) {
+            gamestatus.globalCurrentMessage = {
+                message: "Timeout reached.",
+                duration: 0,
+                color: "#fa8585"
+            }
+            gamestatus.timeout = true;
+        }
+
+        if (gamestatus.enemyPokemonDamage >= defenderHealth) {
+            gamestatus.globalCurrentMessage = {
+                message: "The Raid Boss has been defeated!",
+                duration: 0,
+                color: "#a2fa85"
+            }
+        }
+
+        gamestatus.simulationLog.push({
+            turn: gamestatus.timer,
+            activeAllyIndex: gamestatus.activeAllyIndex,
+            currentDPS: gamestatus.allyTDO.reduce((a, b) => a + b, 0) / gamestatus.timer,
+            isRelobbying: gamestatus.isRelobby === 1,
+            allyHP: gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex] - gamestatus.allyPokemonDamage[gamestatus.activeAllyIndex] + "/" + gamestatus.allyPokemonMaxHealth[gamestatus.activeAllyIndex],
+            allyEnergy: gamestatus.allyEnergy[gamestatus.activeAllyIndex] + "/100",
+            enemyHP: gamestatus.enemyPokemonMaxHealth - gamestatus.enemyPokemonDamage + "/" + gamestatus.enemyPokemonMaxHealth,
+            hasUsedChargedMove: gamestatus.chargedMoveEnd,
+            allyMessage: gamestatus.allyCurrentMessage?.message || null,
+            landedMove: landedmove,
+            landedMoveIndex
+        });
+
+
+        const next = {...gamestatus} as RaidStatus;
+
+        //console.log(next);
+        return next;
+    }
+
+    static RealTimeSimulatorEnemyTurnRaid(
+        attackers: any[],
+        defender: any,
+        attackersQuickMove: any[],
+        attackersCinematicMove: any[],
+        attackersStats: any[][],
+        attackersBonuses: any[][],
+        defenderQuickAttack: any,
+        defenderCinematicAttack: any,
+        defenderBonuses: any[],
+        raidMode: string,
+        weather: string = "EXTREME",
+        advEffects: string = "none",
+        gamestatus: RaidStatus,
+        types: any = null,
+        allMoves: any = null,
+        deferDamageForRealTime = false,
+    ) {
+        let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+
+        // enemy can cast a move
+        if (gamestatus.enemyCooldown == 0 && !gamestatus.enemyMovePendingHit) {
+            if (gamestatus.enemyActiveMove == null) {
+                // Choose move
+                gamestatus.dodgeWindowStart = gamestatus.timer;
+                gamestatus.enemyPrepPhase = true;
+                gamestatus.enemyMoveHitIn = null;
+                gamestatus.enemyMoveHasHit = false;
+                gamestatus.enemyMoveHitAt = null;
+                gamestatus.enemyMovePendingHit = false;
+                if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && this.nextRandom(gamestatus, 0) < gamestatus.chargedMoveChance) {
+                    gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
+                } else {
+                    gamestatus.enemyActiveMove = {move: defenderQuickAttack, isCharged: false};
+                    gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
+                }
+
                 gamestatus.targetDodgeWindow = true;
                 gamestatus.allyDodgeTurn = 0;
                 gamestatus.enemyCurrentMessage = {
@@ -6183,7 +6985,7 @@ export class PoGoAPI {
                 gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
                 gamestatus.enemyMoveHitIn = gamestatus.enemyCooldown;
                 gamestatus.enemyMoveHasHit = false;
-                gamestatus.enemyMoveHitAt = gamestatus.timer + gamestatus.enemyCooldown * 0.5;
+                gamestatus.enemyMoveHitAt = gamestatus.timer + Math.max(0, gamestatus.enemyCooldown - 0.5);
             }
         }
         if (gamestatus.enemyCooldown > 0) {
@@ -6199,28 +7001,43 @@ export class PoGoAPI {
             }
         }
 
-        if (
-            gamestatus.enemyPrepPhase === false &&
+        const enemyMoveIsDue = gamestatus.enemyPrepPhase === false &&
             gamestatus.enemyMoveHitAt != null &&
-            gamestatus.timer >= gamestatus.enemyMoveHitAt &&
-            !gamestatus.enemyMoveHasHit
-        ) {
+            (deferDamageForRealTime
+                ? gamestatus.timer + 0.5 >= gamestatus.enemyMoveHitAt
+                : gamestatus.timer >= gamestatus.enemyMoveHitAt) &&
+            !gamestatus.enemyMoveHasHit;
+
+        if (gamestatus.enemyMovePendingHit || enemyMoveIsDue) {
+            if (
+                deferDamageForRealTime &&
+                !gamestatus.enemyMovePendingHit &&
+                (gamestatus.enemyMoveHitIn ?? 0) > 0.5
+            ) {
+                gamestatus.enemyMovePendingHit = true;
+                gamestatus.enemyMoveHasHit = true;
+                gamestatus.enemyMoveHitIn = null;
+                gamestatus.enemyMoveHitAt = null;
+                return;
+            }
+
+            gamestatus.enemyMovePendingHit = false;
             gamestatus.enemyMoveHitIn = null;
             gamestatus.enemyMoveHitAt = null;
             gamestatus.enemyMoveHasHit = true;
                     // Enemy deals damage
                     //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
-                    let projectedDamage = gamestatus.damageReduction == 1 ? 
-                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : 
+                    let projectedDamage = gamestatus.damageReduction == 1 ?
+                        gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] :
                         gamestatus.enrage ? gamestatus.enemyDamageValuesEnragedReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
                     let proDamageReal = projectedDamage;
-                    
+
                     gamestatus.allyDodgeTurn = 0;
                     if (!gamestatus.enemyActiveMove?.isCharged) {
                         gamestatus.enemyEnergy += gamestatus.enemyActiveMove?.move.energyDelta || 0;
                         if (gamestatus.enemyEnergy > 100) {
                             gamestatus.enemyEnergy = 100;
-                        } 
+                        }
                     }
 
                     if (!gamestatus.isRelobby) {
@@ -6273,6 +7090,7 @@ export class PoGoAPI {
             }
         }
     }
+
 
     static isShadow(pokemonId: string) {
         return pokemonId.endsWith("_SHADOW_FORM") || pokemonId.endsWith("_S_FORM");

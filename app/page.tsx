@@ -27,6 +27,7 @@ import CalculateButtonMaxBoss from "@/components/calculate-button-maxboss";
 import CalculateButtonMultiSimulateAdvanced from "@/components/calculate-button-advanced-multisim";
 import { AnyARecord } from "dns";
 import { Announcement } from "@/components/Announcement";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -635,17 +636,15 @@ export default function Home() {
     });
   };
 
+  const canOpenPlayerSimulation =
+    raidMode !== "normal" &&
+    Boolean(raidMode && defendingPokemon && selectedQuickMoveDefender && selectedChargedMoveDefender) &&
+    attackingPokemon.every(Boolean) &&
+    selectedQuickMoveAttacker.every(Boolean) &&
+    selectedChargedMoveAttacker.every(Boolean);
+
   const openPlayerSimulation = () => {
-    if (
-      raidMode === "normal" ||
-      !raidMode ||
-      !defendingPokemon ||
-      !selectedQuickMoveDefender ||
-      !selectedChargedMoveDefender ||
-      attackingPokemon.some((pokemon) => !pokemon) ||
-      selectedQuickMoveAttacker.some((move) => !move) ||
-      selectedChargedMoveAttacker.some((move) => !move)
-    ) {
+    if (!canOpenPlayerSimulation) {
       alert("Please select all required raid fields before opening the real-time player!");
       return;
     }
@@ -686,7 +685,18 @@ export default function Home() {
       <Announcement/>
 
       <Navbar/>
-      <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
+      {canOpenPlayerSimulation && (
+        <div className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 md:hidden">
+          <button
+            type="button"
+            onClick={openPlayerSimulation}
+            className="w-full max-w-sm rounded-md bg-primary px-4 py-4 text-base font-medium text-primary-foreground shadow-xl"
+          >
+            Start real-time raid
+          </button>
+        </div>
+      )}
+      <div className="flex responsive-test space-y-4 md:space-x-4 big-box">
         <Card className="md:w-1/2 w-full">
           <CardHeader>
             <CardTitle>Attacking Pokémon</CardTitle>
@@ -1001,6 +1011,17 @@ export default function Home() {
                   allMoves={allMoves}
                   advenEffect={advEffect}
               />
+            </CardContent>
+
+            <CardContent>
+              <CardDescription>Realtime Solo Raid Player</CardDescription>
+              <button
+                type="button"
+                onClick={openPlayerSimulation}
+                className="w-full rounded-md bg-primary px-4 py-2 text-base font-medium text-primary-foreground shadow-xl"
+              >
+                Open Player
+              </button>
             </CardContent>
         </Card>
       </div>
