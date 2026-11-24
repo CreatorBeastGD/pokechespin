@@ -228,6 +228,33 @@ body {
     transform: translateY(-10px);
   }
 }
+
+@keyframes raid-ally-attack {
+  from {
+    transform: translate(-8px, -50%) scale(0.96);
+  }
+  to {
+    transform: translate(10px, -50%) scale(1.04);
+  }
+}
+
+@keyframes raid-enemy-attack {
+  from {
+    transform: translate(8px, -50%) scale(0.96);
+  }
+  to {
+    transform: translate(-10px, -50%) scale(1.04);
+  }
+}
+
+.raid-ally-attacking {
+  animation: raid-ally-attack 700ms ease-in-out infinite alternate;
+}
+
+.raid-enemy-attacking {
+  animation: raid-enemy-attack 700ms ease-in-out infinite alternate;
+}
+
 .link {
   @apply text-blue-500 underline;
 }
@@ -279,7 +306,7 @@ body {
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 180 10% 5%;
-    --primary-foreground: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;

@@ -418,7 +418,7 @@ export default function rankingsPage() {
                 <a href={`/dynamax${window.location.search}`} className="w-full py-2 text-center text-white bg-primary rounded-lg mt-4 mb-4">
                     Go to Max Battles Calculator
                 </a>
-                <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
+                <div className="flex responsive-test space-y-4 md:space-x-4 big-box">
                     <Card className="md:w-1/2 w-full">
                         <CardHeader className="text-xl font-bold">Best Pokémon - {PoGoAPI.formatTypeName(currentType)} Type</CardHeader>
                         

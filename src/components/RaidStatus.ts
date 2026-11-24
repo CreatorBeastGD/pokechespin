@@ -12,6 +12,7 @@ export class RaidStatus {
     enemyMoveHitIn: number | null = null;
     enemyMoveHasHit: boolean = false;
     enemyMoveHitAt: number | null = null;
+    enemyMovePendingHit: boolean = false;
     
     allyEnergy: number[] = [];
     enemyEnergy: number = 0;

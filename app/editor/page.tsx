@@ -152,7 +152,7 @@ export default function Home() {
       <p className="linktext">Made by <a className="link" href="https://github.com/CreatorBeastGD">CreatorBeastGD</a></p>
       
       <Navbar/>
-      <div className="flex responsive-test space-y-4 md:space-y-4 big-box">
+      <div className="flex responsive-test space-y-4 md:space-x-4 big-box">
         <Card className="md:w-1/2 w-full">
           <CardHeader>
             <CardTitle>Pokémon Editor</CardTitle>
