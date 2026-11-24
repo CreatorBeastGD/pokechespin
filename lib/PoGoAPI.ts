@@ -5703,6 +5703,66 @@ export class PoGoAPI {
                 case "init":
                     //console.log(gamestatus);
                     return {...gamestatus} as RaidStatus;
+                case "rt-fast":
+                    gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};
+                    gamestatus.allyCooldown = Math.ceil(attackersQuickMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                    gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+
+                    if (!enableEnergyResolveBug) {
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                        if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] > 100) {
+                            gamestatus.allyEnergy[gamestatus.activeAllyIndex] = 100;
+                        }
+                    } else {
+                        gamestatus.nextEnergyGainTurn = gamestatus.timer + 0.5;
+                        gamestatus.nextEnergyGainAmount = attackersQuickMove[gamestatus.activeAllyIndex].energyDelta;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Using " + PoGoAPI.formatMoveName(attackersQuickMove[gamestatus.activeAllyIndex].moveId),
+                        damage: 0,
+                        duration: gamestatus.allyCooldown,
+                        color: "#575757"
+                    };
+                    return {...gamestatus} as RaidStatus;
+                case "rt-charged":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: false};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    }
+                    return {...gamestatus} as RaidStatus;
+                case "rt-charged2":
+                    if (gamestatus.allyEnergy[gamestatus.activeAllyIndex] >= -attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta) {
+                        gamestatus.allyActiveMove = {move: attackersSecondCinematicMove[gamestatus.activeAllyIndex], isCharged: true, isSecondCharged: true};
+                        gamestatus.allyEnergy[gamestatus.activeAllyIndex] += attackersSecondCinematicMove[gamestatus.activeAllyIndex].energyDelta;
+                        gamestatus.allyCooldown = Math.ceil(attackersSecondCinematicMove[gamestatus.activeAllyIndex].durationMs * 2 / 1000) / 2;
+                        gamestatus.lastHitTime = gamestatus.timer + gamestatus.allyCooldown;
+                    }
+                    return {...gamestatus} as RaidStatus;
+                case "rt-dodge":
+                    gamestatus.allyActiveMove = null;
+                    gamestatus.allyCooldown = 1;
+
+                    if (gamestatus.allyDodgeTurn == 0 && gamestatus.targetDodgeWindow == true) {
+                        gamestatus.allyDodgeTurn = gamestatus.timer;
+                    }
+
+                    gamestatus.allyCurrentMessage = {
+                        message: "Dodged",
+                        damage: 0,
+                        duration: 0,
+                        color: "#a2fa85"
+                    };
+
+                    if (gamestatus.hasDodged != true && gamestatus.allyDodgeTurn >= gamestatus.dodgeWindowStart && gamestatus.allyDodgeTurn <= (gamestatus.dodgeWindowEnd - 1)) {
+                        gamestatus.damageReduction = 0.25;
+                        gamestatus.hasDodged = true;
+                    } else {
+                        gamestatus.damageReduction = 1;
+                    }
+                    return {...gamestatus} as RaidStatus;
                 // Fast Move
                 case "fast":
                     gamestatus.allyActiveMove = {move: attackersQuickMove[gamestatus.activeAllyIndex], isCharged: false};    
@@ -6098,7 +6158,9 @@ export class PoGoAPI {
                 // Choose move
                 gamestatus.dodgeWindowStart = gamestatus.timer;
                 gamestatus.enemyPrepPhase = true;
-                console.log(gamestatus.chargedMoveChance);
+                gamestatus.enemyMoveHitIn = null;
+                gamestatus.enemyMoveHasHit = false;
+                gamestatus.enemyMoveHitAt = null;
                 if (gamestatus.enemyEnergy >= -defenderCinematicAttack.energyDelta && this.nextRandom(gamestatus, 0) < gamestatus.chargedMoveChance) {
                     gamestatus.enemyActiveMove = {move: defenderCinematicAttack, isCharged: true};
                     gamestatus.enemyCooldown = gamestatus.prevWasCharged ? 0.5 : (Math.floor(this.nextRandom(gamestatus, 1)*3))*0.5+1.5;
@@ -6119,6 +6181,9 @@ export class PoGoAPI {
             } else {
                 // Enemy starts to cast move
                 gamestatus.enemyCooldown = Math.ceil((gamestatus.enemyActiveMove.move.durationMs) * 2 / 1000) / 2;
+                gamestatus.enemyMoveHitIn = gamestatus.enemyCooldown;
+                gamestatus.enemyMoveHasHit = false;
+                gamestatus.enemyMoveHitAt = gamestatus.timer + gamestatus.enemyCooldown * 0.5;
             }
         }
         if (gamestatus.enemyCooldown > 0) {
@@ -6130,7 +6195,19 @@ export class PoGoAPI {
                     if (gamestatus.enemyActiveMove?.isCharged) {
                         gamestatus.enemyEnergy += defenderCinematicAttack.energyDelta;
                     }
-                } else {
+                }
+            }
+        }
+
+        if (
+            gamestatus.enemyPrepPhase === false &&
+            gamestatus.enemyMoveHitAt != null &&
+            gamestatus.timer >= gamestatus.enemyMoveHitAt &&
+            !gamestatus.enemyMoveHasHit
+        ) {
+            gamestatus.enemyMoveHitIn = null;
+            gamestatus.enemyMoveHitAt = null;
+            gamestatus.enemyMoveHasHit = true;
                     // Enemy deals damage
                     //console.log(attackers[gamestatus.activeAllyIndex].pokemonId + " is " + (this.isShadow(attackers[gamestatus.activeAllyIndex].pokemonId) ? "a shadow Pokémon" : "not a shadow Pokémon"));
                     let projectedDamage = gamestatus.damageReduction == 1 ? 
@@ -6186,29 +6263,13 @@ export class PoGoAPI {
                     gamestatus.enemyActiveMove = null;
                     gamestatus.enemyPrepPhase = true;
                 }
-            }
-            else {
-                if (gamestatus.enemyActiveMove != null) {
-                    if (gamestatus.enemyActiveMove.isCharged) {
-                        if (!gamestatus.enemyPrepPhase) {
-                            gamestatus.enemyCurrentMessage = {
-                                duration: gamestatus.enemyCooldown,
-                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
-                                damage: 0,
-                                color: "#575757"
-                            }
-                        }
-                    } else {
-                        if (!gamestatus.enemyPrepPhase) {
-                            gamestatus.enemyCurrentMessage = {
-                                duration: gamestatus.enemyCooldown,
-                                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
-                                damage: 0,
-                                color: "#575757"
-                            }
-                        }
-                    }
-                }
+
+        if (gamestatus.enemyActiveMove != null && !gamestatus.enemyPrepPhase) {
+            gamestatus.enemyCurrentMessage = {
+                duration: gamestatus.enemyMoveHitIn ?? gamestatus.enemyCooldown,
+                message: "The Raid Boss prepares " + PoGoAPI.formatMoveName(gamestatus.enemyActiveMove.move.moveId) + "!",
+                damage: 0,
+                color: "#575757"
             }
         }
     }

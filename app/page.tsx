@@ -635,6 +635,25 @@ export default function Home() {
     });
   };
 
+  const openPlayerSimulation = () => {
+    if (
+      raidMode === "normal" ||
+      !raidMode ||
+      !defendingPokemon ||
+      !selectedQuickMoveDefender ||
+      !selectedChargedMoveDefender ||
+      attackingPokemon.some((pokemon) => !pokemon) ||
+      selectedQuickMoveAttacker.some((move) => !move) ||
+      selectedChargedMoveAttacker.some((move) => !move)
+    ) {
+      alert("Please select all required raid fields before opening the real-time player!");
+      return;
+    }
+
+    const playerParams = new URLSearchParams(window.location.search);
+    router.push(`/player?${playerParams.toString()}`);
+  };
+
   const handleBarChange = (bar: string, value: number) => {
     if (bar === "slot") {
       setSelectedPokemonSlot(value);
