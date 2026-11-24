@@ -1012,6 +1012,17 @@ export default function Home() {
                   advenEffect={advEffect}
               />
             </CardContent>
+
+            <CardContent>
+              <CardDescription>Realtime Solo Raid Player</CardDescription>
+              <button
+                type="button"
+                onClick={openPlayerSimulation}
+                className="w-full rounded-md bg-primary px-4 py-2 text-base font-medium text-primary-foreground shadow-xl"
+              >
+                Open Player
+              </button>
+            </CardContent>
         </Card>
       </div>
       

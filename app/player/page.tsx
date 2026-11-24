@@ -424,14 +424,28 @@ export default function PlayerPage() {
         
         <Card className="relative mt-4">
           <CardHeader>
-            <CardTitle>Real-Time Raid Player</CardTitle>
+            <CardTitle>Real-Time Raid Player (BETA)</CardTitle>
             <CardDescription>
-              Play the configured raid using the same turn-based battle engine.
+              Play the configured raid using the same turn-based battle engine, but with real-time interaction.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            To start the raid, click the "Start Raid" button below. It is highly recommended to play on mobile devices. Clicking anywhere will default to use a Fast Attack.
+            To start the raid, click the "Start Raid" button below. It is highly recommended to play on mobile devices. Clicking anywhere in the main card will default to use a Fast Attack.
           </CardContent>
+          <CardContent>
+            Additional configurations:
+            <p>Relobby Time: {config?.relobbyTime || 0}s</p>
+            <p>Weather: {config?.weather || "None"}</p>
+            <p>Adventure Effect: {config?.advEffect || "None"}</p>
+            <button
+            className="w-full py-2 text-white bg-primary rounded-lg mt-4 "
+            onClick={() => {
+              window.location.href = "/" + window.location.search;
+            }}>
+              Back to PokéChespin for Raids
+            </button>
+          </CardContent>
+          
         </Card>
         <Card className="relative mt-4">
           <CardHeader>
