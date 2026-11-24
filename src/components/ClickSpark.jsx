@@ -346,7 +346,7 @@ const ClickSpark = forwardRef(
       };
 
       const onPointerDown = event => {
-        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (event.pointerType !== 'mouse' || event.button !== 0) return;
         lastPress = { time: performance.now(), x: event.clientX, y: event.clientY };
         spawn(event.clientX, event.clientY);
       };
