@@ -9,6 +9,9 @@ export class RaidStatus {
     allyCooldown: number = 0;
     enemyCooldown: number = 0;
     enemyPrepPhase: boolean = false;
+    enemyMoveHitIn: number | null = null;
+    enemyMoveHasHit: boolean = false;
+    enemyMoveHitAt: number | null = null;
     
     allyEnergy: number[] = [];
     enemyEnergy: number = 0;
