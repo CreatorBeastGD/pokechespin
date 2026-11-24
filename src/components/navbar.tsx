@@ -61,6 +61,7 @@ const Navbar = () => {
     let [allPokemon, setAllPokemon] = useState<any>(null);
 
     let [usePokeboxOnRankings, setUsePokeboxOnRankings] = useState(false);
+    let [showSparkOnClickSimulation, setShowSparkOnClickSimulation] = useState(true);
 
     let [bugMessage, setBugMessage] = useState("");
 
@@ -87,11 +88,18 @@ const Navbar = () => {
         const pokeboxIDStorage = localStorage.getItem("pokeboxId");
         const usePokeboxOnRankingsStorage = localStorage.getItem("usePokeboxOnRankings");
         const customBladeBoostAffectsMovesStorage = localStorage.getItem("customBladeBoostAffectsMoves");
+        const showSparkOnClickSimulationStorage = localStorage.getItem("showSparkOnClickSimulation");
 
         if (customBladeBoostAffectsMovesStorage) {
             setBladeBoostAffectsMoves(customBladeBoostAffectsMovesStorage === "true");
         } else {
             localStorage.setItem("customBladeBoostAffectsMoves", "false");
+        }
+
+        if (showSparkOnClickSimulationStorage) {
+            setShowSparkOnClickSimulation(showSparkOnClickSimulationStorage === "true");
+        } else {
+            localStorage.setItem("showSparkOnClickSimulation", "true");
         }
 
         if (usePokeboxOnRankingsStorage) {
@@ -253,6 +261,8 @@ const Navbar = () => {
     let ChangeOrbBoost = (option: string) => {
         setMaxOrbBoost(option);
     }
+
+    
     
 
     let ApplyChanges = () => {
@@ -277,6 +287,8 @@ const Navbar = () => {
         localStorage.setItem("usePokeboxOnRankings", usePokeboxOnRankings.toString());
         localStorage.setItem("maxOrbBoost", maxOrbBoost);
         localStorage.setItem("customBladeBoostAffectsMoves", bladeBoostAffectsMoves.toString());
+        localStorage.setItem("showSparkOnClickSimulation", showSparkOnClickSimulation.toString());
+
         // reload page
         window.location.reload();
     }
@@ -303,6 +315,7 @@ const Navbar = () => {
         setUsePokeboxOnRankings(false);
         setMaxOrbBoost("x1");
         setBladeBoostAffectsMoves(false);
+        setShowSparkOnClickSimulation(true);
         localStorage.setItem("doubleFriendshipBonus", "false");
         localStorage.setItem("customBladeBoostAmount", "0.1");
         localStorage.setItem("showAllPokemonAsShiny", "false");
@@ -328,6 +341,7 @@ const Navbar = () => {
         localStorage.setItem("usePokeboxOnRankings", "false");
         localStorage.setItem("maxOrbBoost", "x1");
         localStorage.setItem("customBladeBoostAffectsMoves", "false");
+        localStorage.setItem("showSparkOnClickSimulation", "true");
         // reload page
         window.location.reload();
     }
@@ -619,6 +633,15 @@ const Navbar = () => {
 
                             <Separator className="bg-white bg-opacity-10" />
                             <SheetTitle>Customization</SheetTitle>
+                            <div className="flex flex-col ">
+                                <label className="text-sm">Show Sparks on Solo Simulations</label>
+                                <div className="flex items-center space-x-2">
+                                    <input checked={showSparkOnClickSimulation} onChange={(e) => setShowSparkOnClickSimulation(e.target.checked)} type="checkbox" id="showSparkOnClickSimulation" className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2" />
+                                    <p className="text-xs text-muted-foreground">
+                                        Shows sparks when clicking on the simulation.
+                                    </p>
+                                </div>
+                            </div>
                             <div className="flex flex-col ">
                                 <label className="text-sm">Show all Pokémon as shiny</label>
                                 <div className="flex items-center space-x-2">

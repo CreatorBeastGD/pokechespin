@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator"
 import { RaidStatus } from "./RaidStatus";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "./ui/chart";
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
+import { ClickSparkWithProps } from "./calculate-button-turn-based-click-spark";
 
 const cloneRaidStatus = (status: RaidStatus | null): RaidStatus | null => {
   if (!status) return null;
@@ -84,6 +85,8 @@ export default function CalculateButtonSimulateTurnBased({
   const [showCard, setShowCard] = useState<boolean>(true);
   const [showSummary, setShowSummary] = useState<boolean>(false);
   const [range, setRange] = useState<[number, number]>([0, 0]);
+  const [showSparks, setShowSparks] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const [previousSteps, setPreviousSteps] = useState<(RaidStatus|null)[]>([]);
 
@@ -125,6 +128,8 @@ export default function CalculateButtonSimulateTurnBased({
   useEffect(() => {
     setEnergyResolveBug(searchParams.get("energy_resolve_bug") === "true");
     if (typeof window === "undefined") return;
+    setShowSparks(window.localStorage.getItem("showSparkOnClickSimulation") === "true");
+    setDarkMode(window.localStorage.getItem("darkMode") === "true");
     setShowDPS(window.localStorage.getItem("showDPSOnSoloRaid") === "true");
     setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
     setCustomChargedMoveChance(window.localStorage.getItem("customChargedMoveChance") === "true");
@@ -364,6 +369,15 @@ export default function CalculateButtonSimulateTurnBased({
         
       <div className="w-full">
       {startedSim &&
+      <ClickSparkWithProps
+        sparkColor={darkMode ? "#fff" : "#000"}
+        shape="dot"
+        sparkCount={1000}
+        sparkSize={18}
+        sparkRadius={40}
+        duration={500}
+        randomness={0}
+        disabled={showSparks ? false : true}>
         <div>
           <Card className="mt-4 py-4 px-4 mb-2 dark:bg-neutral-900">
           <div className="flex flex-col space-y-1">
@@ -708,6 +722,7 @@ export default function CalculateButtonSimulateTurnBased({
         </Card>
         )}
         </div>
+        </ClickSparkWithProps>
         }
         
     </div>

@@ -14,6 +14,7 @@ import { Switch } from "./ui/switch";
 import Image from "next/image";
 import { GameStatus } from "./GameStatus";
 import { Separator } from "@/components/ui/separator"
+import { ClickSparkWithProps } from "./calculate-button-turn-based-click-spark";
 
 export default function CalculateButtonSimulateTurnBasedDynamax({
   attacker,
@@ -72,6 +73,8 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
   const [customBossAtkMult, setCustomBossAtkMult] = useState<number>((Number)(searchParams.get("custom_atk_mult") || 1));
   const [customBossHP, setCustomBossHP] = useState<number>((Number)(searchParams.get("custom_hp") || 10000));
   const [customEnergyGainMult, setCustomEnergyGainMult] = useState<number>((Number)(searchParams.get("custom_energy_gain_mult") || 1));
+  const [showSparks, setShowSparks] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const [showHP, setShowHP] = useState<boolean>(false);
 
@@ -106,6 +109,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     loadParams();
     
     if (typeof window === "undefined") return;
+    setShowSparks(window.localStorage.getItem("showSparkOnClickSimulation") === "true");
     setShowHP(window.localStorage.getItem("showHPOnSoloRaid") === "true");
   }, []);
 
@@ -118,6 +122,22 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
     //console.log("Changed dependencies")
 
   }, [attacker, defender, quickMove, chargedMove, secondChargedMove, bonusAttacker, bonusDefender, attackerStats, defenderStats, raidMode, largeAttack, targetAttack, maxMoves, customBossHP, customBossCPM, customBossAtkMult, shroom, advEffect]);
+
+  useEffect(() => {
+    const updateDarkMode = () => {
+      setDarkMode(document.documentElement.classList.contains("dark"));
+    };
+
+    updateDarkMode();
+
+    const observer = new MutationObserver(updateDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const getHealthBarColor = (healthPercent: number) => {
     if (healthPercent > 50) {
@@ -283,6 +303,15 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
         </Card>
         }
       {startedSim &&
+      <ClickSparkWithProps
+              sparkColor={darkMode ? "#fff" : "#000"}
+              shape="dot"
+              sparkCount={1000}
+              sparkSize={18}
+              sparkRadius={40}
+              duration={500}
+              randomness={0}
+              disabled={showSparks ? false : true}>
         <Card className="mt-4 py-4 px-4 mb-2 dark:bg-neutral-900">
           <div className="flex flex-col space-y-1">
             <div className="relative flex min-h-16 items-center justify-between">
@@ -406,6 +435,7 @@ export default function CalculateButtonSimulateTurnBasedDynamax({
             }
           </div>
         </Card>
+        </ClickSparkWithProps>
         }
     </div>
     </>);

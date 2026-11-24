@@ -9,6 +9,11 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.46.0.1",
+        desc: "+ Added a new spark pulse effect to both Solo Simulators when clicking on it. This can be disabled on the Customization section of the Configurations.\n",
+        date: "2026-11-24",
+    },
+    {
         title: "v1.46 (Dark Mode!)",
         desc: "+ Added Dark Mode to PokéChespin!\n"+
             "~ Some bug fixes related to weather in raids not applying correctly under certain circumstances and 1st slot losing their stats in raids.\n",
