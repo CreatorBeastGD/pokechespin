@@ -106,6 +106,8 @@ export default function PlayerPage() {
   const [showPokemonWindow, setShowPokemonWindow] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenError, setFullscreenError] = useState<string | null>(null);
+  const [topographyDisabled, setTopographyDisabled] = useState(false);
+
   const pointerStart = useRef<{ x: number; y: number; target: HTMLElement } | null>(null);
   const gameCardRef = useRef<HTMLDivElement>(null);
 
@@ -406,6 +408,9 @@ export default function PlayerPage() {
   const topographyColor = config
     ? pokemonTypeColors[PoGoAPI.formatTypeName(config.defender.type).toLowerCase()] ?? "#4fff60"
     : "#4fff60";
+  const topographySecondColor = config?.defender.type2
+    ? pokemonTypeColors[PoGoAPI.formatTypeName(config.defender.type2).toLowerCase()]
+    : undefined;
   const allySprite = useMemo(
     () => config && PoGoAPI.getPokemonImageByID(config.attackers[activeIndex].pokemonId, config.imageLinks),
     [config, activeIndex],
@@ -559,6 +564,9 @@ export default function PlayerPage() {
                 </Button>
               </div>
             </div>
+            <Button onClick={() => setTopographyDisabled(!topographyDisabled)}>
+              {topographyDisabled ? "Enable" : "Disable"} Topography
+            </Button>
           </CardContent>
           
         </Card>
@@ -605,7 +613,8 @@ export default function PlayerPage() {
                   onPointerUp={handlePagePointerUp}
                 >
                   <div className="raid-game-topography  pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-                    <Topography
+                    {!topographyDisabled && (
+                      <Topography
                       color={topographyColor}
                       lineCount={30}
                       lineWidth={0.9}
@@ -635,8 +644,15 @@ export default function PlayerPage() {
                       intro={false}
                       lightMode={false}
                       dpr={undefined}
-                      style={{ width: "100%", height: "100%" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: topographySecondColor
+                          ? `${topographySecondColor}10`
+                          : undefined,
+                      }}
                     />
+                    )}
                   </div>
                   <ClickSparkWithProps
                     {...clickSparkSettings}
