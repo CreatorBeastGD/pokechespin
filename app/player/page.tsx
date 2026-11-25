@@ -107,6 +107,8 @@ export default function PlayerPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenError, setFullscreenError] = useState<string | null>(null);
   const [topographyDisabled, setTopographyDisabled] = useState(false);
+  const [showHPValues, setShowHPValues] = useState(true);
+  const [showDPS, setShowDPS] = useState(true);
 
   const pointerStart = useRef<{ x: number; y: number; target: HTMLElement } | null>(null);
   const gameCardRef = useRef<HTMLDivElement>(null);
@@ -227,6 +229,9 @@ export default function PlayerPage() {
           imageLinks,
         });
         setError(null);
+
+        localStorage.getItem("showHPOnSoloRaid") === "false" ? setShowHPValues(false) : setShowHPValues(true);
+        localStorage.getItem("showDPSOnSoloRaid") === "false" ? setShowDPS(false) : setShowDPS(true);
       } catch (loadError) {
         if (cancelled) return;
         setConfig(null);
@@ -488,7 +493,7 @@ export default function PlayerPage() {
   };
 
   const clickSparkSettings = {
-    sparkColor: darkMode ? "#fff" : "#000",
+    sparkColor: gameStyle ? "#fff" : darkMode ? "#fff" : "#000",
     shape: "dot",
     sparkCount: 1000,
     sparkSize: 18,
@@ -734,12 +739,23 @@ export default function PlayerPage() {
                         
                       </div>
                       <div className="flex max-w-[58%] flex-col items-end gap-1">
-                        <span className="rounded-full bg-amber-50/90 px-3 py-1 text-xs font-semibold text-stone-800">
-                          {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
-                        </span>
+                        { showHPValues && (
+                          <span className="rounded-full bg-amber-50/90 px-3 py-1 text-xs font-semibold text-stone-800">
+                            {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
+                          </span>
+                        )}
+                        
                         {gameStatus.globalCurrentMessage?.message && (
                           <p className="text-right text-[10px] leading-tight text-stone-300">
                             {gameStatus.globalCurrentMessage.message}
+                          </p>
+                        )}
+                        {showDPS && (
+                          <p className="text-right text-[10px] leading-tight text-stone-300">
+                            DPS: {gameStatus.enemyPokemonDamage > 0 && gameStatus.timer > 0
+                              ? (gameStatus.enemyPokemonDamage / gameStatus.timer).toFixed(2)
+                              : "0.00"
+                            }
                           </p>
                         )}
                       </div>
@@ -795,7 +811,7 @@ export default function PlayerPage() {
                     <div className="absolute bottom-[44%] left-[7%] w-52 text-xs font-semibold text-white drop-shadow-md">
                       <div className="mb-1 flex justify-between gap-2 text-[11px] font-semibold">
                         <span className="truncate">{PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}</span>
-                        <span>{Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} HP</span>
+                        {showHPValues && <span>{Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} HP</span>}
                       </div>
                       <div className="h-3 overflow-hidden rounded-full bg-stone-300">
                         <div
@@ -913,9 +929,11 @@ export default function PlayerPage() {
                                 className="h-12 w-12 select-none object-contain"
                               />
                               <span className="w-full truncate">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, config.allEnglishText)}</span>
-                              <span className="w-full text-center text-[10px]">
-                                {Math.max(0, gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index])} / {gameStatus.allyPokemonMaxHealth[index]} HP
-                              </span>
+                              {showHPValues && (
+                                <span className="w-full text-center text-[10px]">
+                                  {Math.max(0, gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index])} / {gameStatus.allyPokemonMaxHealth[index]} HP
+                                </span>
+                              )}
                               <span className="h-1.5 w-full overflow-hidden rounded-full bg-stone-300">
                                 <span
                                   className={`block h-full ${getHealthColor(((gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index]) / gameStatus.allyPokemonMaxHealth[index]) * 100)}`}
@@ -1008,9 +1026,11 @@ export default function PlayerPage() {
                     <div className="mt-2">
                       <div className="mb-1 flex justify-between text-xs">
                         <span>{PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}</span>
-                        <span>
-                          {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
-                        </span>
+                          {showHPValues && (
+                            <span>
+                              {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
+                            </span>
+                          )}
                       </div>
                       <Progress
                         value={Math.max(0, ((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) / gameStatus.enemyPokemonMaxHealth) * 100)}
@@ -1026,9 +1046,11 @@ export default function PlayerPage() {
                     <div>
                       <div className="mb-1 flex justify-between text-xs">
                         <span>{PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}</span>
-                        <span>
+                        {showHPValues && (
+                          <span>
                           {Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} / {gameStatus.allyPokemonMaxHealth[activeIndex]} HP
                         </span>
+                        )}
                       </div>
                       <Progress
                         value={Math.max(0, ((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}
