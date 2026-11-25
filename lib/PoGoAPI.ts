@@ -5954,7 +5954,7 @@ export class PoGoAPI {
                     gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
                     gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
 
-                    gamestatus.enemyPokemonDamage += projectedDamage;
+                    gamestatus.enemyPokemonDamage += (gamestatus.timer >= this.getRaidTime(raidMode) ? 0 : projectedDamage);
 
                     gamestatus.enemyEnergy += Math.ceil(projectedDamage / 2);
                     if (gamestatus.enemyEnergy > 100) {
@@ -6813,7 +6813,7 @@ export class PoGoAPI {
                     gamestatus.allyTDO[gamestatus.activeAllyIndex] += projectedDamage;
                     gamestatus.chargedMoveEnd = gamestatus.allyActiveMove.isCharged ? true : false;
 
-                    gamestatus.enemyPokemonDamage += projectedDamage;
+                    gamestatus.enemyPokemonDamage += (gamestatus.timer >= this.getRaidTime(raidMode) ? 0 : projectedDamage);
 
                     gamestatus.enemyEnergy += Math.ceil(projectedDamage / 2);
                     if (gamestatus.enemyEnergy > 100) {
