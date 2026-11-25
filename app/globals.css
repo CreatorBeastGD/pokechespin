@@ -231,19 +231,23 @@ body {
 
 @keyframes raid-ally-attack {
   from {
-    transform: translate(-8px, -50%) scale(0.96);
+    translate: -8px 0;
+    scale: 0.96;
   }
   to {
-    transform: translate(10px, -50%) scale(1.04);
+    translate: 10px 0;
+    scale: 1.04;
   }
 }
 
 @keyframes raid-enemy-attack {
   from {
-    transform: translate(8px, -50%) scale(0.96);
+    translate: 8px 0;
+    scale: 0.96;
   }
   to {
-    transform: translate(-10px, -50%) scale(1.04);
+    translate: -10px 0;
+    scale: 1.04;
   }
 }
 
@@ -253,6 +257,67 @@ body {
 
 .raid-enemy-attacking {
   animation: raid-enemy-attack 700ms ease-in-out infinite alternate;
+}
+
+.raid-game-background {
+  isolation: isolate;
+  background: linear-gradient(135deg, #101010 0%, #292929 100%);
+}
+
+.raid-game-background,
+.raid-game-background * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.raid-game-background {
+  -webkit-touch-callout: none;
+}
+
+.raid-game-topography {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.raid-game-panel {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+}
+
+.raid-game-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.raid-game-background:fullscreen {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  flex-direction: column;
+  border-radius: 0;
+}
+
+.raid-game-background:fullscreen > .raid-game-spark-layer {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+}
+
+.raid-game-background:fullscreen .raid-game-spark-layer > .raid-game-panel {
+  flex: 0 0 auto;
+}
+
+.raid-game-background:fullscreen .raid-game-spark-layer > .raid-game-stage {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 0;
 }
 
 .link {

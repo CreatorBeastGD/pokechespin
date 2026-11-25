@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { RaidStatus } from "@/components/RaidStatus";
+import Topography from "@/components/Topography";
 import { PoGoAPI } from "../../lib/PoGoAPI";
 import { ClickSparkWithProps } from "@/components/calculate-button-turn-based-click-spark";
 
@@ -32,6 +33,27 @@ type PlayerConfig = {
   allMoves: any;
   allEnglishText: any;
   imageLinks: any;
+};
+
+const pokemonTypeColors: Record<string, string> = {
+  normal: "#919aa1",
+  fighting: "#d5425f",
+  flying: "#9bb3e1",
+  poison: "#b962cf",
+  ground: "#d68e5e",
+  rock: "#cbbd8d",
+  bug: "#99c32f",
+  ghost: "#626dbd",
+  steel: "#5497a3",
+  fire: "#ffa152",
+  water: "#5faadd",
+  grass: "#5dbe67",
+  electric: "#f7da5b",
+  psychic: "#fb8684",
+  ice: "#7dd2c7",
+  dragon: "#0970bb",
+  dark: "#656777",
+  fairy: "#ffaef0",
 };
 
 const cloneRaidStatus = (status: RaidStatus): RaidStatus => {
@@ -80,7 +102,12 @@ export default function PlayerPage() {
   const [hasStartedRaid, setHasStartedRaid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
-  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const [gameStyle, setGameStyle] = useState(false);
+  const [showPokemonWindow, setShowPokemonWindow] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenError, setFullscreenError] = useState<string | null>(null);
+  const pointerStart = useRef<{ x: number; y: number; target: HTMLElement } | null>(null);
+  const gameCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -226,6 +253,15 @@ export default function PlayerPage() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const updateFullscreen = () => {
+      setIsFullscreen(document.fullscreenElement === gameCardRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", updateFullscreen);
+    return () => document.removeEventListener("fullscreenchange", updateFullscreen);
+  }, []);
+
   const createInitialSimulation = (currentConfig: PlayerConfig) =>
     PoGoAPI.RealTimeSimulatorAllyTurnRaid(
       currentConfig.attackers,
@@ -328,6 +364,35 @@ export default function PlayerPage() {
     `type-${String(move?.type ?? "normal").replace("POKEMON_TYPE_", "").toLowerCase()}`;
   const getMoveName = (move: any) =>
     move?.moveId ? PoGoAPI.formatMoveName(move.moveId) : "Move";
+  const allyChargedMoveMessage = gameStatus?.allyActiveMove?.isCharged
+    ? `Using ${getMoveName(gameStatus.allyActiveMove.move)}`
+    : null;
+  const getPlayerMessage = (message?: string | null) =>
+    message?.replace(/\s+for [\d,.]+ damage!/i, "!");
+  const toggleGameFullscreen = async () => {
+    const card = gameCardRef.current;
+    if (!card) return;
+
+    if (!document.fullscreenEnabled || typeof card.requestFullscreen !== "function") {
+      setFullscreenError("Fullscreen is not supported by this browser.");
+      return;
+    }
+
+    try {
+      if (document.fullscreenElement === card) {
+        await document.exitFullscreen();
+      } else {
+        await card.requestFullscreen();
+      }
+      setFullscreenError(null);
+    } catch (fullscreenRequestError) {
+      setFullscreenError(
+        fullscreenRequestError instanceof Error
+          ? fullscreenRequestError.message
+          : "Could not enter fullscreen mode.",
+      );
+    }
+  };
   const getMoveAnimationDuration = (move: any) => {
     const durationMs = Number(move?.durationMs);
     const normalizedDurationMs = Number.isFinite(durationMs) && durationMs > 0
@@ -338,6 +403,9 @@ export default function PlayerPage() {
   };
 
   const activeIndex = gameStatus?.activeAllyIndex ?? 0;
+  const topographyColor = config
+    ? pokemonTypeColors[PoGoAPI.formatTypeName(config.defender.type).toLowerCase()] ?? "#4fff60"
+    : "#4fff60";
   const allySprite = useMemo(
     () => config && PoGoAPI.getPokemonImageByID(config.attackers[activeIndex].pokemonId, config.imageLinks),
     [config, activeIndex],
@@ -359,8 +427,25 @@ export default function PlayerPage() {
   const raidRemaining = config && gameStatus
     ? Math.max(0, PoGoAPI.getRaidTime(config.raidMode) - gameStatus.timer)
     : 0;
+  const bossHealthPercent = gameStatus && gameStatus.enemyPokemonMaxHealth > 0
+    ? Math.max(
+        0,
+        ((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) /
+          gameStatus.enemyPokemonMaxHealth) *
+          100,
+      )
+    : 0;
+  const bossHealthColor = bossHealthPercent > 50
+    ? "bg-green-500"
+    : bossHealthPercent > 25
+      ? "bg-yellow-500"
+      : "bg-red-500";
   const handlePagePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    pointerStart.current = { x: event.clientX, y: event.clientY };
+    pointerStart.current = {
+      x: event.clientX,
+      y: event.clientY,
+      target: event.target as HTMLElement,
+    };
   };
 
   const handlePagePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -375,10 +460,20 @@ export default function PlayerPage() {
       return;
     }
 
-    const target = event.target as HTMLElement;
+    const target = start.target;
     const blockedButton = target.closest("button") as HTMLButtonElement | null;
-    if (blockedButton?.disabled) {
+    if (blockedButton?.disabled && target.closest("[data-fast-fallback]")) {
       if (gameStatus?.allyCooldown === 0) sendAction("fast");
+      return;
+    }
+
+    if (blockedButton?.disabled) {
+      if (
+        !blockedButton.hasAttribute("data-no-fast") &&
+        gameStatus?.allyCooldown === 0
+      ) {
+        sendAction("fast");
+      }
       return;
     }
 
@@ -387,34 +482,28 @@ export default function PlayerPage() {
     sendAction("fast");
   };
 
+  const clickSparkSettings = {
+    sparkColor: darkMode ? "#fff" : "#000",
+    shape: "dot",
+    sparkCount: 1000,
+    sparkSize: 18,
+    sparkRadius: 40,
+    duration: 500,
+    randomness: 0,
+  };
+
   return (
     <>
       <Navbar />
       <ClickSparkWithProps
-        sparkColor={darkMode ? "#fff" : "#000"}
-        shape="dot"
-        sparkCount={1000}
-        sparkSize={18}
-        sparkRadius={40}
-        duration={500}
-        randomness={0}
-        disabled={false}
+        {...clickSparkSettings}
+        disabled={gameStyle}
       >
       <div
         className="container mx-auto max-w-3xl px-4 pb-10"
-        onPointerDown={handlePagePointerDown}
-        onPointerDownCapture={(event) => {
-          const target = event.target as HTMLElement;
-          const blockedButton = target.closest("button") as HTMLButtonElement | null;
-          if (
-            blockedButton?.disabled &&
-            !blockedButton.hasAttribute("data-no-fast") &&
-            gameStatus?.allyCooldown === 0
-          ) {
-            sendAction("fast");
-          }
-        }}
-        onPointerUp={handlePagePointerUp}
+        style={{ touchAction: "pan-y" }}
+        onPointerDown={gameStyle ? undefined : handlePagePointerDown}
+        onPointerUp={gameStyle ? undefined : handlePagePointerUp}
         onPointerCancel={() => {
           pointerStart.current = null;
         }}
@@ -435,20 +524,48 @@ export default function PlayerPage() {
             <p>Relobby Time: {config?.relobbyTime || 0}s</p>
             <p>Weather: {config?.weather || "None"}</p>
             <p>Adventure Effect: {config?.advEffect || "None"}</p>
-            <button
-            className="w-full py-2 text-white bg-primary rounded-lg mt-4 "
-            onClick={() => {
-              window.location.href = "/" + window.location.search;
-            }}>
-              Back to PokéChespin for Raids
-            </button>
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button
+                className="w-full rounded-lg bg-primary py-2 text-white"
+                onClick={() => {
+                  window.location.href = "/" + window.location.search;
+                }}
+              >
+                Back to PokéChespin for Raids
+              </button>
+              <div className="grid grid-cols-2 gap-1 rounded-lg border border-border p-1" aria-label="Raid interface">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={!gameStyle ? "default" : "ghost"}
+                  data-no-fast
+                  aria-pressed={!gameStyle}
+                  onClick={() => {
+                    setGameStyle(false);
+                    setShowPokemonWindow(false);
+                  }}
+                >
+                  Classic UI
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={gameStyle ? "default" : "ghost"}
+                  data-no-fast
+                  aria-pressed={gameStyle}
+                  onClick={() => setGameStyle(true)}
+                >
+                  Game UI
+                </Button>
+              </div>
+            </div>
           </CardContent>
           
         </Card>
         <Card className="relative mt-4">
           <CardHeader>
             <div className="flex items-start justify-between gap-2">
-              {gameStatus && hasStartedRaid && (
+              {gameStatus && hasStartedRaid && !gameStyle && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -473,6 +590,366 @@ export default function PlayerPage() {
             {!config && !error && <p>Loading raid configuration...</p>}
 
             {config && gameStatus && (
+              gameStyle ? (
+                <div
+                  ref={gameCardRef}
+                  className="raid-game-background relative mx-auto max-w-[430px] select-none overflow-hidden rounded-3xl border border-stone-600 text-white shadow-xl"
+                  style={{ touchAction: "pan-y" }}
+                  onPointerDown={(event) => {
+                    handlePagePointerDown(event);
+                    const target = event.target as HTMLElement;
+                    if (!target.closest("button, a, input, select, textarea, [data-no-fast]")) {
+                      event.currentTarget.setPointerCapture(event.pointerId);
+                    }
+                  }}
+                  onPointerUp={handlePagePointerUp}
+                >
+                  <div className="raid-game-topography  pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+                    <Topography
+                      color={topographyColor}
+                      lineCount={30}
+                      lineWidth={0.9}
+                      elevation={0.5}
+                      foreground={0.2}
+                      tilt={45}
+                      speed={0.23}
+                      direction="forward"
+                      glow={0.9}
+                      depthOfField={0}
+                      fog={0.75}
+                      hoverEffect="light"
+                      clickEffect="none"
+                      majorLines
+                      scale={1.5}
+                      detail={1}
+                      morph={1}
+                      brightness={2}
+                      markers="dots"
+                      glitch={0}
+                      opacity={0.6}
+                      mouseInteraction
+                      mouseRadius={2.2}
+                      mouseStrength={0}
+                      trail={0.3}
+                      parallax={0.42}
+                      intro={false}
+                      lightMode={false}
+                      dpr={undefined}
+                      style={{ width: "100%", height: "100%" }}
+                    />
+                  </div>
+                  <ClickSparkWithProps
+                    {...clickSparkSettings}
+                    className="raid-game-spark-layer relative z-10"
+                    disabled={false}
+                  >
+                  <div className="raid-game-panel px-4 pb-3 pt-4">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold">
+                          {PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}
+                        </p>
+                        <p className="text-xs text-stone-300">Raid Boss</p>
+                      </div>                   
+                      <strong className="rounded-full bg-stone-200 px-3 py-1 text-sm text-black">{raidRemaining.toFixed(0)}s</strong>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100"
+                          data-no-fast
+                          onClick={() => {
+                            setRunning(false);
+                            initializeSimulation();
+                          }}
+                          disabled={gameStatus.timeout || gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth}
+                        >
+                          Restart
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100"
+                          data-no-fast
+                          onClick={toggleGameFullscreen}
+                        >
+                          {isFullscreen ? "Exit" : "Fullscreen"}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="h-3 overflow-hidden rounded-full bg-stone-300">
+                      <div
+                        className={"h-full transition-[width,background-color] " + bossHealthColor}
+                        style={{
+                          width: `${bossHealthPercent}%`,
+                        }}
+                      />
+                    </div>
+                    {fullscreenError && (
+                      <p className="mt-2 text-xs text-red-200" role="alert">
+                        {fullscreenError}
+                      </p>
+                    )}
+                    <div className="mt-2 flex items-start justify-between gap-2">
+                      <div className="flex flex-col items-start gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                          data-no-fast
+                          onClick={() => sendAction("relobby")}
+                          disabled={
+                            !running ||
+                            gameStatus.timer < 1 ||
+                            gameStatus.simulationLog.length === 0
+                          }
+                        >
+                          Relobby
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                          data-no-fast
+                          onClick={() => setRunning((current) => !current)}
+                          disabled={gameStatus.timeout || gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth}
+                        >
+                          {running ? "Pause" : "Resume"}
+                        </Button>
+                        
+                      </div>
+                      <div className="flex max-w-[58%] flex-col items-end gap-1">
+                        <span className="rounded-full bg-amber-50/90 px-3 py-1 text-xs font-semibold text-stone-800">
+                          {Math.max(0, gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage)} / {gameStatus.enemyPokemonMaxHealth} HP
+                        </span>
+                        {gameStatus.globalCurrentMessage?.message && (
+                          <p className="text-right text-[10px] leading-tight text-stone-300">
+                            {gameStatus.globalCurrentMessage.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="raid-game-stage relative h-[min(58vh,520px)] min-h-[390px] overflow-hidden"
+                    style={{ touchAction: "pan-y" }}
+                    aria-label="Battlefield: tap to use a fast attack or swipe horizontally to dodge"
+                  >
+                    <div className="absolute left-1/2 top-[42%] h-10 w-44 -translate-x-1/2 rounded-[50%] bg-stone-800/15 blur-sm" />
+                    {gameStatus.enemyActiveMove?.isCharged &&
+                      !gameStatus.enemyPrepPhase &&
+                      gameStatus.enemyCurrentMessage?.message && (
+                      <p
+                        className="absolute right-4 z-10 w-2/3 rounded-lg bg-black/80 px-2 py-1 text-right text-base font-semibold leading-tight text-white shadow"
+                        style={{ top: "calc(50% - 5.25rem)" }}
+                        role="status"
+                      >
+                        {gameStatus.enemyCurrentMessage.message}
+                      </p>
+                    )}
+                    <Button
+                      className="absolute right-4 top-1/2 z-10 h-16 w-16 -translate-y-1/2 rounded-lg border border-amber-800 bg-amber-700 p-1 text-xs text-white hover:bg-amber-800"
+                      disabled={!running || gameStatus.allyCooldown > 0}
+                      onClick={() => sendAction("dodge")}
+                    >
+                      Dodge
+                    </Button>
+                    <img
+                      src={"https://static.pokebattler.com/assets/pokemon/128/" + enemySprite}
+                      alt={PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}
+                      draggable={false}
+                      className={"pointer-events-none absolute right-[8%] top-[2%] h-36 w-36 select-none object-contain drop-shadow-lg sm:h-44 sm:w-44 " + enemySpriteMovement}
+                      style={gameStatus.enemyActiveMove && !gameStatus.enemyPrepPhase ? { animationDuration: getMoveAnimationDuration(gameStatus.enemyActiveMove.move) } : undefined}
+                    />
+                    <img
+                      src={"https://static.pokebattler.com/assets/pokemon/128/" + allySprite}
+                      alt={PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}
+                      draggable={false}
+                      className={"pointer-events-none absolute bottom-[12%] left-[7%] h-40 w-40 select-none object-contain drop-shadow-xl sm:h-48 sm:w-48 " + allySpriteMovement}
+                      style={gameStatus.allyActiveMove ? { animationDuration: getMoveAnimationDuration(gameStatus.allyActiveMove.move) } : undefined}
+                    />
+                    {allyChargedMoveMessage && (
+                      <p
+                        className="absolute bottom-[6%] left-4 z-10 w-2/3 rounded-lg bg-black/80 px-2 py-1 text-left text-base font-semibold leading-tight text-white shadow"
+                        role="status"
+                      >
+                        {allyChargedMoveMessage}
+                      </p>
+                    )}
+                    <div className="absolute bottom-[44%] left-[7%] w-52 text-xs font-semibold text-white drop-shadow-md">
+                      <div className="mb-1 flex justify-between gap-2 text-[11px] font-semibold">
+                        <span className="truncate">{PoGoAPI.getPokemonNamePB(config.attackers[activeIndex].pokemonId, config.allEnglishText)}</span>
+                        <span>{Math.max(0, gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex])} HP</span>
+                      </div>
+                      <div className="h-3 overflow-hidden rounded-full bg-stone-300">
+                        <div
+                          className={`h-full ${getHealthColor(((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}`}
+                          style={{
+                            width: `${Math.max(0, ((gameStatus.allyPokemonMaxHealth[activeIndex] - gameStatus.allyPokemonDamage[activeIndex]) / gameStatus.allyPokemonMaxHealth[activeIndex]) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div className="raid-game-panel space-y-2 p-3">
+                    <div className={`grid justify-items-center gap-2 ${config.secondChargedMoves[activeIndex] ? "grid-cols-2" : "grid-cols-1"}`}>
+                      {[
+                        { move: config.chargedMoves[activeIndex], action: "charged" },
+                        ...(config.secondChargedMoves[activeIndex] ? [{ move: config.secondChargedMoves[activeIndex], action: "charged2" }] : []),
+                      ].map(({ move, action }) => {
+                        const energyCost = -move.energyDelta;
+                        const segmentCount = energyCost === 33 ? 3 : energyCost === 50 ? 2 : 0;
+                        const energy = gameStatus.allyEnergy[activeIndex];
+                        const completedCharges = segmentCount > 0
+                          ? Math.min(segmentCount, Math.floor(energy / energyCost))
+                          : 0;
+                        const chargeProgress = segmentCount > 0
+                          ? completedCharges === segmentCount
+                            ? 100
+                            : ((energy - completedCharges * energyCost) / energyCost) * 100
+                          : 0;
+
+                        return (
+                          <Button
+                            key={action}
+                            className={"relative aspect-square h-auto w-full max-w-[88px] overflow-hidden whitespace-normal px-2 text-xs text-white disabled:pointer-events-auto " + getMoveTypeClass(move)}
+                            data-no-fast
+                            data-fast-fallback
+                            disabled={
+                              !running ||
+                              gameStatus.allyCooldown > 0 ||
+                              gameStatus.allyEnergy[activeIndex] < energyCost
+                            }
+                            onClick={() => sendAction(action)}
+                          >
+                            <span className="relative z-10">{getMoveName(move)}</span>
+                            {segmentCount > 0 ? (
+                              <>
+                                <span
+                                  className="pointer-events-none absolute inset-0 z-0 bg-white/30 transition-opacity"
+                                  style={{ opacity: completedCharges / segmentCount }}
+                                  aria-hidden="true"
+                                />
+                                <span
+                                  className="pointer-events-none absolute inset-x-0 bottom-0 z-0 bg-white/40 transition-[height]"
+                                  style={{ height: `${chargeProgress}%` }}
+                                  aria-hidden="true"
+                                />
+                                <span className="pointer-events-none absolute right-1 top-1 z-10 rounded bg-black/60 px-1 text-[9px] leading-4 text-white">
+                                  {completedCharges}/{segmentCount}
+                                </span>
+                              </>
+                            ) : (
+                              <span
+                                className="pointer-events-none absolute inset-x-0 bottom-0 z-0 bg-white/35 transition-[height]"
+                                style={{
+                                  height: `${Math.max(0, Math.min(100, (energy / energyCost) * 100))}%`,
+                                }}
+                              />
+                            )}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-end">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                        data-no-fast
+                        onClick={() => setShowPokemonWindow(true)}
+                      >
+                        Pokémon
+                      </Button>
+                    </div>
+                    <p className="text-center text-[11px] text-stone-300">Tap the battlefield to attack · swipe sideways to dodge</p>
+                  </div>
+                  {showPokemonWindow && (
+                    <div className="absolute inset-0 z-30 flex items-end justify-center bg-black/70 p-4 pb-2">
+                      <div className="w-full rounded-2xl border border-stone-300 bg-amber-50 p-3 text-stone-900 shadow-xl" data-no-fast role="dialog" aria-modal="true" aria-label="Pokémon party">
+                        <div className="mb-2 flex items-center justify-between">
+                          <strong>Pokémon</strong>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {config.attackers.map((attacker, index) => (
+                            <Button
+                              key={`${attacker.pokemonId}-${index}`}
+                              variant="outline"
+                              className={`h-auto min-w-0 flex-col gap-1 p-2 text-xs text-stone-900 ${index === activeIndex ? "border-amber-700 bg-amber-100" : "bg-white"}`}
+                              data-no-fast
+                              disabled={
+                                !running ||
+                                gameStatus.allyCooldown > 0 ||
+                                index === activeIndex ||
+                                gameStatus.allyPokemonDamage[index] >= gameStatus.allyPokemonMaxHealth[index]
+                              }
+                              onClick={() => {
+                                sendAction(`switch${index}`);
+                                setShowPokemonWindow(false);
+                              }}
+                            >
+                              <img
+                                src={"https://static.pokebattler.com/assets/pokemon/128/" + PoGoAPI.getPokemonImageByID(attacker.pokemonId, config.imageLinks)}
+                                alt=""
+                                draggable={false}
+                                className="h-12 w-12 select-none object-contain"
+                              />
+                              <span className="w-full truncate">{PoGoAPI.getPokemonNamePB(attacker.pokemonId, config.allEnglishText)}</span>
+                              <span className="w-full text-center text-[10px]">
+                                {Math.max(0, gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index])} / {gameStatus.allyPokemonMaxHealth[index]} HP
+                              </span>
+                              <span className="h-1.5 w-full overflow-hidden rounded-full bg-stone-300">
+                                <span
+                                  className={`block h-full ${getHealthColor(((gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index]) / gameStatus.allyPokemonMaxHealth[index]) * 100)}`}
+                                  style={{
+                                    width: `${Math.max(0, ((gameStatus.allyPokemonMaxHealth[index] - gameStatus.allyPokemonDamage[index]) / gameStatus.allyPokemonMaxHealth[index]) * 100)}%`,
+                                  }}
+                                />
+                              </span>
+                            </Button>
+                          ))}
+                        </div>
+                        <Button
+                          className="mx-auto mt-3 flex min-w-28"
+                          variant="outline"
+                          data-no-fast
+                          onClick={() => setShowPokemonWindow(false)}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {!hasStartedRaid && (
+                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/50 p-4 backdrop-blur-[2px]">
+                      {fullscreenError && (
+                        <p className="text-center text-sm text-red-200" role="alert">
+                          {fullscreenError}
+                        </p>
+                      )}
+                      <Button
+                        className="h-14 min-w-[10rem] px-8 text-lg shadow-xl"
+                        data-no-fast
+                        onClick={initializeSimulation}
+                      >
+                        Start raid
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100"
+                        data-no-fast
+                        onClick={toggleGameFullscreen}
+                      >
+                        {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                      </Button>
+                    </div>
+                  )}
+                  </ClickSparkWithProps>
+                </div>
+              ) : (
               <>
                 <div className="flex items-center justify-between gap-2 text-sm">
                   <Button
@@ -499,13 +976,15 @@ export default function PlayerPage() {
                     <img
                       src={"https://static.pokebattler.com/assets/pokemon/128/" + allySprite}
                       alt=""
-                      className={"absolute right-1/4 top-1/3 h-20 w-20 -translate-y-1/2 object-contain opacity-40 transition-transform duration-300 ease-out " + allySpriteMovement}
+                      draggable={false}
+                      className={"absolute right-1/4 top-1/3 h-20 w-20 -translate-y-1/2 select-none object-contain opacity-40 transition-transform duration-300 ease-out " + allySpriteMovement}
                       style={gameStatus.allyActiveMove ? { animationDuration: getMoveAnimationDuration(gameStatus.allyActiveMove.move) } : undefined}
                     />
                     <img
                       src={"https://static.pokebattler.com/assets/pokemon/128/" + enemySprite}
                       alt=""
-                      className={"absolute right-1 top-1/3 h-20 w-20 -translate-y-1/2 object-contain opacity-40 transition-transform duration-300 ease-out " + enemySpriteMovement}
+                      draggable={false}
+                      className={"absolute right-1 top-1/3 h-20 w-20 -translate-y-1/2 select-none object-contain opacity-40 transition-transform duration-300 ease-out " + enemySpriteMovement}
                       style={gameStatus.enemyActiveMove && !gameStatus.enemyPrepPhase ? { animationDuration: getMoveAnimationDuration(gameStatus.enemyActiveMove.move) } : undefined}
                     />
                   </div>
@@ -548,7 +1027,7 @@ export default function PlayerPage() {
                         />
                       </div>
                       <p className="mt-2 min-h-8 text-xs">
-                        {gameStatus.allyCurrentMessage?.message}
+                        {getPlayerMessage(gameStatus.allyCurrentMessage?.message)}
                       </p>
                       <p className="text-xs">Energy: {gameStatus.allyEnergy[activeIndex]}/100</p>
                     </div>
@@ -583,6 +1062,7 @@ export default function PlayerPage() {
                   >
                     <Button
                       className={"h-14 text-sm text-white disabled:pointer-events-auto " + getMoveTypeClass(config.chargedMoves[activeIndex])}
+                      data-fast-fallback
                       disabled={
                         !running ||
                         gameStatus.allyCooldown > 0 ||
@@ -596,6 +1076,7 @@ export default function PlayerPage() {
                       <Button
                         className={"h-14 text-sm text-white disabled:pointer-events-auto " + getMoveTypeClass(config.secondChargedMoves[activeIndex])}
                         data-no-fast
+                        data-fast-fallback
                         disabled={
                           !running ||
                           gameStatus.allyCooldown > 0 ||
@@ -635,7 +1116,8 @@ export default function PlayerPage() {
                         <img
                           src={"https://static.pokebattler.com/assets/pokemon/128/" + PoGoAPI.getPokemonImageByID(attacker.pokemonId, config.imageLinks)}
                           alt=""
-                          className="h-12 w-12 object-contain sm:h-16 sm:w-16"
+                          draggable={false}
+                          className="h-12 w-12 select-none object-contain sm:h-16 sm:w-16"
                         />
                         <div className="mt-1 w-full">
                           <Progress
@@ -667,9 +1149,10 @@ export default function PlayerPage() {
                   </Button>
                 </div>
               </>
+              )
             )}
           </CardContent>
-          {config && gameStatus && !hasStartedRaid && (
+          {config && gameStatus && !hasStartedRaid && !gameStyle && (
             <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/60 p-4 backdrop-blur-[2px]">
               <Button
                 className="h-14 min-w-[10rem] px-12 py-2 text-lg shadow-xl"

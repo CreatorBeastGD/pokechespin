@@ -10,7 +10,7 @@ type ClickSparkProps = {
   sparkRadius: number;
   duration: number;
   randomness: number;
-  
+  className?: string;
   disabled: boolean;
 };
 
