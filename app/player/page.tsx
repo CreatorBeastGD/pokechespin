@@ -45,6 +45,33 @@ const cloneRaidStatus = (status: RaidStatus): RaidStatus => {
   ) as RaidStatus;
 };
 
+const runPlayerSimulationAction = (
+  config: PlayerConfig,
+  action: string,
+  status: RaidStatus,
+) =>
+  PoGoAPI.RealTimeSimulatorAllyTurnRaid(
+    config.attackers,
+    config.defender,
+    config.quickMoves,
+    config.chargedMoves,
+    config.secondChargedMoves,
+    config.defenderQuickMove,
+    config.defenderChargedMove,
+    config.attackerStats,
+    config.attackerBonuses,
+    config.defenderBonuses,
+    config.raidMode,
+    config.weather,
+    config.advEffect,
+    action,
+    cloneRaidStatus(status),
+    config.types,
+    config.allMoves,
+    config.relobbyTime,
+    config.energyResolveBug,
+  );
+
 export default function PlayerPage() {
   const searchParams = useSearchParams();
   const [config, setConfig] = useState<PlayerConfig | null>(null);
@@ -243,29 +270,12 @@ export default function PlayerPage() {
     const interval = window.setInterval(() => {
       setGameStatus((current) => {
         if (!current || !config) return current;
-        const statusCopy = cloneRaidStatus(current);
-
-        const next = PoGoAPI.RealTimeSimulatorAllyTurnRaid(
-          config.attackers,
-          config.defender,
-          config.quickMoves,
-          config.chargedMoves,
-          config.secondChargedMoves,
-          config.defenderQuickMove,
-          config.defenderChargedMove,
-          config.attackerStats,
-          config.attackerBonuses,
-          config.defenderBonuses,
-          config.raidMode,
-          config.weather,
-          config.advEffect,
-          "tick",
-          statusCopy,
-          config.types,
-          config.allMoves,
-          config.relobbyTime,
-          config.energyResolveBug,
-        );
+        const tickResult = runPlayerSimulationAction(config, "tick", current);
+        const next = tickResult.isRelobby === 2 &&
+          !tickResult.timeout &&
+          tickResult.enemyPokemonDamage < tickResult.enemyPokemonMaxHealth
+          ? runPlayerSimulationAction(config, "relobby", tickResult)
+          : tickResult;
 
         if (
           next.timeout ||
@@ -283,6 +293,7 @@ export default function PlayerPage() {
 
   const sendAction = (action: string) => {
     if (!running || !config || !gameStatus) return;
+    if (action !== "relobby" && gameStatus.isRelobby !== 0) return;
     if (action !== "relobby" && gameStatus.allyCooldown > 0) return;
 
     const realTimeAction =
@@ -294,30 +305,17 @@ export default function PlayerPage() {
 
     setGameStatus((current) => {
       if (!current) return current;
+      if (action !== "relobby" && current.isRelobby !== 0) return current;
       if (action !== "relobby" && current.allyCooldown > 0) return current;
-      const statusCopy = cloneRaidStatus(current);
+      if (
+        action !== "relobby" &&
+        !action.startsWith("switch") &&
+        current.allyPokemonDamage[current.activeAllyIndex] >= current.allyPokemonMaxHealth[current.activeAllyIndex]
+      ) {
+        return current;
+      }
 
-      return PoGoAPI.RealTimeSimulatorAllyTurnRaid(
-        config.attackers,
-        config.defender,
-        config.quickMoves,
-        config.chargedMoves,
-        config.secondChargedMoves,
-        config.defenderQuickMove,
-        config.defenderChargedMove,
-        config.attackerStats,
-        config.attackerBonuses,
-        config.defenderBonuses,
-        config.raidMode,
-        config.weather,
-        config.advEffect,
-        realTimeAction,
-        statusCopy,
-        config.types,
-        config.allMoves,
-        config.relobbyTime,
-        config.energyResolveBug,
-      );
+      return runPlayerSimulationAction(config, realTimeAction, current);
     });
   };
 
