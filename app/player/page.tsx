@@ -662,7 +662,6 @@ export default function PlayerPage() {
                             setRunning(false);
                             initializeSimulation();
                           }}
-                          disabled={gameStatus.timeout || gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth}
                         >
                           Restart
                         </Button>
