@@ -976,7 +976,19 @@ export class PoGoAPI {
                 damageWindowEndMs: 2500,
                 animationId: "MOONBLAST",
             };
-        } if (moveId.endsWith("_PLUS_1") || moveId.endsWith("_PLUS_2") || moveId.endsWith("_PLUS_3") || moveId.endsWith("_PLUS_4")) {
+        } if (moveId.startsWith("CHILLING_WATER_PLUS")) {
+            return {
+                moveId: "CHILLING_WATER_PLUS_"+(parseInt(moveId.slice(-1)) || 1),
+                power: ((megaMove && megaMove.moveId.startsWith("CHILLING_WATER_PLUS_") ? megaMove.power : 160) * megaMultiplier[(parseInt(moveId.slice(-1)) || 1) - 1]),
+                durationMs: 3500,
+                energyDelta: -100,
+                type: "POKEMON_TYPE_WATER",
+                damageWindowStartMs: 3498,
+                damageWindowEndMs: 3500,
+                animationId: "CHILLING_WATER",
+            };
+        }
+        if (moveId.endsWith("_PLUS_1") || moveId.endsWith("_PLUS_2") || moveId.endsWith("_PLUS_3") || moveId.endsWith("_PLUS_4")) {
             let baseMove = moveId.replace(/_PLUS_[1-4]$/, "");
             let baseMoveData: any = this.getMovePBByID(baseMove, moveList);
             
