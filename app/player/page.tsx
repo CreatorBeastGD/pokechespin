@@ -235,6 +235,11 @@ export default function PlayerPage() {
 
         localStorage.getItem("showHPOnSoloRaid") === "false" ? setShowHPValues(false) : setShowHPValues(true);
         localStorage.getItem("showDPSOnSoloRaid") === "false" ? setShowDPS(false) : setShowDPS(true);
+        
+        setGameStyle(localStorage.getItem("raidGameStyle") === "true");
+        setTopographyDisabled(localStorage.getItem("raidGameTopographyDisabled") === "true");
+        setShowDodgeButton(localStorage.getItem("raidGameShowDodgeButton") !== "false");
+
       } catch (loadError) {
         if (cancelled) return;
         setConfig(null);
@@ -444,9 +449,17 @@ export default function PlayerPage() {
   const bossHealthPercent = gameStatus && gameStatus.enemyPokemonMaxHealth > 0
     ? Math.max(
         0,
-        ((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) /
+        Math.ceil(((gameStatus.enemyPokemonMaxHealth - gameStatus.enemyPokemonDamage) /
           gameStatus.enemyPokemonMaxHealth) *
-          100,
+          100),
+      )
+    : 0;
+  const bossBackHealthPercent = gameStatus && gameStatus.enemyPokemonMaxHealth > 0
+    ? Math.max(
+        0,
+        Math.ceil((((parseInt(gameStatus.simulationLog[gameStatus.simulationLog.length - 2]?.enemyHP) ?? 0)) /
+          gameStatus.enemyPokemonMaxHealth) *
+          100),
       )
     : 0;
   const bossHealthColor = bossHealthPercent > 50
@@ -557,6 +570,7 @@ export default function PlayerPage() {
                   onClick={() => {
                     setGameStyle(false);
                     setShowPokemonWindow(false);
+                    localStorage.setItem("raidGameStyle", "false");
                   }}
                 >
                   Classic UI
@@ -567,7 +581,10 @@ export default function PlayerPage() {
                   variant={gameStyle ? "default" : "ghost"}
                   data-no-fast
                   aria-pressed={gameStyle}
-                  onClick={() => setGameStyle(true)}
+                  onClick={() => {
+                    setGameStyle(true);
+                    localStorage.setItem("raidGameStyle", "true");
+                  }}
                 >
                   Game UI
                 </Button>
@@ -575,10 +592,16 @@ export default function PlayerPage() {
             </div>
             {gameStyle && (
               <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <Button onClick={() => setTopographyDisabled(!topographyDisabled)}>
+                <Button onClick={() => {
+                  setTopographyDisabled(!topographyDisabled)
+                  localStorage.setItem("raidGameTopographyDisabled", (!topographyDisabled).toString())
+                }}>
                   {topographyDisabled ? "Enable" : "Disable"} Background
                 </Button>
-                <Button onClick={() => setShowDodgeButton(!showDodgeButton)}>
+                <Button onClick={() => {
+                  setShowDodgeButton(!showDodgeButton)
+                  localStorage.setItem("raidGameShowDodgeButton", (!showDodgeButton).toString())
+                }}>
                   {showDodgeButton ? "Hide" : "Show"} Dodge Button
                 </Button>
               </div>
@@ -714,11 +737,17 @@ export default function PlayerPage() {
                         </Button>
                       </div>
                     </div>
-                    <div className="h-3 overflow-hidden rounded-full bg-stone-300">
+                    <div className="relative h-3 overflow-hidden rounded-full bg-stone-300">
                       <div
-                        className={"h-full transition-[width,background-color] " + bossHealthColor}
+                        className={"relative z-10 h-full transition-[width,background-color] " + bossHealthColor}
                         style={{
                           width: `${bossHealthPercent}%`,
+                        }}
+                      />
+                      <div
+                        className="absolute inset-y-0 left-0 z-0 transition-[width,background-color] bg-orange-500"
+                        style={{
+                          width: `${bossBackHealthPercent}%`,
                         }}
                       />
                     </div>
@@ -999,6 +1028,34 @@ export default function PlayerPage() {
                     </div>
                   )}
                   </ClickSparkWithProps>
+                  {!running && hasStartedRaid && (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+                      <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                        Paused
+                      </p>
+                    </div>
+                  )}
+                  {gameStatus.isRelobby > 0 && (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+                      <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                        Relobbying...
+                      </p>
+                    </div>
+                  )}
+                  {gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth && (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+                      <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                        YOU WIN!
+                      </p>
+                    </div>
+                  )}
+                  {gameStatus.timeout && (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+                      <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                        Timeout reached.
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
               <>
@@ -1219,28 +1276,28 @@ export default function PlayerPage() {
               </Button>
             </div>
           )}
-          {config && gameStatus && !running && hasStartedRaid && (
+          {!gameStyle && config && gameStatus && !running && hasStartedRaid && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
               <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
                 Paused
               </p>
             </div>
           )}
-          {config && gameStatus && gameStatus.isRelobby > 0 && (
+          {!gameStyle && config && gameStatus && gameStatus.isRelobby > 0 && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
               <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
                 Relobbying...
               </p>
             </div>
           )}
-          {config && gameStatus && gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth && (
+          {!gameStyle && config && gameStatus && gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
               <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
                 YOU WIN!
               </p>
             </div>
           )}
-          {config && gameStatus && gameStatus.timeout && (
+          {!gameStyle && config && gameStatus && gameStatus.timeout && (
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
               <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
                 Timeout reached.
