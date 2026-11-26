@@ -10,6 +10,7 @@ const FAR = 160;
 const HEIGHT = 1.7;
 const FREQUENCY = 0.45;
 const INTRO_SECONDS = 2.8;
+const COLOR_FLASH_DURATION = 0.5;
 const MAX_PULSES = 4;
 const BLOOM_LEVELS = 4;
 const SCULPT_SIZE = 256;
@@ -668,6 +669,8 @@ const viewProjection = ({ eye, f, r, u }, aspect, out) => {
 
 const Topography = ({
   color = '#4f7cff',
+  flash = false,
+  flashColor = '#ff0000',
   lineCount = 22,
   lineWidth = 1.2,
   majorLines = true,
@@ -706,6 +709,8 @@ const Topography = ({
   const [generation, setGeneration] = useState(0);
   const settings = {
     color,
+    flash,
+    flashColor,
     lineCount: clamp(lineCount, 2, 80),
     lineWidth: Math.max(0.2, lineWidth),
     majorLines,
@@ -879,6 +884,8 @@ const Topography = ({
     const pointer = { x: 0, y: 0, inside: false };
     const view = { width: 1, height: 1, ratio: 1, cell: 0.05, cellKey: '' };
     const state = {
+      flashActive: false,
+      flashStartedAt: null,
       intro: settingsRef.current.intro && !reduce ? 0 : 1,
       rise: 1,
       travelX: 0,
@@ -1047,7 +1054,18 @@ const Topography = ({
         view.cell = cell;
       }
 
-      const color = toRgb(s.color);
+      const baseColor = toRgb(s.color);
+      const flashColor = toRgb(s.flashColor);
+      const flashProgress =
+        state.flashStartedAt === null
+          ? 1
+          : reduce
+            ? (s.flash ? 0 : 1)
+            : clamp((state.clock - state.flashStartedAt) / COLOR_FLASH_DURATION, 0, 1);
+      const easedFlashProgress = flashProgress * flashProgress * (3 - 2 * flashProgress);
+      const color = flashColor.map((channel, index) =>
+        channel + (baseColor[index] - channel) * easedFlashProgress
+      );
       const height = state.elevation * HEIGHT * state.rise;
       const layout = grid(box, view.cell);
       const near = nearRange(cam, s);
@@ -1338,6 +1356,8 @@ const Topography = ({
       state.scale = s.scale;
 
       state.clock += dt;
+      if (s.flash && !state.flashActive) state.flashStartedAt = state.clock;
+      state.flashActive = s.flash;
       const glitching = reduce ? 0 : s.glitch;
       if (glitching > 0) {
         if (state.clock >= glitch.next && state.clock >= glitch.until) {
@@ -1422,12 +1442,17 @@ const Topography = ({
         Math.abs(state.pitchVelocity) > 1e-4 ||
         Math.abs(focusTarget - state.focus) > 1e-3 ||
         Math.abs(tracing - state.trace) > 1e-3;
+      const colorAnimating =
+        !reduce &&
+        state.flashStartedAt !== null &&
+        state.clock - state.flashStartedAt < COLOR_FLASH_DURATION;
       const busy =
         (!reduce && (s.speed !== 0 || s.morph !== 0 || s.glitch > 0 || s.markers >= 0)) ||
         state.intro < 1 ||
         pulses.length > 0 ||
         sculpting ||
         settling ||
+        colorAnimating ||
         (state.presence > 0.001 && state.presence < 0.999);
       quiet = busy ? 0 : quiet + dt;
       if (quiet < 0.5) raf = requestAnimationFrame(frame);

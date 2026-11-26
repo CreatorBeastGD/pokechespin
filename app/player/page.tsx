@@ -67,6 +67,8 @@ const cloneRaidStatus = (status: RaidStatus): RaidStatus => {
   ) as RaidStatus;
 };
 
+const raidRemainingRedColorNumList = [30, 25, 20, 15, 10, 5, 4, 3, 2, 1 ,0];
+
 const runPlayerSimulationAction = (
   config: PlayerConfig,
   action: string,
@@ -109,6 +111,7 @@ export default function PlayerPage() {
   const [topographyDisabled, setTopographyDisabled] = useState(false);
   const [showHPValues, setShowHPValues] = useState(true);
   const [showDPS, setShowDPS] = useState(true);
+  const [showDodgeButton, setShowDodgeButton] = useState(true);
 
   const pointerStart = useRef<{ x: number; y: number; target: HTMLElement } | null>(null);
   const gameCardRef = useRef<HTMLDivElement>(null);
@@ -437,6 +440,7 @@ export default function PlayerPage() {
   const raidRemaining = config && gameStatus
     ? Math.max(0, PoGoAPI.getRaidTime(config.raidMode) - gameStatus.timer)
     : 0;
+  const isRaidTimeWarning = raidRemainingRedColorNumList.includes(raidRemaining);
   const bossHealthPercent = gameStatus && gameStatus.enemyPokemonMaxHealth > 0
     ? Math.max(
         0,
@@ -569,9 +573,16 @@ export default function PlayerPage() {
                 </Button>
               </div>
             </div>
-            <Button onClick={() => setTopographyDisabled(!topographyDisabled)}>
-              {topographyDisabled ? "Enable" : "Disable"} Topography
-            </Button>
+            {gameStyle && (
+              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <Button onClick={() => setTopographyDisabled(!topographyDisabled)}>
+                  {topographyDisabled ? "Enable" : "Disable"} Background
+                </Button>
+                <Button onClick={() => setShowDodgeButton(!showDodgeButton)}>
+                  {showDodgeButton ? "Hide" : "Show"} Dodge Button
+                </Button>
+              </div>
+            )}
           </CardContent>
           
         </Card>
@@ -606,8 +617,10 @@ export default function PlayerPage() {
               gameStyle ? (
                 <div
                   ref={gameCardRef}
-                  className="raid-game-background relative mx-auto max-w-[430px] select-none overflow-hidden rounded-3xl border border-stone-600 text-white shadow-xl"
-                  style={{ touchAction: "pan-y" }}
+                  className={"raid-game-background relative mx-auto max-w-[430px] select-none overflow-hidden rounded-3xl border border-stone-600 text-white shadow-xl"}
+                  style={{ touchAction: "pan-y",
+                    backgroundColor: topographyColor
+                   }}
                   onPointerDown={(event) => {
                     handlePagePointerDown(event);
                     const target = event.target as HTMLElement;
@@ -616,11 +629,15 @@ export default function PlayerPage() {
                     }
                   }}
                   onPointerUp={handlePagePointerUp}
+                  
                 >
-                  <div className="raid-game-topography  pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+                  <div className={"raid-game-topography pointer-events-none absolute inset-0 z-0"} aria-hidden="true" style={{
+                    backgroundColor: topographyDisabled ? topographyColor+"20" : undefined
+                   }}>
                     {!topographyDisabled && (
                       <Topography
                       color={topographyColor}
+                      flash={isRaidTimeWarning}
                       lineCount={30}
                       lineWidth={0.9}
                       elevation={0.5}
@@ -779,13 +796,14 @@ export default function PlayerPage() {
                         {gameStatus.enemyCurrentMessage.message}
                       </p>
                     )}
-                    <Button
-                      className="absolute right-4 top-1/2 z-10 h-16 w-16 -translate-y-1/2 rounded-lg border border-amber-800 bg-amber-700 p-1 text-xs text-white hover:bg-amber-800"
-                      disabled={!running || gameStatus.allyCooldown > 0}
-                      onClick={() => sendAction("dodge")}
-                    >
-                      Dodge
-                    </Button>
+                    {showDodgeButton && (
+                      <Button
+                        className="absolute right-4 top-1/2 z-10 h-16 w-16 -translate-y-1/2 rounded-lg border border-amber-800 bg-amber-700 p-1 text-xs text-white hover:bg-amber-800"
+                        disabled={!running || gameStatus.allyCooldown > 0}
+                        onClick={() => sendAction("dodge")}
+                      >
+                        Dodge
+                    </Button>)}
                     <img
                       src={"https://static.pokebattler.com/assets/pokemon/128/" + enemySprite}
                       alt={PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}
@@ -1188,6 +1206,7 @@ export default function PlayerPage() {
               </>
               )
             )}
+            
           </CardContent>
           {config && gameStatus && !hasStartedRaid && !gameStyle && (
             <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/60 p-4 backdrop-blur-[2px]">
@@ -1198,6 +1217,34 @@ export default function PlayerPage() {
               >
                 Start raid
               </Button>
+            </div>
+          )}
+          {config && gameStatus && !running && hasStartedRaid && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+              <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                Paused
+              </p>
+            </div>
+          )}
+          {config && gameStatus && gameStatus.isRelobby > 0 && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+              <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                Relobbying...
+              </p>
+            </div>
+          )}
+          {config && gameStatus && gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+              <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                YOU WIN!
+              </p>
+            </div>
+          )}
+          {config && gameStatus && gameStatus.timeout && (
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
+              <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
+                Timeout reached.
+              </p>
             </div>
           )}
         </Card>
