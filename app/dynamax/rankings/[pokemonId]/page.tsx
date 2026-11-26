@@ -171,16 +171,31 @@ export default function rankingsPage() {
                 const pokemon = PoGoAPI.getPokemonPBByID(pokemonId, pokemonList)[0];
                 setPokemonInfo(pokemon);
                 
-                const defenderChargedAttack = urlSP.get("defender_cinematic_attack");
+                let defenderChargedAttack = urlSP.get("defender_cinematic_attack");
+                console.log("Defender Charged Attack from URL:", defenderChargedAttack);
+
+                if (defenderChargedAttack === "undefined") {
+                    urlSP.delete("defender_cinematic_attack");
+                    defenderChargedAttack = null;
+                }
                 
-                if (defenderChargedAttack !== null) {
+                if (defenderChargedAttack !== null ) {
                     setTargetedMove(PoGoAPI.getMovePBByID(defenderChargedAttack, allMoves));
+                } else {
+                    defenderChargedAttack = null;
                 } 
 
-                const defenderFastAttack = urlSP.get("defender_fast_attack");
+                let defenderFastAttack = urlSP.get("defender_fast_attack");
+
+                if (defenderFastAttack === "undefined") {
+                    urlSP.delete("defender_fast_attack");
+                    defenderFastAttack = null;
+                }
                 
-                if (defenderFastAttack !== null) {
+                if (defenderFastAttack !== null ) {
                     setLargeMove(PoGoAPI.getMovePBByID(defenderFastAttack, allMoves));
+                } else {
+                    defenderFastAttack = null;
                 }
 
                 const prioritiseFastAtt = urlSP.get("prioritise_fast_attack") ? urlSP.get("prioritise_fast_attack") === "true" : false;
@@ -251,6 +266,9 @@ export default function rankingsPage() {
                     PoGoAPI.updateSearchParams(urlSP);
                     const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
                     setPokeboxReadyAndShowing(showingBox);
+
+                    PoGoAPI.updateSearchParams(urlSP);
+
                     load=true;
                 } else if (raidMode && (!defenderFastAttack || !defenderChargedAttack)) {
                     setRaidMode(raidMode);
@@ -265,6 +283,9 @@ export default function rankingsPage() {
                     PoGoAPI.updateSearchParams(urlSP);
                     const showingBox: boolean = localStorage.getItem("pokeboxId") !== "null" && localStorage.getItem("pokeboxId") !== "undefined" && pokebox !== null && (localStorage.getItem("usePokeboxOnRankings") === "true");
                     setPokeboxReadyAndShowing(showingBox);
+                    
+                    PoGoAPI.updateSearchParams(urlSP);
+                    
                     load=true;
                 } else {
                     const newUrl = `${window.location.origin}/dynamax?defender=${pokemonId}`;
@@ -644,7 +665,8 @@ export default function rankingsPage() {
                             <div className="flex flex-row space-x-4">
                                 <div>
                                     <h3 className="text-xl font-bold ">Large Move:</h3>
-                                    <Card key={largeMove} className={`mb-4`}>
+                                    {largeMove && (
+                                        <Card key={largeMove} className={`mb-4`}>
                                         <CardHeader>
                                             <CardTitle>{PoGoAPI.formatMoveName((PoGoAPI.getMovePBByID(largeMove?.moveId, allMoves)).moveId)}{(pokemonInfo?.eliteCinematicMove ?? []).includes(largeMove) ? " *" : ""}</CardTitle>
                                         </CardHeader>
@@ -667,7 +689,8 @@ export default function rankingsPage() {
                                             </div>
 
                                         </CardContent>
-                                    </Card>
+                                    </Card>    
+                                    )}
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold ">Targeted Move:</h3>

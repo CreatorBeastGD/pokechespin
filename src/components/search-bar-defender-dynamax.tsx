@@ -88,17 +88,21 @@ export default function SearchBarDefenderDynamax({
   const handleQuickMoveSelect = (moveId: string, move: any) => {
     setSelectedQuickMove(moveId);
     onQuickMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(window.location.search);
-    newSearchParams.set("defender_fast_attack", moveId);
-    PoGoAPI.updateSearchParams(newSearchParams, pathname);
+    if (moveId) {
+      const newSearchParams = new URLSearchParams(window.location.search);
+      newSearchParams.set("defender_fast_attack", moveId);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
+    }
   };
 
   const handleChargedMoveSelect = (moveId: string, move: any) => {
     setSelectedChargedMove(moveId);
     onChargedMoveSelect(moveId, move, member, number);
-    const newSearchParams = new URLSearchParams(window.location.search);
-    newSearchParams.set("defender_cinematic_attack", moveId);
-    PoGoAPI.updateSearchParams(newSearchParams, pathname);
+    if (moveId) {
+      const newSearchParams = new URLSearchParams(window.location.search);
+      newSearchParams.set("defender_cinematic_attack", moveId);
+      PoGoAPI.updateSearchParams(newSearchParams, pathname);
+    }
   }
 
   useEffect(() => {
