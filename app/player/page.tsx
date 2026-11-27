@@ -375,6 +375,8 @@ export default function PlayerPage() {
     if (percent >= 25) return "bg-yellow-500";
     return "bg-red-500";
   };
+  const getMoveType = (move: any) =>
+    String(move?.type ?? "normal").replace("POKEMON_TYPE_", "").toLowerCase();
   const getMoveTypeClass = (move: any) =>
     `type-${String(move?.type ?? "normal").replace("POKEMON_TYPE_", "").toLowerCase()}`;
   const getMoveName = (move: any) =>
@@ -908,7 +910,7 @@ export default function PlayerPage() {
                         return (
                           <Button
                             key={action}
-                            className={"relative aspect-square h-auto w-full max-w-[88px] overflow-hidden whitespace-normal px-2 text-xs text-white disabled:pointer-events-auto " + getMoveTypeClass(move)}
+                            className={"relative aspect-square h-auto w-full max-w-[88px] overflow-hidden whitespace-normal px-2 text-xs text-white disabled:pointer-events-auto " + getMoveTypeClass(move) + " hover:bg-" + getMoveType(move) + " hover:bg-opacity-80"}
                             data-no-fast
                             data-fast-fallback
                             disabled={
