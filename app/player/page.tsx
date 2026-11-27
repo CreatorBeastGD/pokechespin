@@ -1067,7 +1067,7 @@ export default function PlayerPage() {
                       </p>
                     </div>
                   )}
-                  {gameStatus.timeout && (
+                  {gameStatus.timeout && !(gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth) && (
                     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
                       <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
                         Timeout reached.
