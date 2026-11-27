@@ -90,6 +90,21 @@ const Navbar = () => {
         const customBladeBoostAffectsMovesStorage = localStorage.getItem("customBladeBoostAffectsMoves");
         const showSparkOnClickSimulationStorage = localStorage.getItem("showSparkOnClickSimulation");
 
+        const raidStyleStorage = localStorage.getItem("raidGameStyle");
+        if (!raidStyleStorage) {
+            localStorage.setItem("raidGameStyle", "true");
+        }
+
+        const raidTopographyDisabledStorage = localStorage.getItem("raidGameTopographyDisabled");
+        if (!raidTopographyDisabledStorage) {
+            localStorage.setItem("raidGameTopographyDisabled", "false");
+        }
+
+        const raidShowDodgeButtonStorage = localStorage.getItem("raidGameShowDodgeButton");
+        if (!raidShowDodgeButtonStorage) {
+            localStorage.setItem("raidGameShowDodgeButton", "true");
+        }
+
         if (customBladeBoostAffectsMovesStorage) {
             setBladeBoostAffectsMoves(customBladeBoostAffectsMovesStorage === "true");
         } else {

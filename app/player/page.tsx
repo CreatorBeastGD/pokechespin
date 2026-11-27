@@ -717,7 +717,7 @@ export default function PlayerPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100"
+                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100 hover:text-black"
                           data-no-fast
                           onClick={() => {
                             setRunning(false);
@@ -729,7 +729,7 @@ export default function PlayerPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100"
+                          className="border-stone-400 bg-amber-50 text-stone-900 hover:bg-amber-100 hover:text-black"
                           data-no-fast
                           onClick={toggleGameFullscreen}
                         >
@@ -761,7 +761,7 @@ export default function PlayerPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100 hover:text-black"
                           data-no-fast
                           onClick={() => sendAction("relobby")}
                           disabled={
@@ -775,7 +775,7 @@ export default function PlayerPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                          className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100 hover:text-black"
                           data-no-fast
                           onClick={() => setRunning((current) => !current)}
                           disabled={gameStatus.timeout || gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth}
@@ -936,7 +936,7 @@ export default function PlayerPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100"
+                        className="h-14 w-14 whitespace-normal rounded-lg border-stone-400 bg-amber-50 px-1 text-[10px] leading-tight text-stone-900 hover:bg-amber-100 hover:text-black"
                         data-no-fast
                         onClick={() => setShowPokemonWindow(true)}
                       >
@@ -947,16 +947,16 @@ export default function PlayerPage() {
                   </div>
                   {showPokemonWindow && (
                     <div className="absolute inset-0 z-30 flex items-end justify-center bg-black/70 p-4 pb-2">
-                      <div className="w-full rounded-2xl border border-stone-300 bg-amber-50 p-3 text-stone-900 shadow-xl" data-no-fast role="dialog" aria-modal="true" aria-label="Pokémon party">
+                      <div className="w-full rounded-2xl border border-gray-600 bg-gray-900 p-3 text-white shadow-xl" data-no-fast role="dialog" aria-modal="true" aria-label="Pokémon party">
                         <div className="mb-2 flex items-center justify-between">
-                          <strong>Pokémon</strong>
+                          <strong>My Battle Party</strong>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           {config.attackers.map((attacker, index) => (
                             <Button
                               key={`${attacker.pokemonId}-${index}`}
                               variant="outline"
-                              className={`h-auto min-w-0 flex-col gap-1 p-2 text-xs text-stone-900 ${index === activeIndex ? "border-amber-700 bg-amber-100" : "bg-white"}`}
+                              className={`h-auto min-w-0 flex-col gap-1 p-2 text-xs text-white ${index === activeIndex ? "border-blue-700 bg-gray-900" : "bg-gray-700"}`}
                               data-no-fast
                               disabled={
                                 !running ||
@@ -993,7 +993,7 @@ export default function PlayerPage() {
                           ))}
                         </div>
                         <Button
-                          className="mx-auto mt-3 flex min-w-28"
+                          className="mx-auto mt-3 flex min-w-28 bg-amber-50 px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-amber-100 hover:text-black"
                           variant="outline"
                           data-no-fast
                           onClick={() => setShowPokemonWindow(false)}
