@@ -542,6 +542,9 @@ export default function PlayerPage() {
             <CardDescription>
               Play the configured raid using the same turn-based battle engine, but with real-time interaction.
             </CardDescription>
+            <CardDescription>
+              This is a recreation of the raid battle system from Pokémon GO, and is not affiliated with Niantic, Scopely Explore, or The Pokémon Company.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             To start the raid, click the "Start Raid" button below. It is highly recommended to play on mobile devices. Clicking anywhere in the main card will default to use a Fast Attack.
@@ -638,6 +641,7 @@ export default function PlayerPage() {
 
             {config && gameStatus && (
               gameStyle ? (
+                
                 <div
                   ref={gameCardRef}
                   className={"raid-game-background relative mx-auto max-w-[430px] select-none overflow-hidden rounded-3xl border border-stone-600 text-white shadow-xl"}
@@ -654,6 +658,11 @@ export default function PlayerPage() {
                   onPointerUp={handlePagePointerUp}
                   
                 >
+                  <ClickSparkWithProps
+                    {...clickSparkSettings}
+                    className="raid-game-spark-layer relative z-10"
+                    disabled={false}
+                  >
                   <div className={"raid-game-topography pointer-events-none absolute inset-0 z-0"} aria-hidden="true" style={{
                     backgroundColor: topographyDisabled ? topographyColor+"20" : undefined
                    }}>
@@ -699,11 +708,7 @@ export default function PlayerPage() {
                     />
                     )}
                   </div>
-                  <ClickSparkWithProps
-                    {...clickSparkSettings}
-                    className="raid-game-spark-layer relative z-10"
-                    disabled={false}
-                  >
+                  
                   <div className="raid-game-panel px-4 pb-3 pt-4">
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -833,6 +838,16 @@ export default function PlayerPage() {
                       >
                         Dodge
                     </Button>)}
+                    {(gameStatus.simulationLog[gameStatus.simulationLog.length - 1]?.receivedDodgedDamage == true ||
+                    gameStatus.simulationLog[gameStatus.simulationLog.length - 2]?.receivedDodgedDamage == true) && (
+                      <p
+                        className="absolute right-4 top-1/2 z-10 w-1/3 rounded-lg bg-black/80 px-2 py-1 text-right text-base font-semibold leading-tight text-white shadow"
+                        style={{ top: "calc(95% - 5.25rem)" }}
+                        role="status"
+                      >
+                        Dodged!
+                      </p>
+                    )}
                     <img
                       src={"https://static.pokebattler.com/assets/pokemon/128/" + enemySprite}
                       alt={PoGoAPI.getPokemonNamePB(config.defender.pokemonId, config.allEnglishText)}
@@ -943,20 +958,22 @@ export default function PlayerPage() {
                         Pokémon
                       </Button>
                     </div>
-                    <p className="text-center text-[11px] text-stone-300">Tap the battlefield to attack · swipe sideways to dodge</p>
+                    <p className="text-center text-[11px] text-stone-300">Tap the battlefield to attack · Swipe sideways to dodge</p>
+                    
+                    <p className="absolute bottom-1 left-0 right-0 text-center text-[8px] text-stone-300">PokéChespin Realtime Raid Player</p>
                   </div>
                   {showPokemonWindow && (
                     <div className="absolute inset-0 z-30 flex items-end justify-center bg-black/70 p-4 pb-2">
-                      <div className="w-full rounded-2xl border border-gray-600 bg-gray-900 p-3 text-white shadow-xl" data-no-fast role="dialog" aria-modal="true" aria-label="Pokémon party">
-                        <div className="mb-2 flex items-center justify-between">
-                          <strong>My Battle Party</strong>
+                      <div className="w-full rounded-2xl bg-opacity-70 border border-gray-600 bg-gray-900 p-3 text-white shadow-xl" data-no-fast role="dialog" aria-modal="true" aria-label="Pokémon party">
+                        <div className="mb-2 flex items-center justify-center">
+                          <strong>Battle Party</strong>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           {config.attackers.map((attacker, index) => (
                             <Button
                               key={`${attacker.pokemonId}-${index}`}
                               variant="outline"
-                              className={`h-auto min-w-0 flex-col gap-1 p-2 text-xs text-white ${index === activeIndex ? "border-blue-700 bg-gray-900" : "bg-gray-700"}`}
+                              className={`h-auto min-w-0 flex-col gap-1 p-2 text-xs text-white ${index === activeIndex ? "border-gray-500 bg-gray-900" : "bg-gray-700"}`}
                               data-no-fast
                               disabled={
                                 !running ||
@@ -1027,7 +1044,6 @@ export default function PlayerPage() {
                       </Button>
                     </div>
                   )}
-                  </ClickSparkWithProps>
                   {!running && hasStartedRaid && (
                     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
                       <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
@@ -1045,7 +1061,7 @@ export default function PlayerPage() {
                   {gameStatus.enemyPokemonDamage >= gameStatus.enemyPokemonMaxHealth && (
                     <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-xl">
                       <p className="bg-black rounded-xl bg-background/60 px-4 py-2 text-lg font-semibold text-stone-300 backdrop-blur-[2px]">
-                        YOU WIN!
+                        You win!
                       </p>
                     </div>
                   )}
@@ -1056,6 +1072,7 @@ export default function PlayerPage() {
                       </p>
                     </div>
                   )}
+                </ClickSparkWithProps>
                 </div>
               ) : (
               <>

@@ -67,6 +67,7 @@ export class RaidStatus {
     allyActiveTurns: number[] = [];
 
     chargedMoveEnd: boolean = true;
+    enemyAttackWasDodged: boolean = false;
 
     chargedMoveChance = 0.3;
 
@@ -82,6 +83,7 @@ export class RaidStatus {
         allyMessage: string | null;
         landedMove: "f" | "c" | "d" | "fr" | "cr" | "dr" | "c2" | "c2r" | null;
         landedMoveIndex: number | null;
+        receivedDodgedDamage: boolean;
     }[] = [];
 
     rngSeed: number = 0;

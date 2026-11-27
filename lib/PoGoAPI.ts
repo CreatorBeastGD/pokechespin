@@ -5489,6 +5489,7 @@ export class PoGoAPI {
 
         defenderBonuses[0] = attackersBonuses[0][0];
 
+
         if (order === "init") {
             gamestatus.allyPokemonMaxHealth = [];
             for (let i = 0 ; i < attackers.length ; i++) {
@@ -6075,7 +6076,8 @@ export class PoGoAPI {
             hasUsedChargedMove: gamestatus.chargedMoveEnd,
             allyMessage: gamestatus.allyCurrentMessage?.message || null,
             landedMove: landedmove,
-            landedMoveIndex
+            landedMoveIndex,
+            receivedDodgedDamage: false
         });
 
 
@@ -6103,6 +6105,8 @@ export class PoGoAPI {
         allMoves: any = null,
     ) {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+
+        gamestatus.enemyAttackWasDodged = false;
 
         // enemy can cast a move
         if (gamestatus.enemyCooldown == 0) {
@@ -6149,6 +6153,8 @@ export class PoGoAPI {
                         gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] :
                         gamestatus.enrage ? gamestatus.enemyDamageValuesEnragedReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
                     let proDamageReal = projectedDamage;
+
+                    gamestatus.enemyAttackWasDodged = gamestatus.damageReduction < 1 ? true : false;
 
                     gamestatus.allyDodgeTurn = 0;
                     if (!gamestatus.enemyActiveMove?.isCharged) {
@@ -6935,7 +6941,8 @@ export class PoGoAPI {
             hasUsedChargedMove: gamestatus.chargedMoveEnd,
             allyMessage: gamestatus.allyCurrentMessage?.message || null,
             landedMove: landedmove,
-            landedMoveIndex
+            landedMoveIndex,
+            receivedDodgedDamage: gamestatus.enemyAttackWasDodged,
         });
 
 
@@ -6964,6 +6971,8 @@ export class PoGoAPI {
         deferDamageForRealTime = false,
     ) {
         let defenderStats = this.convertStats([40,15,15,15], raidMode, defender.pokemonId);
+
+        gamestatus.enemyAttackWasDodged = false;
 
         // enemy can cast a move
         if (gamestatus.enemyCooldown == 0 && !gamestatus.enemyMovePendingHit) {
@@ -7043,6 +7052,8 @@ export class PoGoAPI {
                         gamestatus.enrage ? gamestatus.enemyDamageValuesEnraged[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValues[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] :
                         gamestatus.enrage ? gamestatus.enemyDamageValuesEnragedReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0] : gamestatus.enemyDamageValuesReduced[gamestatus.activeAllyIndex][gamestatus.enemyActiveMove?.isCharged ? 1 : 0];
                     let proDamageReal = projectedDamage;
+
+                    gamestatus.enemyAttackWasDodged = gamestatus.damageReduction < 1;
 
                     gamestatus.allyDodgeTurn = 0;
                     if (!gamestatus.enemyActiveMove?.isCharged) {

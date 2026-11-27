@@ -59,7 +59,7 @@ export default function RootLayout({
         </Suspense>
         <div className="flex flex-col items-center justify-center space-y-3 mt-4 mb-4">
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
-            CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
+            CreatorBeastGD is not affiliated with Niantic, Inc., The Pokémon Company, Scopely Explore, or Nintendo. Pokémon and Pokémon character names are trademarks of Nintendo.
           </p>
           <p className="textslate text-xs w-1/2 justify-center text-center px-4">
             If you enjoy this page, consider supporting me by buying me a coffee or sponsoring me on GitHub, or helping me if you find any discrepancy in the data. I'll try to do my best to fix it as soon as possible.
