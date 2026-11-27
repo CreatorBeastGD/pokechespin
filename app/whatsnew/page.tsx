@@ -9,6 +9,11 @@ import Image from "next/image";
 
 const novedades = [
     {
+        title: "v1.48 (Real-Time Raid Player Improvements!)",
+        desc: "+ A new theme has been added to the Realtime Raid Player, giving more information about the Raid and being as close as possible to the in-game raid interface!\n",
+        date: "2026-11-27",
+    },
+    {
         title: "v1.47 (REALTIME Solo Raid Player!)",
         desc: "+ Added a new feature to PokéChespin called 'Real-Time Raid Player'!\n"+
             ">>>>>> This new feature allows you to play the configured raid in real-time, using the same turn-based battle engine, but with real-time interaction!\n"+

@@ -102,7 +102,7 @@ const Navbar = () => {
 
         const raidShowDodgeButtonStorage = localStorage.getItem("raidGameShowDodgeButton");
         if (!raidShowDodgeButtonStorage) {
-            localStorage.setItem("raidGameShowDodgeButton", "true");
+            localStorage.setItem("raidGameShowDodgeButton", "false");
         }
 
         if (customBladeBoostAffectsMovesStorage) {

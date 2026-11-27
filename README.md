@@ -9,18 +9,22 @@ This project is a Pokémon GO damage calculator that allows users to select atta
     - Calculating how much damage does your attacker' quick or charged move deal against a defender.
     - Simulating a raid with the difficulty and custom parameters of your choice.
     - Checking your attacker' offensive breakpoints against a defender.
+    - Play a Raid by your own, both turn by turn, or in realtime.
 
 - Run Max Battles calculations and simulations, such as...
     - Calculating how much damage does your attacker' quick, charged or max move deal against a defender.
-    - Building up to 4 teams to run an advanced simulation of a Max Battle (BETA) with the difficulty and custom parameters of your choice.
+    - Building up to 4 teams to run an advanced simulation of a Max Battle with the difficulty and custom parameters of your choice.
     - Calculating how much damage the defender will deal to your Pokémon with their large or targeted moves.
     - Checking your attacker' offensive breakpoints against a defender.
+    - Play a Max Battle by your own, turn by turn.
 
 - Check the rankings of any Max Boss to know which are the best Tanks and best Attackers against one Boss.
 
 - Export any pokémon you like to import their data at any moment!
 
 - Copy any setup from the page to send it to anyone!
+
+- Edit any move, create moves, and edit Pokémon movepools.
 
 ## Installation
 

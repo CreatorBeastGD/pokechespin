@@ -538,7 +538,7 @@ export default function PlayerPage() {
         
         <Card className="relative mt-4">
           <CardHeader>
-            <CardTitle>Real-Time Raid Player (BETA)</CardTitle>
+            <CardTitle>PokéChespin Realtime Raid Player (BETA)</CardTitle>
             <CardDescription>
               Play the configured raid using the same turn-based battle engine, but with real-time interaction.
             </CardDescription>
